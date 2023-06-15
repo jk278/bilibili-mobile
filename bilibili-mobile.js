@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-mobile
-// @version            2.5
+// @version            2.5.1
 // @description        view bilibili mobile page recommended video directly 
 // @description:zh-CN  b 站移动端网页推荐视频直接看
 // @author             jk278
