@@ -63,15 +63,15 @@
         const button = document.createElement('button');
         button.classList.add('btn', 'relative', 'btn-neutral', 'border-0', 'md:border');
         button.setAttribute('id', 'enter-key-button');
-        const bottonHTML = '<div class="flex w-full items-center justify-center gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle></svg></div>';
-        button.innerHTML = bottonHTML;
+        const buttonHTML = '<div class="flex w-full items-center justify-center gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle></svg></div>';
+        button.innerHTML = buttonHTML;
 
         const updateButtonState = () => {
             const isSelected = localStorage.getItem(localStorageKey) === 'true';
             if (isSelected) {
                 button.innerHTML += '<div class="absolute top-0 left-0 w-full h-full flex items-center justify-center"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="h-2 w-2" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="256" cy="256" r="128"></circle></svg></div>';
             } else {
-                button.innerHTML = bottonHTML;
+                button.innerHTML = buttonHTML;
             }
         };
 
