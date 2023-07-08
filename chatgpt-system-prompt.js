@@ -6,8 +6,7 @@
 // @description        Your Script Description
 // @description:zh-CN  
 // @author             jk278
-// @match               https://chat.openai.com
-// @match               https://chat.openai.com/?model=*
+// @match               https://chat.openai.com/*
 // @grant              none
 // @run-at             document-start
 // @icon                https://raw.githubusercontent.com/jk278/chatgpt-enter-key-modification/main/openai-icon_48.png
@@ -22,7 +21,7 @@
         const exampleElement = document.querySelector('.absolute.bottom-0.left-0.w-full.border-t');
         if (!exampleElement) return;
 
-        var button = document.createElement('button');
+        const button = document.createElement('button');
         button.innerHTML = `
             <div class="flex w-full items-center justify-center gap-2">
             <svg stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="24" width= "24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -30,15 +29,14 @@
             <path d="M12,5 L12,19 M5,12 L19,12" stroke-linecap="round"/>
             </svg></div>
         `;
-        button.style.cssText = 'Your CSS Here';
+        button.classList.add('btn', 'relative', 'btn-neutral', 'border-0', 'md:border');
         button.className = 'prompt-button';
-        
+
         const parent = document.createElement("div");
-        parent.className = "flex w-full items-center justify-center gap-2";
+        parent.className = "flex justify-center pb-2";
         parent.appendChild(button);
-        
+
         exampleElement.prepend(parent);
-        console.log('test: ', exampleElement.parentNode);
 
         createPopup();
 
@@ -50,7 +48,7 @@
 
     function createPopup() {
         // 创建弹窗
-        var popup = document.createElement("div");
+        const popup = document.createElement("div");
         popup.className = 'prompt-popup';
         popup.style.cssText = `
             position: fixed;
@@ -63,8 +61,18 @@
             display: none;
         `;
 
+        // 添加标题
+        const popupTitle = document.createElement("div");
+        popupTitle.innerHTML = "系统提示词";
+        popup.appendChild(popupTitle);
+
+        // 添加提示词菜单
+        const promptBody = document.createElement("div");
+        promptBody.style.cssText = 'height:300px;width:300px;'
+        popup.appendChild(promptBody);
+
         // 添加关闭按钮
-        var closeButton = document.createElement("button");
+        const closeButton = document.createElement("button");
         closeButton.innerHTML = "关闭";
         closeButton.addEventListener("click", function () {
             togglePopup();
@@ -72,7 +80,7 @@
         popup.appendChild(closeButton);
 
         // 添加按钮
-        var addButton = document.createElement("button");
+        const addButton = document.createElement("button");
         addButton.innerHTML = "添加";
         addButton.addEventListener("click", function () {
             openAddItemPopup();
@@ -80,7 +88,7 @@
         popup.appendChild(addButton);
 
         // 排序按钮
-        var sortButton = document.createElement("button");
+        const sortButton = document.createElement("button");
         sortButton.innerHTML = "排序";
         sortButton.addEventListener("click", function () {
             toggleSortMode();
@@ -88,7 +96,7 @@
         popup.appendChild(sortButton);
 
         // 删除按钮
-        var deleteButton = document.createElement("button");
+        const deleteButton = document.createElement("button");
         deleteButton.innerHTML = "删除";
         deleteButton.addEventListener("click", function () {
             toggleDeleteMode();
@@ -96,10 +104,10 @@
         popup.appendChild(deleteButton);
 
         // 根据暗色模式设置背景色
-        var darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
         let backgroundStr;
-        darkModeMediaQuery?backgroundStr="rgba(52, 53, 65, var(--tw-bg-opacity))":backgroundStr="white";
+        darkModeMediaQuery ? backgroundStr = "rgba(52, 53, 65, var(--tw-bg-opacity))" : backgroundStr = "white";
         popup.style.backgroundColor = backgroundStr;
 
 
@@ -128,10 +136,10 @@
 
     // 刷新列表 UI
     function refreshUI() {
-        var listContainer = document.createElement("ul");
+        const listContainer = document.createElement("ul");
 
-        for (var i = 0; i < jsonList.length; i++) {
-            var listItem = document.createElement("li");
+        for (let i = 0; i < jsonList.length; i++) {
+            const listItem = document.createElement("li");
             listItem.innerHTML = jsonList[i].name;
             listItem.addEventListener("click", function () {
                 getItemValue(this.innerHTML);
@@ -148,7 +156,7 @@
 
     // 打开添加项目的弹窗
     function openAddItemPopup() {
-        var addItemPopup = document.createElement("div");
+        const addItemPopup = document.createElement("div");
         addItemPopup.innerHTML = `
             <input type="text" id="nameInput" placeholder="名称">
             <input type="text" id="stringInput" placeholder="字符串">
@@ -156,10 +164,10 @@
         `;
         popup.appendChild(addItemPopup);
 
-        var confirmButton = document.getElementById("confirmButton");
+        const confirmButton = document.getElementById("confirmButton");
         confirmButton.addEventListener("click", function () {
-            var nameInput = document.getElementById("nameInput");
-            var stringInput = document.getElementById("stringInput");
+            const nameInput = document.getElementById("nameInput");
+            const stringInput = document.getElementById("stringInput");
 
             if (nameInput.value && stringInput.value) {
                 addItem(nameInput.value, stringInput.value);
@@ -181,13 +189,13 @@
 
     // 打开排序模式
     function toggleSortMode() {
-        var listItems = popup.getElementsByTagName("li");
-        var sortButton = document.createElement("button");
+        const listItems = popup.getElementsByTagName("li");
+        const sortButton = document.createElement("button");
         sortButton.innerHTML = "确认排序";
         sortButton.id = "sortButton";
         popup.appendChild(sortButton);
 
-        for (var i = 0; i < listItems.length; i++) {
+        for (const i = 0; i < listItems.length; i++) {
             var listItem = listItems[i];
             listItem.innerHTML += `
                 <svg xmlns="http://www.w3.org/2000/svg" height="12" width="12" viewBox="0 0 24 24" id="sortIcon${i}">
@@ -200,7 +208,7 @@
             });
         }
 
-        var sortButton = document.getElementById("sortButton");
+        // var sortButton = document.getElementById("sortButton");
         sortButton.addEventListener("click", function () {
             endSortMode();
         });
@@ -208,14 +216,14 @@
 
     // 切换排序输入框
     function toggleSortInput(index) {
-        var sortIcon = document.getElementById(`sortIcon${index}`);
-        var listItem = sortIcon.parentNode;
+        const sortIcon = document.getElementById(`sortIcon${index}`);
+        const listItem = sortIcon.parentNode;
 
         if (sortIcon.tagName === "path") {
             sortIcon.outerHTML = `
                 <input type="number" id="sortInput${index}" style="width: 40px;" min="1" max="${jsonList.length}" value="${index + 1}" />
             `;
-            var sortInput = document.getElementById(`sortInput${index}`);
+            const sortInput = document.getElementById(`sortInput${index}`);
             sortInput.addEventListener("keydown", function (event) {
                 if (event.key === "Enter") {
                     var newIndex = parseInt(this.value, 10);
@@ -225,7 +233,7 @@
             });
             sortInput.focus();
         } else {
-            var sortInput = document.getElementById(`sortInput${index}`);
+            const sortInput = document.getElementById(`sortInput${index}`);
             sortItem(index, parseInt(sortInput.value, 10));
             toggleSortInput(index);
         }
@@ -233,13 +241,13 @@
 
     // 结束排序模式
     function endSortMode() {
-        var sortButton = document.getElementById("sortButton");
+        const sortButton = document.getElementById("sortButton");
         sortButton.parentNode.removeChild(sortButton);
 
-        var sortInputs = popup.querySelectorAll('input[type="number"]');
-        for (var i = 0; i < sortInputs.length; i++) {
-            var sortInput = sortInputs[i];
-            var sortIcon = document.createElement("svg");
+        const sortInputs = popup.querySelectorAll('input[type="number"]');
+        for (let i = 0; i < sortInputs.length; i++) {
+            const sortInput = sortInputs[i];
+            const sortIcon = document.createElement("svg");
             sortIcon.setAttribute("xmlns", "http://www.w3.org/2000/svg");
             sortIcon.setAttribute("height", "12");
             sortIcon.setAttribute("width", "12");
@@ -262,14 +270,14 @@
 
     // 打开删除模式
     function toggleDeleteMode() {
-        var listItems = popup.getElementsByTagName("li");
-        var deleteButton = document.createElement("button");
+        const listItems = popup.getElementsByTagName("li");
+        const deleteButton = document.createElement("button");
         deleteButton.innerHTML = "确认删除";
         deleteButton.id = "deleteButton";
         popup.appendChild(deleteButton);
 
-        for (var i = 0; i < listItems.length; i++) {
-            var listItem = listItems[i];
+        for (let i = 0; i < listItems.length; i++) {
+            const listItem = listItems[i];
             listItem.innerHTML += `
                 <svg xmlns="http://www.w3.org/2000/svg" height="12" width="12" viewBox="0 0 24 24" id="deleteIcon${i}">
                     <path d="M19 6h-4l-2-2H9L7 6H3v2h16V6zM4 18h16v-8H4v8zm8-6h2v4h-2v-4z" fill="#000"/>
@@ -289,12 +297,12 @@
 
     // 结束删除模式
     function endDeleteMode() {
-        var deleteButton = document.getElementById("deleteButton");
+        const deleteButton = document.getElementById("deleteButton");
         deleteButton.parentNode.removeChild(deleteButton);
 
-        var deleteIcons = popup.querySelectorAll('svg[id^="deleteIcon"]');
-        for (var i = 0; i < deleteIcons.length; i++) {
-            var deleteIcon = deleteIcons[i];
+        const deleteIcons = popup.querySelectorAll('svg[id^="deleteIcon"]');
+        for (let i = 0; i < deleteIcons.length; i++) {
+            const deleteIcon = deleteIcons[i];
             deleteIcon.parentNode.removeChild(deleteIcon);
         }
     }
@@ -307,27 +315,12 @@
 
     // 获取元素的值
     function getItemValue(name) {
-        var item = jsonList.find(function (item) {
+        const item = jsonList.find(function (item) {
             return item.name === name;
         });
 
         if (item) {
             console.log(item.string);
-        }
-    }
-
-    // 因为元素在 DOM 渲染后动态加载，所以循环执行，成功后终止
-    function checkForButton() {
-        var button = document.querySelector('.prompt-button');
-        if (button) {
-            // 找到了按钮
-            console.log('Button found:', button);
-            // 在这里执行您希望执行的操作
-        } else {
-            // 没有找到按钮，继续等待
-            console.log('Button not found. Trying again in 20ms...');
-            addButton();
-            setTimeout(checkForButton, 20);
         }
     }
 
@@ -340,10 +333,46 @@
         }
     }
 
-    executeAfterDOMContentLoaded(function () {
-        setTimeout(function () {
-            checkForButton();
-        }, 50);
+    // <<注意>>: 仅能在 DOM 初始化过程中完整获取 DOM
+    function observerForAddButton() {
+        // <<常见错误>>: setTimeout(funcA(), 1000);
+
+        // 创建 MutationObserver 实例
+        const observer = new MutationObserver((mutationsList, observer) => {
+            const exampleElement = document.querySelector('.absolute.bottom-0.left-0.w-full.border-t');
+            const button = document.querySelector('.prompt-button');
+            console.log("test");
+            if (exampleElement && !button) {
+                console.log("addButton");
+                addButton();
+            }
+        });
+
+        // 监听整个 Document 的变化
+        observer.observe(document, {
+            childList: true,  // 监视子节点的变化
+            subtree: true,    // 监视所有子节点的变化
+        });
+
+    }
+
+    let pathname = window.location.pathname;
+    if (pathname === '/' || pathname === '' || pathname.startsWith('/?model=')) {
+
+        observerForAddButton();
+
+        executeAfterDOMContentLoaded(function () {
+
+        });
+    }
+
+    // 监听popstate事件
+    window.addEventListener('popstate', function () {
+        // 检查href路径是否发生变化
+        if (location.pathname !== pathname) {
+            // 当href路径发生变化时，重新加载页面
+            location.reload();
+        }
     });
 
 })();
