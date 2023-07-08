@@ -2,7 +2,7 @@
 // @name               ChatGPT System Prompt
 // @name:zh-CN         ChatGPT 系统提示词
 // @namespace          https://github.com/jk278/chatgpt-system-prompt
-// @version            0.1
+// @version            0.5
 // @description        Your Script Description
 // @description:zh-CN  
 // @author             jk278
