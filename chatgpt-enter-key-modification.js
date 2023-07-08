@@ -2,7 +2,7 @@
 // @name                ChatGPT Enter Key Modification ↵
 // @name:zh-CN          ChatGPT 回车键修改 ↵
 // @name:zh-TW          ChatGPT 回車鍵修改 ↵
-// @version             1.2
+// @version             1.2.3
 // @author              jk278
 // @namespace           https://github.com/jk278/chatgpt-enter-key-modification
 // @description         Modify the behavior of the enter key based on device type
