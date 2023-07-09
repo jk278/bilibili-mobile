@@ -6,10 +6,10 @@
 // @description        Your Script Description
 // @description:zh-CN  
 // @author             jk278
-// @match               https://chat.openai.com/*
+// @match              https://chat.openai.com/*
 // @grant              none
 // @run-at             document-start
-// @icon                https://raw.githubusercontent.com/jk278/chatgpt-enter-key-modification/main/openai-icon_48.png
+// @icon               https://raw.githubusercontent.com/jk278/chatgpt-enter-key-modification/main/openai-icon_48.png
 // ==/UserScript==
 
 (function () {
@@ -51,24 +51,25 @@
         const popup = document.createElement("div");
         popup.className = 'prompt-popup';
         popup.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            z-index: 9999;
-            display: none;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-color: white;
+          padding: 20px;
+          z-index: 9999;
+          display: none;
         `;
 
         // 添加标题
         const popupTitle = document.createElement("div");
         popupTitle.innerHTML = "系统提示词";
+        popupTitle.style.cssText = 'border-bottom: 1px solid;'
         popup.appendChild(popupTitle);
 
         // 添加提示词菜单
         const promptBody = document.createElement("div");
-        promptBody.style.cssText = 'height:300px;width:300px;'
+        promptBody.style.cssText = 'height:300px;width:250px;'
         popup.appendChild(promptBody);
 
         // 添加关闭按钮
@@ -79,13 +80,18 @@
         });
         popup.appendChild(closeButton);
 
+        // 添加按钮容器
+        const buttonsContainer = document.createElement("div");
+        buttonsContainer.style.cssText = 'display: flex; justify-content: space-between; margin-top: 10px;';
+        popup.appendChild(buttonsContainer);
+
         // 添加按钮
         const addButton = document.createElement("button");
         addButton.innerHTML = "添加";
         addButton.addEventListener("click", function () {
             openAddItemPopup();
         });
-        popup.appendChild(addButton);
+        buttonsContainer.appendChild(addButton);
 
         // 排序按钮
         const sortButton = document.createElement("button");
@@ -93,7 +99,7 @@
         sortButton.addEventListener("click", function () {
             toggleSortMode();
         });
-        popup.appendChild(sortButton);
+        buttonsContainer.appendChild(sortButton);
 
         // 删除按钮
         const deleteButton = document.createElement("button");
@@ -101,15 +107,21 @@
         deleteButton.addEventListener("click", function () {
             toggleDeleteMode();
         });
-        popup.appendChild(deleteButton);
+        buttonsContainer.appendChild(deleteButton);
+
+        // 监听点击事件，关闭弹窗
+        document.addEventListener("click", function (event) {
+            if (event.target === popup) {
+                togglePopup();
+            }
+        });
 
         // 根据暗色模式设置背景色
         const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
         let backgroundStr;
-        darkModeMediaQuery ? backgroundStr = "rgba(52, 53, 65, var(--tw-bg-opacity))" : backgroundStr = "white";
+        darkModeMediaQuery.matches ? backgroundStr = "rgba(52, 53, 65, var(--tw-bg-opacity))" : backgroundStr = "white";
         popup.style.backgroundColor = backgroundStr;
-
 
         darkModeMediaQuery.addEventListener('change', function (e) {
             if (e.matches) {
@@ -346,6 +358,7 @@
                 console.log("addButton");
                 addButton();
             }
+
         });
 
         // 监听整个 Document 的变化
@@ -356,7 +369,7 @@
 
     }
 
-    let pathname = window.location.pathname;
+    let pathname = location.pathname;
     if (pathname === '/' || pathname === '' || pathname.startsWith('/?model=')) {
 
         observerForAddButton();
@@ -366,13 +379,23 @@
         });
     }
 
-    // 监听popstate事件
-    window.addEventListener('popstate', function () {
-        // 检查href路径是否发生变化
-        if (location.pathname !== pathname) {
-            // 当href路径发生变化时，重新加载页面
-            location.reload();
+    setInterval(() => {
+        if (location.pathname.startsWith('/c/') !== pathname.startsWith('/c/')) {
+            console.log('path name: ', location.pathname);
+            pathname = location.pathname;
+
+            const button = document.querySelector('.prompt-button');
+            if (button) {
+                if ( pathname.startsWith('/c/') ) {
+                    setTimeout(button.remove, 0);
+                }
+            } else {
+                console.log('can\'t find button');
+                setTimeout(addButton, 0);
+            }
+
         }
-    });
+    }, 1000);
+
 
 })();
