@@ -2,7 +2,7 @@
 // @name               ChatGPT System Prompt
 // @name:zh-CN         ChatGPT 系统提示词
 // @namespace          https://github.com/jk278/chatgpt-system-prompt
-// @version            0.5
+// @version            0.6
 // @description        Your Script Description
 // @description:zh-CN  
 // @author             jk278
@@ -59,30 +59,24 @@
           padding: 20px;
           z-index: 9999;
           display: none;
+          border-radius: 25px;
+          border: 1px solid;
         `;
 
         // 添加标题
         const popupTitle = document.createElement("div");
         popupTitle.innerHTML = "系统提示词";
-        popupTitle.style.cssText = 'border-bottom: 1px solid;'
+        popupTitle.style.cssText = 'border-bottom: 1px solid; padding-bottom: 10px;'
         popup.appendChild(popupTitle);
 
-        // 添加提示词菜单
+        // 添加提示词块
         const promptBody = document.createElement("div");
         promptBody.style.cssText = 'height:300px;width:250px;'
         popup.appendChild(promptBody);
 
-        // 添加关闭按钮
-        const closeButton = document.createElement("button");
-        closeButton.innerHTML = "关闭";
-        closeButton.addEventListener("click", function () {
-            togglePopup();
-        });
-        popup.appendChild(closeButton);
-
         // 添加按钮容器
         const buttonsContainer = document.createElement("div");
-        buttonsContainer.style.cssText = 'display: flex; justify-content: space-between; margin-top: 10px;';
+        buttonsContainer.style.cssText = 'display: flex; justify-content: space-between; padding: 10px 10px 0 10px; border-top: 1px solid';
         popup.appendChild(buttonsContainer);
 
         // 添加按钮
@@ -109,10 +103,15 @@
         });
         buttonsContainer.appendChild(deleteButton);
 
-        // 监听点击事件，关闭弹窗
+        // 监听点击事件
         document.addEventListener("click", function (event) {
-            if (event.target === popup) {
+            if (popup.contains(event.target)) {
+                console.log(popup.contains(event.target));
                 togglePopup();
+            }
+            if (!popup.contains(event.target)) {
+                console.log(popup.contains(event.target));
+                // togglePopup();
             }
         });
 
@@ -373,6 +372,7 @@
     if (pathname === '/' || pathname === '' || pathname.startsWith('/?model=')) {
 
         observerForAddButton();
+        // setTimeout(addButton, 500);
 
         executeAfterDOMContentLoaded(function () {
 
@@ -385,13 +385,20 @@
             pathname = location.pathname;
 
             const button = document.querySelector('.prompt-button');
+
             if (button) {
-                if ( pathname.startsWith('/c/') ) {
+                if (pathname.startsWith('/c/')) {
                     setTimeout(button.remove, 0);
                 }
             } else {
                 console.log('can\'t find button');
-                setTimeout(addButton, 0);
+                setTimeout(function () {
+                    if (!button) {
+                        addButton();
+                    } else {
+                        button.remove();
+                    }
+                }, 500);
             }
 
         }
