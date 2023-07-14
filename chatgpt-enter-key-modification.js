@@ -2,7 +2,7 @@
 // @name                ChatGPT Enter Key Modification ↵
 // @name:zh-CN          ChatGPT 回车键修改 ↵
 // @name:zh-TW          ChatGPT 回車鍵修改 ↵
-// @version             1.2.3
+// @version             1.2.4
 // @author              jk278
 // @namespace           https://github.com/jk278/chatgpt-enter-key-modification
 // @description         Modify the behavior of the enter key based on device type
@@ -10,7 +10,6 @@
 // @description:zh-TW   根據設備類型修改回車鍵的行爲
 // @match               https://chat.openai.com/*
 // @grant               none
-// @icon                https://raw.githubusercontent.com/jk278/chatgpt-enter-key-modification/main/openai-icon_48.png
 // @homepageURL         https://github.com/jk278/chatgpt-enter-key-modification
 // @supportURL          https://github.com/jk278/chatgpt-enter-key-modification/issues
 // ==/UserScript==
