@@ -26,9 +26,9 @@
 
         const style = document.createElement('style');
         style.textContent = `
-          body[data-mode="night"] #cbox #content { color: rgb(120, 132, 156); }
+          body[data-mode="night"] #cbox #content { color: rgb(140, 154, 182); }
           `;
-        // 比例：10：11：13，倍数：12
+        // 比例：10：11：13，倍数：14
 
         // 如果 document.documentElement 可用，将样式添加到文档
         if (document.documentElement) {
