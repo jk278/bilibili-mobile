@@ -2,7 +2,7 @@
 // @name               Bing Plus
 // @name:zh-CN         必应增强版
 // @namespace          https://github.com/jk278/bing-plus
-// @version            1.0
+// @version            1.0.1
 // @description        Add some extra styles and abilities for bing
 // @description:zh-CN  为必应增加一些附加样式与能力
 // @author             jk278
@@ -13,7 +13,7 @@
 // ==/UserScript==
 
 /**
- * 能力：像谷歌那样把菜单栏移动到底部，解决必应移动端的焦点跳动割裂体验感（这样）的问题
+ * 能力：更改菜单位置，解决必应移动端的焦点跳动割裂体验感（这样）的问题
  */
 
 (function () {
@@ -27,7 +27,7 @@
     function removeElementsBeforeRendering() {
         const css = `
         #tallhead { height: 0 !important; }
-        #mHamburger#mHamburger { top:54px; z-index:2; background:var(--htmlbk); }
+        #mHamburger#mHamburger { top:54px; z-index:2; background:var(--canvasbk3); }
         #mHamburger#mHamburger::before {
             content: "";
             position: absolute;
