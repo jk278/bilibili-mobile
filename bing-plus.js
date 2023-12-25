@@ -26,23 +26,12 @@
     // 通过把新元素和父元素的margin-top调成正负值，解决动态增加元素时的布局跳动（relative）
     function removeElementsBeforeRendering() {
         const css = `
-        #tallhead { height: 0 !important; }
-        #mHamburger#mHamburger { top:54px; z-index:2; background:var(--canvasbk3); }
-        #mHamburger#mHamburger::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -3px;
-            width: 5px;
-            height: 100%;
-            box-shadow: -5px 0 5px rgba(0, 0, 0, 0.2);
-        }
-        .b_scopebar { margin-right: 44px; }
-        .b_searchboxForm { z-index: 3; }
-        #bpage { width: 100vw; }
-        #HBright { max-width: 300px; }
-        .hb_det_cont_top { margin-top:44px; }
-        .hb_bfb_id { margin-top:-44px; }
+        #tallhead { display: none }
+        .b_searchboxForm { z-index: 3 }
+        #bpage { width: 100vw }
+        #HBright { max-width: 300px }
+        .hb_det_cont_top { margin-top:44px }
+        .hb_bfb_id { margin-top:-44px }
         `;
         const style = document.createElement('style');
         style.textContent = css;
@@ -60,8 +49,52 @@
         }
     }
 
+    /**
+     * Adds two numbers.
+     * @param {boolean} condition - TRUE --> 直接执行，FALSE --> 推迟
+     * @param {function()} callback - 匿名函数：直接执行或DOM加载后执行
+     */
+    function judgeAndDelay(condition, callback) {
+        if (!condition) {
+            document.addEventListener('DOMContentLoaded', () => callback());
+        } else {
+            callback();
+        }
+    }
+
+    function moveElement() {
+        console.log("CHANGED!!");
+        // 获取#tallhead元素
+        var tallheadElement = document.getElementById('tallhead');
+        console.log("tallheadElement: ", tallheadElement);
+
+        // 如果存在#tallhead元素
+        if (tallheadElement) {
+
+            // 获取.b_pag元素
+            var bPagElement = document.querySelector('.b_pag');
+            // JavaScript中，null计算为true
+            judgeAndDelay(bPagElement != null, () => {
+                console.log("执行回调！");
+                // 在.b_pag元素的后面插入元素。插入子元素：appendChild(tallheadElement);
+                bPagElement.insertAdjacentElement('afterend', tallheadElement);
+
+                // 修改元素的样式
+                tallheadElement.style.display = 'block';
+            });
+            if(bPagElement==null) console.log('DOM加载状态:', document.readyState);
+
+        }
+
+    }
+
     if (isMobile) {
         removeElementsBeforeRendering();
+
+        // 针对 VIA 浏览器优化，判断 DOM 状态
+        judgeAndDelay(document.readyState !== 'loading', function () {
+            moveElement();
+        });
     }
 
 })();
