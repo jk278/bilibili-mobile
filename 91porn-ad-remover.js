@@ -2,12 +2,11 @@
 // @name               91PORN Ad Remover
 // @name:zh-CN         九色视频去广告
 // @namespace          https://github.com/jk278/91porn-ad-remover
-// @version            1.5.9
+// @version            2.0
 // @description        Remove ads from 91PORN series websites.
 // @description:zh-CN  删除 91PORN 系列网站的广告。
 // @author             jk278
-// @match              *://*/*
-// @exclude            *://github.com/*
+// @match              https://jiuse.icu/*
 // @grant              none
 // @run-at             document-start
 // @icon               https://jiuse2.github.io/favicon.ico
@@ -16,38 +15,13 @@
 (function () {
   'use strict';
 
-  function shouldExecute() {
-    const storedDomains = JSON.parse(localStorage.getItem('allowedDomains')) || [];
-
-    const domain = window.location.hostname;
-
-    if (storedDomains.includes(domain)) {
-      return true;
-    }
-
-    const copyright = document.querySelector('footer')?.firstChild?.lastChild?.innerHTML;
-
-    if (!copyright) return false;
-
-    if (copyright === 'Copyright © 2020 91PORN All Rights Reserved.') {
-      if (storedDomains.length >= 30) {
-        storedDomains.shift();
-      }
-      storedDomains.push(domain);
-      localStorage.setItem('allowedDomains', JSON.stringify(storedDomains));
-      return true;
-    }
-
-    return false;
-  }
-
   function removeElementsBeforeRendering() {
-    // 广告元素，高清版本，首页顶部收藏，播放器，启动弹窗，高清标签，文本广告，热搜下标签广告
-    const selector1 = '[id^="po-s"], .alert, .p-0.mb-3, #playerJsvLayer, #global-modals, .modal-backdrop, .vip-layer, .text-danger, #po-link1';
+    // 广告元素，高清版本，首页顶部收藏，播放器，启动弹窗（+蒙版），高清标签，文本广告
+    const selector1 = '[id^="po-s"], .alert, .p-0.mb-3, #playerJsvLayer, #global-modals, .modal-backdrop, .vip-layer, .text-danger';
     // 跳转到其他网站的视频区广告
-    const selector2 = ', .colVideoList [href^="http"], .colVideoList [href^="http"] + small';
-    // 底部链接，首页广告标签
-    const selector3 = ', #po-link2, main>.px-0:not(:last-child)>.row:not(.my-2)>.col-60 > a:not([href^="/search"]):not([href="/tags"])';
+    const selector2 = ', .colVideoList:has([href^="http"])';
+    // 首页链接（上、下），首页广告标签
+    const selector3 = ', #po-link1, #po-link2, main>.px-0:not(:last-child)>.row:not(.my-2)>.col-60 > a:not([href^="/search"]):not([href="/tags"])';
     const targetElementSelector = selector1 + selector2 + selector3;
 
     // 用 CSS 隐藏目标元素，避免页面闪烁
@@ -125,13 +99,11 @@
     }
   }
 
-  if (shouldExecute) {
-    removeElementsBeforeRendering();
+  removeElementsBeforeRendering();
 
-    executeAfterDOMContentLoaded(function () {
-      replaceVideoLinks();
-      preventScrollBouncing();
-    });
-  }
+  executeAfterDOMContentLoaded(function () {
+    replaceVideoLinks();
+    preventScrollBouncing();
+  });
 
 })();
