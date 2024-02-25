@@ -4,7 +4,7 @@
 // @namespace          https://github.com/jk278/91porn-ad-remover
 // @version            2.2
 // @description        Remove ads from 91PORN series websites.
-// @description:zh-CN  删除 91PORN 系列网站的广告。
+// @description:zh-CN  删除 91PORNY 系列网站的广告。
 // @author             jk278
 // @match              https://jiuse.icu/*
 // @grant              none
