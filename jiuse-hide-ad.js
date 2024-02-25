@@ -2,7 +2,7 @@
 // @name               91PORN Ad Remover
 // @name:zh-CN         九色视频去广告
 // @namespace          https://github.com/jk278/91porn-ad-remover
-// @version            2.1
+// @version            2.2
 // @description        Remove ads from 91PORN series websites.
 // @description:zh-CN  删除 91PORN 系列网站的广告。
 // @author             jk278
@@ -24,7 +24,7 @@
 
     function removeElementsBeforeRendering() {
         // 广告元素，高清版本，首页顶部收藏，播放器，启动弹窗（+蒙版），高清标签，文本广告
-        const selector1 = '[id^="po-s"], .alert, .p-0.mb-3, #playerJsvLayer, #global-modals, .modal-backdrop, .vip-layer, .text-danger';
+        const selector1 = '[id^="po-s"], .alert, .p-0.mb-3, #playerJsvLayer, #global-modals, .modal-backdrop, .vip-layer, .col-60>.title>.navContainer';
         // 跳转到其他网站的视频区广告
         const selector2 = ', .colVideoList:has([href^="http"])';
         // 首页链接（上、下），首页广告标签
@@ -35,7 +35,9 @@
         insertHideAdsStyle();
 
         function insertHideAdsStyle() {
-            const css = `${targetElementSelector} {display: none !important;}`;
+            const css = `${targetElementSelector} {display: none !important;}
+                #main {margin-top: calc(1.5rem + 56px) !important;}
+                .col-60>.title {justify-content: flex-end;}`;
             const style = document.createElement('style');
             style.textContent = css;
 
