@@ -46,7 +46,7 @@
     animation: fadeIn 1s ease-in forwards; /* 动画属性设置为 fadeIn，持续时间为 1 秒，缓和函数为 ease-in，只播放一次，保留最后一帧的状态 */
 }
 .settings-button:hover {
-    transform: translateY(-50%) scale3d(1.1, 1.1, 1.1);
+    transform: translateY(-50%) scale(1.2);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 .settings-button:hover #hour-hand {
@@ -123,8 +123,8 @@
         settingsPanelToggleBtn.innerHTML = `
   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" width="32px" height="32px">
     <circle style="fill:none;stroke:currentColor;stroke-width:2;stroke-miterlimit:10;" cx="16" cy="16" r="11"/>
-    <line id="minute-hand" x1="16" y1="16" x2="16" y2="8" style="fill:none;stroke:currentColor;stroke-width:2;stroke-miterlimit:10;"/>
-    <line id="hour-hand" x1="16" y1="16" x2="22" y2="16" style="fill:none;stroke:currentColor;stroke-width:2;stroke-miterlimit:10;"/>
+    <line id="minute-hand" x1="16" y1="17" x2="16" y2="8" style="fill:none;stroke:currentColor;stroke-width:2;stroke-miterlimit:10;"/>
+    <line id="hour-hand" x1="15" y1="16" x2="22" y2="16" style="fill:none;stroke:currentColor;stroke-width:2;stroke-miterlimit:10;"/>
   </svg>
     `;
 
