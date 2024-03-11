@@ -2,73 +2,96 @@
 // @name               91PORN Ad Remover
 // @name:zh-CN         九色视频去广告
 // @namespace          https://github.com/jk278/91porn-ad-remover
-// @version            2.2
+// @version            3.0
 // @description        Remove ads from 91PORN series websites.
 // @description:zh-CN  删除 91PORNY 系列网站的广告。
 // @author             jk278
 // @match              https://jiuse.icu/*
-// @grant              none
+// @match              https://*/*
+// @exclude            https://*.gitbook.io/jiuse
 // @run-at             document-start
+// @grant              none
 // @icon               https://jiuse2.github.io/favicon.ico
 // ==/UserScript==
 
 (function () {
     'use strict';
 
-    removeElementsBeforeRendering();
+    console.log("91PORN Ad Remover is running!");
+    const startTime = performance.now(); //时间戳
 
-    executeAfterDOMContentLoaded(function () {
-        replaceVideoLinks();
-        preventScrollBouncing();
-    });
-
-    function removeElementsBeforeRendering() {
-        // 广告元素，高清版本，首页顶部收藏，播放器，启动弹窗（+蒙版），高清标签，文本广告
-        const selector1 = '[id^="po-s"], .alert, .p-0.mb-3, #playerJsvLayer, #global-modals, .modal-backdrop, .vip-layer, .col-60>.title>.navContainer';
-        // 跳转到其他网站的视频区广告
-        const selector2 = ', .colVideoList:has([href^="http"])';
-        // 首页链接（上、下），首页广告标签
-        const selector3 = ', #po-link1, #po-link2, main>.px-0:not(:last-child)>.row:not(.my-2)>.col-60 > a:not([href^="/search"]):not([href="/tags"])';
-        const targetElementSelector = selector1 + selector2 + selector3;
-
-        // 尽早插入 CSS 隐藏广告元素
-        insertHideAdsStyle();
-
-        function insertHideAdsStyle() {
-            const css = `${targetElementSelector} {display: none !important;}
-                #main {margin-top: calc(1.5rem + 56px) !important;}
-                .col-60>.title {justify-content: flex-end;}`;
-            const style = document.createElement('style');
-            style.textContent = css;
-
-            // 尝试将样式插入到 head 中
-            const head = document.head || document.querySelector('head');
-            if (head) {
-                head.insertBefore(style, head.firstChild);
-            } else {
-                // 如果 head 还未加载，监听 readyStateChange 事件
-                document.addEventListener('readystatechange', () => {
-                    if (!style.isConnected && document.readyState !== 'loading') {
-                        const head = document.head || document.querySelector('head');
-                        if (head) {
-                            head.insertBefore(style, head.firstChild);
-                        }
-                    }
-                });
-            }
-        }
-
-    }
-
-    // 针对 VIA 浏览器优化，判断 DOM 状态
-    function executeAfterDOMContentLoaded(callback) {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => callback());
+    // 检查是否为克隆分站
+    function checkMetaContent() {
+        if (document.querySelector('head>meta[name^="ap"]')?.content === "九色视频") {
+            main();
         } else {
-            callback();
+            console.log("退出", performance.now() - startTime, "ms");
+            return;
         }
     }
 
+    if (document.head) {
+        checkMetaContent();
+    } else {
+        setTimeout(() => {
+            checkMetaContent();
+        }, 50);
+    }
+
+    function main() {
+        console.log("开始", performance.now() - startTime, "ms");
+
+        injectCss();
+
+        waitDOMContentLoaded(() => {
+            removeModal();
+            replaceVideoLinks();
+        });
+    }
+
+    // 渲染前注入 CSS 尽管无法阻止源代码中的广告位，但有时能增加表现效果（比如移动端或部分其它情况不预解析源代码）
+    function injectCss() {
+        // 首页广告元素，高清版本字样，首页顶部收藏，播放器，VIP视频标签
+        const ad1 = '[id^="po-"], .alert, .p-0.mb-3, #playerJsvLayer, .vip-layer';
+        // 跳转到其他网站的视频区广告、标签广告，removeModal 相关的启动弹窗和蒙版
+        const ad2 = ', .colVideoList:has([href^="http"]), #global-modals, .modal-backdrop';
+        // 跳转到其他网站的首页广告标签
+        const ad3 = ', [href^="http"]:has(.btn-outline-danger)';
+        const elemToHide = ad1 + ad2 + ad3;
+
+        // 隐藏广告元素
+        const selector1 = `${elemToHide} {display: none !important;}`;
+        // 在 Firefox 中, sticky 元素高度超出视窗引起兄弟元素滚动溢出
+        const selector2 = 'body {padding-top: 56px;} @media only screen and (min-width: 768px) {body {padding-top: 0;}} .Mobile-Header {position: fixed !important; width: 100%;}';
+        // 分类页广告（排除搜索页）加修复页数显示
+
+        const selector3 = '.col-60>.title>.navContainer {display: none !important;} .col-60>.title {justify-content: flex-end;}';
+
+        const style = document.createElement('style');
+        style.textContent = selector1 + selector2 + selector3;
+        document.head.insertBefore(style, document.head.firstChild);
+    }
+
+    // DOM 加载完后
+    function waitDOMContentLoaded(callback) {
+        document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback();
+    }
+
+    // 广告：该类存在时禁止点击
+    function removeModal() {
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.attributeName === 'class' && mutation.target.classList.contains('modal-open')) {
+                    // 即使移除不存在的 class，也会导致属性变化，从而循环触发 MutationObserver
+                    mutation.target.classList.remove('modal-open');
+                }
+            });
+        });
+
+        observer.observe(document.body, { attributes: true });
+    }
+
+    // 替换VIP视频链接
     function replaceVideoLinks() {
         const links = document.querySelectorAll('a[href*="/video/viewhd/"]');
         links.forEach(function (link) {
@@ -76,28 +99,6 @@
             const newHref = href.replace('/video/viewhd/', '/video/view/');
             link.setAttribute('href', newHref);
         });
-    }
-
-    function preventScrollBouncing() {
-        // 设置 header 样式
-        const style = document.createElement('style');
-        style.textContent = `
-            .Mobile-Header { position: fixed; width: 100% }
-            body { paddingTop: 56px }
-            `;
-
-        // 如果 document.documentElement 可用，将样式添加到文档
-        if (document.documentElement) {
-            // 添加为html的末尾子元素
-            document.documentElement.appendChild(style);
-        } else {
-            // 如果 document.documentElement 不可用，监听 readyStateChange 事件
-            document.addEventListener('readystatechange', () => {
-                if (!style.isConnected && document.readyState !== 'loading') {
-                    document.documentElement.appendChild(style);
-                }
-            });
-        }
     }
 
 })();

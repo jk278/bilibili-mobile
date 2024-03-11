@@ -401,7 +401,7 @@ body.full iframe {
         settingsPanel.id = 'settings-panel';
         settingsPanel.classList.add('hide');
 
-        // 为按钮添加监听        当 display: none 时，元素不会渲染，也获取不到样式
+        // 为按钮添加监听        当 display: none 时，元素不会渲染，但仍可以获取到它的样式
         // 对屏幕外元素，浏览器会自动优化渲染；有时将 display 设为 none 反而会强制浏览器重新计算布局，并在显隐时重绘页面
         settingsPanelToggleBtn.addEventListener('click', () => {
             settingsPanel.classList.toggle('hide');
