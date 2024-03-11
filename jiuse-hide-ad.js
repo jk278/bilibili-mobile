@@ -6,6 +6,7 @@
 // @description        Remove ads from 91PORN series websites.
 // @description:zh-CN  删除 91PORNY 系列网站的广告。
 // @author             jk278
+// @license            MIT
 // @match              https://jiuse.icu/*
 // @match              https://*/*
 // @exclude            https://*.gitbook.io/jiuse
