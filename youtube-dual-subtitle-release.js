@@ -1,103 +1,104 @@
 // ==UserScript==
-// @name                Youtube dual subtitle
-// @name:zh-CN          Youtube 双语字幕全平台
-// @name:zh-TW          Youtube 雙語字幕全平臺
-// @version             2.0.5
-// @author              Coink & jk278
-// @namespace           https://github.com/jk278/youtube-dual-subtitle
-// @description         Fix for mobile devices on YouTube bilingual captions. It works on both mobile and desktop, and supports the Via browser.
-// @description:zh-CN   Youtube 双语字幕。移动端（mobile）修复，双端适用，而且支持 Via 浏览器。
-// @description:zh-TW   Youtube 雙語字幕。移動端（mobile）修復，雙端適用，而且支持 Via 瀏覽器。
-// @match               *://www.youtube.com/*
-// @match               *://m.youtube.com/*
-// @require             https://unpkg.com/ajax-hook@latest/dist/ajaxhook.min.js
-// @grant               none
-// @run-at              document-start
+// @name               91PORN Ad Remover
+// @name:zh-CN         九色视频去广告
+// @namespace          https://github.com/jk278/91porn-ad-remover
+// @version            3.0
+// @description        Remove ads from 91PORN series websites.
+// @description:zh-CN  删除 91PORNY 系列网站的广告。
+// @author             jk278
+// @license            MIT
+// @match              https://jiuse.icu/*
+// @match              https://*/*
+// @exclude            https://*.gitbook.io/jiuse
+// @run-at             document-start
+// @grant              none
+// @icon               https://jiuse2.github.io/favicon.ico
 // ==/UserScript==
-
-/*
-如果未自动加载，请切换字幕或关闭后再打开即可。默认语言为浏览器首选语言。
-*/
 
 (function () {
     'use strict';
-    // 检测浏览器首选语言，如果没有，设置为英语
-    let localeLang = navigator.language.split('-')[0] || 'en'; // 跟随 YouTube 页面所用语言
-    // localeLang = 'zh'  // 取消注释此行以在此处定义您希望的语言
-    // 启用双语字幕
-    function enableSubs() {
-        ah.proxy({
-            onRequest: (config, handler) => {
-                handler.next(config); // 处理下一个请求
-            },
-            onResponse: (response, handler) => {
-                // 如果请求的 URL 包含 '/api/timedtext' 并且没有 '&translate_h00ked'，则表示请求双语字幕
-                if (response.config.url.includes('/api/timedtext') && !response.config.url.includes('&translate_h00ked')) {
-                    let xhr = new XMLHttpRequest(); // 创建新的 XMLHttpRequest
-                    // 使用 RegExp 清除我们的 xhr 请求参数中的 '&tlang=...'，同时使用 Y2B 自动翻译
-                    let url = response.config.url.replace(/(^|[&?])tlang=[^&]*/g, '');
-                    url = `${url}&tlang=${localeLang}&translate_h00ked`;
-                    xhr.open('GET', url, false); // 打开 xhr 请求
-                    xhr.send(); // 发送 xhr 请求
-                    let defaultJson = null; // 声明默认 JSON 变量
-                    if (response.response) {
-                        const jsonResponse = JSON.parse(response.response);
-                        if (jsonResponse.events) defaultJson = jsonResponse;
-                    }
-                    const localeJson = JSON.parse(xhr.response); // 解析 xhr 响应
-                    let isOfficialSub = true;
-                    for (const defaultJsonEvent of defaultJson.events) {
-                        if (defaultJsonEvent.segs && defaultJsonEvent.segs.length > 1) {
-                            isOfficialSub = false;
-                            break;
-                        }
-                    }
-                    // 将默认字幕与本地语言字幕合并
-                    if (isOfficialSub) {
-                        // 如果片段长度相同
-                        for (let i = 0, len = defaultJson.events.length; i < len; i++) {
-                            const defaultJsonEvent = defaultJson.events[i];
-                            if (!defaultJsonEvent.segs) continue;
-                            const localeJsonEvent = localeJson.events[i];
-                            if (`${defaultJsonEvent.segs[0].utf8}`.trim() !== `${localeJsonEvent.segs[0].utf8}`.trim()) {
-                                // 避免在两者相同时合并字幕
-                                defaultJsonEvent.segs[0].utf8 += ('\n' + localeJsonEvent.segs[0].utf8);
-                            }
-                        }
-                        response.response = JSON.stringify(defaultJson); // 更新响应
-                    } else {
-                        // 如果片段长度不同（例如：自动生成的英语字幕）
-                        let pureLocalEvents = localeJson.events.filter(event => event.aAppend !== 1 && event.segs);
-                        for (const defaultJsonEvent of defaultJson.events) {
-                            if (!defaultJsonEvent.segs) continue;
-                            let currentStart = defaultJsonEvent.tStartMs,
-                                currentEnd = currentStart + defaultJsonEvent.dDurationMs;
-                            let currentLocalEvents = pureLocalEvents.filter(pe => currentStart <= pe.tStartMs && pe.tStartMs < currentEnd);
-                            let localLine = '';
-                            for (const ev of currentLocalEvents) {
-                                for (const seg of ev.segs) {
-                                    localLine += seg.utf8;
-                                }
-                                localLine += '﻿'; // 添加零宽空格，以避免单词粘在一起
-                            }
-                            let defaultLine = '';
-                            for (const seg of defaultJsonEvent.segs) {
-                                defaultLine += seg.utf8;
-                            }
-                            defaultJsonEvent.segs[0].utf8 = defaultLine + '\n' + localLine;
-                            defaultJsonEvent.segs = [defaultJsonEvent.segs[0]];
-                        }
-                        response.response = JSON.stringify(defaultJson); // 更新响应
-                    }
-                }
-                handler.resolve(response); // 处理响应
-            }
+
+    console.log("91PORN Ad Remover is running!");
+    const startTime = performance.now(); //时间戳
+
+    // 检查是否为克隆分站
+    function checkMetaContent() {
+        if (document.querySelector('head>meta[name^="ap"]')?.content === "九色视频") {
+            main();
+        } else {
+            console.log("退出", performance.now() - startTime, "ms");
+            return;
+        }
+    }
+
+    if (document.head) {
+        checkMetaContent();
+    } else {
+        setTimeout(() => {
+            checkMetaContent();
+        }, 50);
+    }
+
+    function main() {
+        console.log("开始", performance.now() - startTime, "ms");
+
+        injectCss();
+
+        waitDOMContentLoaded(() => {
+            removeModal();
+            replaceVideoLinks();
         });
     }
-    // 当文档加载完成并且字幕可用时，调用 enableSubs 函数启用双语字幕
-    if (document.readyState === 'complete') {
-        enableSubs(); // 如果文档已经加载完成，则启用双语字幕
-    } else {
-        window.addEventListener('load', enableSubs); // 如果文档尚未加载完成，添加事件监听器以在加载完成时启用双语字幕
+
+    // 渲染前注入 CSS 尽管无法阻止源代码中的广告位，但有时能增加表现效果（比如移动端或部分其它情况不预解析源代码）
+    function injectCss() {
+        // 首页广告元素，高清版本字样，首页顶部收藏，播放器，VIP视频标签
+        const ad1 = '[id^="po-"], .alert, .p-0.mb-3, #playerJsvLayer, .vip-layer';
+        // 跳转到其他网站的视频区广告、标签广告，removeModal 相关的启动弹窗和蒙版
+        const ad2 = ', .colVideoList:has([href^="http"]), #global-modals, .modal-backdrop';
+        // 跳转到其他网站的首页广告标签，热播旁文字广告
+        const ad3 = ', [href^="http"]:has(.btn-outline-danger), .text-danger';
+        const elemToHide = ad1 + ad2 + ad3;
+
+        // 隐藏广告元素
+        const selector1 = `${elemToHide} {display: none !important;}`;
+        // 在 Firefox 中, sticky 元素高度超出视窗引起兄弟元素滚动溢出
+        const selector2 = 'body {padding-top: 56px;} @media only screen and (min-width: 768px) {body {padding-top: 0;}} .Mobile-Header {position: fixed !important; width: 100%;}';
+        // 分类页广告（排除搜索页）加修复页数显示
+        const selector3 = '.col-60>.title>.navContainer {display: none !important;} .col-60>.title {justify-content: center; .total {display: block !important; text-align: center !important; padding: 0 !important;} }';
+
+        const style = document.createElement('style');
+        style.textContent = selector1 + selector2 + selector3;
+        document.head.insertBefore(style, document.head.firstChild);
     }
+
+    // DOM 加载完后
+    function waitDOMContentLoaded(callback) {
+        document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback();
+    }
+
+    // 广告：该类存在时禁止点击
+    function removeModal() {
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.attributeName === 'class' && mutation.target.classList.contains('modal-open')) {
+                    // 即使移除不存在的 class，也会导致属性变化，从而循环触发 MutationObserver
+                    mutation.target.classList.remove('modal-open');
+                }
+            });
+        });
+
+        observer.observe(document.body, { attributes: true });
+    }
+
+    // 替换VIP视频链接
+    function replaceVideoLinks() {
+        const links = document.querySelectorAll('a[href*="/video/viewhd/"]');
+        links.forEach(function (link) {
+            const href = link.getAttribute('href');
+            const newHref = href.replace('/video/viewhd/', '/video/view/');
+            link.setAttribute('href', newHref);
+        });
+    }
+
 })();
