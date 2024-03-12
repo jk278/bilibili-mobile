@@ -56,8 +56,8 @@
         const ad1 = '[id^="po-"], .alert, .p-0.mb-3, #playerJsvLayer, .vip-layer';
         // 跳转到其他网站的视频区广告、标签广告，removeModal 相关的启动弹窗和蒙版
         const ad2 = ', .colVideoList:has([href^="http"]), #global-modals, .modal-backdrop';
-        // 跳转到其他网站的首页广告标签
-        const ad3 = ', [href^="http"]:has(.btn-outline-danger)';
+        // 跳转到其他网站的首页广告标签，热播旁文字广告
+        const ad3 = ', [href^="http"]:has(.btn-outline-danger), .text-danger';
         const elemToHide = ad1 + ad2 + ad3;
 
         // 隐藏广告元素
@@ -65,8 +65,7 @@
         // 在 Firefox 中, sticky 元素高度超出视窗引起兄弟元素滚动溢出
         const selector2 = 'body {padding-top: 56px;} @media only screen and (min-width: 768px) {body {padding-top: 0;}} .Mobile-Header {position: fixed !important; width: 100%;}';
         // 分类页广告（排除搜索页）加修复页数显示
-
-        const selector3 = '.col-60>.title>.navContainer {display: none !important;} .col-60>.title {justify-content: flex-end;}';
+        const selector3 = '.col-60>.title>.navContainer {display: none !important;} .col-60>.title {justify-content: center; .total {display: block !important; text-align: center !important; padding: 0 !important;} }';
 
         const style = document.createElement('style');
         style.textContent = selector1 + selector2 + selector3;
