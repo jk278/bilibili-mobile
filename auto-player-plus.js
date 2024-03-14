@@ -454,7 +454,9 @@ body.full iframe {
       const input = document.createElement('input')
       input.type = 'number'
       input.placeholder = placeholder
-      input.value = vars[id] === -0.1 ? '' : vars[id]
+      // console.log(vars[id], vars[id].type)
+      input.value = Number(vars[id]) === -0.1 || 0 ? '' : vars[id]
+      // console.log(input.value, input.type)
       settingsPanel.appendChild(input)
 
       // Assign the input field to the corresponding variable
@@ -497,6 +499,7 @@ body.full iframe {
         const value = parseFloat(input.value) || -0.1
         vars[key] = value
         localStorage.setItem(key, value)
+        input.value = Number(input.value) === 0 ? '' : input.value
       })
 
       settingsPanel.classList.add('hide')
@@ -520,7 +523,7 @@ body.full iframe {
       ]
 
       inputFields.forEach(({ input, key }) => {
-        input.value = vars[key] === -0.1 ? '' : vars[key]
+        input.value = Number(vars[key]) === -0.1 || 0 ? '' : vars[key]
       })
 
       settingsPanel.classList.add('hide')
