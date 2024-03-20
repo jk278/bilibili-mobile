@@ -275,11 +275,7 @@ body.full iframe {
             showFooter()
             break
           case ' ':
-            if (videoElement.paused) {
-              videoElement.play()
-            } else {
-              videoElement.pause()
-            }
+            videoElement.paused ? videoElement.play() : videoElement.pause()
             showFooter()
             break
         }
