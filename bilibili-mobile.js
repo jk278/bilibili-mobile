@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-mobile
-// @version            2.8
+// @version            2.8.1
 // @description        view bilibili mobile page recommended video directly
 // @description:zh-CN  b 站移动端网页推荐视频直接看
 // @author             jk278
@@ -86,101 +86,98 @@
   }
 
   function customElementStyle () {
-    // 全屏跳App、倍速按钮、播完推荐
-    const css1 = `
-    .mplayer-fullscreen-call-app, .mplayer-control-btn-speed, .mplayer-ending-panel-recommend
-        { display: none !important; }
-    `
+    const initialInsertStyle = `
+/* 全屏跳App、倍速按钮、播完推荐 */
+.mplayer-fullscreen-call-app, .mplayer-control-btn-speed, .mplayer-ending-panel-recommend {
+  display: none !important;
+}
 
-    // 优化视觉
-    const css2 = `
-    /* 调整分集高度 */
-    .m-video-part-panel-content { height: 81vmin !important; }
-    /* 阻止跳转APP */
-    .launch-app-btn { pointer-events: none; }
-    .card-box a { pointer-events: auto; }
-    /* 重复的初始图形层 */
-    .natural-module, .m-footer { display: none !important; }
-    `
+/*
+* 优化视觉 *
+*/
 
-    // 居中重播按钮
-    const css3 = '.mplayer-ending-panel-buttons { align-self: center !important; img { margin-left: 3px !important; } }'
+/* 调整分集高度 */
+.m-video-part-panel-content {
+  height: 81vmin !important;
+}
+/* 居中重播按钮 */
+.mplayer-ending-panel-buttons {
+  align-self: center !important;
 
-    // 声音按钮
-    const unmuteStyle = `
+  img {
+    margin-left: 3px !important;
+  }
+}
+/* 阻止跳转APP */
+.launch-app-btn {
+  pointer-events: none;
+}
+.card-box a {
+  pointer-events: auto;
+}
+/* 重复的初始图形层 */
+.natural-module, .m-footer {
+  display: none !important;
+}
+
+/*
+* 声音按钮 *
+*/
+
 .unmute {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1001;
-    text-transform: uppercase;
-    color: #000;
-    font-size: 127%;
-    font-weight: 500;
-    background: none;
-    padding: 12px;
-    border: 0;
-    text-align: inherit;
+  position: absolute;
+  top: 0;
+  padding: 12px;
+  background: none;
+  border: 0;
+  font-size: 127%;
+  text-align: inherit;
 }
 .unmute-inner {
-    position: relative;
-    width: 100%;
+  position: relative;
 }
 .unmute-icon {
-    width: 48px;
-    height: 48px;
-    display: inline-block;
-    vertical-align: middle;
-
-    padding-left: 2px;
-    position: relative;
-    z-index: 10;
-    background-color: rgb(255, 255, 255);
-    border-radius: 2px;
-    border-bottom: 1px solid #f1f1f1;
+  height: 48px;
+  display: inline-block;
+  vertical-align: middle;
+  padding-left: 2px;
+  position: relative;
+  z-index: 10;
+  background-color: rgb(255, 255, 255);
+  border-radius: 2px;
+  border-bottom: 1px solid #f1f1f1;
 }
 .unmute svg {
-    filter: drop-shadow(0 0 2px rgba(0,0,0,.5));
+  filter: drop-shadow(0 0 2px rgba(0,0,0,.5));
 }
 .unmute-text {
-    position: relative;
-    z-index: 10;
-    padding-top: 1px;
-    padding-right: 10px;
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-    display: inline-block;
-
-    /* animation: unmute-alpha-anim .25s cubic-bezier(.4,0,1,1) 5.4s reverse forwards; */
-    transition: opacity .25s cubic-bezier(.4,0,1,1);
+  position: relative;
+  z-index: 10;
+  padding-right: 10px;
+  vertical-align: middle;
+  display: inline-block;
+  transition: opacity .25s cubic-bezier(.4,0,1,1);
 }
 .animated .unmute-text {
-    opacity: 0;
+  opacity: 0;
 }
 .unmute-box {
-    width: 100%;
-    display: block;
-    background-color: rgb(255, 255, 255);
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    border-radius: 2px;
-    border-bottom: 1px solid #f1f1f1;
-
-    /* animation: unmute-width-anim .5s cubic-bezier(.4,0,1,1) 5.5s reverse forwards; */
-    transition: width .5s cubic-bezier(.4,0,1,1);
+  width: 100%;
+  background-color: rgb(255, 255, 255);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 2px;
+  border-bottom: 1px solid #f1f1f1;
+  transition: width .5s cubic-bezier(.4,0,1,1);
 }
 .animated .unmute-box {
-    width: 0;
+  width: 0;
 }
     `
 
     const style = document.createElement('style')
-    style.textContent = css1 + css2 + css3 + unmuteStyle
+    style.textContent = initialInsertStyle
 
     // 如果 document.head 可用，将样式添加到文档
     document.head ? document.head.appendChild(style) : waitDOMContentLoaded(document.head.appendChild(style))
@@ -251,7 +248,7 @@
             .catch((error) => {
               if (error.name === 'NotAllowedError') {
                 video.muted = true
-                // video.play()
+                video.play()
               } else {
                 // 处理加载或播放错误
               }
