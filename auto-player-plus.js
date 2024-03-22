@@ -6,6 +6,7 @@
 // @description  Automatically skip intro/outro and play next episode on a video site
 // @description:zh-CN  自动跳过片头和片尾，自动播放下一集，跳过插片广告，针对网站：https://www.dmttang.com
 // @author       jk278
+// @license      MIT
 // @match        https://www.dmttang.com/vodplay/*
 // @match        https://www.agedm.org/play/*
 // @grant        none

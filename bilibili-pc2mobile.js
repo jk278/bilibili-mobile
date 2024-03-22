@@ -6,6 +6,7 @@
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
+// @license            MIT
 // @match              *://www.bilibili.com/*
 // @grant              none
 // @run-at             document-start
