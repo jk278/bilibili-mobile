@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 桌面版移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            1.0
+// @version            2.0
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -45,7 +45,7 @@ body, .bili-header, .bili-header__banner {
 .bili-header__bar {
     padding: 75px 15px 25px !important;
 }
-.header-channel, .video-container-v1 {
+.video-container-v1 {
     margin-top: 25px !important;
 }
 /* 搜索框置顶 */
@@ -59,17 +59,14 @@ body, .bili-header, .bili-header__banner {
     margin: 0 !important;
 }
 .left-entry {
-    flex: 1;
     min-width: 0;
     margin: 0 !important;
 }
 .right-entry {
-    flex: 2;
+    flex: 1;
     min-width: 0;
     margin: 0 !important;
-}
-.right-entry * {
-    margin: 0 2px !important;
+    justify-content: space-evenly;
 }
 /* 禁止换行 */
 .left-entry__title, .dm.item {
@@ -77,7 +74,15 @@ body, .bili-header, .bili-header__banner {
 }
 /* 移除次要入口 */
 .left-entry>li:not(:nth-of-type(1)), .vip-wrap, .right-entry-item:nth-of-type(6), .right-entry-item--upload,
-.bili-header__channel, .recommended-swipe, .feed-roll-btn {
+.header-channel, .bili-header__channel, .recommended-swipe, .feed-roll-btn {
+    display: none !important;
+}
+/* 缩减纵距 */
+.container > * {
+    margin-top: 0 !important;
+}
+/* 广告、推广图块 */
+.container > *:has(.bili-video-card__info--ad), .floor-single-card {
     display: none !important;
 }
 /*
@@ -89,8 +94,8 @@ body, .bili-header, .bili-header__banner {
     min-width: 0 !important;
 }
 /* 分列和视频 */
-.video-container-v1 > div, #bilibili-player {
-    width:100% !important;
+.video-container-v1 > div {
+    width: 100% !important;
 }
 /* 视频列 */
 .left-container.scroll-sticky {
@@ -101,8 +106,12 @@ body, .bili-header, .bili-header__banner {
     margin: 0 !important;
 }
 /* 播放器样式 */
-#playerWrap, #bilibili-player {
-    height: auto !important;
+#bilibili-player {
+    height: 100% !important;
+    width: 100% !important;
+}
+#playerWrap {
+    height: calc((100vw - 20px) * 0.5625 + 46px) !important;
 }
 /* 播放器控制区 */
 .bpx-player-control-entity {
@@ -146,9 +155,16 @@ body, .bili-header, .bili-header__banner {
 .video-info-container {
     height: 90px !important;
 }
-/* 冗杂元素 */
-#activity_vote {
+.video-tag-container {
+    margin: 0 !important;
+}
+/* 块状广告 */
+#activity_vote, #bannerAd, .reply-notice {
     display: none !important;
+}
+/* 折叠评论 */
+.bili-comment {
+    overflow: hidden;
 }
       `
     const style = document.createElement('style')
