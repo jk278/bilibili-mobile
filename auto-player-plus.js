@@ -386,10 +386,10 @@ body.full iframe {
     const settingsPanelToggleBtn = document.createElement('button')
     settingsPanelToggleBtn.id = 'settings-button'
     settingsPanelToggleBtn.innerHTML = `
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" width="32px" height="32px">
-    <circle style="fill:none;stroke:currentColor;stroke-width:2;stroke-miterlimit:10;" cx="16" cy="16" r="11"/>
-    <line id="minute-hand" x1="16" y1="17" x2="16" y2="8" style="fill:none;stroke:currentColor;stroke-width:2;stroke-miterlimit:10;"/>
-    <line id="hour-hand" x1="15" y1="16" x2="22" y2="16" style="fill:none;stroke:currentColor;stroke-width:2;stroke-miterlimit:10;"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" width="32px" height="32px" style="fill:none;stroke:currentColor;stroke-width:2">
+    <circle cx="16" cy="16" r="11"/>
+    <line id="minute-hand" x1="16" y1="8" x2="16" y2="16" style="stroke-linecap:round;"/>
+    <line id="hour-hand" x1="22" y1="16" x2="16" y2="16" style="stroke-linecap:round;"/>
 </svg>
         `
 
