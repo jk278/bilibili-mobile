@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.1
+// @version            2.4
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -18,12 +18,12 @@
   console.log('Bilibili mobile execute!')
 
   initViewport()
-
   initElementStyle()
 
   waitDOMContentLoaded(() => {
     controlSidebar()
     controlSearchbar()
+    controlTopMenu()
   })
 
   // DOM 加载完后
@@ -41,28 +41,34 @@
   }
 
   function controlSidebar () {
-    const toggleSidebar = document.createElement('button')
-    toggleSidebar.id = 'toggleSidebar'
-    toggleSidebar.innerHTML = `
-  <svg width="50" height="50" viewBox="0 0 50 50">
-      <line id="line-1" x1="25" y1="5" x2="25" y2="25" />
-      <line id="line-2" x1="25" y1="45" x2="25" y2="25" />
-  </svg>
-        `
-
     const rightContainer = document.querySelector('.right-container')
-    toggleSidebar.addEventListener('click', function () {
-      if (!toggleSidebar.classList.contains('arrow')) {
-        toggleSidebar.classList.add('arrow')
-        rightContainer.classList.add('show')
-      } else {
-        toggleSidebar.classList.remove('arrow')
-        rightContainer.classList.remove('show')
-      }
-    })
+    if (rightContainer) {
+      const toggleSidebar = document.createElement('button')
+      toggleSidebar.id = 'toggleSidebar'
+      toggleSidebar.innerHTML = `
+    <svg width="50" height="50" viewBox="0 0 50 50">
+        <line id="line-1" x1="25" y1="5" x2="25" y2="25" />
+        <line id="line-2" x1="25" y1="45" x2="25" y2="25" />
+    </svg>
+          `
 
-    // 若作为两个分列的兄弟元素加入，就会影响页面布局
-    document.body.appendChild(toggleSidebar)
+      toggleSidebar.addEventListener('click', function () {
+        if (!toggleSidebar.classList.contains('arrow')) {
+          toggleSidebar.classList.add('arrow')
+          rightContainer.classList.add('show')
+        } else {
+          toggleSidebar.classList.remove('arrow')
+          rightContainer.classList.remove('show')
+        }
+      })
+
+      // 若作为两个分列的兄弟元素加入，就会影响页面布局
+      document.body.appendChild(toggleSidebar)
+
+      const recommendList = document.querySelector('#reco_list')
+      // 只能传递函数引用，不能传递函数执行结果
+      recommendList.addEventListener('click', () => { toggleSidebar.click() })
+    }
   }
 
   function controlSearchbar () {
@@ -82,6 +88,37 @@
       })
     })
     document.body.appendChild(searchbarBtn)
+  }
+
+  // 子元素先禁止，再启用一半
+  function controlTopMenu () {
+    if (!window.location.href.startsWith('https://www.bilibili.com/video')) {
+      const leftEntry = document.querySelector('.left-entry')
+      leftEntry.classList.add('show-button')
+      leftEntry.addEventListener('click', function (event) {
+        if (event.target === leftEntry) {
+          leftEntry.classList.add('show-panel')
+          const popoverWrap = document.querySelector('.v-popover-wrap')
+          const arrow = document.querySelector('.mini-header__arrow')
+          if (!arrow.classList.contains('arrow-up')) {
+            popoverWrap.dispatchEvent(new MouseEvent('mouseenter', {
+              bubbles: true,
+              cancelable: true,
+              view: window
+            }))
+            arrow.classList.add('arrow-up')
+          } else {
+            popoverWrap.dispatchEvent(new MouseEvent('mouseleave', {
+              bubbles: true,
+              cancelable: true,
+              view: window
+            }))
+            arrow.classList.remove('arrow-up')
+            leftEntry.classList.remove('show-panel')
+          }
+        }
+      }, false)
+    }
   }
 
   function initElementStyle () {
@@ -132,6 +169,41 @@ body,
 .left-entry {
   min-width: 0;
   margin: 0 !important;
+}
+
+/* 点击展开 */
+.left-entry .v-popover-wrap {
+  pointer-events: none;
+
+  a > svg {
+    pointer-events: auto;
+  }
+}
+
+/* 展开图 */
+.bili-header-channel-panel {
+  width: calc(100vw - 30px) !important;
+  padding: 5px 0 !important;
+  display: none !important;
+}
+
+.left-entry.show-panel .bili-header-channel-panel {
+  display: flex !important;
+}
+
+/* 视频页隐藏展开图相关 */
+.mini-header__title {
+  display: none !important;
+}
+
+.left-entry.show-button .mini-header__title {
+  display: block !important;
+} 
+
+.channel-panel__column {
+  width: 100% !important;
+  flex: 1;
+  padding: 0 !important;
 }
 
 .right-entry {
@@ -354,12 +426,6 @@ svg line {
   transform: rotate(30deg);
 }
 
-/* 刷新按钮 */
-span.btn-text-inner,
-.primary-btn {
-  display: none !important;
-}
-
 /* 搜索按钮 */
 #search-fab {
   position: fixed;
@@ -373,6 +439,36 @@ span.btn-text-inner,
 
 #search-fab svg {
   vertical-align: middle;
+}
+
+/* 刷新按钮 */
+.flexible-roll-btn-inner {
+  color: inherit !important;
+  background: none !important;
+  padding: 9px 9px 10px 10px !important;
+  border-radius: 50% !important;
+  background: rgba(0, 0, 0, .2) !important;
+  height: auto !important;
+  display: block !important;
+  margin-right: 20px;
+  margin-top: 70px;
+}
+
+.flexible-roll-btn-inner svg {
+  width: 30px;
+  height: 30px;
+  stroke: currentColor;
+  stroke-width: 0.1px;
+}
+
+.palette-button-wrap.translucent>div[data-v-6640d1cd].flexible-roll-btn {
+  opacity: 1 !important;
+}
+
+/* 按钮组 */
+span.btn-text-inner,
+.primary-btn {
+  display: none !important;
 }
         `
     const style = document.createElement('style')
