@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.0.1
+// @version            2.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -19,9 +19,12 @@
 
   initViewport()
 
-  customElementStyle()
+  initElementStyle()
 
-  controlScrollX()
+  waitDOMContentLoaded(() => {
+    controlSidebar()
+    controlSearchbar()
+  })
 
   // DOM 加载完后
   function waitDOMContentLoaded (callback) {
@@ -37,43 +40,56 @@
     }
   }
 
-  function controlScrollX () {
-    waitDOMContentLoaded(() => {
-      const toggleSidebar = document.createElement('button')
-      toggleSidebar.id = 'toggleSidebar'
-      toggleSidebar.innerHTML = `
+  function controlSidebar () {
+    const toggleSidebar = document.createElement('button')
+    toggleSidebar.id = 'toggleSidebar'
+    toggleSidebar.innerHTML = `
   <svg width="50" height="50" viewBox="0 0 50 50">
       <line id="line-1" x1="25" y1="5" x2="25" y2="25" />
       <line id="line-2" x1="25" y1="45" x2="25" y2="25" />
   </svg>
         `
 
-      toggleSidebar.addEventListener('click', function () {
-        let x = 0
-        if (!toggleSidebar.classList.contains('arrow')) {
-          x = window.innerWidth
-          console.log('The screen width: ', x)
-          toggleSidebar.classList.add('arrow')
-        } else {
-          toggleSidebar.classList.remove('arrow')
-        }
-        window.scrollTo({
-          left: x,
-          top: window.scrollY,
-          behavior: 'smooth'
-        })
-      })
-
-      // 若作为两个分列的兄弟元素加入，就会影响页面布局
-      document.body.appendChild(toggleSidebar)
+    const rightContainer = document.querySelector('.right-container')
+    toggleSidebar.addEventListener('click', function () {
+      if (!toggleSidebar.classList.contains('arrow')) {
+        toggleSidebar.classList.add('arrow')
+        rightContainer.classList.add('show')
+      } else {
+        toggleSidebar.classList.remove('arrow')
+        rightContainer.classList.remove('show')
+      }
     })
+
+    // 若作为两个分列的兄弟元素加入，就会影响页面布局
+    document.body.appendChild(toggleSidebar)
   }
 
-  function customElementStyle () {
+  function controlSearchbar () {
+    const searchbarBtn = document.createElement('div')
+    searchbarBtn.id = 'search-fab'
+    searchbarBtn.innerHTML = `
+      <svg width="30" height="30" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
+      `
+    searchbarBtn.addEventListener('click', () => {
+      const searchbar = document.querySelector('.center-search-container')
+      searchbar.classList.add('show')
+      const input = searchbar.querySelector('input')
+      input.focus()
+
+      input.addEventListener('blur', () => {
+        searchbar.classList.remove('show')
+      })
+    })
+    document.body.appendChild(searchbarBtn)
+  }
+
+  function initElementStyle () {
     const initialInsertStyle = `
-    /*
-    * 首页  *
-    */
+/*
+* 首页  *
+*/
+
 /* 双列视频 */
 .recommended-container_floor-aside .container {
   grid-template-columns: repeat(2, 1fr) !important;
@@ -87,26 +103,17 @@ body,
   min-width: 0 !important;
 }
 
-/* 宽度 */
-.bili-feed4-layout,
-.bili-header {
+/* 主页视频流 */
+.bili-feed4-layout {
   width: 100% !important;
 }
 
-.bili-feed4-layout {
-  padding: 0 10px !important;
-}
-
-/* 顶部留空 */
+/* 顶栏边距 */
 .bili-header__bar {
-  padding: 75px 15px 25px !important;
+  padding: 0 15px !important;
 }
 
-.video-container-v1 {
-  margin-top: 25px !important;
-}
-
-/* 搜索框置顶 */
+/* 搜索框 */
 .center-search-container {
   position: absolute !important;
   width: 100%;
@@ -115,6 +122,11 @@ body,
   padding: 10px 20px 5px !important;
   z-index: 3;
   margin: 0 !important;
+  display: none;
+}
+
+.center-search-container.show {
+  display: block;
 }
 
 .left-entry {
@@ -127,6 +139,11 @@ body,
   min-width: 0;
   margin: 0 !important;
   justify-content: space-evenly;
+}
+
+/* 头像 */
+.header-avatar-wrap {
+  padding-right: 0 !important;
 }
 
 /* 禁止换行 */
@@ -163,32 +180,56 @@ body,
 * 视频详情页 *
 */
 
-/* 列包裹 */
+/* 主应用块 */
+#app {
+  overflow: hidden;
+}
+
+/* 主体内容块 */
 .video-container-v1 {
   min-width: 0 !important;
-  justify-content: start !important;
 }
 
-/* 分列和视频 */
+/* 分内容块 */
 .video-container-v1>div {
   width: 100% !important;
-  flex: none;
 }
 
-/* 视频列 */
-/* .left-container {} */
-
-/* 推荐列 */
+/* 推荐块 */
 .right-container {
-  min-width: 0;
-  margin-left: 20px !important;
-  padding-right: 10px !important;
+  position: fixed !important;
+  z-index: 1;
+  background: white;
+  transition: transform .4s linear;
+  transform: translateX(100%);
+  height: 100%;
+  overflow-y: auto;
+  
+  box-sizing: border-box;
+  padding: 10px;
+  margin: 0 !important;
+  left: 0;
+}
+
+.right-container.show {
+  transform: translateX(0)
+}
+
+.right-container-inner {
+  padding: 0 !important;
 }
 
 /* 播放器样式 */
 #bilibili-player {
   height: 100% !important;
   width: 100% !important;
+}
+
+/* 小窗 */
+.bpx-player-container[data-screen=mini] {
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 #playerWrap {
@@ -280,11 +321,6 @@ body,
   padding-left: 40px !important;
 }
 
-/* 禁横滚 */
-body {
-  overflow-x: hidden !important;
-}
-
 /* 侧栏按钮 */
 #toggleSidebar {
   position: fixed;
@@ -322,6 +358,21 @@ svg line {
 span.btn-text-inner,
 .primary-btn {
   display: none !important;
+}
+
+/* 搜索按钮 */
+#search-fab {
+  position: fixed;
+  bottom: 80px;
+  right: 30px;
+  z-index: 1;
+  padding: 10px 9px 9px 10px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .2);
+}
+
+#search-fab svg {
+  vertical-align: middle;
 }
         `
     const style = document.createElement('style')
