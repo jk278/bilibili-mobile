@@ -219,7 +219,7 @@ body {
     background: none;
     z-index: 75;
     top: calc(50% - 25px);
-    transition: left .3s linear;
+    transition: left .4s linear;
     left: calc(100% - 50px);
 }
 
@@ -234,7 +234,6 @@ svg line {
     /* drop-shadow 属性只需要渲染阴影，而 box-shadow 属性还需要渲染盒子的边框。 */
     filter:  drop-shadow(0 0 5px rgba(0, 0, 0, .5));
     transition: transform .5s linear;
-    transform: rotate(0);
     transform-origin: 50% 50%;
 }
 

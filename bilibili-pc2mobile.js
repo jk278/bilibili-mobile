@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.0
+// @version            2.0.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -36,6 +36,7 @@
       document.head.appendChild(viewport)
     }
   }
+
   function controlScrollX () {
     waitDOMContentLoaded(() => {
       const toggleSidebar = document.createElement('button')
@@ -69,7 +70,8 @@
   }
 
   function customElementStyle () {
-    const initialInsertStyle = `      /*
+    const initialInsertStyle = `
+    /*
     * 首页  *
     */
 /* 双列视频 */
@@ -290,7 +292,7 @@ body {
   background: none;
   z-index: 75;
   top: calc(50% - 25px);
-  transition: left .3s linear;
+  transition: left .4s linear;
   left: calc(100% - 50px);
 }
 
@@ -305,7 +307,6 @@ svg line {
   /* drop-shadow 属性只需要渲染阴影，而 box-shadow 属性还需要渲染盒子的边框。 */
   filter:  drop-shadow(0 0 5px rgba(0, 0, 0, .5));
   transition: transform .5s linear;
-  transform: rotate(0);
   transform-origin: 50% 50%;
 }
 
@@ -317,15 +318,7 @@ svg line {
   transform: rotate(30deg);
 }
 
-/*
-* 调整大小 *
-*/
-
 /* 刷新按钮 */
-.palette-button-wrap {
-  transform: translate(-25px, 0) !important;
-}
-
 span.btn-text-inner,
 .primary-btn {
   display: none !important;
