@@ -17,6 +17,8 @@
   'use strict'
   console.log('Bilibili mobile execute!')
 
+  initViewport()
+
   customElementStyle()
 
   controlScrollX()
@@ -26,16 +28,24 @@
     document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback()
   }
 
+  function initViewport () {
+    if (document.head) {
+      const viewport = document.createElement('meta')
+      viewport.setAttribute('name', 'viewport')
+      viewport.setAttribute('content', 'width=device-width, initial-scale=1.0')
+      document.head.appendChild(viewport)
+    }
+  }
   function controlScrollX () {
     waitDOMContentLoaded(() => {
       const toggleSidebar = document.createElement('button')
       toggleSidebar.id = 'toggleSidebar'
       toggleSidebar.innerHTML = `
-<svg width="50" height="50" viewBox="0 0 50 50">
-    <line id="line-1" x1="25" y1="5" x2="25" y2="25" />
-    <line id="line-2" x1="25" y1="45" x2="25" y2="25" />
-</svg>
-      `
+  <svg width="50" height="50" viewBox="0 0 50 50">
+      <line id="line-1" x1="25" y1="5" x2="25" y2="25" />
+      <line id="line-2" x1="25" y1="45" x2="25" y2="25" />
+  </svg>
+        `
 
       toggleSidebar.addEventListener('click', function () {
         let x = 0
@@ -59,69 +69,68 @@
   }
 
   function customElementStyle () {
-    const initialInsertStyle = `
-/*
+    const initialInsertStyle = `      /*
     * 首页  *
     */
 /* 双列视频 */
 .recommended-container_floor-aside .container {
-    grid-template-columns: repeat(2, 1fr) !important;
-    padding: 15px;
+  grid-template-columns: repeat(2, 1fr) !important;
+  padding: 15px;
 }
 
 /* 最小宽度 */
 body,
 .bili-header,
 .bili-header__banner {
-    min-width: 0 !important;
+  min-width: 0 !important;
 }
 
 /* 宽度 */
 .bili-feed4-layout,
 .bili-header {
-    width: 100% !important;
+  width: 100% !important;
 }
 
 .bili-feed4-layout {
-    padding: 0 10px !important;
+  padding: 0 10px !important;
 }
 
 /* 顶部留空 */
 .bili-header__bar {
-    padding: 10vw 3vw 4vw !important;
+  padding: 75px 15px 25px !important;
 }
 
 .video-container-v1 {
-    margin-top: 4vw !important;
+  margin-top: 25px !important;
 }
 
 /* 搜索框置顶 */
 .center-search-container {
-    position: absolute !important;
-    width: 100%;
-    left: 0;
-    top: 0;
-    padding: 10px 20px 5px !important;
-    z-index: 3;
-    margin: 0 !important;
+  position: absolute !important;
+  width: 100%;
+  left: 0;
+  top: 0;
+  padding: 10px 20px 5px !important;
+  z-index: 3;
+  margin: 0 !important;
 }
 
 .left-entry {
-    min-width: 0;
-    margin: 0 !important;
+  min-width: 0;
+  margin: 0 !important;
 }
 
 .right-entry {
-    flex: 1;
-    min-width: 0;
-    margin: 0 !important;
-    justify-content: space-evenly;
+  flex: 1;
+  min-width: 0;
+  margin: 0 !important;
+  justify-content: space-evenly;
 }
 
 /* 禁止换行 */
 .left-entry__title,
 .dm.item {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 /* 移除次要入口 */
@@ -133,19 +142,19 @@ body,
 .bili-header__channel,
 .recommended-swipe,
 .feed-roll-btn {
-    display: none !important;
+  display: none !important;
 }
 
 /* 缩减纵距 */
 .container>* {
-    margin-top: 0 !important;
+  margin-top: 0 !important;
 }
 
 /* 广告、推广图块 */
 .container>*:has(.bili-video-card__info--ad),
 .floor-single-card,
 .desktop-download-tip {
-    display: none !important;
+  display: none !important;
 }
 
 /*
@@ -154,14 +163,14 @@ body,
 
 /* 列包裹 */
 .video-container-v1 {
-    min-width: 0 !important;
-    justify-content: start !important;
+  min-width: 0 !important;
+  justify-content: start !important;
 }
 
 /* 分列和视频 */
 .video-container-v1>div {
-    width: 100% !important;
-    flex: none;
+  width: 100% !important;
+  flex: none;
 }
 
 /* 视频列 */
@@ -169,82 +178,82 @@ body,
 
 /* 推荐列 */
 .right-container {
-    min-width: 0;
-    margin-left: 20px !important;
-    padding-right: 10px !important;
+  min-width: 0;
+  margin-left: 20px !important;
+  padding-right: 10px !important;
 }
 
 /* 播放器样式 */
 #bilibili-player {
-    height: 100% !important;
-    width: 100% !important;
+  height: 100% !important;
+  width: 100% !important;
 }
 
 #playerWrap {
-    height: calc((100vw - 20px) * 0.5625 + 46px) !important;
+  height: calc((100vw - 20px) * 0.5625 + 46px) !important;
 }
 
 /* 播放器控制区 */
 .bpx-player-control-entity {
-    display: block !important;
+  display: block !important;
 }
 
 .bpx-player-ctrl-pip,
 .bpx-player-ctrl-wide,
 .bpx-player-ctrl-web {
-    display: none !important;
+  display: none !important;
 }
 
 .bpx-player-control-bottom-left,
 .bpx-player-control-bottom-right {
-    flex: 1 !important;
-    min-width: 0;
+  flex: 1 !important;
+  min-width: 0;
 }
 
 /* 点赞投币行 */
 .video-toolbar-left,
 .video-toolbar-left-main {
-    min-width: 0;
+  min-width: 0;
 }
 
 .toolbar-left-item-wrap {
-    flex: 1;
-    min-width: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .video-toolbar-container * {
-    margin: 0 !important;
+  margin: 0 !important;
 }
 
 .video-share-info {
-    width: 40px !important;
+  width: 40px !important;
 }
 
 .video-share-popover {
-    display: none !important;
+  display: none !important;
 }
 
 /* 弹幕行 */
 .bpx-player-video-info,
 .bpx-player-dm-hint {
-    display: none !important;
+  display: none !important;
 }
 
 .bpx-player-video-inputbar {
-    min-width: 0 !important;
+  min-width: 0 !important;
 }
 
 .bpx-player-video-inputbar-wrap {
-    width: 0 !important;
+  width: 0 !important;
 }
 
 /* 纵向缩窄 */
 .video-info-container {
-    height: 90px !important;
+  height: 90px !important;
 }
 
 .video-tag-container {
-    margin: 0 !important;
+  margin: 0 !important;
 }
 
 /* 块状广告（包括推荐列） */
@@ -253,59 +262,59 @@ body,
 .reply-notice,
 .ad-report,
 .pop-live-small-mode {
-    display: none !important;
+  display: none !important;
 }
 
 /* 评论 */
 .root-reply-container {
-    padding-left: 50px !important;
+  padding-left: 50px !important;
 }
 
 .root-reply-avatar {
-    width: 40px !important;
+  width: 40px !important;
 }
 
 .sub-reply-container {
-    padding-left: 40px !important;
+  padding-left: 40px !important;
 }
 
 /* 禁横滚 */
 body {
-    overflow-x: hidden !important;
+  overflow-x: hidden !important;
 }
 
 /* 侧栏按钮 */
 #toggleSidebar {
-    position: fixed;
-    border: 0;
-    background: none;
-    z-index: 75;
-    top: calc(50% - 25px);
-    transition: left .3s linear;
-    left: calc(100% - 50px);
+  position: fixed;
+  border: 0;
+  background: none;
+  z-index: 75;
+  top: calc(50% - 25px);
+  transition: left .3s linear;
+  left: calc(100% - 50px);
 }
 
 #toggleSidebar.arrow {
-    left: 0;
+  left: 0;
 }
 
 svg line {
-    stroke: #333;
-    stroke-width: 10;
-    stroke-linecap: round;
-    /* drop-shadow 属性只需要渲染阴影，而 box-shadow 属性还需要渲染盒子的边框。 */
-    filter: drop-shadow(0 0 5px rgba(0, 0, 0, .5));
-    transition: transform .5s linear;
-    transform: rotate(0);
-    transform-origin: 50% 50%;
+  stroke: #333;
+  stroke-width: 10;
+  stroke-linecap: round;
+  /* drop-shadow 属性只需要渲染阴影，而 box-shadow 属性还需要渲染盒子的边框。 */
+  filter:  drop-shadow(0 0 5px rgba(0, 0, 0, .5));
+  transition: transform .5s linear;
+  transform: rotate(0);
+  transform-origin: 50% 50%;
 }
 
 .arrow #line-1 {
-    transform: rotate(-30deg);
+  transform: rotate(-30deg);
 }
 
 .arrow #line-2 {
-    transform: rotate(30deg);
+  transform: rotate(30deg);
 }
 
 /*
@@ -314,27 +323,14 @@ svg line {
 
 /* 刷新按钮 */
 .palette-button-wrap {
-    transform: translate(-25px, 0) !important;
+  transform: translate(-25px, 0) !important;
 }
 
 span.btn-text-inner,
 .primary-btn {
-    display: none !important;
+  display: none !important;
 }
-
-/* 顶栏 */
-.bili-header .bili-header__bar {
-    height: inherit !important;
-}
-
-.center-search__bar {
-    max-width: none !important;
-}
-
-#nav-searchform {
-    height: 8vw !important;
-}
-      `
+        `
     const style = document.createElement('style')
     style.textContent = initialInsertStyle
 

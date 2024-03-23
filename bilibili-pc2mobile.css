@@ -1,8 +1,8 @@
-/*
-    * 首页  *
-    */
-/* 双列视频 */
-.recommended-container_floor-aside .container {
+      /*
+      * 首页  *
+      */
+  /* 双列视频 */
+  .recommended-container_floor-aside .container {
     grid-template-columns: repeat(2, 1fr) !important;
     padding: 15px;
 }
@@ -26,11 +26,11 @@ body,
 
 /* 顶部留空 */
 .bili-header__bar {
-    padding: 10vw 3vw 4vw !important;
+    padding: 75px 15px 25px !important;
 }
 
 .video-container-v1 {
-    margin-top: 4vw !important;
+    margin-top: 25px !important;
 }
 
 /* 搜索框置顶 */
@@ -232,7 +232,7 @@ svg line {
     stroke-width: 10;
     stroke-linecap: round;
     /* drop-shadow 属性只需要渲染阴影，而 box-shadow 属性还需要渲染盒子的边框。 */
-    filter: drop-shadow(0 0 5px rgba(0, 0, 0, .5));
+    filter:  drop-shadow(0 0 5px rgba(0, 0, 0, .5));
     transition: transform .5s linear;
     transform: rotate(0);
     transform-origin: 50% 50%;
@@ -258,17 +258,4 @@ svg line {
 span.btn-text-inner,
 .primary-btn {
     display: none !important;
-}
-
-/* 顶栏 */
-.bili-header .bili-header__bar {
-    height: inherit !important;
-}
-
-.center-search__bar {
-    max-width: none !important;
-}
-
-#nav-searchform {
-    height: 8vw !important;
 }
