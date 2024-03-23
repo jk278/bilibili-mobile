@@ -60,7 +60,7 @@
 
   function customElementStyle () {
     const initialInsertStyle = `
-    /*
+/*
     * 首页  *
     */
 /* 双列视频 */
@@ -88,11 +88,11 @@ body,
 
 /* 顶部留空 */
 .bili-header__bar {
-    padding: 75px 15px 25px !important;
+    padding: 10vw 3vw 4vw !important;
 }
 
 .video-container-v1 {
-    margin-top: 25px !important;
+    margin-top: 4vw !important;
 }
 
 /* 搜索框置顶 */
@@ -294,7 +294,7 @@ svg line {
     stroke-width: 10;
     stroke-linecap: round;
     /* drop-shadow 属性只需要渲染阴影，而 box-shadow 属性还需要渲染盒子的边框。 */
-    filter:  drop-shadow(0 0 5px rgba(0, 0, 0, .5));
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, .5));
     transition: transform .5s linear;
     transform: rotate(0);
     transform-origin: 50% 50%;
@@ -311,9 +311,6 @@ svg line {
 /*
 * 调整大小 *
 */
-body {
-    zoom: 3;
-}
 
 /* 刷新按钮 */
 .palette-button-wrap {
@@ -323,6 +320,19 @@ body {
 span.btn-text-inner,
 .primary-btn {
     display: none !important;
+}
+
+/* 顶栏 */
+.bili-header .bili-header__bar {
+    height: inherit !important;
+}
+
+.center-search__bar {
+    max-width: none !important;
+}
+
+#nav-searchform {
+    height: 8vw !important;
 }
       `
     const style = document.createElement('style')
