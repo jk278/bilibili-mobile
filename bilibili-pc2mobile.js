@@ -1,3 +1,4 @@
+import { css } from '@emotion/core';
 // ==UserScript==
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）

@@ -3,10 +3,7 @@ module.exports = {
     browser: true,
     es2021: true
   },
-  extends: [
-    'standard',
-    'plugin:emotion/recommended'
-  ],
+  extends: 'standard',
   overrides: [
     {
       env: {
@@ -23,10 +20,6 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest'
   },
-  plugins: ['emotion'],
   rules: {
-    'emotion/no-vanilla': 'error',
-    'emotion/import-from-emotion': 'error',
-    'emotion/styled-import': 'error'
   }
 }
