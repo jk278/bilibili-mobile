@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.5
+// @version            2.6
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -43,10 +43,10 @@
   function controlSidebar () {
     const rightContainer = document.querySelector('.right-container')
     if (rightContainer) {
-      const toggleSidebar = document.createElement('button')
+      const toggleSidebar = document.createElement('div')
       toggleSidebar.id = 'toggleSidebar'
       toggleSidebar.innerHTML = `
-    <svg width="50" height="50" viewBox="0 0 50 50">
+    <svg width="26" height="26" viewBox="0 0 50 50">
         <line id="line-1" x1="25" y1="5" x2="25" y2="25" />
         <line id="line-2" x1="25" y1="45" x2="25" y2="25" />
     </svg>
@@ -75,7 +75,7 @@
     const searchbarBtn = document.createElement('div')
     searchbarBtn.id = 'search-fab'
     searchbarBtn.innerHTML = `
-      <svg width="30" height="30" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
+      <svg width="26" height="26" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
       `
     searchbarBtn.addEventListener('click', () => {
       const searchbar = document.querySelector('.center-search-container')
@@ -130,6 +130,12 @@
 * ---------------------------------------------------- *
  ----------------------------------------------------- */
 
+body {
+  background: white !important;
+
+  --header-height: 48px;
+}
+
 /* 双列视频 */
 .recommended-container_floor-aside .container {
   grid-template-columns: repeat(2, 1fr) !important;
@@ -148,7 +154,7 @@
   display: block !important;
 }
 
-/* 最小宽度 */
+/* 最小宽度（body、顶栏） */
 body,
 .bili-header,
 .bili-header__banner {
@@ -163,6 +169,25 @@ body,
 /* 顶栏边距 */
 .bili-header__bar {
   padding: 0 15px !important;
+}
+
+/* 顶栏高度 */
+.bili-header .bili-header__bar {
+  height: var(--header-height) !important;
+}
+
+/* 视频页顶栏高度 */
+.header-v3 #biliMainHeader .bili-header .mini-header {
+  height: var(--header-height) !important;
+}
+
+/* 顶栏高度补偿：HTML初始加载的顶栏高度留空，若修改则局部跳动，
+   视频页非 fixed 布局，提前减去变化后的差值，而不修改顶栏外框 */
+
+/* 不影响结果 */
+#biliMainHeader .bili-header {
+  min-height: var(--header-height);
+  height: var(--header-height);
 }
 
 /* 搜索框 */
@@ -264,9 +289,7 @@ body,
 }
 
 /* ----------------------------------------------------
-* ---------------------------------------------------- *
 * ---------------------- 视频卡片 -------------------- *
-* ---------------------------------------------------- *
  ----------------------------------------------------- */
 
 .container > * {
@@ -353,9 +376,10 @@ body,
   overflow: hidden;
 }
 
-/* 主体内容块 */
+/* 主体内容块（减去顶栏高度补偿） */
 .video-container-v1 {
   min-width: 0 !important;
+  top: calc(var(--header-height) - 64px - 1px);
 }
 
 /* 分内容块 */
@@ -368,8 +392,8 @@ body,
   position: fixed !important;
   z-index: 1;
   background: white;
-  transition: transform .4s linear;
-  transform: translateX(100%);
+  transition: transform .5s linear;
+  transform: translateX(calc(100% + 5px));
   height: 100%;
   overflow-y: auto;
   
@@ -377,6 +401,7 @@ body,
   padding: 10px;
   margin: 0 !important;
   left: 0;
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.5);
 }
 
 .right-container.show {
@@ -387,21 +412,54 @@ body,
   padding: 0 !important;
 }
 
-/* 播放器样式 */
+/* 主视频块 */
+.left-container {
+  --video-height : calc(100vw * 0.5625 + 46px);
+  padding-top: var(--video-height);
+}
+
+/* 移除播放器固定尺寸 */
 #bilibili-player {
   height: 100% !important;
   width: 100% !important;
 }
 
-/* 小窗 */
-.bpx-player-container[data-screen=mini] {
-  top: 120px;
-  left: 50%;
-  transform: translateX(-50%);
+/* 固定视频（覆盖原宽度） */
+#playerWrap {
+  position: fixed;
+  left: 0;
+  top: var(--header-height);
+  width: 100vw;
+  height: var(--video-height) !important;
+  z-index: 75;
 }
 
-#playerWrap {
-  height: calc((100vw - 20px) * 0.5625 + 46px) !important;
+/* 固定小窗导致的元素显隐 */
+.bpx-player-state-wrap,
+.bpx-player-toast-wrap,
+.bpx-player-control-wrap,
+.bpx-player-control-mask,
+.bpx-player-control-entity,
+.bpx-player-sending-area {
+  display: block !important;
+}
+
+.bpx-player-mini-warp {
+  display: none !important;
+}
+
+/* 固定小窗导致的视频跳动（宽度相比 fixed 减去了滚动条） */
+.bpx-player-container[data-screen=mini] {
+  top: var(--header-height);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100% !important;
+  height: var(--video-height) !important;
+}
+
+/* 移除小窗等按钮 */
+.fixed-sidenav-storage > *:nth-child(1), .fixed-sidenav-storage > *:nth-child(2) {
+  display: none !important;
 }
 
 /* 播放器控制区 */
@@ -421,7 +479,25 @@ body,
   min-width: 0;
 }
 
+/* 弹幕行 */
+.bpx-player-video-info,
+.bpx-player-dm-hint {
+  display: none !important;
+}
+
+.bpx-player-video-inputbar {
+  min-width: 0 !important;
+}
+
+.bpx-player-video-inputbar-wrap {
+  width: 0 !important;
+}
+
 /* 点赞投币行 */
+.video-toolbar-container {
+  padding: 10px 0 8px !important;
+}
+
 .video-toolbar-left,
 .video-toolbar-left-main {
   min-width: 0;
@@ -444,27 +520,142 @@ body,
   display: none !important;
 }
 
-/* 弹幕行 */
-.bpx-player-video-info,
-.bpx-player-dm-hint {
+/* AI 助手“测试版”字样 */
+.video-ai-assistant-badge {
   display: none !important;
 }
 
-.bpx-player-video-inputbar {
-  min-width: 0 !important;
+/* AI 总结 */
+.resizable-component {
+  width: 100% !important;
+  left: 0 !important;
 }
 
-.bpx-player-video-inputbar-wrap {
-  width: 0 !important;
-}
-
-/* 纵向缩窄 */
+/* 信息块（标题） */
 .video-info-container {
-  height: 90px !important;
+  height: 70px !important;
+  padding-top: 10px !important;
 }
 
+/* 标题 */
+.video-title {
+  font-size: 18px !important;
+}
+
+.video-desc-container {
+  margin: 10px 0 !important;
+}
+
+/* 标签 */
 .video-tag-container {
-  margin: 0 !important;
+  margin: 6px 0 0 !important;
+  padding-bottom: 1px !important;
+}
+
+.tag-panel .tag {
+  margin-bottom: 6px !important;
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in-out 3s forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 固定评论栏 */
+.main-reply-box {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 10;
+  background: white;
+  width: 100%;
+  padding: 8px 12px;
+  border-top: 1px #ccc solid;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 移除原底部评论栏 */
+.fixed-reply-box {
+  display: none !important;
+}
+
+/* 移除评论头像 */
+.reply-box-avatar {
+  display: none !important;
+}
+
+/* 输入块外 */
+.reply-box-warp {
+  border-radius: 13px !important;
+}
+
+/* 输入块内 */
+.textarea-wrap {
+  padding: 0 !important;
+}
+
+/* 文字输入 */
+.reply-box-textarea {
+  height: 26px !important;
+  line-height: 26px !important;
+  min-height: 26px !important;
+}
+
+/* 输入展开块 */
+.box-expand {
+  height: 26px;
+  margin-left: 0 !important;
+}
+
+/* 插入表情图片 */
+.box-left {
+  flex: 1;
+  justify-content: space-evenly !important;
+}
+
+/* 点击发送 */
+.reply-box-send {
+  width: 50px !important;
+  height: 26px !important;
+}
+
+/* 评论块 */
+#comment{
+  margin-top: 12px !important;
+}
+/* 评论导航 */
+.reply-navigation {
+  margin-bottom: 0 !important;
+}
+
+/* 评论 */
+.root-reply-container {
+  padding: 12px 0 0 36px !important;
+}
+
+.root-reply-avatar, 
+.root-reply-avatar .bili-avatar {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.user-info {
+  margin: 3px 5px 0 !important;
+}
+
+/* 回复评论 */
+.sub-reply-container {
+  padding-left: 28px !important;
+}
+
+.sub-reply-item {
+  padding: 4px 0 4px 37px !important;
 }
 
 /* 块状广告（包括推荐列） */
@@ -476,20 +667,6 @@ body,
   display: none !important;
 }
 
-/* 评论 */
-.root-reply-container {
-  padding-left: 50px !important;
-}
-
-.root-reply-avatar {
-  width: 40px !important;
-}
-
-.sub-reply-container {
-  padding-left: 40px !important;
-}
-
-
 /* ----------------------------------------------------
 * ---------------------------------------------------- *
 * ------------------------ 按钮 ---------------------- *
@@ -499,21 +676,17 @@ body,
 /* 侧栏按钮 */
 #toggleSidebar {
   position: fixed;
-  border: 0;
-  background: none;
-  z-index: 75;
-  top: calc(50% - 25px);
-  transition: left .4s linear;
-  left: calc(100% - 50px);
-}
-
-#toggleSidebar.arrow {
-  left: 0;
+  bottom: 140px;
+  right: 0;
+  z-index: 1;
+  padding: 9px 6px 10px 13px;
+  border-radius: 50% 0 0 50%;
+  background: rgba(0, 174, 236, .4);
 }
 
 svg line {
-  stroke: #333;
-  stroke-width: 10;
+  stroke: currentColor;
+  stroke-width: 6;
   stroke-linecap: round;
   /* drop-shadow 属性只需要渲染阴影，而 box-shadow 属性还需要渲染盒子的边框。 */
   filter:  drop-shadow(0 0 5px rgba(0, 0, 0, .5));
@@ -532,12 +705,12 @@ svg line {
 /* 搜索按钮 */
 #search-fab {
   position: fixed;
-  bottom: 80px;
-  right: 30px;
+  bottom: 86px;
+  right: 0;
   z-index: 1;
-  padding: 10px 9px 9px 10px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, .2);
+  padding: 9px 9px 10px 10px;
+  border-radius: 50% 0 0 50%;
+  background: rgba(0, 174, 236, .4);
 }
 
 #search-fab svg {
@@ -549,19 +722,22 @@ svg line {
   color: inherit !important;
   background: none !important;
   padding: 9px 9px 10px 10px !important;
-  border-radius: 50% !important;
-  background: rgba(0, 0, 0, .2) !important;
+  border-radius: 50% 0 0 50% !important;
+  background: rgba(0, 174, 236, .4) !important;
   height: auto !important;
   display: block !important;
-  margin-right: 20px;
-  margin-top: 70px;
 }
 
 .flexible-roll-btn-inner svg {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   stroke: currentColor;
   stroke-width: 0.1px;
+}
+
+.palette-button-wrap {
+  right: 10px !important;
+  bottom: -12px !important;
 }
 
 .palette-button-wrap.translucent>div[data-v-6640d1cd].flexible-roll-btn {
@@ -574,13 +750,11 @@ span.btn-text-inner,
   display: none !important;
 }
 
-
 /* ----------------------------------------------------
 * ---------------------------------------------------- *
 * ---------------------- 动态窗口 -------------------- *
 * ---------------------------------------------------- *
  ----------------------------------------------------- */
-
 
 /* 登录窗 */
 .login-scan-wp,
