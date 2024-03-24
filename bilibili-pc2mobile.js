@@ -122,15 +122,23 @@
   }
 
   function initElementStyle () {
-    const initialInsertStyle = `
-/*
-* 首页  *
-*/
-
+    const initialInsertStyle = css`
+/* ----------------------------------------------
+* ---------------------------------------------- *
+* -------------------- 首页 -------------------- *
+* ---------------------------------------------- *
+ ----------------------------------------------- */
 /* 双列视频 */
 .recommended-container_floor-aside .container {
   grid-template-columns: repeat(2, 1fr) !important;
-  padding: 15px;
+  padding: 5px;
+  grid-gap: 5px !important;
+  background: #f1f2f3;;
+}
+
+/* 显示根据屏宽隐藏的 feed */
+.container>.feed-card {
+  display: block !important;
 }
 
 /* 最小宽度 */
@@ -227,6 +235,7 @@ body,
 /* 移除次要入口 */
 .left-entry>li:not(:nth-of-type(1)),
 .vip-wrap,
+.right-entry-item:has(>.vip-wrap),
 .right-entry-item:nth-of-type(6),
 .right-entry-item--upload,
 .header-channel,
@@ -236,16 +245,66 @@ body,
   display: none !important;
 }
 
-/* 缩减纵距 */
-.container>* {
+/* 广告、推广图块 */
+/* 底部登录弹窗类 .lt-row 可能包含其它元素 */
+.container>*:has(.bili-video-card__info--ad),
+.floor-single-card,
+.desktop-download-tip,
+.lt-row {
+  display: none !important;
+}
+
+/* ----------------------------------------------
+* ---------------------------------------------- *
+* ------------------- 视频卡片 ------------------ *
+* ---------------------------------------------- *
+ ----------------------------------------------- */
+
+.container > * {
   margin-top: 0 !important;
 }
 
-/* 广告、推广图块 */
-.container>*:has(.bili-video-card__info--ad),
-.floor-single-card,
-.desktop-download-tip {
-  display: none !important;
+/* 卡片底板 */
+.bili-video-card__wrap {
+  border-radius: 5px;
+  background: red !important;
+}
+
+/* 卡片标题 */
+.bili-video-card__info--right {
+  padding: 0 5px;
+}
+
+/* 卡片标题 - 字重 */
+.bili-video-card__info--tit > a {
+  font-family: unset !important;
+  font-weight: normal !important;
+}
+
+/* 小标 */
+.bili-video-card__info--bottom {
+  --subtitle-font-size: 12px;
+}
+
+/* 小标 - 日期 */
+.bili-video-card__info--owner {
+  flex: 1;
+}
+
+.bili-video-card__info--date {
+  margin-left: auto !important;
+}
+
+/* 小标 - 点赞数 */
+.bili-video-card__info--icon-text {
+  --follow-icon-font-size: 11px;
+  --follow-icon-line-height: 15px;
+}
+
+.bili-video-card__info--tit {
+  padding-right: 0 !important;
+  --title-font-size: 14px;
+  --title-line-height: 20px;
 }
 
 /*
@@ -469,6 +528,21 @@ svg line {
 span.btn-text-inner,
 .primary-btn {
   display: none !important;
+}
+
+/* 登录窗 */
+.login-scan-wp,
+.bili-mini-line {
+  display: none !important;
+}
+
+.bili-mini-content-wp {
+  padding: 52px 0 29px !important;
+}
+
+.bili-mini-login-right-wp,
+.bili-mini-login-right-wp * {
+  max-width: 80vw;
 }
         `
     const style = document.createElement('style')
