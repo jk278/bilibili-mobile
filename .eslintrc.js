@@ -21,5 +21,8 @@ module.exports = {
     ecmaVersion: 'latest'
   },
   rules: {
+  },
+  globals: {
+    css: 'readonly'
   }
 }
