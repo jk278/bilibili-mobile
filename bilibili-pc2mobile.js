@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.4
+// @version            2.5
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -129,12 +129,18 @@
 * ----------------------- 首页 ----------------------- *
 * ---------------------------------------------------- *
  ----------------------------------------------------- */
+
 /* 双列视频 */
 .recommended-container_floor-aside .container {
   grid-template-columns: repeat(2, 1fr) !important;
   padding: 5px;
   grid-gap: 5px !important;
-  background: #f1f2f3;;
+  background: #f1f2f3;
+}
+
+/* 头图底色 */
+.bili-header__banner {
+  background-color: #f1f2f3 !important;
 }
 
 /* 显示根据屏宽隐藏的 feed */
@@ -248,10 +254,12 @@ body,
 
 /* 广告、推广图块 */
 /* 底部登录弹窗类 .lt-row 可能包含其它元素 */
+/* 首页顶部动图上的大 Logo */
 .container>*:has(.bili-video-card__info--ad),
 .floor-single-card,
 .desktop-download-tip,
-.lt-row {
+.lt-row,
+.header-banner__inner {
   display: none !important;
 }
 
@@ -268,15 +276,43 @@ body,
 /* 卡片底板 */
 .bili-video-card__wrap {
   border-radius: 5px;
-  background: red !important;
 }
 
-/* 卡片标题 */
+/* 封面宽长比 */
+.bili-video-card.is-rcmd {
+  --cover-radio: 75% !important;
+}
+
+/* 封面圆角 */
+.v-img.bili-video-card__cover {
+  border-radius: 5px 5px 0 0;
+}
+
+/* 封面信息（阴影层圆角） */
+.bili-video-card__stats {
+  border-radius: 0 !important;
+  --icon-size: 16px;
+  --subtitle-font-size: 11px;
+  white-space: nowrap;
+}
+
+/* 卡片标题 - 字样 */
+.bili-video-card__info--tit {
+  --title-padding-right: 0;
+  --title-font-size: 14px;
+  --title-line-height: 20px;
+}
+
+/* 标题 - 上下距 */
+.bili-video-card__info {
+}
+
+/* 标题 - 左右距 */
 .bili-video-card__info--right {
   padding: 0 5px;
 }
 
-/* 卡片标题 - 字重 */
+/* 标题 - 字重 */
 .bili-video-card__info--tit > a {
   font-family: unset !important;
   font-weight: normal !important;
@@ -285,6 +321,10 @@ body,
 /* 小标 */
 .bili-video-card__info--bottom {
   --subtitle-font-size: 12px;
+}
+
+.bili-video-card__info--icon-text {
+  padding: 0 5px !important;
 }
 
 /* 小标 - 日期 */
@@ -301,16 +341,6 @@ body,
   --follow-icon-font-size: 11px;
   --follow-icon-line-height: 15px;
 }
-
-.bili-video-card__info--tit {
-  padding-right: 0 !important;
-  --title-font-size: 14px;
-  --title-line-height: 20px;
-}
-
-/*
-* 视频详情页 *
-*/
 
 /* ----------------------------------------------------
 * ---------------------------------------------------- *
