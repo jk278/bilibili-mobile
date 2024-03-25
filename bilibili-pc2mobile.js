@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.9.1
+// @version            2.9.2
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -233,9 +233,9 @@ body,
   width: 100% !important;
 }
 
-/* 顶栏边距 */
+/* 顶栏边距（右边距减去头像右空隙） */
 .bili-header__bar {
-  padding: 0 15px !important;
+  padding: 0 10px 0 15px !important;
 }
 
 /* 顶栏高度 */
@@ -256,6 +256,11 @@ body,
 }
 
 .left-entry__title {
+  height: var(--header-height) !important;
+}
+
+/* 头像高度 */
+.v-popover-wrap.header-avatar-wrap {
   height: var(--header-height) !important;
 }
 
@@ -312,14 +317,40 @@ body,
   white-space: nowrap;
 }
 
-/* 减弱初始化 left-etry 跳动 */
-.left-entry__title {
-  margin-right: 10px !important;
+/* 头像置右 */
+.v-popover-wrap.header-avatar-wrap {
+  order: 5;
+  margin-left: auto;
 }
 
+/* 剩余元素均分 */
+.v-popover-wrap:not(.header-avatar-wrap) {
+  flex: 1;
+}
+
+/* 肉眼个别微调 */
+.right-entry--message {
+  padding-left: 3px;
+}
+
+/* 顶栏元素间距 */
+.left-entry__title {
+  margin-right: 0px !important;
+}
+
+/* 与头像左空隙对齐 */
 .mini-header__logo {
-  margin-right: 10px !important;
-  display: block !important;
+  margin-right: 7px !important;
+}
+
+/* 禁用主题色重载 */
+svg.mini-header__logo path {
+  fill: var(--brand_blue) !important;
+}
+
+/* 移除“首页”字样 */
+.mini-header__title {
+  display: none !important;
 }
 
 /* -------------------------------------------------- 
