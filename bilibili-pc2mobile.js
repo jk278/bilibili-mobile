@@ -616,6 +616,7 @@ svg.mini-header__logo path {
   background-color: rgb(0, 0, 0);
   opacity: 0;
   transition: opacity 0.6s ease-in;
+  pointer-events: none;
 }
 
 .video-container-v1:has(>.right-container.show):after {
