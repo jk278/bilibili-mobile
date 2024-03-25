@@ -981,7 +981,7 @@ svg line {
 
 /* 按钮组 */
 span.btn-text-inner,
-.primary-btn {
+.storage-box {
   display: none !important;
 }
 
