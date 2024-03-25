@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.8
+// @version            2.9
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -312,6 +312,16 @@ body,
   white-space: nowrap;
 }
 
+/* 减弱初始化 left-etry 跳动 */
+.left-entry__title {
+  margin-right: 10px !important;
+}
+
+.mini-header__logo {
+  margin-right: 10px !important;
+  display: block !important;
+}
+
 /* -------------------------------------------------- 
  ---------------------- 展开图类 --------------------- 
  -------------------------------------------------- */
@@ -376,7 +386,7 @@ body,
   }
 }
 
-/* 间距 */
+/* 间距（收藏展开图） */
 .favorite-panel-popover__nav .tab-item {
   padding: 0 6px !important;
 }
@@ -531,7 +541,7 @@ body,
   width: 80% !important;
 
   position: fixed !important;
-  z-index: 2;
+  z-index: 76;
   background: white;
   transition: transform .6s ease-in;
   transform: translateX(calc(100% + 1px));
@@ -881,13 +891,14 @@ body,
   position: fixed;
   bottom: 132px;
   right: 0;
-  z-index: 3;
+  z-index: 77;
   padding: 7px 7px 7px 8px;
   border-radius: 25% 0 0 25%;
   background: inherit;
   border: 1px solid var(--line_regular);
   border-right: none;
-  animation: fadeIn 1s ease-in;
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
   
   svg {
     vertical-align: middle;
@@ -916,13 +927,14 @@ svg line {
   position: fixed;
   bottom: 78px;
   right: 0;
-  z-index: 3;
+  z-index: 77;
   padding: 7px 7px 8px 9px;
   border-radius: 25% 0 0 25%;
   background: inherit;
   border: 1px solid var(--line_regular);
   border-right: none;
-  animation: fadeIn 1s ease-in;
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
 
   svg {
     vertical-align: middle;
@@ -940,8 +952,8 @@ svg line {
   display: block !important;
   border: 1px solid var(--line_regular);
   border-right: none;
-  animation: fadeIn 1s ease-in;
-}
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
 
 .flexible-roll-btn-inner svg {
   stroke: currentColor;
