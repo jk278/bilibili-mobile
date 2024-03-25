@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.9
+// @version            2.9.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -43,7 +43,7 @@
 
   function addPlaysInline () {
     const videoElement = document.querySelector('.bpx-player-video-wrap>video')
-    videoElement.playsInline = true
+    if (videoElement) videoElement.playsInline = true
   }
 
   function controlSidebar () {
@@ -964,9 +964,10 @@ svg line {
   opacity: 0;
   animation: fadeIn 1s ease-in forwards;
 
-.flexible-roll-btn-inner svg {
-  stroke: currentColor;
-  stroke-width: 0.1px;
+  .flexible-roll-btn-inner svg {
+    stroke: currentColor;
+    stroke-width: 0.1px;
+  }
 }
 
 /* 刷新按钮的位置 */
@@ -981,7 +982,7 @@ svg line {
 
 /* 按钮组 */
 span.btn-text-inner,
-.storage-box {
+.primary-btn {
   display: none !important;
 }
 
