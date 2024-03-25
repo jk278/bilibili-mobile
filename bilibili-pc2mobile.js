@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.7
+// @version            2.7.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -396,7 +396,7 @@ body,
 /* 推荐块 */
 .right-container {
   position: fixed !important;
-  z-index: 1;
+  z-index: 2;
   background: white;
   transition: transform .5s linear;
   transform: translateX(calc(100% + 5px));
@@ -727,7 +727,7 @@ body,
   position: fixed;
   bottom: 140px;
   right: 0;
-  z-index: 1;
+  z-index: 3;
   padding: 7px 7px 7px 8px;
   border-radius: 25% 0 0 25%;
   background: inherit;
@@ -761,7 +761,7 @@ svg line {
   position: fixed;
   bottom: 86px;
   right: 0;
-  z-index: 1;
+  z-index: 3;
   padding: 7px 7px 8px 9px;
   border-radius: 25% 0 0 25%;
   background: inherit;
@@ -819,7 +819,7 @@ span.btn-text-inner,
   left: 0;
   right: unset !important;
   bottom: 86px !important;
-    /* margin-bottom: 6px;
+  z-index: 1 !important;
 }
 
 /* ----------------------------------------------------
