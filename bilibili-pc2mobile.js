@@ -556,7 +556,7 @@ body,
 
 /* 主视频块 */
 .left-container {
-  --video-height : calc(100vw * 0.5625 + 46px);
+  --video-height : calc(100vw * 0.5625 + 44px);
   padding-top: var(--video-height);
 }
 
