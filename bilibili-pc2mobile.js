@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.6
+// @version            2.7
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -46,7 +46,7 @@
       const toggleSidebar = document.createElement('div')
       toggleSidebar.id = 'toggleSidebar'
       toggleSidebar.innerHTML = `
-    <svg width="26" height="26" viewBox="0 0 50 50">
+    <svg width=50" height="50" viewBox="0 0 50 50">
         <line id="line-1" x1="25" y1="5" x2="25" y2="25" />
         <line id="line-2" x1="25" y1="45" x2="25" y2="25" />
     </svg>
@@ -75,7 +75,7 @@
     const searchbarBtn = document.createElement('div')
     searchbarBtn.id = 'search-fab'
     searchbarBtn.innerHTML = `
-      <svg width="26" height="26" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
       `
     searchbarBtn.addEventListener('click', () => {
       const searchbar = document.querySelector('.center-search-container')
@@ -216,6 +216,11 @@ body,
   pointer-events: none;
 
   a > svg {
+    pointer-events: auto;
+  }
+
+  /* 展开图恢复点击 */
+  .v-popover-content {
     pointer-events: auto;
   }
 }
@@ -383,7 +388,8 @@ body,
 }
 
 /* 分内容块 */
-.video-container-v1>div {
+.left-container,
+.right-container {
   width: 100% !important;
 }
 
@@ -480,6 +486,21 @@ body,
 }
 
 /* 弹幕行 */
+.bpx-player-sending-bar {
+  height: 44px !important;
+}
+
+.bpx-player-dm-input {
+  height: 26px !important;
+}
+
+/* 弹幕输入栏外 */
+.bpx-player-video-inputbar {
+  height: 26px !important;
+  border-radius: 13px !important;
+}
+
+/* 非主要元素 */
 .bpx-player-video-info,
 .bpx-player-dm-hint {
   display: none !important;
@@ -490,7 +511,27 @@ body,
 }
 
 .bpx-player-video-inputbar-wrap {
-  width: 0 !important;
+  width: 100% !important;
+}
+
+/* 不输入隐藏发送 */
+.bpx-player-dm-btn-send {
+  display: none !important;
+}
+
+.bpx-player-video-inputbar-wrap:has(>input:focus) + .bpx-player-dm-btn-send {
+  display: flex !important;
+}
+
+.bpx-player-dm-btn-send {
+  border-radius: 0 13px 13px 0 !important;
+  height: 26px !important;
+  min-width: 50px !important;
+  width: 50px !important;
+}
+
+.bui-button-blue {
+  min-width: 50px !important;
 }
 
 /* 点赞投币行 */
@@ -673,33 +714,46 @@ body,
 * ---------------------------------------------------- *
  ----------------------------------------------------- */
 
+/* svg 大小 */
+#toggleSidebar svg,
+#search-fab svg,
+.flexible-roll-btn-inner svg {
+  width: 26px;
+  height: 26px;
+}
+
 /* 侧栏按钮 */
 #toggleSidebar {
   position: fixed;
   bottom: 140px;
   right: 0;
   z-index: 1;
-  padding: 9px 6px 10px 13px;
-  border-radius: 50% 0 0 50%;
-  background: rgba(0, 174, 236, .4);
+  padding: 7px 7px 7px 8px;
+  border-radius: 25% 0 0 25%;
+  background: inherit;
+  border: 1px solid var(--line_regular);
+  border-right: none;
+  
+  svg {
+    vertical-align: middle;
+  }
 }
 
 svg line {
   stroke: currentColor;
   stroke-width: 6;
   stroke-linecap: round;
-  /* drop-shadow 属性只需要渲染阴影，而 box-shadow 属性还需要渲染盒子的边框。 */
-  filter:  drop-shadow(0 0 5px rgba(0, 0, 0, .5));
+  /* filter:  drop-shadow 属性只需要渲染阴影，而 box-shadow 属性还需要渲染盒子的边框。 */
   transition: transform .5s linear;
   transform-origin: 50% 50%;
 }
 
 .arrow #line-1 {
-  transform: rotate(-30deg);
+  transform: rotate(-30deg) translateX(3px);
 }
 
 .arrow #line-2 {
-  transform: rotate(30deg);
+  transform: rotate(30deg) translateX(3px);
 }
 
 /* 搜索按钮 */
@@ -708,29 +762,31 @@ svg line {
   bottom: 86px;
   right: 0;
   z-index: 1;
-  padding: 9px 9px 10px 10px;
-  border-radius: 50% 0 0 50%;
-  background: rgba(0, 174, 236, .4);
-}
+  padding: 7px 7px 8px 9px;
+  border-radius: 25% 0 0 25%;
+  background: inherit;
+  border: 1px solid var(--line_regular);
+  border-right: none;
 
-#search-fab svg {
-  vertical-align: middle;
+  svg {
+    vertical-align: middle;
+  }
 }
 
 /* 刷新按钮 */
 .flexible-roll-btn-inner {
   color: inherit !important;
   background: none !important;
-  padding: 9px 9px 10px 10px !important;
-  border-radius: 50% 0 0 50% !important;
-  background: rgba(0, 174, 236, .4) !important;
+  padding: 7px 8px 7px 7px !important;
+  border-radius: 25% 0 0 25% !important;
+  background: white !important;
   height: auto !important;
   display: block !important;
+  border: 1px solid var(--line_regular);
+  border-right: none;
 }
 
 .flexible-roll-btn-inner svg {
-  width: 26px;
-  height: 26px;
   stroke: currentColor;
   stroke-width: 0.1px;
 }
@@ -748,6 +804,22 @@ svg line {
 span.btn-text-inner,
 .primary-btn {
   display: none !important;
+}
+
+/* 返回顶部按钮 */
+.back-to-top {
+  border-radius: 0 25% 25% 0 !important;
+  border-left: 0 !important;
+  margin-bottom: 0 !important;
+  width: 42px !important;
+}
+
+/* 回顶按钮的位置 */
+.fixed-sidenav-storage {
+  left: 0;
+  right: unset !important;
+  bottom: 86px !important;
+    /* margin-bottom: 6px;
 }
 
 /* ----------------------------------------------------
