@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.9.2
+// @version            2.9.3
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
