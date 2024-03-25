@@ -349,8 +349,16 @@ body,
 }
 
 /* 动态展开图 */
+.dynamic-panel-popover {
+  max-width: calc(100vw - 30px);
+}
+
 .dynamic-video-item {
-  margin-right: 15px;
+  margin-right: 0 !important;
+}
+
+.header-dynamic-list-item {
+  padding: 5px !important;
 }
 
 .header-dynamic__box--center {
@@ -361,6 +369,7 @@ body,
   top: 0 !important;
   margin-bottom: 0  !important;
   width: unset !important;
+  flex: 1;
 
   .cover {
     width: unset !important;
