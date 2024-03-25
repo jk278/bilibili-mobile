@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.7.1
+// @version            2.8
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -21,9 +21,10 @@
   initElementStyle()
 
   waitDOMContentLoaded(() => {
+    controlHeaderClick()
+    addPlaysInline()
     controlSidebar()
     controlSearchbar()
-    controlTopMenu()
   })
 
   // DOM 加载完后
@@ -38,6 +39,11 @@
       viewport.setAttribute('content', 'width=device-width, initial-scale=1.0')
       document.head.appendChild(viewport)
     }
+  }
+
+  function addPlaysInline () {
+    const videoElement = document.querySelector('.bpx-player-video-wrap>video')
+    videoElement.playsInline = true
   }
 
   function controlSidebar () {
@@ -90,34 +96,84 @@
     document.body.appendChild(searchbarBtn)
   }
 
-  // 子元素先禁止，再启用一半
-  function controlTopMenu () {
-    if (!window.location.href.startsWith('https://www.bilibili.com/video')) {
-      const leftEntry = document.querySelector('.left-entry')
-      leftEntry.classList.add('show-button')
-      leftEntry.addEventListener('click', function (event) {
-        if (event.target === leftEntry) {
-          leftEntry.classList.add('show-panel')
-          const popoverWrap = document.querySelector('.v-popover-wrap')
-          const arrow = document.querySelector('.mini-header__arrow')
-          if (!arrow.classList.contains('arrow-up')) {
-            popoverWrap.dispatchEvent(new MouseEvent('mouseenter', {
-              bubbles: true,
-              cancelable: true,
-              view: window
-            }))
-            arrow.classList.add('arrow-up')
-          } else {
-            popoverWrap.dispatchEvent(new MouseEvent('mouseleave', {
-              bubbles: true,
-              cancelable: true,
-              view: window
-            }))
-            arrow.classList.remove('arrow-up')
-            leftEntry.classList.remove('show-panel')
-          }
+  // 接管顶部点击事件
+  function controlHeaderClick () {
+    const overlay = document.createElement('div')
+    overlay.id = 'overlay'
+    document.body.appendChild(overlay)
+    overlay.addEventListener('click', handleClick)
+
+    let storedElement = null
+    let isMouseEntered = false
+
+    let clickTimer = null
+    let clickCount = 0
+
+    function handleClick (event) {
+      clickCount++
+
+      if (clickTimer) {
+        clearTimeout(clickTimer)
+        clickTimer = null
+      }
+
+      if (clickCount === 1) {
+        clickTimer = setTimeout(function () {
+          // 如果 100ms 内没有第二次点击，则执行操作 A
+          onceClick()
+          clickCount = 0
+        }, 250)
+      } else {
+        // 如果 100ms 内有第二次点击，则执行操作 B
+        twiceClick()
+        clickCount = 0
+      }
+
+      function onceClick () {
+        const x = event.clientX
+        const y = event.clientY
+        // const startTime = performance.now()
+
+        if (isMouseEntered) {
+          simulateMouseLeave(storedElement)
+          isMouseEntered = false
+        } else {
+          overlay.style.display = 'none'
+          const element = document.elementFromPoint(x, y)
+          simulateMouseEnter(element)
+          isMouseEntered = true
+          storedElement = element
         }
-      }, false)
+
+        overlay.style.display = 'block'
+        // console.log('执行时间：', performance.now() - startTime)
+      }
+
+      function twiceClick () {
+        const x = event.clientX
+        const y = event.clientY
+        overlay.style.display = 'none'
+        const element = document.elementFromPoint(x, y)
+        simulateClick(element)
+
+        overlay.style.display = 'block'
+        // 是否设置 isMouseEntered = false ？
+      }
+    }
+
+    function simulateMouseEnter (element) {
+      const event = new MouseEvent('mouseenter', { bubbles: true, view: window })
+      element.dispatchEvent(event)
+    }
+
+    function simulateMouseLeave (element) {
+      const event = new MouseEvent('mouseleave', { bubbles: true, view: window })
+      element.dispatchEvent(event)
+    }
+
+    function simulateClick (element) {
+      const event = new MouseEvent('click', { bubbles: true, view: window })
+      element.dispatchEvent(event)
     }
   }
 
@@ -134,6 +190,17 @@ body {
   background: white !important;
 
   --header-height: 48px;
+}
+
+/* 顶栏点击遮罩层 */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  background-color: transparent;
+  z-index: 1002;
 }
 
 /* 双列视频 */
@@ -181,6 +248,17 @@ body,
   height: var(--header-height) !important;
 }
 
+/* 顶部按钮高度 */
+.entry-title,
+.right-entry,
+.mini-header__logo {
+  max-height: var(--header-height);
+}
+
+.left-entry__title {
+  height: var(--header-height) !important;
+}
+
 /* 顶栏高度补偿：HTML初始加载的顶栏高度留空，若修改则局部跳动，
    视频页非 fixed 布局，提前减去变化后的差值，而不修改顶栏外框 */
 
@@ -211,46 +289,7 @@ body,
   margin: 0 !important;
 }
 
-/* 点击展开 */
-.left-entry .v-popover-wrap {
-  pointer-events: none;
-
-  a > svg {
-    pointer-events: auto;
-  }
-
-  /* 展开图恢复点击 */
-  .v-popover-content {
-    pointer-events: auto;
-  }
-}
-
-/* 展开图 */
-.bili-header-channel-panel {
-  width: calc(100vw - 30px) !important;
-  padding: 5px 0 !important;
-  display: none !important;
-}
-
-.left-entry.show-panel .bili-header-channel-panel {
-  display: flex !important;
-}
-
-/* 视频页隐藏展开图相关 */
-.mini-header__title {
-  display: none !important;
-}
-
-.left-entry.show-button .mini-header__title {
-  display: block !important;
-} 
-
-.channel-panel__column {
-  width: 100% !important;
-  flex: 1;
-  padding: 0 !important;
-}
-
+/* 顶栏右侧图标 */
 .right-entry {
   flex: 1;
   min-width: 0;
@@ -258,7 +297,11 @@ body,
   justify-content: space-evenly;
 }
 
-/* 头像 */
+.right-entry > * {
+  animation: fadeIn 1s ease-in;
+}
+
+/* 头像图表边距 */
 .header-avatar-wrap {
   padding-right: 0 !important;
 }
@@ -267,6 +310,97 @@ body,
 .left-entry__title,
 .dm.item {
   white-space: nowrap;
+}
+
+/* -------------------------------------------------- 
+ ---------------------- 展开图类 --------------------- 
+ -------------------------------------------------- */
+
+.v-popover {
+  position: fixed !important;
+  top: var(--header-height) !important;
+  margin: 0 !important;
+  max-width: calc(100vw - 30px);
+  padding: 5px 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+}
+
+/* 分类展开图 */
+.bili-header-channel-panel {
+  width: calc(100vw - 30px) !important;
+  padding: 5px 0 !important;
+}
+
+.channel-panel__column {
+  width: 100% !important;
+  flex: 1;
+  padding: 0 !important;
+}
+
+/* 动态展开图 */
+.dynamic-video-item {
+  margin-right: 15px;
+}
+
+.header-dynamic__box--center {
+  max-width: 60%;
+}
+
+.header-dynamic__box--right {
+  top: 0 !important;
+  margin-bottom: 0  !important;
+  width: unset !important;
+
+  .cover {
+    width: unset !important;
+    height: unset !important;
+  }
+}
+
+/* 收藏展开图 */
+.favorite-panel-popover {
+  width: calc(100vw - 30px) !important;
+}
+
+.favorite-panel-popover__nav {
+  max-width: 25%;
+}
+
+.header-fav-card__image {
+  max-width: 40%;
+
+  picture {
+    max-width: 100%;
+    height: 100% !important;
+  }
+}
+
+/* 间距 */
+.favorite-panel-popover__nav .tab-item {
+  padding: 0 6px !important;
+}
+
+.header-fav-card {
+  padding: 6px !important;
+}
+
+.favorite-panel-popover__nav {
+  margin-top: 6px !important;
+}
+
+.history-panel-popover {
+  width: calc(100vw - 30px) !important;
+}
+
+/* 移除头像大图 */
+.header-entry-avatar {
+  display: none !important;
+}
+
+/* 关闭头像动画 */
+.header-entry-mini {
+  animation: unset !important;
 }
 
 /* 移除次要入口 */
@@ -384,34 +518,36 @@ body,
 /* 主体内容块（减去顶栏高度补偿） */
 .video-container-v1 {
   min-width: 0 !important;
-  top: calc(var(--header-height) - 64px - 1px);
+  top: calc(var(--header-height) - 64px);
 }
 
-/* 分内容块 */
-.left-container,
-.right-container {
+/* 视频块（宽度） */
+.left-container {
   width: 100% !important;
 }
 
 /* 推荐块 */
 .right-container {
+  width: 80% !important;
+
   position: fixed !important;
   z-index: 2;
   background: white;
-  transition: transform .5s linear;
-  transform: translateX(calc(100% + 5px));
+  transition: transform .6s ease-in;
+  transform: translateX(calc(100% + 1px));
   height: 100%;
   overflow-y: auto;
+  overscroll-behavior: contain;
   
   box-sizing: border-box;
   padding: 10px;
   margin: 0 !important;
-  left: 0;
-  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.5);
+  right: 0;
+  border-left: 1px solid var(--line_regular);
 }
 
 .right-container.show {
-  transform: translateX(0)
+  transform: none;
 }
 
 .right-container-inner {
@@ -468,6 +604,10 @@ body,
   display: none !important;
 }
 
+/* ----------------------------------------------------
+* ---------------------- 播放页组件 ------------------- *
+ ----------------------------------------------------- */
+
 /* 播放器控制区 */
 .bpx-player-control-entity {
   display: block !important;
@@ -488,6 +628,10 @@ body,
 /* 弹幕行 */
 .bpx-player-sending-bar {
   height: 44px !important;
+}
+
+.bpx-player-sending-bar > * {
+  animation: fadeIn 1s ease-in;
 }
 
 .bpx-player-dm-input {
@@ -596,17 +740,12 @@ body,
 .tag-panel .tag {
   margin-bottom: 6px !important;
   opacity: 0;
-  animation: fadeIn 0.5s ease-in-out 3s forwards;
+  animation: fadeIn 1s ease-in 2s forwards;
 }
 
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
+/* ----------------------------------------------------
+* ----------------- 播放组件（评论以下） -------------- *
+ ----------------------------------------------------- */
 
 /* 固定评论栏 */
 .main-reply-box {
@@ -617,8 +756,19 @@ body,
   background: white;
   width: 100%;
   padding: 8px 12px;
-  border-top: 1px #ccc solid;
+  border-top: 1px solid var(--line_regular);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
+}
+
+@fadeIn {
+  form {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* 移除原底部评论栏 */
@@ -646,12 +796,14 @@ body,
   height: 26px !important;
   line-height: 26px !important;
   min-height: 26px !important;
+  opacity: 0;
+  animation: fadeIn 4.5s ease-in forwards;
 }
 
 /* 输入展开块 */
-.box-expand {
+.main-reply-box .reply-box .box-expand[data-v-a6daab22] {
   height: 26px;
-  margin-left: 0 !important;
+  margin: 8px 0 0 0;
 }
 
 /* 插入表情图片 */
@@ -670,6 +822,7 @@ body,
 #comment{
   margin-top: 12px !important;
 }
+
 /* 评论导航 */
 .reply-navigation {
   margin-bottom: 0 !important;
@@ -704,7 +857,8 @@ body,
 #bannerAd,
 .reply-notice,
 .ad-report,
-.pop-live-small-mode {
+.pop-live-small-mode,
+#slide_ad {
   display: none !important;
 }
 
@@ -725,7 +879,7 @@ body,
 /* 侧栏按钮 */
 #toggleSidebar {
   position: fixed;
-  bottom: 140px;
+  bottom: 132px;
   right: 0;
   z-index: 3;
   padding: 7px 7px 7px 8px;
@@ -733,6 +887,7 @@ body,
   background: inherit;
   border: 1px solid var(--line_regular);
   border-right: none;
+  animation: fadeIn 1s ease-in;
   
   svg {
     vertical-align: middle;
@@ -759,7 +914,7 @@ svg line {
 /* 搜索按钮 */
 #search-fab {
   position: fixed;
-  bottom: 86px;
+  bottom: 78px;
   right: 0;
   z-index: 3;
   padding: 7px 7px 8px 9px;
@@ -767,6 +922,7 @@ svg line {
   background: inherit;
   border: 1px solid var(--line_regular);
   border-right: none;
+  animation: fadeIn 1s ease-in;
 
   svg {
     vertical-align: middle;
@@ -784,6 +940,7 @@ svg line {
   display: block !important;
   border: 1px solid var(--line_regular);
   border-right: none;
+  animation: fadeIn 1s ease-in;
 }
 
 .flexible-roll-btn-inner svg {
@@ -791,9 +948,10 @@ svg line {
   stroke-width: 0.1px;
 }
 
+/* 刷新按钮的位置 */
 .palette-button-wrap {
   right: 10px !important;
-  bottom: -12px !important;
+  bottom: -20px !important;
 }
 
 .palette-button-wrap.translucent>div[data-v-6640d1cd].flexible-roll-btn {
@@ -806,25 +964,34 @@ span.btn-text-inner,
   display: none !important;
 }
 
-/* 返回顶部按钮 */
+/* 返回顶部按钮（添加渐变） */
+/* 权重：基本设置属性 < transition < animation */
 .back-to-top {
   border-radius: 0 25% 25% 0 !important;
   border-left: 0 !important;
   margin-bottom: 0 !important;
   width: 42px !important;
+
+  visibility: visible !important; 
+  transform: translateX(-100%);
+  transition: transform .5s ease-in-out;
+}
+
+.back-to-top.visible {
+  transform: none;
 }
 
 /* 回顶按钮的位置 */
 .fixed-sidenav-storage {
   left: 0;
   right: unset !important;
-  bottom: 86px !important;
+  bottom: 78px !important;
   z-index: 1 !important;
 }
 
 /* ----------------------------------------------------
 * ---------------------------------------------------- *
-* ---------------------- 动态窗口 -------------------- *
+* ---------------------- 其它窗口 -------------------- *
 * ---------------------------------------------------- *
  ----------------------------------------------------- */
 
