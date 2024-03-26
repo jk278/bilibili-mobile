@@ -711,7 +711,8 @@ svg.mini-header__logo path {
 }
 
 .bpx-player-sending-bar > * {
-  animation: fadeIn 1s ease-in;
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
 }
 
 .bpx-player-dm-input {
