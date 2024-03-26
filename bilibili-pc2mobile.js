@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.9.6
+// @version            2.9.7
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -16,9 +16,14 @@
 (function () {
   'use strict'
   console.log('Bilibili mobile execute!')
+  setInterval(() => {
+    console.log('debug')
+  }, 50)
 
   initViewport()
   initElementStyle()
+
+  controlHeaderImage()
 
   waitDOMContentLoaded(() => {
     controlHeaderClick()
@@ -188,6 +193,81 @@
     function simulateClick (element) {
       const event = new MouseEvent('click', { bubbles: true, view: window })
       element.dispatchEvent(event)
+    }
+  }
+
+  function controlHeaderImage () {
+    const key = 'header-image'
+    const url = 'https://source.unsplash.com/random/840x400'
+    const elementSelector = '.bili-header__banner'
+
+    if (window.location.pathname === '/') {
+      loadImage(key, elementSelector)
+
+      setTimeout(async () => {
+        try {
+          const img = await getImage(url)
+          const base64Data = imageToBase64(img)
+          storeImage(key, base64Data)
+          loadImage(key, elementSelector)
+        } catch (error) {
+          console.error('Failed to get image:', error)
+        }
+      }, 5000)
+    }
+
+    function getImage (url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.crossOrigin = 'Anonymous'
+        img.src = url
+        img.onload = () => resolve(img)
+        img.onerror = reject
+      })
+    }
+
+    function imageToBase64 (img) {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0)
+      return canvas.toDataURL('image/jpeg')
+    }
+
+    function storeImage (key, base64Data) {
+      localStorage.setItem(key, base64Data)
+    }
+
+    function loadImage (key, elementSelector) {
+      const base64Data = localStorage.getItem(key)
+      if (base64Data) {
+        const style = document.createElement('style')
+        style.innerHTML = `
+          ${elementSelector}::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: url(${base64Data});
+            background-size: cover;
+            background-position: center;
+          }
+        `
+        document.head.appendChild(style)
+      } else {
+        // 如果本地存储中不存在图片数据，则从 URL 中获取图片
+        getImage(url).then(img => {
+          const base64Data = imageToBase64(img)
+          storeImage(key, base64Data)
+          loadImage(key, elementSelector)
+        }).catch(error => {
+          console.error('Failed to get image:', error)
+        })
+      }
     }
   }
 
@@ -367,6 +447,18 @@ svg.mini-header__logo path {
 
 /* 移除“首页”字样 */
 .mini-header__title {
+  display: none !important;
+}
+
+/* 移除顶部动图和临时静图 */
+.animated-banner,
+#bili-header-banner-img {
+  display: none !important;
+}
+
+/* 使用 controlHeaderImage 获取随机头图 */
+
+.biliheader__banner {
   display: none !important;
 }
 
