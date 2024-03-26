@@ -620,6 +620,7 @@ svg.mini-header__logo path {
 
 .video-container-v1:has(>.right-container.show):after {
   opacity: 0.5;
+  pointer-events: none;
 }
 
 /* 主视频块 */
