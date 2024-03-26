@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.9.4
+// @version            2.9.5
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -22,7 +22,7 @@
 
   waitDOMContentLoaded(() => {
     controlHeaderClick()
-    if (window) {
+    if (window.location.pathname.startsWith('/video')) {
       addPlaysInline()
       controlSidebar()
     }
@@ -45,6 +45,7 @@
 
   function addPlaysInline () {
     const videoElement = document.querySelector('.bpx-player-video-wrap>video')
+    // 新添加了路径判断，此处预留
     if (videoElement) videoElement.playsInline = true
   }
 
@@ -64,17 +65,23 @@
         toggleSidebar.classList.add('arrow')
         rightContainer.classList.add('show')
       } else {
-        toggleSidebar.classList.remove('arrow')
-        rightContainer.classList.remove('show')
+        closeSidebar()
       }
     })
+
+    function closeSidebar () {
+      toggleSidebar.classList.remove('arrow')
+      rightContainer.classList.remove('show')
+    }
 
     // 若作为两个分列的兄弟元素加入，就会影响页面布局
     document.body.appendChild(toggleSidebar)
 
     const recommendList = document.querySelector('#reco_list')
-    // 只能传递函数引用，不能传递函数执行结果
-    recommendList.addEventListener('click', () => { toggleSidebar.click() })
+    const backdrop = document.querySelector('.video-container-v1') // 伪元素的真实元素
+    // 只能传递函数引用，不能传递函数执行结果 : () => { toggleSidebar.click() }
+    recommendList.addEventListener('click', closeSidebar)
+    backdrop.addEventListener('click', closeSidebar)
   }
 
   function controlSearchbar () {
@@ -187,7 +194,10 @@
  ----------------------------------------------------- */
 
 body {
+  /* 避免评论未加载时显示灰色 */
   background: white !important;
+
+  /* 添加透明 animation 为 Via 预留加载 initViewport 的时间后，刷新加载出现白屏 */
 
   --header-height: 48px;
 }
@@ -620,11 +630,12 @@ svg.mini-header__logo path {
 
 .video-container-v1:has(>.right-container.show):after {
   opacity: 0.5;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
-/* 主视频块 */
+/* 主视频块(视频高度) */
 .left-container {
+  /* 注意：所加高度为弹幕行 */
   --video-height : calc(100vw * 0.5625 + 44px);
   padding-top: var(--video-height);
 }
@@ -1019,6 +1030,7 @@ svg line {
   opacity: 0;
   animation: fadeIn 1s ease-in forwards;
 
+  /* 嵌套忘加右括号 */
   .flexible-roll-btn-inner svg {
     stroke: currentColor;
     stroke-width: 0.1px;
