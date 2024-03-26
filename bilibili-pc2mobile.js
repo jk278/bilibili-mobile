@@ -209,7 +209,6 @@
           const img = await getImage(url)
           const base64Data = imageToBase64(img)
           storeImage(key, base64Data)
-          loadImage(key, elementSelector)
         } catch (error) {
           console.error('Failed to get image:', error)
         }
