@@ -22,8 +22,10 @@
 
   waitDOMContentLoaded(() => {
     controlHeaderClick()
-    addPlaysInline()
-    controlSidebar()
+    if (window) {
+      addPlaysInline()
+      controlSidebar()
+    }
     controlSearchbar()
   })
 
@@ -48,33 +50,31 @@
 
   function controlSidebar () {
     const rightContainer = document.querySelector('.right-container')
-    if (rightContainer) {
-      const toggleSidebar = document.createElement('div')
-      toggleSidebar.id = 'toggleSidebar'
-      toggleSidebar.innerHTML = `
+    const toggleSidebar = document.createElement('div')
+    toggleSidebar.id = 'toggleSidebar'
+    toggleSidebar.innerHTML = `
     <svg width=50" height="50" viewBox="0 0 50 50">
         <line id="line-1" x1="25" y1="5" x2="25" y2="25" />
         <line id="line-2" x1="25" y1="45" x2="25" y2="25" />
     </svg>
           `
 
-      toggleSidebar.addEventListener('click', function () {
-        if (!toggleSidebar.classList.contains('arrow')) {
-          toggleSidebar.classList.add('arrow')
-          rightContainer.classList.add('show')
-        } else {
-          toggleSidebar.classList.remove('arrow')
-          rightContainer.classList.remove('show')
-        }
-      })
+    toggleSidebar.addEventListener('click', function () {
+      if (!toggleSidebar.classList.contains('arrow')) {
+        toggleSidebar.classList.add('arrow')
+        rightContainer.classList.add('show')
+      } else {
+        toggleSidebar.classList.remove('arrow')
+        rightContainer.classList.remove('show')
+      }
+    })
 
-      // 若作为两个分列的兄弟元素加入，就会影响页面布局
-      document.body.appendChild(toggleSidebar)
+    // 若作为两个分列的兄弟元素加入，就会影响页面布局
+    document.body.appendChild(toggleSidebar)
 
-      const recommendList = document.querySelector('#reco_list')
-      // 只能传递函数引用，不能传递函数执行结果
-      recommendList.addEventListener('click', () => { toggleSidebar.click() })
-    }
+    const recommendList = document.querySelector('#reco_list')
+    // 只能传递函数引用，不能传递函数执行结果
+    recommendList.addEventListener('click', () => { toggleSidebar.click() })
   }
 
   function controlSearchbar () {
@@ -526,8 +526,7 @@ svg.mini-header__logo path {
 
 /* 标题 - 字重 */
 .bili-video-card__info--tit > a {
-  font-family: unset !important;
-  font-weight: normal !important;
+  /*font-family: unset !important;*/
 }
 
 /* 小标 */
@@ -787,13 +786,18 @@ svg.mini-header__logo path {
 
 /* 信息块（标题） */
 .video-info-container {
-  height: 70px !important;
+  height: auto !important;
   padding-top: 10px !important;
 }
 
-/* 标题 */
+/* 标题（可两行显示） */
 .video-title {
   font-size: 18px !important;
+
+  white-space: wrap !important;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .video-desc-container {
