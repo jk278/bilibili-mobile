@@ -16,9 +16,9 @@
 (function () {
   'use strict'
   console.log('Bilibili mobile execute!')
-  setInterval(() => {
-    console.log('debug')
-  }, 50)
+  // setInterval(() => {
+  //   console.log('debug')
+  // }, 50)
 
   initViewport()
   initElementStyle()
