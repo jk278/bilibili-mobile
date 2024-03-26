@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.9.5
+// @version            2.9.6
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -77,11 +77,18 @@
     // 若作为两个分列的兄弟元素加入，就会影响页面布局
     document.body.appendChild(toggleSidebar)
 
-    const recommendList = document.querySelector('#reco_list')
-    const backdrop = document.querySelector('.video-container-v1') // 伪元素的真实元素
-    // 只能传递函数引用，不能传递函数执行结果 : () => { toggleSidebar.click() }
-    recommendList.addEventListener('click', closeSidebar)
+    const backdrop = document.querySelector('.left-container') // 伪元素的真实元素
     backdrop.addEventListener('click', closeSidebar)
+    // 只能传递函数引用，不能传递函数执行结果，或 () => { closeSidebar() }
+    // event.stopPropagation() 阻止目标子元素的点击事件默认冒泡到父元素
+
+    // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
+    const recommendLiist = document.getElementById('reco_list')
+    recommendLiist.addEventListener('click', event => {
+      const nextPlay = document.querySelector('.rec-title')
+      nextPlay.contains(event.target) || closeSidebar()
+    }
+    )
   }
 
   function controlSearchbar () {
@@ -193,7 +200,7 @@
 * ---------------------------------------------------- *
  ----------------------------------------------------- */
 
-body {
+ body {
   /* 避免评论未加载时显示灰色 */
   background: white !important;
 
@@ -312,7 +319,7 @@ body,
   justify-content: space-evenly;
 }
 
-.right-entry > * {
+.right-entry>* {
   animation: fadeIn 1s ease-in;
 }
 
@@ -408,13 +415,13 @@ svg.mini-header__logo path {
 
 .header-dynamic__box--right {
   top: 0 !important;
-  margin-bottom: 0  !important;
+  margin-bottom: 0 !important;
   width: unset !important;
   flex: 1;
 
   .cover {
-    width: unset !important;
-    height: unset !important;
+      width: unset !important;
+      height: unset !important;
   }
 }
 
@@ -431,8 +438,8 @@ svg.mini-header__logo path {
   max-width: 40%;
 
   picture {
-    max-width: 100%;
-    height: 100% !important;
+      max-width: 100%;
+      height: 100% !important;
   }
 }
 
@@ -491,7 +498,7 @@ svg.mini-header__logo path {
 * ---------------------- 视频卡片 -------------------- *
  ----------------------------------------------------- */
 
-.container > * {
+.container>* {
   margin-top: 0 !important;
 }
 
@@ -526,8 +533,7 @@ svg.mini-header__logo path {
 }
 
 /* 标题 - 上下距 */
-.bili-video-card__info {
-}
+/* .bili-video-card__info  */
 
 /* 标题 - 左右距 */
 .bili-video-card__info--right {
@@ -535,9 +541,7 @@ svg.mini-header__logo path {
 }
 
 /* 标题 - 字重 */
-.bili-video-card__info--tit > a {
-  /*font-family: unset !important;*/
-}
+/* .bili-video-card__info--tit > a */
 
 /* 小标 */
 .bili-video-card__info--bottom {
@@ -578,11 +582,16 @@ svg.mini-header__logo path {
 .video-container-v1 {
   min-width: 0 !important;
   top: calc(var(--header-height) - 64px);
+  padding: 0 !important;
 }
 
 /* 视频块（宽度） */
 .left-container {
   width: 100% !important;
+
+  /* padding-top 会填充掉主体内容块的 top */
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 /* 推荐块 */
@@ -594,10 +603,11 @@ svg.mini-header__logo path {
   background: white;
   transition: transform .6s ease-in;
   transform: translateX(calc(100% + 1px));
-  height: 100%;
+  height: calc(100% - var(--header-height));
   overflow-y: auto;
+  /* 避免到达边界后的滚动事件穿透 */
   overscroll-behavior: contain;
-  
+
   box-sizing: border-box;
   padding: 10px;
   margin: 0 !important;
@@ -613,8 +623,8 @@ svg.mini-header__logo path {
   padding: 0 !important;
 }
 
-/* 推荐块蒙版 */
-.video-container-v1:has(>.right-container):after {
+/* 推荐块蒙版（加到左视频块才不会被冒泡事件影响） */
+.video-container-v1:has(>.right-container) .left-container:after {
   content: '';
   position: absolute;
   top: 0;
@@ -628,15 +638,40 @@ svg.mini-header__logo path {
   pointer-events: none;
 }
 
-.video-container-v1:has(>.right-container.show):after {
+.video-container-v1:has(>.right-container.show) .left-container:after {
   opacity: 0.5;
   pointer-events: auto;
+}
+
+/* UP信息 */
+.upinfo-btn-panel .default-btn {
+  font-size: 12px !important;
+}
+
+.new-charge-btn {
+  max-width: 35%;
+}
+
+.follow-btn {
+  max-width: 150px !important;
+}
+
+/* UP头像 */
+.bili-avatar,
+.up-avatar-wrap {
+  width: 38px !important;
+  height: 38px !important;
+}
+
+/* 推荐视频图块 */
+#reco_list .card-box .pic-box {
+  max-width: 50%;
 }
 
 /* 主视频块(视频高度) */
 .left-container {
   /* 注意：所加高度为弹幕行 */
-  --video-height : calc(100vw * 0.5625 + 44px);
+  --video-height: calc(100vw * 0.5625 + 44px);
   padding-top: var(--video-height);
 }
 
@@ -680,7 +715,8 @@ svg.mini-header__logo path {
 }
 
 /* 移除小窗等按钮 */
-.fixed-sidenav-storage > *:nth-child(1), .fixed-sidenav-storage > *:nth-child(2) {
+.fixed-sidenav-storage>*:nth-child(1),
+.fixed-sidenav-storage>*:nth-child(2) {
   display: none !important;
 }
 
@@ -710,7 +746,7 @@ svg.mini-header__logo path {
   height: 44px !important;
 }
 
-.bpx-player-sending-bar > * {
+.bpx-player-sending-bar>* {
   opacity: 0;
   animation: fadeIn 1s ease-in forwards;
 }
@@ -744,7 +780,7 @@ svg.mini-header__logo path {
   display: none !important;
 }
 
-.bpx-player-video-inputbar-wrap:has(>input:focus) + .bpx-player-dm-btn-send {
+.bpx-player-video-inputbar-wrap:has(>input:focus)+.bpx-player-dm-btn-send {
   display: flex !important;
 }
 
@@ -829,6 +865,12 @@ svg.mini-header__logo path {
   animation: fadeIn 1s ease-in 2s forwards;
 }
 
+/* 投票卡片（ 暂定 ） */
+.top-vote-card-left {
+  width: unset !important;
+  max-width: unset !important;
+}
+
 /* ----------------------------------------------------
 * ----------------- 播放组件（评论以下） -------------- *
  ----------------------------------------------------- */
@@ -848,12 +890,13 @@ svg.mini-header__logo path {
   animation: fadeIn 1s ease-in forwards;
 }
 
-@fadeIn {
+@keyframes fadeIn {
   form {
-    opacity: 0;
+      opacity: 0;
   }
+
   to {
-    opacity: 1;
+      opacity: 1;
   }
 }
 
@@ -905,7 +948,7 @@ svg.mini-header__logo path {
 }
 
 /* 评论块 */
-#comment{
+#comment {
   margin-top: 12px !important;
 }
 
@@ -919,7 +962,7 @@ svg.mini-header__logo path {
   padding: 12px 0 0 36px !important;
 }
 
-.root-reply-avatar, 
+.root-reply-avatar,
 .root-reply-avatar .bili-avatar {
   width: 36px !important;
   height: 36px !important;
@@ -975,9 +1018,9 @@ svg.mini-header__logo path {
   border-right: none;
   opacity: 0;
   animation: fadeIn 1s ease-in forwards;
-  
+
   svg {
-    vertical-align: middle;
+      vertical-align: middle;
   }
 }
 
@@ -1013,7 +1056,7 @@ svg line {
   animation: fadeIn 1s ease-in forwards;
 
   svg {
-    vertical-align: middle;
+      vertical-align: middle;
   }
 }
 
@@ -1033,8 +1076,8 @@ svg line {
 
   /* 嵌套忘加右括号 */
   .flexible-roll-btn-inner svg {
-    stroke: currentColor;
-    stroke-width: 0.1px;
+      stroke: currentColor;
+      stroke-width: 0.1px;
   }
 }
 
@@ -1044,7 +1087,7 @@ svg line {
   bottom: -20px !important;
 }
 
-.palette-button-wrap.translucent>div[data-v-6640d1cd].flexible-roll-btn {
+.palette-button-wrap.translucent>.flexible-roll-btn.flexible-roll-btn {
   opacity: 1 !important;
 }
 
@@ -1062,7 +1105,7 @@ span.btn-text-inner,
   margin-bottom: 0 !important;
   width: 42px !important;
 
-  visibility: visible !important; 
+  visibility: visible !important;
   transform: translateX(-100%);
   transition: transform .5s ease-in-out;
 }
@@ -1099,7 +1142,7 @@ span.btn-text-inner,
 .bili-mini-login-right-wp * {
   max-width: 80vw;
 }
-        `
+    `
     const style = document.createElement('style')
     style.textContent = initialInsertStyle
 
