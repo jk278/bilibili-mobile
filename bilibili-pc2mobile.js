@@ -2,7 +2,7 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.0
+// @version            3.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
@@ -837,8 +837,9 @@ svg.mini-header__logo path {
   display: none !important;
 }
 
-/* 窄屏不隐藏控制条 */
-.bpx-player-control-entity {
+/* 窄屏不隐藏控制条和阴影 */
+.bpx-player-control-entity,
+.bpx-player-control-mask {
   display: block !important;
 }
 
@@ -852,7 +853,12 @@ svg.mini-header__logo path {
 .bpx-player-control-bottom-left,
 .bpx-player-control-bottom-right {
   flex: unset !important;
-  min-width: 0;
+}
+
+/* 全屏时 */
+.bpx-player-container .bpx-player-control-bottom-left,
+.bpx-player-container .bpx-player-control-bottom-right {
+  min-width: 0 !important;
 }
 
 /* 清晰度 */
@@ -921,15 +927,22 @@ svg.mini-header__logo path {
 }
 
 /* 全屏控制栏 */
-.bpx-player-container .bpx-player-control-bottom-left,
-.bpx-player-container .bpx-player-control-bottom-right {
-  min-width: 0 !important;
-}
-
 .bpx-player-control-bottom-center .bpx-player-sending-bar {
   padding-right: 6px !important;
   height: 24px !important;
 }
+
+/* 存在章节时 */
+.bpx-player-ctrl-viewpoint {
+  margin: 0 !important;
+  width: 
+}
+
+.bpx-player-ctrl-viewpoint-text {
+  width: 44px !important;
+  text-overflow: unset !important;
+}
+
 /* ----------------------------------------------------
 * ----------------------- 弹幕行 ---------------------- *
  ----------------------------------------------------- */
