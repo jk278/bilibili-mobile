@@ -19,8 +19,8 @@
  * 使用此脚本，需在手机上打开电脑版网页 www.bilibili.com，且已完成初始配置：
  * Via 等轻浏览器 修改网站独立 UA 为 Windows 或 MacOS，但不要开电脑模式
  * Firefox for Android 下载扩展 Header Editor 并添加两条规则：
-    ① 修改请求头 ------ 域名 ------ << 匹配规则 >> ------ 名称 : user-agent ------ 内容 : Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0
-    ② 其中，规则一 : www.bilibili.com；规则二 : upos-sz-mirrorali.bilivideo.com
+    ① 修改请求头 ------ 正则表达式 ------ << 匹配规则 >> ------ 名称: user-agent ------ 内容: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0
+    ② 其中，规则一:  ^https://www\.bilibili\.com/.*  规则二:  ^https://.*\.bilivideo\.com/.*
  * Safari 浏览器 直接打开电脑模式即可
  */
 
@@ -202,6 +202,7 @@
     }
   }
 
+  // 控制首页头图函数
   function controlHeaderImage () {
     const key = 'header-image'
     const url = 'https://source.unsplash.com/random/840x400'
@@ -276,6 +277,7 @@
     }
   }
 
+  // 增加视频加载数量函数
   function increaseVideoLoadSize () {
     const origFetch = window.fetch
     window.fetch = function (input, init) {
@@ -296,6 +298,7 @@
     document.head.appendChild(style)
   }
 
+  // 滚动隐藏函数
   function scrollToHidden () {
     const leftContainer = document.querySelector('.left-container')
 
@@ -308,7 +311,7 @@
         leftContainer.classList.add('scroll-hidden')
         lastScrollTop = currentScrollTop
       } else if ((currentScrollTop - lastScrollTop) < -scrollThreshold ||
-       currentScrollTop === 0) {
+       currentScrollTop < 100) {
         leftContainer.classList.remove('scroll-hidden')
         lastScrollTop = currentScrollTop
       }
@@ -374,6 +377,10 @@ body,
   width: 100% !important;
 }
 
+/* -------------------------------------------------- 
+ ------------------------ 顶栏 ----------------------- 
+ -------------------------------------------------- */
+
 /* 顶栏边距（右边距减去头像右空隙） */
 .bili-header__bar {
   padding: 0 10px 0 15px !important;
@@ -385,10 +392,11 @@ body,
 }
 
 /* 视频页顶栏高度 */
-.header-v3 div#biliMainHeader,
 .header-v3 #biliMainHeader .bili-header .mini-header {
   height: var(--header-height) !important;
 }
+
+/* 保留 #biliMainHeader 内联初始高度 64px */
 
 /* 顶部按钮高度 */
 .entry-title,
@@ -406,8 +414,8 @@ body,
   height: var(--header-height) !important;
 }
 
-/* 顶栏高度补偿：HTML初始加载的顶栏高度留空，若修改则局部跳动，
-   视频页非 fixed 布局，提前减去变化后的差值，而不修改顶栏外框 */
+/* 顶栏高度：HTML 初始加载时，biliMainHeader 已有内联高度，
+   保留顶栏外框（biliMainHeader）高度，修改其它元素 */
 
 /* 不影响结果 */
 #biliMainHeader .bili-header {
@@ -626,7 +634,7 @@ svg.mini-header__logo path {
 }
 
 /* ----------------------------------------------------
-* ---------------------- 视频卡片 -------------------- *
+* --------------------- 主页视频卡片 ------------------- *
  ----------------------------------------------------- */
 
 .container>* {
@@ -713,6 +721,8 @@ svg.mini-header__logo path {
 .video-container-v1 {
   min-width: 0 !important;
   padding: 0 !important;
+  /* 顶栏高度减 #biliMainHeader 保留高度 */
+  top: calc(var(--header-height) - 64px );
 }
 
 /** --------------------------------------------------------
@@ -720,16 +730,16 @@ svg.mini-header__logo path {
  * ---------------------------------------------------------
  */
 
-/* 主视频块(视频高度) */
+/* 主视频块(视频高度加顶栏初始高度减顶栏减顶栏高度) */
 .left-container {
-  /* 注意：所加高度为弹幕行 */
   --video-height: calc(100vw * 0.5625);
+  --dm-row-height: 44px;
 }
 
 /* 视频块（宽度） */
 .left-container {
   /* 移动 Safari 百分比宽高自动考虑边框和填充 */
-  padding: var(--video-height) 10px 0;
+  padding: calc(var(--video-height) + var(--dm-row-height)) 10px 0;
   box-sizing: border-box;
   width: 100% !important;
 }
@@ -817,13 +827,15 @@ svg.mini-header__logo path {
   z-index: 1;
 }
 
-#bilibili-player-placeholder-bottom {
-  display: none !important;
+/* 弹幕行预加载灰块 */
+.bpx-player-sending-bar-left,
+.bpx-player-sending-bar-right {
+  display: none;
 }
 
 /* 弹幕行高度 */
 .bpx-player-sending-bar {
-  height: 44px !important;
+  height: var(--dm-row-height) !important;
 }
 
 .bpx-player-sending-bar>* {
@@ -839,7 +851,47 @@ svg.mini-header__logo path {
 .bpx-player-video-inputbar {
   height: 26px !important;
   border-radius: 13px !important;
+
+  min-width: 0 !important;
 }
+
+.bpx-player-video-inputbar-wrap {
+  width: 100% !important;
+}
+
+/* 不输入隐藏发送 */
+.bpx-player-dm-btn-send {
+  display: none !important;
+}
+
+.bpx-player-video-inputbar-wrap:has(>input:focus)+.bpx-player-dm-btn-send {
+  display: flex !important;
+}
+
+.bpx-player-dm-btn-send {
+  border-radius: 0 13px 13px 0 !important;
+  height: 26px !important;
+  min-width: 50px !important;
+  width: 50px !important;
+}
+
+.bui-button-blue {
+  min-width: 50px !important;
+}
+
+/* 观看人数 */
+.bpx-player-video-info {
+  margin-right: 6px !important;
+}
+
+/* 弹幕数量、弹幕礼仪 */
+.bpx-player-video-info-divide,
+.bpx-player-video-info-dm,
+.bpx-player-dm-hint {
+  display: none !important;
+}
+
+/* 播放组件在下面 */
 
 /** --------------------------------------------------------
  * ----------------------- 推荐块 --------------------------
@@ -924,38 +976,37 @@ svg.mini-header__logo path {
 * ---------------------- 播放页组件 ------------------- *
  ----------------------------------------------------- */
 
-/* 非主要元素 */
-.bpx-player-video-info,
-.bpx-player-dm-hint {
-  display: none !important;
+ #viewbox_report {
 }
 
-.bpx-player-video-inputbar {
-  min-width: 0 !important;
+/* 信息块（标题） */
+.video-info-container {
+  height: auto !important;
+  padding-top: 0 !important;
 }
 
-.bpx-player-video-inputbar-wrap {
-  width: 100% !important;
+/* 标题（可两行显示） */
+.video-title {
+  font-size: 18px !important;
+
+  white-space: wrap !important;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+
+  /* 去除折叠时的 show-more 按钮 margin */
+  margin-right: 0 !important;
 }
 
-/* 不输入隐藏发送 */
-.bpx-player-dm-btn-send {
-  display: none !important;
+.show-more {
+  top: unset !important;
+  transform: none !important;
+  bottom: 4px;
+  right: 4px !important;
 }
 
-.bpx-player-video-inputbar-wrap:has(>input:focus)+.bpx-player-dm-btn-send {
-  display: flex !important;
-}
-
-.bpx-player-dm-btn-send {
-  border-radius: 0 13px 13px 0 !important;
-  height: 26px !important;
-  min-width: 50px !important;
-  width: 50px !important;
-}
-
-.bui-button-blue {
-  min-width: 50px !important;
+.video-desc-container {
+  margin: 10px 0 !important;
 }
 
 /* 点赞投币行 */
@@ -994,36 +1045,6 @@ svg.mini-header__logo path {
 .resizable-component {
   width: 100% !important;
   left: 0 !important;
-}
-
-/* 信息块（标题） */
-.video-info-container {
-  height: auto !important;
-  padding-top: 10px !important;
-}
-
-/* 标题（可两行显示） */
-.video-title {
-  font-size: 18px !important;
-
-  white-space: wrap !important;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-
-  /* 去除折叠时的 show-more 按钮 margin */
-  margin-right: 0 !important;
-}
-
-.show-more {
-  top: unset !important;
-  transform: none !important;
-  bottom: 4px;
-  right: 4px !important;
-}
-
-.video-desc-container {
-  margin: 10px 0 !important;
 }
 
 /* 标签 */
