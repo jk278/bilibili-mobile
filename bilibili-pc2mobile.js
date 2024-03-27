@@ -2,16 +2,18 @@
 // @name               Bilibili PC to Mobile
 // @name:zh-CN         bilibili 移动端（桌面版）
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            2.9.9
+// @version            3.0
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在手机上看 b 站桌面版网页
 // @author             jk278
 // @license            MIT
 // @match              *://www.bilibili.com/*
-// @grant              unsafeWindow
+// @grant              none
 // @run-at             document-start
 // @icon               https://www.bilibili.com/favicon.ico
 // ==/UserScript==
+
+// @grant none 表现全局作用域运行，而不在隔离沙盒内使用特定 API
 
 /**
  * 使用此脚本，需在手机上打开电脑版网页 www.bilibili.com，且已完成初始配置：
@@ -26,9 +28,8 @@
   'use strict'
   console.log('Bilibili mobile execute!')
 
-  // eslint-disable-next-line no-undef, no-void
-  const _unsafeWindow = /* @__PURE__ */ (() => typeof unsafeWindow !== 'undefined' ? unsafeWindow : void 0)()
-  const window = _unsafeWindow
+  // const _unsafeWindow = /* @__PURE__ */ (() => typeof window !== 'undefined' ? window : undefined)() // 立即执行表达式只调用一次
+  // 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
 
   initViewport()
   initElementStyle()
@@ -40,6 +41,7 @@
     if (window.location.pathname.startsWith('/video')) {
       addPlaysInline()
       controlSidebar()
+      scrollToHidden()
     }
 
     controlSearchbar()
@@ -275,8 +277,8 @@
   }
 
   function increaseVideoLoadSize () {
-    const origFetch = _unsafeWindow.fetch
-    _unsafeWindow.fetch = function (input, init) {
+    const origFetch = window.fetch
+    window.fetch = function (input, init) {
       if (typeof input === 'string' && input.includes('api.bilibili.com') && input.includes('feed/rcmd') && init.method.toUpperCase() === 'GET') {
         input = input.replace('&ps=12&', '&ps=30&')
       }
@@ -294,7 +296,24 @@
     document.head.appendChild(style)
   }
 
-  increaseVideoLoadSize()
+  function scrollToHidden () {
+    const leftContainer = document.querySelector('.left-container')
+
+    let lastScrollTop = 0
+    const scrollThreshold = 100 // 滚动距离阈值
+
+    window.addEventListener('scroll', () => {
+      const currentScrollTop = window.scrollY
+      if ((currentScrollTop - lastScrollTop) > scrollThreshold) {
+        leftContainer.classList.add('scroll-hidden')
+        lastScrollTop = currentScrollTop
+      } else if ((currentScrollTop - lastScrollTop) < -scrollThreshold ||
+       currentScrollTop === 0) {
+        leftContainer.classList.remove('scroll-hidden')
+        lastScrollTop = currentScrollTop
+      }
+    })
+  }
 
   function initElementStyle () {
     /* css */
@@ -704,7 +723,7 @@ svg.mini-header__logo path {
 /* 主视频块(视频高度) */
 .left-container {
   /* 注意：所加高度为弹幕行 */
-  --video-height: calc(100vw * 0.5625 + 44px);
+  --video-height: calc(100vw * 0.5625);
 }
 
 /* 视频块（宽度） */
@@ -714,6 +733,11 @@ svg.mini-header__logo path {
   box-sizing: border-box;
   width: 100% !important;
 }
+
+/** --------------------------------------------------------
+ * ----------------------- 播放器 --------------------------
+ * ---------------------------------------------------------
+ */
 
 /* 移除播放器固定尺寸 */
 #bilibili-player {
@@ -731,21 +755,19 @@ svg.mini-header__logo path {
   z-index: 75;
 }
 
-/* 固定小窗导致的元素显隐 */
+/* 小窗时的隐藏 - 始终隐藏 */
+.bpx-player-top-wrap,
 .bpx-player-state-wrap,
-.bpx-player-toast-wrap,
-.bpx-player-control-wrap,
-.bpx-player-control-mask,
-.bpx-player-control-entity,
-.bpx-player-sending-area {
-  display: block !important;
+.bpx-player-toast-wrap, {
+  display: none !important;
 }
 
+/* 小窗时的暂停按钮 */
 .bpx-player-mini-warp {
   display: none !important;
 }
 
-/* 固定小窗导致的视频跳动（宽度相比 fixed 减去了滚动条） */
+/* 小窗时的位置移动（宽度相比 fixed 减去了滚动条） */
 .bpx-player-container[data-screen=mini] {
   top: var(--header-height);
   left: 50%;
@@ -758,6 +780,65 @@ svg.mini-header__logo path {
 .fixed-sidenav-storage>*:nth-child(1),
 .fixed-sidenav-storage>*:nth-child(2) {
   display: none !important;
+}
+
+/* 播放器控制区 */
+.bpx-player-control-entity {
+  display: block !important;
+}
+
+.bpx-player-ctrl-pip,
+.bpx-player-ctrl-wide,
+.bpx-player-ctrl-web {
+  display: none !important;
+}
+
+.bpx-player-control-bottom-left,
+.bpx-player-control-bottom-right {
+  flex: 1 !important;
+  min-width: 0;
+}
+
+/* 弹幕行滚动隐藏 */
+.bpx-player-sending-area {
+  position: absolute !important;
+  bottom: 0;
+  width: 100%;
+  transform: translateY(100%);
+
+  transition: 0.5s transform ease-in;
+}
+
+.left-container.scroll-hidden .bpx-player-sending-area {
+  transform: none
+}
+
+.bpx-player-video-area {
+  z-index: 1;
+}
+
+#bilibili-player-placeholder-bottom {
+  display: none !important;
+}
+
+/* 弹幕行高度 */
+.bpx-player-sending-bar {
+  height: 44px !important;
+}
+
+.bpx-player-sending-bar>* {
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
+}
+
+.bpx-player-dm-input {
+  height: 26px !important;
+}
+
+/* 弹幕输入栏外 */
+.bpx-player-video-inputbar {
+  height: 26px !important;
+  border-radius: 13px !important;
 }
 
 /** --------------------------------------------------------
@@ -842,43 +923,6 @@ svg.mini-header__logo path {
 /* ----------------------------------------------------
 * ---------------------- 播放页组件 ------------------- *
  ----------------------------------------------------- */
-
-/* 播放器控制区 */
-.bpx-player-control-entity {
-  display: block !important;
-}
-
-.bpx-player-ctrl-pip,
-.bpx-player-ctrl-wide,
-.bpx-player-ctrl-web {
-  display: none !important;
-}
-
-.bpx-player-control-bottom-left,
-.bpx-player-control-bottom-right {
-  flex: 1 !important;
-  min-width: 0;
-}
-
-/* 弹幕行 */
-.bpx-player-sending-bar {
-  height: 44px !important;
-}
-
-.bpx-player-sending-bar>* {
-  opacity: 0;
-  animation: fadeIn 1s ease-in forwards;
-}
-
-.bpx-player-dm-input {
-  height: 26px !important;
-}
-
-/* 弹幕输入栏外 */
-.bpx-player-video-inputbar {
-  height: 26px !important;
-  border-radius: 13px !important;
-}
 
 /* 非主要元素 */
 .bpx-player-video-info,
@@ -1017,6 +1061,8 @@ svg.mini-header__logo path {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   opacity: 0;
   animation: fadeIn 1s ease-in forwards;
+
+  transition: 0.5s transform ease-in;
 }
 
 @keyframes fadeIn {
@@ -1028,6 +1074,12 @@ svg.mini-header__logo path {
       opacity: 1;
   }
 }
+
+/* 评论行滚动隐藏 */
+.left-container.scroll-hidden .main-reply-box {
+  transform: translateY(100%)
+}
+
 
 /* 移除原底部评论栏 */
 .fixed-reply-box {
