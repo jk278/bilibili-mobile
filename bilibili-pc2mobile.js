@@ -27,6 +27,9 @@
 (function () {
   'use strict'
   console.log('Bilibili mobile execute!')
+  // setInterval(() => {
+  //   console.log(undefined)
+  // }, 50)
 
   // const _unsafeWindow = /* @__PURE__ */ (() => typeof window !== 'undefined' ? window : undefined)() // 立即执行表达式只调用一次
   // 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
@@ -41,6 +44,7 @@
     if (window.location.pathname.startsWith('/video')) {
       addPlaysInline()
       controlSidebar()
+      controlVideoClick()
       scrollToHidden()
     }
 
@@ -316,6 +320,37 @@
         lastScrollTop = currentScrollTop
       }
     })
+  }
+
+  // 接管视频点击事件
+  function controlVideoClick () {
+    const playerContainer = document.querySelector('.bpx-player-container')
+    playerContainer.addEventListener('click', handleClick)
+    const controlWrap = document.querySelector('.bpx-player-control-wrap')
+
+    let clickTimer = null
+
+    function handleClick () {
+      simulateMouseEnter(controlWrap)
+
+      if (clickTimer) {
+        clearTimeout(clickTimer)
+      }
+
+      clickTimer = setTimeout(() => {
+        simulateMouseLeave(controlWrap)
+      }, 5000)
+    }
+
+    function simulateMouseEnter (element) {
+      const event = new MouseEvent('mouseenter', { bubbles: true, view: window })
+      element.dispatchEvent(event)
+    }
+
+    function simulateMouseLeave (element) {
+      const event = new MouseEvent('mouseleave', { bubbles: true, view: window })
+      element.dispatchEvent(event)
+    }
   }
 
   function initElementStyle () {
@@ -725,10 +760,9 @@ svg.mini-header__logo path {
   top: calc(var(--header-height) - 64px );
 }
 
-/** --------------------------------------------------------
- * ---------------------- 主视频块 -------------------------
- * ---------------------------------------------------------
- */
+/* ----------------------------------------------------
+* ---------------------- 主视频块 --------------------- *
+ ----------------------------------------------------- */
 
 /* 主视频块(视频高度加顶栏初始高度减顶栏减顶栏高度) */
 .left-container {
@@ -744,18 +778,17 @@ svg.mini-header__logo path {
   width: 100% !important;
 }
 
-/** --------------------------------------------------------
- * ----------------------- 播放器 --------------------------
- * ---------------------------------------------------------
- */
+/* ----------------------------------------------------
+* ----------------------- 播放器 ---------------------- *
+ ----------------------------------------------------- */
 
-/* 移除播放器固定尺寸 */
+/* 修改播放器固定尺寸 */
 #bilibili-player {
   height: 100% !important;
   width: 100% !important;
 }
 
-/* 固定视频（覆盖原宽度） */
+/* 固定视频（外框尺寸） */
 #playerWrap {
   position: fixed;
   left: 0;
@@ -765,14 +798,26 @@ svg.mini-header__logo path {
   z-index: 75;
 }
 
-/* 小窗时的隐藏 - 始终隐藏 */
+/* 小窗时的隐藏 - 始终隐藏*/
+/* 顶部关注、音乐、反馈 */
+/* 右下角暂停图标 */
 .bpx-player-top-wrap,
-.bpx-player-state-wrap,
-.bpx-player-toast-wrap, {
+.bpx-player-state-wrap {
   display: none !important;
 }
 
-/* 小窗时的暂停按钮 */
+/* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
+.bpx-player-toast-wrap {
+  bottom: unset !important;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.bpx-player-toast-item {
+  margin: 0 !important;
+}
+
+/* 小窗时的暂停图标 */
 .bpx-player-mini-warp {
   display: none !important;
 }
@@ -792,7 +837,7 @@ svg.mini-header__logo path {
   display: none !important;
 }
 
-/* 播放器控制区 */
+/* 窄屏不隐藏控制条 */
 .bpx-player-control-entity {
   display: block !important;
 }
@@ -803,11 +848,91 @@ svg.mini-header__logo path {
   display: none !important;
 }
 
+/* 左右控制区 */
 .bpx-player-control-bottom-left,
 .bpx-player-control-bottom-right {
-  flex: 1 !important;
+  flex: unset !important;
   min-width: 0;
 }
+
+/* 清晰度 */
+.bpx-player-ctrl-quality-result {
+  font-size: 12px !important;
+}
+
+.bpx-player-ctrl-quality {
+  margin-right: 0 !important;
+}
+
+/* 倍速 */
+.bpx-player-ctrl-playbackrate {
+  font-size: 12px !important;
+}
+
+/* 按钮区(图标22px，算 margin 37px) */
+.bpx-player-control-bottom {
+  height: 29px !important;
+  margin-top: 7px !important;
+  padding: 0 7px !important;
+}
+
+/* 时间 */
+.bpx-player-ctrl-time {
+  margin-right: 0 !important;
+}
+
+/* 进度条 */
+.bpx-player-control-top {
+  bottom: 36px !important;
+}
+
+/* 进度条细条包含块（高12px） */
+.bpx-player-progress-wrap {
+  height: 7px !important;
+  padding-bottom: 3px !important;
+}
+
+/* 阴影(高能区 100% - 1px) */
+.bpx-player-pbp {
+  bottom: calc(100% + 6px) !important;
+}
+
+/* 清晰度弹窗 */
+.bpx-player-ctrl-quality-menu-wrap {
+  bottom: 0 !important;
+  max-height: var(--video-height) !important;
+}
+
+/* 设置弹窗 */
+.bpx-player-ctrl-setting-box {
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+/* 更多设置 */
+.bpx-player-ctrl-setting-menu-right {
+  padding: 5px !important;
+  max-height: var(--video-height) !important;
+}
+
+/* 更多设置 */
+.bui.bui-radio.bui-dark {
+  margin-bottom: 5px !important;
+}
+
+/* 全屏控制栏 */
+.bpx-player-container .bpx-player-control-bottom-left,
+.bpx-player-container .bpx-player-control-bottom-right {
+  min-width: 0 !important;
+}
+
+.bpx-player-control-bottom-center .bpx-player-sending-bar {
+  padding-right: 6px !important;
+  height: 24px !important;
+}
+/* ----------------------------------------------------
+* ----------------------- 弹幕行 ---------------------- *
+ ----------------------------------------------------- */
 
 /* 弹幕行滚动隐藏 */
 .bpx-player-sending-area {
@@ -893,10 +1018,9 @@ svg.mini-header__logo path {
 
 /* 播放组件在下面 */
 
-/** --------------------------------------------------------
- * ----------------------- 推荐块 --------------------------
- * ---------------------------------------------------------
- */
+/* ----------------------------------------------------
+* ----------------------- 推荐块 ---------------------- *
+ ----------------------------------------------------- */
 
 /* 推荐块 */
 .right-container {
@@ -1059,7 +1183,7 @@ svg.mini-header__logo path {
   animation: fadeIn 1s ease-in 2s forwards;
 }
 
-/* 投票卡片（ 暂定 ） */
+/* 投票卡片 */
 .top-vote-card-left {
   width: unset !important;
   max-width: unset !important;
