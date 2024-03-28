@@ -8,6 +8,7 @@
 // @author             jk278
 // @license            MIT
 // @match              *://www.bilibili.com/*
+// @grant              unsafeWindow
 // @grant              GM_registerMenuCommand
 // @run-at             document-start
 // @icon               https://www.bilibili.com/favicon.ico
@@ -31,17 +32,19 @@
   //   console.log(undefined)
   // }, 50)
 
-  // const _unsafeWindow = /* @__PURE__ */ (() => typeof unsafeWindow !== 'undefined' ? unsafeWindow : 'undefined')() // 立即执行表达式只调用一次
+  // eslint-disable-next-line no-undef
+  const _unsafeWindow = /* @__PURE__ */ (() => typeof unsafeWindow !== 'undefined' ? unsafeWindow : 'undefined')() // 立即执行表达式只调用一次
   // 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
 
   initViewport()
   initElementStyle()
 
-  controlHeaderImage()
-
   if (window.location.pathname === '/') {
+    handleHeaderImage()
     // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
     increaseVideoLoadSize()
+  } else if (window.location.pathname.startsWith('/video')) {
+    handleScriptPreSetting()
   }
 
   waitDOMContentLoaded(() => {
@@ -50,7 +53,6 @@
       addPlaysInline()
       controlSidebar()
       controlVideoClick()
-      handleScriptSetting()
       scrollToHidden()
     }
 
@@ -80,6 +82,7 @@
     const rightContainer = document.querySelector('.right-container')
     const toggleSidebar = document.createElement('div')
     toggleSidebar.id = 'toggleSidebar'
+    /* html */
     toggleSidebar.innerHTML = `
     <svg width="50" height="50" viewBox="0 0 50 50">
         <line id="line-1" x1="25" y1="5" x2="25" y2="25" />
@@ -113,7 +116,10 @@
     const recommendLiist = document.getElementById('reco_list')
     recommendLiist.addEventListener('click', event => {
       const nextPlay = document.querySelector('.rec-title')
-      nextPlay.contains(event.target) || closeSidebar()
+      const recommendFooter = document.querySelector('.rec-footer')
+      if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) {
+        closeSidebar()
+      }
     }
     )
   }
@@ -122,9 +128,10 @@
     // center-search-container
     const searchbarBtn = document.createElement('div')
     searchbarBtn.id = 'search-fab'
+    /* html */
     searchbarBtn.innerHTML = `
-      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
-      `
+    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
+    `
     searchbarBtn.addEventListener('click', () => {
       const searchbar = document.querySelector('.center-search-container')
       searchbar.classList.add('show')
@@ -140,9 +147,10 @@
     // right-entry
     const entryBtn = document.createElement('div')
     entryBtn.id = 'menu-fab'
+    /* html */
     entryBtn.innerHTML = `
-      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
-      `
+    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
+    `
     entryBtn.addEventListener('click', () => {
       const entryBtn = document.querySelector('.right-entry')
       entryBtn.classList.add('show')
@@ -211,23 +219,23 @@
     }
 
     function simulateMouseEnter (element) {
-      const event = new MouseEvent('mouseenter', { bubbles: true, view: window })
+      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
       element.dispatchEvent(event)
     }
 
     function simulateMouseLeave (element) {
-      const event = new MouseEvent('mouseleave', { bubbles: true, view: window })
+      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
       element.dispatchEvent(event)
     }
 
     function simulateClick (element) {
-      const event = new MouseEvent('click', { bubbles: true, view: window })
+      const event = new MouseEvent('click', { bubbles: true, view: _unsafeWindow })
       element.dispatchEvent(event)
     }
   }
 
   // 控制首页头图函数
-  function controlHeaderImage () {
+  function handleHeaderImage () {
     const key = 'header-image'
     const url = 'https://source.unsplash.com/random/840x400'
     const elementSelector = '.bili-header__banner'
@@ -273,6 +281,7 @@
       const base64Data = localStorage.getItem(key)
       if (base64Data) {
         const style = document.createElement('style')
+        /* html */
         style.innerHTML = `
           ${elementSelector}::after {
             content: '';
@@ -323,11 +332,11 @@
     window.addEventListener('scroll', () => {
       const currentScrollTop = window.scrollY
       if ((currentScrollTop - lastScrollTop) > scrollThreshold) {
-        leftContainer.classList.add('scroll-hidden')
+        leftContainer.setAttribute('scroll-hidden', 'true')
         lastScrollTop = currentScrollTop
       } else if ((currentScrollTop - lastScrollTop) < -scrollThreshold ||
        currentScrollTop < 100) {
-        leftContainer.classList.remove('scroll-hidden')
+        leftContainer.setAttribute('scroll-hidden', '')
         lastScrollTop = currentScrollTop
       }
     })
@@ -354,39 +363,110 @@
     }
 
     function simulateMouseEnter (element) {
-      const event = new MouseEvent('mouseenter', { bubbles: true, view: window })
+      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
       element.dispatchEvent(event)
     }
 
     function simulateMouseLeave (element) {
-      const event = new MouseEvent('mouseleave', { bubbles: true, view: window })
+      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
       element.dispatchEvent(event)
     }
   }
 
-  function handleScriptSetting () {
-    const isShowDmAndReply = localStorage.getItem('isShowDmAndReply', true)
+  // 脚本设置
+  function handleScriptPreSetting () {
+    const defaultValue = [1, 1, 1]
+
+    const css = {
+      css1: `
+      .bpx-player-sending-area.bpx-player-sending-area {display: none !important;}
+      .left-container.left-container {padding: calc(var(--video-height) + 5px ) 10px 0;}
+    `,
+      css2: '.main-reply-box.main-reply-box {display: none !important;}',
+      css3: '#v_tag {display: none !important;}'
+    }
 
     readScriptSetting()
 
-    function readScriptSetting (isChangingow) {
-      isChangingow = isChangingow || false
-      const dmSendingArea = document.querySelector('.bpx-player-sending-area')
-      const replyBox = document.querySelector('.main-reply-box')
-      if (isShowDmAndReply) {
-        dmSendingArea.classList.add('show')
-        replyBox.classList.add('show')
-      } else if (isChangingow) {
-        dmSendingArea.classList.remove('show')
-        replyBox.classList.remove('show')
+    // eslint-disable-next-line no-undef
+    GM_registerMenuCommand('设置隐藏元素', () => {
+      waitDOMContentLoaded(handleSettingPanel)
+    })
+
+    function readScriptSetting (diference) {
+      diference = diference || false
+
+      const settingShowHidden = JSON.parse(localStorage.getItem('settingShowHidden', defaultValue))
+      const values = Object.values(css)
+
+      if (diference) {
+        for (const [index, value] of diference.entries()) {
+          if (value) {
+            if (settingShowHidden[index]) {
+              const scriptPreStyle = Object.assign(document.createElement('style'), {
+                id: `script-pre-style-${index}`,
+                textContent: css[`css${index}`]
+              })
+              document.head ? document.head.appendChild(scriptPreStyle) : waitDOMContentLoaded(document.head.appendChild(scriptPreStyle))
+            } else {
+              document.head
+                ? document.head.getElementById(`script-pre-style-${index}`).remove()
+                : waitDOMContentLoaded(document.head.getElementById(`script-pre-style-${index}`))
+            }
+          }
+        }
+      } else {
+        for (const [index, value] of values.entries()) {
+          if (settingShowHidden[index]) {
+            const scriptPreStyle = Object.assign(document.createElement('style'), {
+              id: `script-pre-style-${index}`,
+              textContent: value
+            })
+            document.head ? document.head.appendChild(scriptPreStyle) : waitDOMContentLoaded(document.head.appendChild(scriptPreStyle))
+          }
+        }
       }
     }
 
-    // eslint-disable-next-line no-undef
-    GM_registerMenuCommand((isShowDmAndReply ? '隐藏' : '显示') + '弹幕和评论行', function () {
-      localStorage.setItem('isHiddenDmAndReply', !isShowDmAndReply)
-      readScriptSetting(true)
-    })
+    function handleSettingPanel () {
+      const settingPanel = Object.assign(document.createElement('div'), {
+        id: 'setting-panel',
+        innerHTML: `
+        <div class="setting-title">请选择要隐藏的元素：</div>
+        <select id="setting-select" multiple>
+          <option value="1">弹幕行</option>
+          <option value="2">评论行</option>
+          <option value="3">标签块</option>
+        </select>
+        `
+      })
+
+      const settingConform = Object.assign(document.createElement('button'), {
+        id: 'settingConform',
+        textContent: '确认'
+      })
+
+      const selectElement = settingPanel.querySelector('#setting-select')
+      const oldValues = JSON.parse(localStorage.getItem('settingShowHidden', defaultValue))
+      for (const [index, value] of oldValues.entries()) {
+        selectElement.querySelector(`option[value="${index + 1}"]`).selected = value
+      }
+
+      settingConform.addEventListener('click', () => {
+        const selectedOptions = settingPanel.querySelectorAll('#settingelect option')
+        const selectedValues = Array.from(selectedOptions).map((option) => option.selected ? 1 : 0)
+
+        localStorage.setItem('settingShowHidden', JSON.stringify(selectedValues))
+        const difference = selectedValues.map((value, index) => value === oldValues[index] ? 0 : 1)
+
+        readScriptSetting(difference)
+
+        settingPanel.parentNode.removeChild(settingPanel)
+      })
+
+      settingPanel.appendChild(settingConform)
+      document.body.appendChild(settingPanel)
+    }
   }
 
   function initElementStyle () {
@@ -399,6 +479,23 @@
 /* 扩增载入后产生的骨架空位 */
 .floor-single-card:has(.skeleton, .skeleton-item) {
   display: none;
+}
+
+/* 脚本设置窗口 */
+#setting-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: inherit;
+  z-index: 1;
+  border: 1 solid var(--line_regular);
+  display: flex;
+  flex-direction: column;
+}
+
+#setting-select option {
+  margin: 5px 10px;
 }
 
 /* ----------------------------------------------------
@@ -822,7 +919,7 @@ svg.mini-header__logo path {
 * ---------------------- 主视频块 --------------------- *
  ----------------------------------------------------- */
 
-/* 主视频块(视频高度加顶栏初始高度减顶栏减顶栏高度) */
+/* 主视频块 */
 .left-container {
   --video-height: calc(100vw * 0.5625);
   --dm-row-height: 44px;
@@ -867,12 +964,11 @@ svg.mini-header__logo path {
 }
 
 /* 小窗时的隐藏 - 固定显示*/
+/* 视频控制栏 */
 /* 弹幕行 */
+.bpx-player-control-wrap,
 .bpx-player-sending-area {
   display: block !important;
-}
-
-.bpx-player-container[data-screen=mini] {
 }
 
 /* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
@@ -891,11 +987,11 @@ svg.mini-header__logo path {
   display: none !important;
 }
 
-/* 小窗时的位置移动（宽度相比 fixed 减去了滚动条） */
-.bpx-player-container[data-screen=mini] {
+/* 小窗时的位置移动 */
+#playerWrap .bpx-player-container[data-screen=mini] {
   top: var(--header-height);
   left: 0;
-  width: 100% !important;
+  width: 100vw !important;
   height: var(--video-height) !important;
   /* 避免隐藏弹幕行 */
   overflow: unset !important;
@@ -1013,22 +1109,18 @@ svg.mini-header__logo path {
 * ----------------------- 弹幕行 ---------------------- *
  ----------------------------------------------------- */
 
-/* 弹幕行：脚本设置隐藏 */
+/* 弹幕行：滚动隐藏 */
 .bpx-player-sending-area {
-  display: none !important;
-}
-
-/* 弹幕行滚动隐藏 */
-.bpx-player-sending-area.show {
   position: absolute !important;
   bottom: 0;
   width: 100%;
   transform: translateY(100%);
 
   transition: 0.5s transform ease-in;
+  display: block !important;
 }
 
-.left-container.scroll-hidden .bpx-player-sending-area {
+[scroll-hidden=true] .bpx-player-sending-area {
   transform: none
 }
 
@@ -1272,28 +1364,6 @@ svg.mini-header__logo path {
 * ----------------- 播放组件（评论以下） -------------- *
  ----------------------------------------------------- */
 
-/* 评论行：脚本设置隐藏 */
-.main-reply-box {
-  display: none !important;
-}
-
-/* 固定评论栏 */
-.main-reply-box.show {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  z-index: 10;
-  background: white;
-  width: 100%;
-  padding: 8px 12px;
-  border-top: 1px solid var(--line_regular);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  animation: fadeIn 1s ease-in forwards;
-
-  transition: 0.5s transform ease-in;
-}
-
 @keyframes fadeIn {
   form {
       opacity: 0;
@@ -1304,8 +1374,24 @@ svg.mini-header__logo path {
   }
 }
 
+/* 固定评论栏 */
+.main-reply-box {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 10;
+  background: white;
+  width: 100%;
+  padding: 8px 12px;
+  border-top: 1px solid var(--line_regular);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  transition: 0.5s transform ease-in;
+  display: block !important;
+}
+
 /* 评论行滚动隐藏 */
-.left-container.scroll-hidden .main-reply-box {
+[scroll-hidden=true] .main-reply-box {
   transform: translateY(100%)
 }
 
