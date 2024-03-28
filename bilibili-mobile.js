@@ -8,12 +8,12 @@
 // @author             jk278
 // @license            MIT
 // @match              *://www.bilibili.com/*
-// @grant              none
+// @grant              GM_registerMenuCommand
 // @run-at             document-start
 // @icon               https://www.bilibili.com/favicon.ico
 // ==/UserScript==
 
-// @grant none 表现全局作用域运行，而不在隔离沙盒内使用特定 API
+// @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
 
 /**
  * 先完成配置，再打开桌面版B站
@@ -31,7 +31,7 @@
   //   console.log(undefined)
   // }, 50)
 
-  // const myWindow = /* @__PURE__ */ (() => typeof window !== 'undefined' ? window : 'undefined')() // 立即执行表达式只调用一次
+  // const _unsafeWindow = /* @__PURE__ */ (() => typeof unsafeWindow !== 'undefined' ? unsafeWindow : 'undefined')() // 立即执行表达式只调用一次
   // 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
 
   initViewport()
@@ -40,7 +40,7 @@
   controlHeaderImage()
 
   if (window.location.pathname === '/') {
-    // DOM 加载完后执行就失效了
+    // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
     increaseVideoLoadSize()
   }
 
@@ -50,10 +50,11 @@
       addPlaysInline()
       controlSidebar()
       controlVideoClick()
+      handleScriptSetting()
       scrollToHidden()
     }
 
-    controlSearchbar()
+    controlHeaderbar()
   })
   // DOM 加载完后
   function waitDOMContentLoaded (callback) {
@@ -117,7 +118,8 @@
     )
   }
 
-  function controlSearchbar () {
+  function controlHeaderbar () {
+    // center-search-container
     const searchbarBtn = document.createElement('div')
     searchbarBtn.id = 'search-fab'
     searchbarBtn.innerHTML = `
@@ -134,6 +136,24 @@
       })
     })
     document.body.appendChild(searchbarBtn)
+
+    // right-entry
+    const entryBtn = document.createElement('div')
+    entryBtn.id = 'menu-fab'
+    entryBtn.innerHTML = `
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
+      `
+    entryBtn.addEventListener('click', () => {
+      const entryBtn = document.querySelector('.right-entry')
+      entryBtn.classList.add('show')
+      const input = entryBtn.querySelector('input')
+      input.focus()
+
+      input.addEventListener('blur', () => {
+        entryBtn.classList.remove('show')
+      })
+    })
+    document.body.appendChild(entryBtn)
   }
 
   // 接管顶部点击事件，父元素point-events:none，子元素point-events:auto对有的手机无效
@@ -293,7 +313,7 @@
     }
   }
 
-  // 滚动隐藏函数
+  // 滚动隐藏函数(弹幕行、评论行)
   function scrollToHidden () {
     const leftContainer = document.querySelector('.left-container')
 
@@ -344,6 +364,31 @@
     }
   }
 
+  function handleScriptSetting () {
+    const isShowDmAndReply = localStorage.getItem('isShowDmAndReply', true)
+
+    readScriptSetting()
+
+    function readScriptSetting (isChangingow) {
+      isChangingow = isChangingow || false
+      const dmSendingArea = document.querySelector('.bpx-player-sending-area')
+      const replyBox = document.querySelector('.main-reply-box')
+      if (isShowDmAndReply) {
+        dmSendingArea.classList.add('show')
+        replyBox.classList.add('show')
+      } else if (isChangingow) {
+        dmSendingArea.classList.remove('show')
+        replyBox.classList.remove('show')
+      }
+    }
+
+    // eslint-disable-next-line no-undef
+    GM_registerMenuCommand((isShowDmAndReply ? '隐藏' : '显示') + '弹幕和评论行', function () {
+      localStorage.setItem('isHiddenDmAndReply', !isShowDmAndReply)
+      readScriptSetting(true)
+    })
+  }
+
   function initElementStyle () {
     /* css */
     const initialInsertStyle = `
@@ -368,7 +413,7 @@
 
   /* 添加透明 animation 为 Via 预留加载 initViewport 的时间后，刷新加载出现白屏 */
 
-  --header-height: 48px;
+  --header-height: 46px;
 }
 
 /* 顶栏点击遮罩层 */
@@ -449,6 +494,12 @@ body,
   height: var(--header-height) !important;
 }
 
+/* 收藏按钮高度 */
+.header-favorite-container-box,
+.header-favorite-container  {
+  max-height: var(--header-height) !important;
+}
+
 /* 顶栏高度：HTML 初始加载时，biliMainHeader 已有内联高度，
    保留顶栏外框（biliMainHeader）高度，修改其它元素 */
 
@@ -474,21 +525,28 @@ body,
   display: block;
 }
 
+/* 顶栏右侧图标 */
+.bili-header .right-entry {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  right: 46px;
+  margin: 0 !important;
+  padding: 3px 20px 5px !important;
+  display: none !important;
+}
+
+.bili-header .right-entry.show {
+  display: flex !important;
+}
+
+.right-entry > * {
+  animation: fadeIn 1s ease-in;
+}
+
 .left-entry {
   min-width: 0;
   margin: 0 !important;
-}
-
-/* 顶栏右侧图标 */
-.right-entry {
-  flex: 1;
-  min-width: 0;
-  margin: 0 !important;
-  justify-content: space-evenly;
-}
-
-.right-entry>* {
-  animation: fadeIn 1s ease-in;
 }
 
 /* 头像图表边距 */
@@ -801,17 +859,28 @@ svg.mini-header__logo path {
 /* 小窗时的隐藏 - 始终隐藏*/
 /* 顶部关注、音乐、反馈 */
 /* 右下角暂停图标 */
+/* 取消静音 */
 .bpx-player-top-wrap,
-.bpx-player-state-wrap {
+.bpx-player-state-wrap,
+.bpx-player-toast-wrap {
   display: none !important;
 }
 
+/* 小窗时的隐藏 - 固定显示*/
+/* 弹幕行 */
+.bpx-player-sending-area {
+  display: block !important;
+}
+
+.bpx-player-container[data-screen=mini] {
+}
+
 /* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
-.bpx-player-toast-wrap {
+/*.bpx-player-toast-wrap {
   bottom: unset !important;
   top: 50%;
   transform: translateY(-50%);
-}
+}*/
 
 .bpx-player-toast-item {
   margin: 0 !important;
@@ -825,10 +894,11 @@ svg.mini-header__logo path {
 /* 小窗时的位置移动（宽度相比 fixed 减去了滚动条） */
 .bpx-player-container[data-screen=mini] {
   top: var(--header-height);
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
   width: 100% !important;
   height: var(--video-height) !important;
+  /* 避免隐藏弹幕行 */
+  overflow: unset !important;
 }
 
 /* 移除小窗等按钮 */
@@ -943,8 +1013,13 @@ svg.mini-header__logo path {
 * ----------------------- 弹幕行 ---------------------- *
  ----------------------------------------------------- */
 
-/* 弹幕行滚动隐藏 */
+/* 弹幕行：脚本设置隐藏 */
 .bpx-player-sending-area {
+  display: none !important;
+}
+
+/* 弹幕行滚动隐藏 */
+.bpx-player-sending-area.show {
   position: absolute !important;
   bottom: 0;
   width: 100%;
@@ -1093,8 +1168,7 @@ svg.mini-header__logo path {
 .up-avatar-wrap {
   width: 38px !important;
   height: 38px !important;
-}
-*/
+}*/
 
 /* 推荐视频图块 */
 #reco_list .card-box .pic-box {
@@ -1198,8 +1272,13 @@ svg.mini-header__logo path {
 * ----------------- 播放组件（评论以下） -------------- *
  ----------------------------------------------------- */
 
-/* 固定评论栏 */
+/* 评论行：脚本设置隐藏 */
 .main-reply-box {
+  display: none !important;
+}
+
+/* 固定评论栏 */
+.main-reply-box.show {
   position: fixed;
   left: 0;
   bottom: 0;
@@ -1229,7 +1308,6 @@ svg.mini-header__logo path {
 .left-container.scroll-hidden .main-reply-box {
   transform: translateY(100%)
 }
-
 
 /* 移除原底部评论栏 */
 .fixed-reply-box {
