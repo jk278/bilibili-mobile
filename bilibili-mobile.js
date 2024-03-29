@@ -396,7 +396,7 @@
     function readScriptSetting (diference) {
       diference = diference || false
 
-      const settingShowHidden = JSON.parse(localStorage.getItem('settingShowHidden', defaultValue))
+      const settingShowHidden = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
       const values = Object.values(css)
 
       if (diference) {
@@ -404,14 +404,14 @@
           if (value) {
             if (settingShowHidden[index]) {
               const scriptPreStyle = Object.assign(document.createElement('style'), {
-                id: `script-pre-style-${index}`,
-                textContent: css[`css${index}`]
+                id: `script-pre-style-${index + 1}`,
+                textContent: css[`css${index + 1}`]
               })
               document.head ? document.head.appendChild(scriptPreStyle) : waitDOMContentLoaded(document.head.appendChild(scriptPreStyle))
             } else {
               document.head
-                ? document.head.getElementById(`script-pre-style-${index}`).remove()
-                : waitDOMContentLoaded(document.head.getElementById(`script-pre-style-${index}`))
+                ? document.getElementById(`script-pre-style-${index + 1}`).remove()
+                : waitDOMContentLoaded(document.getElementById(`script-pre-style-${index + 1}`))
             }
           }
         }
@@ -419,7 +419,7 @@
         for (const [index, value] of values.entries()) {
           if (settingShowHidden[index]) {
             const scriptPreStyle = Object.assign(document.createElement('style'), {
-              id: `script-pre-style-${index}`,
+              id: `script-pre-style-${index + 1}`,
               textContent: value
             })
             document.head ? document.head.appendChild(scriptPreStyle) : waitDOMContentLoaded(document.head.appendChild(scriptPreStyle))
@@ -432,11 +432,10 @@
       const settingPanel = Object.assign(document.createElement('div'), {
         id: 'setting-panel',
         innerHTML: `
-        <div class="setting-title">请选择要隐藏的元素：</div>
-        <select id="setting-select" multiple>
-          <option value="1">弹幕行</option>
-          <option value="2">评论行</option>
-          <option value="3">标签块</option>
+        <div id="setting-checkboxes">
+          <label><input type="checkbox" value="1">弹幕行</label>
+          <label><input type="checkbox" value="2">评论行</label>
+          <label><input type="checkbox" value="3">标签块</label>
         </select>
         `
       })
@@ -446,15 +445,14 @@
         textContent: '确认'
       })
 
-      const selectElement = settingPanel.querySelector('#setting-select')
-      const oldValues = JSON.parse(localStorage.getItem('settingShowHidden', defaultValue))
+      const checkboxElements = settingPanel.querySelectorAll('#setting-checkboxes input[type="checkbox"]')
+      const oldValues = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
       for (const [index, value] of oldValues.entries()) {
-        selectElement.querySelector(`option[value="${index + 1}"]`).selected = value
+        checkboxElements[index].checked = value
       }
 
       settingConform.addEventListener('click', () => {
-        const selectedOptions = settingPanel.querySelectorAll('#settingelect option')
-        const selectedValues = Array.from(selectedOptions).map((option) => option.selected ? 1 : 0)
+        const selectedValues = Array.from(checkboxElements).map((checkbox) => checkbox.checked ? 1 : 0)
 
         localStorage.setItem('settingShowHidden', JSON.stringify(selectedValues))
         const difference = selectedValues.map((value, index) => value === oldValues[index] ? 0 : 1)
@@ -494,7 +492,7 @@
   flex-direction: column;
 }
 
-#setting-select option {
+#setting-select label {
   margin: 5px 10px;
 }
 
