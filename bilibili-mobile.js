@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.1
+// @version            3.3
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -30,7 +30,7 @@
   console.log('Bilibili mobile execute!')
   // setInterval(() => {
   //   console.log(undefined)
-  // }, 50)
+  // }, 100)
 
   // eslint-disable-next-line no-undef
   const _unsafeWindow = /* @__PURE__ */ (() => typeof unsafeWindow !== 'undefined' ? unsafeWindow : 'undefined')() // 立即执行表达式只调用一次
@@ -50,19 +50,28 @@
   }
 
   waitDOMContentLoaded(() => {
+    localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
     controlHeaderClick()
     if (window.location.pathname.startsWith('/video')) {
       addPlaysInline()
-      handleSidebar()
       controlVideoClick()
       scrollToHidden()
     }
 
-    handleHeaderbar()
+    handleActionbar()
+
+    if (window.location.pathname.startsWith('/video')) {
+      handleSidebar()
+    }
   })
+
   // DOM 加载完后
   function waitDOMContentLoaded (callback) {
     document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback()
+  }
+  // head 获取到后
+  function ensureHeadGetted (element) {
+    document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element))
   }
 
   function initViewport () {
@@ -92,98 +101,96 @@
     }
   }
 
+  // 操作栏
+  function handleActionbar () {
+    const actionbar = Object.assign(document.createElement('div'), {
+      id: 'actionbar',
+      /* html */
+      innerHTML: `
+      <div id="full-now">
+        <svg version="1.0" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-fullscreen"><path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
+      </div>
+      <div id="my-home">
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m12 4.44 7 6.09V20h-4v-6H9v6H5v-9.47l7-6.09m0-1.32-8 6.96V21h6v-6h4v6h6V10.08l-8-6.96z"></path></svg>
+      </div>
+      <div id="search-fab">
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m20.87 20.17-5.59-5.59C16.35 13.35 17 11.75 17 10c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path></svg>
+      </div>
+      <div id="menu-fab">
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path></svg>
+      </div>
+      <div id="sidebar">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M21 6H3V5h18v1zm0 5H3v1h18v-1zm0 6H3v1h18v-1z"></path></svg>
+      </div>
+      `
+    })
+
+    document.body.appendChild(actionbar)
+
+    if (window.location.pathname === '/') {
+      actionbar.classList.add('home')
+    }
+
+    if (window.location.pathname.startsWith('/video')) {
+      const fullBtn = document.getElementById('full-now')
+      fullBtn.addEventListener('click', () => {
+        const video = document.getElementsByTagName('video')[0]
+        if (video) video.unmuted = false
+        document.getElementsByClassName('bpx-player-ctrl-full')[0]?.click()
+      })
+    }
+
+    const home = document.getElementById('my-home')
+    home.addEventListener('click', () => { window.location.href = '/' })
+
+    const searchbarBtn = document.getElementById('search-fab')
+    searchbarBtn.addEventListener('click', () => {
+      const searchbar = document.getElementsByClassName('center-search-container')[0]
+      searchbar.classList.add('show')
+      const input = searchbar.querySelector('input')
+      input.focus()
+      input.addEventListener('blur', () => { searchbar.classList.remove('show') })
+    })
+
+    const entryBtn = document.getElementById('menu-fab')
+    entryBtn.addEventListener('click', () => {
+      const body = document.body
+      if (body.getAttribute('hidden-header') === 'true') {
+        body.setAttribute('hidden-header', '')
+        localStorage.setItem('hidden-header', '0')
+      } else {
+        body.setAttribute('hidden-header', 'true')
+        localStorage.setItem('hidden-header', '1')
+      }
+    })
+  }
+
   // 侧边栏
   function handleSidebar () {
     const rightContainer = document.getElementsByClassName('right-container')[0]
 
-    const toggleSidebar = Object.assign(document.createElement('div'), {
-      id: 'toggleSidebar',
-      innerHTML: `
-        <svg width="50" height="50" viewBox="0 0 50 50">
-            <line id="line-1" x1="25" y1="5" x2="25" y2="25" />
-            <line id="line-2" x1="25" y1="45" x2="25" y2="25" />
-        </svg>
-      `
-    })
+    const sidebar = document.getElementById('sidebar')
 
-    toggleSidebar.addEventListener('click', function () {
-      if (!toggleSidebar.classList.contains('arrow')) {
-        toggleSidebar.classList.add('arrow')
+    sidebar.addEventListener('click', function () {
+      if (!rightContainer.classList.contains('show')) {
         rightContainer.classList.add('show')
-      } else {
-        closeSidebar()
-      }
+      } else { closeSidebar() }
     })
 
     function closeSidebar () {
-      toggleSidebar.classList.remove('arrow')
       rightContainer.classList.remove('show')
     }
 
-    // 若作为两个分列的兄弟元素加入，就会影响页面布局
-    document.body.appendChild(toggleSidebar)
-
     const backdrop = document.getElementsByClassName('left-container')[0] // 伪元素的真实元素
     backdrop.addEventListener('click', closeSidebar)
-    // 只能传递函数引用，不能传递函数执行结果，或 () => { closeSidebar() }
-    // event.stopPropagation() 阻止目标子元素的点击事件默认冒泡到父元素
 
     // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
     const recommendLiist = document.getElementById('reco_list')
     recommendLiist.addEventListener('click', event => {
       const nextPlay = document.getElementsByClassName('rec-title')[0]
       const recommendFooter = document.getElementsByClassName('rec-footer')[0]
-      if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) {
-        closeSidebar()
-      }
+      if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
     })
-
-    window.addEventListener('beforeunload', function (event) {
-      // 可以在这里显示一个确认对话框
-      event.preventDefault()
-      closeSidebar()
-      location.reload()
-    })
-  }
-
-  function handleHeaderbar () {
-    // center-search-container
-    const searchbarBtn = document.createElement('div')
-    searchbarBtn.id = 'search-fab'
-    /* html */
-    searchbarBtn.innerHTML = `
-    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
-    `
-    searchbarBtn.addEventListener('click', () => {
-      const searchbar = document.getElementsByClassName('center-search-container')[0]
-      searchbar.classList.add('show')
-      const input = searchbar.querySelector('input')
-      input.focus()
-
-      input.addEventListener('blur', () => {
-        searchbar.classList.remove('show')
-      })
-    })
-    document.body.appendChild(searchbarBtn)
-
-    // right-entry
-    const entryBtn = document.createElement('div')
-    entryBtn.id = 'menu-fab'
-    /* html */
-    entryBtn.innerHTML = `
-    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
-    `
-    entryBtn.addEventListener('click', () => {
-      const entryBtn = document.getElementsByClassName('right-entry')[0]
-      entryBtn.classList.add('show')
-      const input = entryBtn.querySelector('input')
-      input.focus()
-
-      input.addEventListener('blur', () => {
-        entryBtn.classList.remove('show')
-      })
-    })
-    document.body.appendChild(entryBtn)
   }
 
   // 接管顶部点击事件，父元素point-events:none，子元素point-events:auto对有的手机无效
@@ -396,7 +403,7 @@
 
   // 脚本设置
   function handleScriptPreSetting () {
-    const defaultValue = [0, 0, 0]
+    const defaultValue = [1, 1, 1, 1]
 
     const css = {
       css1: `
@@ -404,7 +411,10 @@
       .left-container.left-container {padding: calc(var(--video-height) + 5px ) 10px 0;}
     `,
       css2: '.main-reply-box.main-reply-box {display: none !important;}',
-      css3: '#v_tag {display: none !important;}'
+      css3: '#v_tag {display: none !important;}',
+      css4: `
+      .copyright.item {display: none !important;}
+      .show-more {display: none;}`
     }
 
     readScriptSetting()
@@ -432,7 +442,7 @@
                 id: `script-pre-style-${index + 1}`,
                 textContent: css[`css${index + 1}`]
               })
-              document.head ? document.head.appendChild(scriptPreStyle) : waitDOMContentLoaded(document.head.appendChild(scriptPreStyle))
+              ensureHeadGetted(scriptPreStyle)
             } else {
               document.head
                 ? document.getElementById(`script-pre-style-${index + 1}`).remove()
@@ -447,7 +457,7 @@
               id: `script-pre-style-${index + 1}`,
               textContent: value
             })
-            document.head ? document.head.appendChild(scriptPreStyle) : waitDOMContentLoaded(document.head.appendChild(scriptPreStyle))
+            ensureHeadGetted(scriptPreStyle)
           }
         }
       }
@@ -462,6 +472,7 @@
           <label><input type="checkbox" value="1"><span>弹幕行</span></label>
           <label><input type="checkbox" value="2"><span>评论行</span></label>
           <label><input type="checkbox" value="3"><span>标签块</span></label>
+          <label><input type="checkbox" value="4"><span>转载声明</span></label>
         </div>
         `
       })
@@ -497,8 +508,49 @@
     /* css */
     const initialInsertStyle = `
 /* ---------------------------------------------------- *
-* ----------------------- 适配 ----------------------- *
+* ----------------------- 操作栏 ----------------------- *
 * ---------------------------------------------------- */
+
+/* 操作栏 */
+#actionbar {
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  height: var(--header-height);
+  z-index: 1;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background: inherit;
+}
+
+#actionbar > * {
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
+}
+
+#full-now {
+  padding: 12px;
+  svg {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+  }
+}
+
+#my-home,
+#search-fab,
+#menu-fab,
+#sidebar {
+  padding: 8px;
+}
+
+#actionbar.home #full-now,
+#actionbar.home #sidebar {
+  visibility: hidden;
+  pointer-events: none;
+}
+/* --------------------- 其它适配 --------------------- */
 
 /* 扩增载入后产生的骨架空位 */
 .floor-single-card:has(.skeleton, .skeleton-item) {
@@ -610,9 +662,26 @@ body,
  ------------------------ 顶栏 ----------------------- 
  -------------------------------------------------- */
 
+/* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
+
+/* 顶栏隐藏 */
+body[hidden-header="true"] .bili-header__bar {
+  transform: translateY(-100%)
+}
+
+body[hidden-header="true"] #playerWrap {
+  transform: translateY(calc(var(--header-height) * -1))
+}
+
+/* 父布局不要用 transform */
+body[hidden-header="true"] .video-container-v1 {
+  top: -64px !important;
+}
+
 /* 顶栏边距（右边距减去头像右空隙） */
 .bili-header__bar {
   padding: 0 10px 0 15px !important;
+  transition: transform 0.5s ease-in;
 }
 
 /* 顶栏高度 */
@@ -675,20 +744,13 @@ body,
 }
 
 /* 顶栏右侧图标 */
-.bili-header .right-entry {
-  position: absolute !important;
-  top: 0;
-  left: 0;
-  right: 46px;
+.right-entry {
+  flex: 1;
+  min-width: 0;
   margin: 0 !important;
-  padding: 3px 20px 5px !important;
-  display: none !important;
+  justify-content: space-evenly;
 }
-
-.bili-header .right-entry.show {
-  display: flex !important;
-}
-
+ 
 .right-entry > * {
   animation: fadeIn 1s ease-in;
 }
@@ -983,8 +1045,9 @@ svg.mini-header__logo path {
   padding: calc(var(--video-height) + var(--dm-row-height)) 10px 0;
   box-sizing: border-box;
   width: 100% !important;
-  /* 填充评论未加载时的空白 */
-  min-height: calc(100vh - var(--header-height));
+
+  /* 填充评论未加载时的空白，注意: 顶部预留高度是 64px */
+  min-height: calc(100vh - 64px);
 }
 
 /* ----------------------------------------------------
@@ -1005,6 +1068,7 @@ svg.mini-header__logo path {
   width: 100vw;
   height: var(--video-height) !important;
   z-index: 75;
+  transition: transform 0.5s ease-in;
 }
 
 /* 小窗时的隐藏 - 始终隐藏*/
@@ -1041,14 +1105,14 @@ svg.mini-header__logo path {
   display: none !important;
 }
 
-/* 小窗时的位置移动 */
+/* 彻底移除小窗样式 */
 #playerWrap .bpx-player-container[data-screen=mini] {
-  top: var(--header-height);
-  left: 0;
-  width: 100vw !important;
-  height: var(--video-height) !important;
-  /* 避免隐藏弹幕行 */
-  overflow: unset !important;
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  transition: top 0.5s ease-in;
 }
 
 /* 移除小窗等按钮 */
@@ -1197,10 +1261,11 @@ svg.mini-header__logo path {
   z-index: 1;
 }
 
-/* 弹幕行预加载灰块 */
+/* 弹幕行预加载灰块白条(视频底下也有，预加载有时会看到) */
 .bpx-player-sending-bar-left,
-.bpx-player-sending-bar-right {
-  display: none;
+.bpx-player-sending-bar-right,
+#bilibili-player-placeholder-bottom {
+  display: none !important;
 }
 
 /* 弹幕行高度 */
@@ -1561,103 +1626,55 @@ svg.mini-header__logo path {
 * ---------------------------------------------------- *
  ----------------------------------------------------- */
 
+/* 刷新按钮 */
+.primary-btn:hover {
+  background-color: unset !important;
+}
+
+/* 刷新按钮 */
+.flexible-roll-btn-inner {
+  border: none !important;
+  color: inherit !important;
+  background: none !important;
+  padding: 7px 8px 7px 7px !important; */
+  display: block !important;
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
+  position: fixed;
+  bottom: -17px;
+  right: 5vw;
+  width: 40px !important;
+}
+
+/* 首页置顶按钮 */
+.top-btn {
+  border: none !important;
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
+  position: fixed;
+  bottom: -17px;
+  right: 77vw;
+  width: 40px !important;
+}
+
+.top-btn .primary-btn-text {
+  display: none;
+}
+
 /* svg 大小 */
-#toggleSidebar svg,
-#search-fab svg,
 .flexible-roll-btn-inner svg {
   width: 26px;
   height: 26px;
 }
 
-/* 侧栏按钮 */
-#toggleSidebar {
-  position: fixed;
-  bottom: 132px;
-  right: 0;
-  z-index: 77;
-  padding: 7px 7px 7px 8px;
-  border-radius: 25% 0 0 25%;
-  background: inherit;
-  border: 1px solid var(--line_regular);
-  border-right: none;
-  opacity: 0;
-  animation: fadeIn 1s ease-in forwards;
-
-  svg {
-      vertical-align: middle;
-  }
-}
-
-svg line {
-  stroke: currentColor;
-  stroke-width: 6;
-  stroke-linecap: round;
-  /* filter:  drop-shadow 属性只需要渲染阴影，而 box-shadow 属性还需要渲染盒子的边框。 */
-  transition: transform .5s linear;
-  transform-origin: 50% 50%;
-}
-
-.arrow #line-1 {
-  transform: rotate(-30deg) translateX(3px);
-}
-
-.arrow #line-2 {
-  transform: rotate(30deg) translateX(3px);
-}
-
-/* 搜索按钮 */
-#search-fab {
-  position: fixed;
-  bottom: 78px;
-  right: 0;
-  z-index: 77;
-  padding: 7px 7px 8px 9px;
-  border-radius: 25% 0 0 25%;
-  background: inherit;
-  border: 1px solid var(--line_regular);
-  border-right: none;
-  opacity: 0;
-  animation: fadeIn 1s ease-in forwards;
-
-  svg {
-      vertical-align: middle;
-  }
-}
-
-/* 刷新按钮 */
-.flexible-roll-btn-inner {
-  color: inherit !important;
-  background: none !important;
-  padding: 7px 8px 7px 7px !important;
-  border-radius: 25% 0 0 25% !important;
-  background: white !important;
-  height: auto !important;
-  display: block !important;
-  border: 1px solid var(--line_regular);
-  border-right: none;
-  opacity: 0;
-  animation: fadeIn 1s ease-in forwards;
-
-  /* 嵌套忘加右括号 */
-  .flexible-roll-btn-inner svg {
-      stroke: currentColor;
-      stroke-width: 0.1px;
-  }
-}
-
-/* 刷新按钮的位置 */
-.palette-button-wrap {
-  right: 10px !important;
-  bottom: -20px !important;
-}
-
-.palette-button-wrap.translucent>.flexible-roll-btn.flexible-roll-btn {
+.palette-button-wrap.translucent>.flexible-roll-btn.flexible-roll-btn,
+.palette-button-wrap.translucent>.top-btn-wrap.top-btn-wrap {
   opacity: 1 !important;
 }
 
 /* 按钮组 */
 span.btn-text-inner,
-.primary-btn {
+.storage-box {
   display: none !important;
 }
 
@@ -1711,6 +1728,6 @@ span.btn-text-inner,
     style.textContent = initialInsertStyle
 
     // 如果 document.head 可用，将样式添加到文档
-    document.head ? document.head.appendChild(style) : waitDOMContentLoaded(document.head.appendChild(style))
+    ensureHeadGetted(style)
   }
 })()
