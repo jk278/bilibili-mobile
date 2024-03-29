@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.0.2
+// @version            3.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -39,6 +39,8 @@
   initViewport()
   initElementStyle()
 
+  preventBeforeUnload()
+
   if (window.location.pathname === '/') {
     handleHeaderImage()
     // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
@@ -51,12 +53,12 @@
     controlHeaderClick()
     if (window.location.pathname.startsWith('/video')) {
       addPlaysInline()
-      controlSidebar()
+      handleSidebar()
       controlVideoClick()
       scrollToHidden()
     }
 
-    controlHeaderbar()
+    handleHeaderbar()
   })
   // DOM 加载完后
   function waitDOMContentLoaded (callback) {
@@ -78,17 +80,31 @@
     if (videoElement) videoElement.playsInline = true
   }
 
-  function controlSidebar () {
+  function preventBeforeUnload () {
+    const originalAddEventListener = window.addEventListener
+
+    // 重写 addEventListener 方法，禁止其刷新弹窗
+    window.addEventListener = function (type, listener, options) {
+      if (type === 'beforeunload') {
+        return
+      }
+      originalAddEventListener.call(this, type, listener, options)
+    }
+  }
+
+  // 侧边栏
+  function handleSidebar () {
     const rightContainer = document.getElementsByClassName('right-container')[0]
-    const toggleSidebar = document.createElement('div')
-    toggleSidebar.id = 'toggleSidebar'
-    /* html */
-    toggleSidebar.innerHTML = `
-    <svg width="50" height="50" viewBox="0 0 50 50">
-        <line id="line-1" x1="25" y1="5" x2="25" y2="25" />
-        <line id="line-2" x1="25" y1="45" x2="25" y2="25" />
-    </svg>
-          `
+
+    const toggleSidebar = Object.assign(document.createElement('div'), {
+      id: 'toggleSidebar',
+      innerHTML: `
+        <svg width="50" height="50" viewBox="0 0 50 50">
+            <line id="line-1" x1="25" y1="5" x2="25" y2="25" />
+            <line id="line-2" x1="25" y1="45" x2="25" y2="25" />
+        </svg>
+      `
+    })
 
     toggleSidebar.addEventListener('click', function () {
       if (!toggleSidebar.classList.contains('arrow')) {
@@ -120,11 +136,17 @@
       if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) {
         closeSidebar()
       }
-    }
-    )
+    })
+
+    window.addEventListener('beforeunload', function (event) {
+      // 可以在这里显示一个确认对话框
+      event.preventDefault()
+      closeSidebar()
+      location.reload()
+    })
   }
 
-  function controlHeaderbar () {
+  function handleHeaderbar () {
     // center-search-container
     const searchbarBtn = document.createElement('div')
     searchbarBtn.id = 'search-fab'
@@ -281,7 +303,6 @@
       const base64Data = localStorage.getItem(key)
       if (base64Data) {
         const style = document.createElement('style')
-        /* html */
         style.innerHTML = `
           ${elementSelector}::after {
             content: '';
@@ -375,7 +396,7 @@
 
   // 脚本设置
   function handleScriptPreSetting () {
-    const defaultValue = [1, 1, 1]
+    const defaultValue = [0, 0, 0]
 
     const css = {
       css1: `
@@ -388,9 +409,13 @@
 
     readScriptSetting()
 
-    // eslint-disable-next-line no-undef
-    GM_registerMenuCommand('设置隐藏元素', () => {
-      waitDOMContentLoaded(handleSettingPanel)
+    waitDOMContentLoaded(() => {
+      createSettingPanel()
+
+      // eslint-disable-next-line no-undef
+      GM_registerMenuCommand('设置隐藏元素', () => {
+        document.getElementById('setting-panel').classList.add('show')
+      })
     })
 
     function readScriptSetting (diference) {
@@ -428,20 +453,21 @@
       }
     }
 
-    function handleSettingPanel () {
+    function createSettingPanel () {
       const settingPanel = Object.assign(document.createElement('div'), {
         id: 'setting-panel',
         innerHTML: `
+        <div class="setting-title">选择隐藏的元素：</div>
         <div id="setting-checkboxes">
-          <label><input type="checkbox" value="1">弹幕行</label>
-          <label><input type="checkbox" value="2">评论行</label>
-          <label><input type="checkbox" value="3">标签块</label>
-        </select>
+          <label><input type="checkbox" value="1"><span>弹幕行</span></label>
+          <label><input type="checkbox" value="2"><span>评论行</span></label>
+          <label><input type="checkbox" value="3"><span>标签块</span></label>
+        </div>
         `
       })
 
       const settingConform = Object.assign(document.createElement('button'), {
-        id: 'settingConform',
+        id: 'setting-conform',
         textContent: '确认'
       })
 
@@ -459,7 +485,7 @@
 
         readScriptSetting(difference)
 
-        settingPanel.parentNode.removeChild(settingPanel)
+        settingPanel.classList.remove('show')
       })
 
       settingPanel.appendChild(settingConform)
@@ -487,13 +513,41 @@
   transform: translate(-50%, -50%);
   background: inherit;
   z-index: 1;
-  border: 1 solid var(--line_regular);
+  border: 1px solid var(--line_regular);
+  display: none;
+  flex-direction: column;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+#setting-panel.show {
+  display: flex;
+}
+
+.setting-title {
+  padding-bottom: 5px;
+  margin: 0 5px;
+  border-bottom: 1px solid var(--line_regular);
+}
+#setting-checkboxes {
   display: flex;
   flex-direction: column;
 }
 
-#setting-select label {
-  margin: 5px 10px;
+#setting-checkboxes label {
+  margin: 5px;
+  display: flex;
+}
+
+#setting-checkboxes span {
+  flex-grow: 1;
+  text-align: center;
+  user-select: none;
+}
+
+#setting-conform {
+  margin: 0 20px;
+  border-radius: 5px;
 }
 
 /* ----------------------------------------------------
@@ -929,6 +983,8 @@ svg.mini-header__logo path {
   padding: calc(var(--video-height) + var(--dm-row-height)) 10px 0;
   box-sizing: border-box;
   width: 100% !important;
+  /* 填充评论未加载时的空白 */
+  min-height: calc(100vh - var(--header-height));
 }
 
 /* ----------------------------------------------------
@@ -1007,9 +1063,12 @@ svg.mini-header__logo path {
   display: block !important;
 }
 
+/* 移除次要按钮：画中画、宽屏、页面全屏、时间、选集 */
 .bpx-player-ctrl-pip,
 .bpx-player-ctrl-wide,
-.bpx-player-ctrl-web {
+.bpx-player-ctrl-web,
+.bpx-player-ctrl-time,
+.bpx-player-ctrl-eplist {
   display: none !important;
 }
 
@@ -1025,14 +1084,27 @@ svg.mini-header__logo path {
   min-width: 0 !important;
 }
 
-/* 清晰度、倍速 */
+/* 清晰度(width:auto 不换行，隐藏不掉高清字样) */
+.bpx-player-ctrl-quality {
+  margin-right: 0 !important;
+  min-width: 0;
+  flex: auto !important;
+}
+
+/* 清晰度、倍速文本 */
 .bpx-player-ctrl-quality-result,
 .bpx-player-ctrl-playbackrate {
   font-size: 12px !important;
 }
 
-.bpx-player-ctrl-quality {
-  margin-right: 0 !important;
+/* 清晰度文本:隐藏换行的部分 */
+.bpx-player-ctrl-quality-result {
+  height: 22px;
+  overflow: hidden;
+}
+
+.bpx-player-ctrl-playbackrate {
+  text-wrap: nowrap;
 }
 
 /* 按钮区(图标22px，算 margin 37px) */
@@ -1040,11 +1112,6 @@ svg.mini-header__logo path {
   height: 29px !important;
   margin-top: 7px !important;
   padding: 0 7px !important;
-}
-
-/* 时间 */
-.bpx-player-ctrl-time {
-  margin-right: 0 !important;
 }
 
 /* 进度条 */
@@ -1092,15 +1159,19 @@ svg.mini-header__logo path {
   height: 24px !important;
 }
 
-/* 存在章节时 */
+/* 存在章节时(允许章节缩小) */
 .bpx-player-ctrl-viewpoint {
   margin: 0 !important;
-  width: 
+  min-width: 0 !important;
+  width: 45px !important;
+  flex-shrink: 1 !important;
 }
 
 .bpx-player-ctrl-viewpoint-text {
-  width: 44px !important;
+  width: 24px !important;
   text-overflow: unset !important;
+  font-size: 12px;
+  flex: none;
 }
 
 /* ----------------------------------------------------
