@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.3.2
+// @version            3.3.3
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -41,7 +41,7 @@
 
   preventBeforeUnload()
 
-  addHiddenStyle()
+  if (localStorage.getItem('hidden-header') === '1') { addHiddenStyle() }
 
   if (window.location.pathname === '/') {
     // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
@@ -174,7 +174,7 @@
     const entryBtn = document.getElementById('menu-fab')
     entryBtn.addEventListener('click', () => {
       if (localStorage.getItem('hidden-header') === '1') {
-        document.getElementById('hidden-header').remove()
+        document.getElementById('hidden-header')?.remove()
         localStorage.setItem('hidden-header', '0')
       } else {
         addHiddenStyle()
