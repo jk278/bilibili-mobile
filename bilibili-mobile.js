@@ -41,11 +41,15 @@
 
   preventBeforeUnload()
 
+  addHiddenStyle()
+
   if (window.location.pathname === '/') {
-    handleHeaderImage()
     // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
     increaseVideoLoadSize()
-  } else if (window.location.pathname.startsWith('/video')) {
+    handleHeaderImage()
+  }
+
+  if (window.location.pathname.startsWith('/video')) {
     handleScriptPreSetting()
   }
 
@@ -101,6 +105,20 @@
     }
   }
 
+  // 隐藏顶栏
+  function addHiddenStyle () {
+    const hiddenStyle = Object.assign(document.createElement('style'), {
+      id: 'hidden-header',
+      textContent: `
+          .bili-header__bar, #overlay {transform: translateY(-100%);}
+          #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
+          /* 父布局不要用 transform */
+          .video-container-v1.video-container-v1 {top: -64px !important;}
+        `
+    })
+    ensureHeadGetted(hiddenStyle)
+  }
+
   // 操作栏
   function handleActionbar () {
     const actionbar = Object.assign(document.createElement('div'), {
@@ -154,12 +172,11 @@
 
     const entryBtn = document.getElementById('menu-fab')
     entryBtn.addEventListener('click', () => {
-      const body = document.body
-      if (body.getAttribute('hidden-header') === 'true') {
-        body.setAttribute('hidden-header', '')
+      if (localStorage.getItem('hidden-header') === '1') {
+        document.getElementById('hidden-header').remove()
         localStorage.setItem('hidden-header', '0')
       } else {
-        body.setAttribute('hidden-header', 'true')
+        addHiddenStyle()
         localStorage.setItem('hidden-header', '1')
       }
     })
@@ -340,8 +357,8 @@
 
   // 增加视频加载数量函数
   function increaseVideoLoadSize () {
-    const origFetch = window.fetch
-    window.fetch = function (input, init) {
+    const origFetch = _unsafeWindow.fetch
+    _unsafeWindow.fetch = function (input, init) {
       // console.log(input)
       if (typeof input === 'string' && input.includes('api.bilibili.com') && input.includes('feed/rcmd') && init.method.toUpperCase() === 'GET') {
         input = input.replace('&ps=12&', '&ps=30&')
@@ -352,19 +369,17 @@
 
   // 滚动隐藏函数(弹幕行、评论行)
   function scrollToHidden () {
-    const leftContainer = document.getElementsByClassName('left-container')[0]
-
     let lastScrollTop = 0
-    const scrollThreshold = 100 // 滚动距离阈值
+    const scrollThreshold = 75 // 滚动距离阈值
 
     window.addEventListener('scroll', () => {
       const currentScrollTop = window.scrollY
       if ((currentScrollTop - lastScrollTop) > scrollThreshold) {
-        leftContainer.setAttribute('scroll-hidden', 'true')
+        document.body.setAttribute('scroll-hidden', 'true')
         lastScrollTop = currentScrollTop
       } else if ((currentScrollTop - lastScrollTop) < -scrollThreshold ||
-       currentScrollTop < 100) {
-        leftContainer.setAttribute('scroll-hidden', '')
+       currentScrollTop < scrollThreshold) {
+        document.body.setAttribute('scroll-hidden', '')
         lastScrollTop = currentScrollTop
       }
     })
@@ -522,6 +537,11 @@
   justify-content: space-evenly;
   align-items: center;
   background: inherit;
+  transition: .5s transform ease-in;
+}
+
+[scroll-hidden=true] #actionbar {
+  transform: translateY(100%);
 }
 
 #actionbar > * {
@@ -663,20 +683,6 @@ body,
  -------------------------------------------------- */
 
 /* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
-
-/* 顶栏隐藏 */
-body[hidden-header="true"] .bili-header__bar {
-  transform: translateY(-100%)
-}
-
-body[hidden-header="true"] #playerWrap {
-  transform: translateY(calc(var(--header-height) * -1))
-}
-
-/* 父布局不要用 transform */
-body[hidden-header="true"] .video-container-v1 {
-  top: -64px !important;
-}
 
 /* 顶栏边距（右边距减去头像右空隙） */
 .bili-header__bar {
@@ -1254,7 +1260,7 @@ svg.mini-header__logo path {
 }
 
 [scroll-hidden=true] .bpx-player-sending-area {
-  transform: none
+  transform: none;
 }
 
 .bpx-player-video-area {
@@ -1512,7 +1518,7 @@ svg.mini-header__logo path {
 .main-reply-box {
   position: fixed;
   left: 0;
-  bottom: 0;
+  bottom: var(--header-height);
   z-index: 10;
   background: white;
   width: 100%;
@@ -1520,13 +1526,13 @@ svg.mini-header__logo path {
   border-top: 1px solid var(--line_regular);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
-  transition: 0.5s transform ease-in;
+  transition: .75s transform ease-in;
   display: block !important;
 }
 
 /* 评论行滚动隐藏 */
 [scroll-hidden=true] .main-reply-box {
-  transform: translateY(100%)
+  transform: translateY(calc(100% + var(--header-height)))
 }
 
 /* 移除原底部评论栏 */
@@ -1554,8 +1560,6 @@ svg.mini-header__logo path {
   height: 26px !important;
   line-height: 26px !important;
   min-height: 26px !important;
-  opacity: 0;
-  animation: fadeIn 4.5s ease-in forwards;
 }
 
 /* 输入展开块 */
