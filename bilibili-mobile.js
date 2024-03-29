@@ -73,13 +73,13 @@
   }
 
   function addPlaysInline () {
-    const videoElement = document.querySelector('.bpx-player-video-wrap>video')
+    const videoElement = document.getElementsByClassName('bpx-player-video-wrap>video')[0]
     // 新添加了路径判断，此处预留
     if (videoElement) videoElement.playsInline = true
   }
 
   function controlSidebar () {
-    const rightContainer = document.querySelector('.right-container')
+    const rightContainer = document.getElementsByClassName('right-container')[0]
     const toggleSidebar = document.createElement('div')
     toggleSidebar.id = 'toggleSidebar'
     /* html */
@@ -107,7 +107,7 @@
     // 若作为两个分列的兄弟元素加入，就会影响页面布局
     document.body.appendChild(toggleSidebar)
 
-    const backdrop = document.querySelector('.left-container') // 伪元素的真实元素
+    const backdrop = document.getElementsByClassName('left-container')[0] // 伪元素的真实元素
     backdrop.addEventListener('click', closeSidebar)
     // 只能传递函数引用，不能传递函数执行结果，或 () => { closeSidebar() }
     // event.stopPropagation() 阻止目标子元素的点击事件默认冒泡到父元素
@@ -115,8 +115,8 @@
     // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
     const recommendLiist = document.getElementById('reco_list')
     recommendLiist.addEventListener('click', event => {
-      const nextPlay = document.querySelector('.rec-title')
-      const recommendFooter = document.querySelector('.rec-footer')
+      const nextPlay = document.getElementsByClassName('rec-title')[0]
+      const recommendFooter = document.getElementsByClassName('rec-footer')[0]
       if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) {
         closeSidebar()
       }
@@ -133,7 +133,7 @@
     <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
     `
     searchbarBtn.addEventListener('click', () => {
-      const searchbar = document.querySelector('.center-search-container')
+      const searchbar = document.getElementsByClassName('center-search-container')[0]
       searchbar.classList.add('show')
       const input = searchbar.querySelector('input')
       input.focus()
@@ -152,7 +152,7 @@
     <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg>
     `
     entryBtn.addEventListener('click', () => {
-      const entryBtn = document.querySelector('.right-entry')
+      const entryBtn = document.getElementsByClassName('right-entry')[0]
       entryBtn.classList.add('show')
       const input = entryBtn.querySelector('input')
       input.focus()
@@ -324,7 +324,7 @@
 
   // 滚动隐藏函数(弹幕行、评论行)
   function scrollToHidden () {
-    const leftContainer = document.querySelector('.left-container')
+    const leftContainer = document.getElementsByClassName('left-container')[0]
 
     let lastScrollTop = 0
     const scrollThreshold = 100 // 滚动距离阈值
@@ -344,9 +344,9 @@
 
   // 接管视频点击事件
   function controlVideoClick () {
-    const playerContainer = document.querySelector('.bpx-player-container')
+    const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
     playerContainer.addEventListener('click', handleClick)
-    const controlWrap = document.querySelector('.bpx-player-control-wrap')
+    const controlWrap = document.getElementsByClassName('bpx-player-control-wrap')[0]
 
     let clickTimer = null
 
