@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.3
+// @version            3.3.2
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -33,7 +33,7 @@
   // }, 100)
 
   // eslint-disable-next-line no-undef
-  const _unsafeWindow = /* @__PURE__ */ (() => typeof unsafeWindow !== 'undefined' ? unsafeWindow : 'undefined')() // 立即执行表达式只调用一次
+  const _unsafeWindow = /* @__PURE__ */ (() => typeof unsafeWindow !== 'undefined' ? unsafeWindow : window)() // 立即执行表达式只调用一次
   // 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
 
   initViewport()
@@ -59,8 +59,9 @@
     if (window.location.pathname.startsWith('/video')) {
       addPlaysInline()
       controlVideoClick()
-      scrollToHidden()
     }
+
+    scrollToHidden()
 
     handleActionbar()
 
@@ -126,19 +127,19 @@
       /* html */
       innerHTML: `
       <div id="full-now">
-        <svg version="1.0" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000" class="bi bi-fullscreen"><path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
+        <svg version="1.0" width="24" height="24" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-fullscreen"><path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
       </div>
       <div id="my-home">
-        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m12 4.44 7 6.09V20h-4v-6H9v6H5v-9.47l7-6.09m0-1.32-8 6.96V21h6v-6h4v6h6V10.08l-8-6.96z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m12 4.44 7 6.09V20h-4v-6H9v6H5v-9.47l7-6.09m0-1.32-8 6.96V21h6v-6h4v6h6V10.08l-8-6.96z"></path></svg>
       </div>
       <div id="search-fab">
-        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m20.87 20.17-5.59-5.59C16.35 13.35 17 11.75 17 10c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m20.87 20.17-5.59-5.59C16.35 13.35 17 11.75 17 10c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path></svg>
       </div>
       <div id="menu-fab">
-        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path></svg>
       </div>
       <div id="sidebar">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M21 6H3V5h18v1zm0 5H3v1h18v-1zm0 6H3v1h18v-1z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M21 6H3V5h18v1zm0 5H3v1h18v-1zm0 6H3v1h18v-1z"></path></svg>
       </div>
       `
     })
@@ -372,7 +373,7 @@
     let lastScrollTop = 0
     const scrollThreshold = 75 // 滚动距离阈值
 
-    window.addEventListener('scroll', () => {
+    _unsafeWindow.addEventListener('scroll', () => {
       const currentScrollTop = window.scrollY
       if ((currentScrollTop - lastScrollTop) > scrollThreshold) {
         document.body.setAttribute('scroll-hidden', 'true')
@@ -540,9 +541,12 @@
   transition: .5s transform ease-in;
 }
 
-[scroll-hidden=true] #actionbar {
-  transform: translateY(100%);
+[scroll-hidden=true] #actionbar,
+[scroll-hidden=true] .flexible-roll-btn-inner,
+[scroll-hidden=true] .top-btn {
+  transform: translateY(var(--header-height));
 }
+
 
 #actionbar > * {
   opacity: 0;
@@ -1630,9 +1634,13 @@ svg.mini-header__logo path {
 * ---------------------------------------------------- *
  ----------------------------------------------------- */
 
-/* 刷新按钮 */
+/* 按钮 */
 .primary-btn:hover {
   background-color: unset !important;
+}
+
+.primary-btn {
+  background: none !important;
 }
 
 /* 刷新按钮 */
@@ -1640,25 +1648,23 @@ svg.mini-header__logo path {
   border: none !important;
   color: inherit !important;
   background: none !important;
-  padding: 7px 8px 7px 7px !important; */
+  padding: 7px 8px 7px 7px !important;
   display: block !important;
-  opacity: 0;
-  animation: fadeIn 1s ease-in forwards;
   position: fixed;
   bottom: -17px;
   right: 5vw;
   width: 40px !important;
+  transition: .5s transform ease-in;
 }
 
 /* 首页置顶按钮 */
 .top-btn {
   border: none !important;
-  opacity: 0;
-  animation: fadeIn 1s ease-in forwards;
   position: fixed;
   bottom: -17px;
   right: 77vw;
   width: 40px !important;
+  transition: .5s transform ease-in !important
 }
 
 .top-btn .primary-btn-text {
