@@ -83,7 +83,7 @@
   function preventBeforeUnload () {
     const originalAddEventListener = window.addEventListener
 
-    // 重写 addEventListener 方法，禁止其刷新弹窗
+    // 重写 addEventListener 方法，禁止网站刷新时的弹窗
     window.addEventListener = function (type, listener, options) {
       if (type === 'beforeunload') {
         return
