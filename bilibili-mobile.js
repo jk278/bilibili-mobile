@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.3.6
+// @version            3.4
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -114,7 +114,7 @@
           .bili-header__bar, #overlay {transform: translateY(-100%);}
           #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
           /* 父布局不要用 transform */
-          .video-container-v1.video-container-v1 {top: -64px !important;}
+          .video-container-v1.video-container-v1 {top: 0 !important;}
           .center-search-container {margin-top: var(--header-height) !important;}
         `
     })
@@ -690,6 +690,11 @@ body,
 
 /* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
 
+/* 避免初始内联高度影响计算 */
+#biliMainHeader {
+  position: fixed;
+}
+
 /* 顶栏边距（右边距减去头像右空隙） */
 .bili-header__bar {
   padding: 0 10px 0 15px !important;
@@ -702,11 +707,9 @@ body,
 }
 
 /* 视频页顶栏高度 */
-.header-v3 #biliMainHeader .bili-header .mini-header {
+.header-v3 #biliMainHeader .bili-header .bili-header__bar {
   height: var(--header-height) !important;
 }
-
-/* 保留 #biliMainHeader 内联初始高度 64px */
 
 /* 顶部按钮高度 */
 .entry-title,
@@ -1037,8 +1040,7 @@ svg.mini-header__logo path {
 .video-container-v1 {
   min-width: 0 !important;
   padding: 0 !important;
-  /* 顶栏高度减 #biliMainHeader 保留高度 */
-  top: calc(var(--header-height) - 64px );
+  top: var(--header-height);
 }
 
 /* ----------------------------------------------------
@@ -1051,14 +1053,15 @@ svg.mini-header__logo path {
   --dm-row-height: 44px;
 }
 
-/* 视频块（宽度） */
+/* 有初始内联 top */
+/* 视频块（宽度） (#mainheight与header的高度差导致了64px-48px的可滚动区域) */
 .left-container {
   /* 移动 Safari 百分比宽高自动考虑边框和填充 */
   padding: calc(var(--video-height) + var(--dm-row-height)) 10px 0;
   box-sizing: border-box;
   width: 100% !important;
 
-  /* 填充评论未加载时的空白，video-container-v1 已考虑顶部留空 */
+  /* 填充评论未加载时的空白，video-container-v1 已考虑顶部留空，但 #app 的高度把顶部重叠的部分加上了 */
   min-height: calc(100vh - var(--header-height));
 }
 
@@ -1495,9 +1498,19 @@ svg.mini-header__logo path {
 }
 
 /* AI 总结 */
-.resizable-component {
+.resizable-component.resizable-component {
   width: 100% !important;
   left: 0 !important;
+  position: fixed !important;
+  height: 100vw !important;
+  top: 50% !important;
+  transform: translateY(-50%);
+}
+
+/* 简介 */
+.video-desc-container .toggle-btn {
+  text-align: right;
+  margin-right: 7px;
 }
 
 /* 标签 */
@@ -1654,6 +1667,15 @@ svg.mini-header__logo path {
     right: 50% !important;
     transform: translateX(50%);
   }
+  
+  .last-image {
+    left: 20vw !important;
+  }
+
+  .next-image {
+    right: 20vw !important;
+  }
+
 }
 
 /* 块状广告（包括推荐列） */
