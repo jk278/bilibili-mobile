@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.4
+// @version            3.4.2
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -71,13 +71,9 @@
   })
 
   // DOM 加载完后
-  function waitDOMContentLoaded (callback) {
-    document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback()
-  }
+  function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
   // head 获取到后
-  function ensureHeadGetted (element) {
-    document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element))
-  }
+  function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
 
   function initViewport () {
     if (document.head) {
@@ -110,12 +106,32 @@
   function addHiddenStyle () {
     const hiddenStyle = Object.assign(document.createElement('style'), {
       id: 'hidden-header',
+      /* css */
       textContent: `
           .bili-header__bar, #overlay {transform: translateY(-100%);}
           #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
           /* 父布局不要用 transform */
           .video-container-v1.video-container-v1 {top: 0 !important;}
+          .right-container.right-container {height: 100%;}
           .center-search-container {margin-top: var(--header-height) !important;}
+          /* 隐藏时操作栏蒙版 */
+          #actionbar:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(0, 0, 0);
+            opacity: 0;
+            transition: opacity 0.6s ease-in;
+            pointer-events: none;
+          }
+          
+          body[show-sidebar="true"] #actionbar:after {
+            opacity: 0.5;
+            pointer-events: auto;
+          }
         `
     })
     ensureHeadGetted(hiddenStyle)
@@ -186,31 +202,30 @@
 
   // 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
   function handleSidebar () {
-    const rightContainer = document.getElementsByClassName('right-container')[0]
     const sidebarBtn = document.getElementById('sidebar-btn')
 
-    sidebarBtn.addEventListener('click', function () {
-      if (rightContainer.getAttribute('show') !== 'true') {
-        rightContainer.setAttribute('show', 'true')
-      } else {
-        closeSidebar()
-      }
+    sidebarBtn.addEventListener('click', (event) => {
+      event.stopPropagation()
+      const isShow = document.body.getAttribute('show-sidebar') === 'true'
+      isShow ? closeSidebar() : document.body.setAttribute('show-sidebar', 'true')
     })
 
-    function closeSidebar () {
-      rightContainer.setAttribute('show', '')
-    }
+    function closeSidebar () { document.body.setAttribute('show-sidebar', '') }
 
-    const backdrop = document.getElementsByClassName('left-container')[0] // 伪元素的真实元素
-    backdrop.addEventListener('click', closeSidebar)
+    document.getElementsByClassName('left-container')[0].addEventListener('click', closeSidebar)
 
-    // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
-    const recommendLiist = document.getElementById('reco_list')
-    recommendLiist.addEventListener('click', event => {
-      const nextPlay = document.getElementsByClassName('rec-title')[0]
-      const recommendFooter = document.getElementsByClassName('rec-footer')[0]
-      if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+    document.getElementById('actionbar').addEventListener('click', () => {
+      // 子元素的监听器比 actionbar 先触发，所以这里的属性值始终为 'true'，阻止子元素的冒泡事件即可
+      localStorage.getItem('hidden-header') === '1' && document.body.getAttribute('show-sidebar') === 'true' && closeSidebar()
     })
+
+    // // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
+    // const recommendLiist = document.getElementById('reco_list')
+    // recommendLiist.addEventListener('click', event => {
+    //   const nextPlay = document.getElementsByClassName('rec-title')[0]
+    //   const recommendFooter = document.getElementsByClassName('rec-footer')[0]
+    //   if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+    // })
   }
 
   // 接管顶部点击事件，父元素point-events:none，子元素point-events:auto对有的手机无效
@@ -1366,7 +1381,7 @@ svg.mini-header__logo path {
   z-index: 76;
   background: white;
   transition: transform .6s ease-in;
-  height: calc(100% - var(--header-height));
+  height: calc(100% - var(--header-height) * 2);
   overflow-y: auto;
   /* 避免到达边界后的滚动事件穿透 */
   overscroll-behavior: contain;
@@ -1375,7 +1390,7 @@ svg.mini-header__logo path {
   border-left: 1px solid var(--line_regular);
 }
 
-.right-container[show="true"] {
+body[show-sidebar="true"] .right-container {
   transform: translateX(-100%);
 }
 
@@ -1384,7 +1399,7 @@ svg.mini-header__logo path {
 }
 
 /* 推荐块蒙版（加到左视频块才不会被冒泡事件影响） */
-.video-container-v1:has(>.right-container) .left-container:after {
+.left-container:after {
   content: '';
   position: absolute;
   top: 0;
@@ -1398,7 +1413,7 @@ svg.mini-header__logo path {
   pointer-events: none;
 }
 
-.video-container-v1:has(>.right-container[show="true"]) .left-container:after {
+body[show-sidebar="true"] .left-container:after {
   opacity: 0.5;
   pointer-events: auto;
 }
