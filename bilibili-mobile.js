@@ -1196,11 +1196,13 @@ svg.mini-header__logo path {
 /* 修复部分情况下的控制栏图标增大导致的高度过高 */
 @media screen and (min-width: 750px) {
   .bpx-player-container[data-screen=full] {
-    height: 43px !important;
-  }
+    .bpx-player-control-wrap {
+      height: 43px !important;
+    }
 
-  .bpx-player-control-top {
-    bottom: 43px !important;
+    .bpx-player-control-top {
+      bottom: 43px !important;
+    }
   }
 }
 
