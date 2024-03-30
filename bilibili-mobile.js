@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.4.3
+// @version            3.4.3.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -171,13 +171,15 @@
     if (window.location.pathname.startsWith('/video')) {
       const fullBtn = document.getElementById('full-now')
       fullBtn.addEventListener('click', () => {
-        document.getElementsByClassName('bpx-player-ctrl-full')[0]?.click()
+        document.getElementsByClassName('bpx-player-ctrl-full')[0].click()
         const video = document.getElementsByTagName('video')[0]
         // 等于符号优先级更高
         if ((localStorage.getItem('full-unmuted') || '0') === '1') {
-          if (video.paused === true) video.play()
+          if (video.paused === true) {
+            document.getElementsByClassName('bpx-player-ctrl-play')[0].click()
+          }
           if (video.volume === 0) {
-            document.getElementsByClassName('bpx-player-ctrl-muted-icon')[0].click()
+            document.getElementsByClassName('bpx-player-ctrl-volume')[0].click()
           }
         }
       })
@@ -582,7 +584,7 @@
       const values = Object.values(keyValue)
       const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
       for (const [index, value] of values.entries()) {
-        checkboxElements[index].checked = (localStorage.getItem(value) || defaultValue)
+        checkboxElements[index].checked = (localStorage.getItem(value) || defaultValue) === '1'
       }
 
       settingConform.addEventListener('click', () => {
