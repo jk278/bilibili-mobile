@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.4.2
+// @version            3.4.3
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -67,6 +67,7 @@
 
     if (window.location.pathname.startsWith('/video')) {
       handleSidebar()
+      handleScriptSetting()
     }
   })
 
@@ -170,9 +171,15 @@
     if (window.location.pathname.startsWith('/video')) {
       const fullBtn = document.getElementById('full-now')
       fullBtn.addEventListener('click', () => {
-        const video = document.getElementsByTagName('video')[0]
-        if (video) video.unmuted = false
         document.getElementsByClassName('bpx-player-ctrl-full')[0]?.click()
+        const video = document.getElementsByTagName('video')[0]
+        // 等于符号优先级更高
+        if ((localStorage.getItem('full-unmuted') || '0') === '1') {
+          if (video.paused === true) video.play()
+          if (video.volume === 0) {
+            document.getElementsByClassName('bpx-player-ctrl-muted-icon')[0].click()
+          }
+        }
       })
     }
 
@@ -220,12 +227,12 @@
     })
 
     // // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
-    // const recommendLiist = document.getElementById('reco_list')
-    // recommendLiist.addEventListener('click', event => {
-    //   const nextPlay = document.getElementsByClassName('rec-title')[0]
-    //   const recommendFooter = document.getElementsByClassName('rec-footer')[0]
-    //   if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
-    // })
+    const recommendLiist = document.getElementById('reco_list')
+    recommendLiist.addEventListener('click', event => {
+      const nextPlay = document.getElementsByClassName('rec-title')[0]
+      const recommendFooter = document.getElementsByClassName('rec-footer')[0]
+      if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+    })
   }
 
   // 接管顶部点击事件，父元素point-events:none，子元素point-events:auto对有的手机无效
@@ -434,7 +441,7 @@
     }
   }
 
-  // 脚本设置
+  // 脚本预加载设置
   function handleScriptPreSetting () {
     const defaultValue = [1, 1, 1, 1]
 
@@ -456,8 +463,8 @@
       createSettingPanel()
 
       // eslint-disable-next-line no-undef
-      GM_registerMenuCommand('设置隐藏元素', () => {
-        document.getElementById('setting-panel').classList.add('show')
+      GM_registerMenuCommand('元素隐藏设置', () => {
+        document.getElementById('setting-panel-style').classList.add('show')
       })
     })
 
@@ -498,10 +505,11 @@
 
     function createSettingPanel () {
       const settingPanel = Object.assign(document.createElement('div'), {
-        id: 'setting-panel',
+        id: 'setting-panel-style',
+        className: 'setting-panel',
         innerHTML: `
-        <div class="setting-title">选择隐藏的元素：</div>
-        <div id="setting-checkboxes">
+        <div class="setting-title">选择隐藏元素：</div>
+        <div class="setting-checkboxes">
           <label><input type="checkbox" value="1"><span>弹幕行</span></label>
           <label><input type="checkbox" value="2"><span>评论行</span></label>
           <label><input type="checkbox" value="3"><span>标签块</span></label>
@@ -511,11 +519,11 @@
       })
 
       const settingConform = Object.assign(document.createElement('button'), {
-        id: 'setting-conform',
+        class: 'setting-conform',
         textContent: '确认'
       })
 
-      const checkboxElements = settingPanel.querySelectorAll('#setting-checkboxes input[type="checkbox"]')
+      const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
       const oldValues = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
       for (const [index, value] of oldValues.entries()) {
         checkboxElements[index].checked = value
@@ -529,6 +537,58 @@
 
         readScriptSetting(difference)
 
+        settingPanel.classList.remove('show')
+      })
+
+      settingPanel.appendChild(settingConform)
+      document.body.appendChild(settingPanel)
+    }
+  }
+
+  // 脚本设置
+  function handleScriptSetting () {
+    const defaultValue = '0'
+
+    const keyValue = {
+      key1: 'full-unmuted'
+    }
+
+    waitDOMContentLoaded(() => {
+      createSettingPanel()
+
+      // eslint-disable-next-line no-undef
+      GM_registerMenuCommand('操作偏好设置', () => {
+        document.getElementById('setting-panel-preference').classList.add('show')
+      })
+    })
+
+    function createSettingPanel () {
+      const settingPanel = Object.assign(document.createElement('div'), {
+        id: 'setting-panel-preference',
+        className: 'setting-panel',
+        innerHTML: `
+        <div class="setting-title">选择操作偏好：</div>
+        <div class="setting-checkboxes">
+          <label><input type="checkbox" value="1"><span>使用底部全屏按钮播放和打开声音</span></label>
+        </div>
+        `
+      })
+
+      const settingConform = Object.assign(document.createElement('button'), {
+        class: 'setting-conform',
+        textContent: '确认'
+      })
+
+      const values = Object.values(keyValue)
+      const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
+      for (const [index, value] of values.entries()) {
+        checkboxElements[index].checked = (localStorage.getItem(value) || defaultValue)
+      }
+
+      settingConform.addEventListener('click', () => {
+        for (const [index, value] of values.entries()) {
+          localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
+        }
         settingPanel.classList.remove('show')
       })
 
@@ -599,7 +659,7 @@
 }
 
 /* 脚本设置窗口 */
-#setting-panel {
+.setting-panel {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -613,7 +673,7 @@
   border-radius: 5px;
 }
 
-#setting-panel.show {
+.setting-panel.show {
   display: flex;
 }
 
@@ -622,23 +682,23 @@
   margin: 0 5px;
   border-bottom: 1px solid var(--line_regular);
 }
-#setting-checkboxes {
+.setting-checkboxes {
   display: flex;
   flex-direction: column;
 }
 
-#setting-checkboxes label {
+.setting-checkboxes label {
   margin: 5px;
   display: flex;
 }
 
-#setting-checkboxes span {
+.setting-checkboxes span {
   flex-grow: 1;
   text-align: center;
   user-select: none;
 }
 
-#setting-conform {
+.setting-conform {
   margin: 0 20px;
   border-radius: 5px;
 }
@@ -708,6 +768,7 @@ body,
 /* 避免初始内联高度影响计算 */
 #biliMainHeader {
   position: fixed;
+  z-index: 2;
 }
 
 /* 顶栏边距（右边距减去头像右空隙） */
@@ -1294,6 +1355,7 @@ svg.mini-header__logo path {
 
   transition: 0.5s transform ease-in;
   display: block !important;
+  z-index: 0;
 }
 
 [scroll-hidden=true] .bpx-player-sending-area {
@@ -1302,6 +1364,11 @@ svg.mini-header__logo path {
 
 .bpx-player-video-area {
   z-index: 1;
+}
+
+/* 修改小窗样式的时候把这行删了，导致弹幕行显示异常 */
+.bpx-player-container[data-screen=mini] {
+  overflow: unset !important;
 }
 
 /* 弹幕行预加载灰块白条(视频底下也有，预加载有时会看到) */
