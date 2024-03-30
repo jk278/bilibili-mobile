@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.3.4
+// @version            3.3.4.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -1194,16 +1194,16 @@ svg.mini-header__logo path {
 }
 
 /* 修复部分情况下的控制栏图标增大导致的高度过高 */
-@media screen and (min-width: 750px)
-.bpx-player-container[data-screen=full] {
-  .bpx-player-control-wrap {
-    height: 42px !important;
-  }
+@media screen and (min-width: 750px) {
+  .bpx-player-container[data-screen=full] {
+    {
+      height: 43px !important;
+    }
 
-  .bpx-player-control-top {
-    bottom: 42px !important;
+    .bpx-player-control-top {
+      bottom: 43px !important;
+    }
   }
-
 }
 
 /* 进度条细条包含块（高12px） */
