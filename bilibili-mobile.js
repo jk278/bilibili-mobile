@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.3.5
+// @version            3.3.5.4
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -52,11 +52,6 @@
   if (window.location.pathname.startsWith('/video')) {
     handleScriptPreSetting()
   }
-
-  waitDOMContentLoaded(() => {
-    const interval = setInterval(() => { console.log(document.getElementsByClassName('right-container')[0].classList) }, 50)
-    setTimeout(() => { clearInterval(interval) }, 2000)
-  })
 
   waitDOMContentLoaded(() => {
     localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
@@ -189,16 +184,17 @@
     })
   }
 
-  // 侧边栏(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)
+  // 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
   function handleSidebar () {
     const rightContainer = document.getElementsByClassName('right-container')[0]
-
     const sidebarBtn = document.getElementById('sidebar-btn')
 
     sidebarBtn.addEventListener('click', function () {
       if (rightContainer.getAttribute('show') !== 'true') {
         rightContainer.setAttribute('show', 'true')
-      } else { closeSidebar() }
+      } else {
+        closeSidebar()
+      }
     })
 
     function closeSidebar () {
@@ -374,7 +370,7 @@
     }
   }
 
-  // 滚动隐藏函数(弹幕行、评论行)
+  // 滚动隐藏函数(弹幕行、评论行)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
   function scrollToHidden () {
     let lastScrollTop = 0
     const scrollThreshold = 75 // 滚动距离阈值
@@ -1062,8 +1058,8 @@ svg.mini-header__logo path {
   box-sizing: border-box;
   width: 100% !important;
 
-  /* 填充评论未加载时的空白，注意: 顶部预留高度是 64px */
-  min-height: calc(100vh - 64px);
+  /* 填充评论未加载时的空白，video-container-v1 已考虑顶部留空 */
+  min-height: calc(100vh - var(--header-height));
 }
 
 /* ----------------------------------------------------
@@ -1358,27 +1354,26 @@ svg.mini-header__logo path {
 
 /* 推荐块 */
 .right-container {
-  width: 85% !important;
-
   position: fixed !important;
+  width: 85% !important;
+  left: 85%;
+  padding: 10px;
+  margin: 0 0 0 15% !important;
+
   z-index: 76;
   background: white;
   transition: transform .6s ease-in;
-  transform: translateX(calc(100% + 1px));
   height: calc(100% - var(--header-height));
   overflow-y: auto;
   /* 避免到达边界后的滚动事件穿透 */
   overscroll-behavior: contain;
 
   box-sizing: border-box;
-  padding: 10px;
-  margin: 0 !important;
-  right: 0;
   border-left: 1px solid var(--line_regular);
 }
 
 .right-container[show="true"] {
-  transform: none;
+  transform: translateX(-100%);
 }
 
 .right-container-inner {
