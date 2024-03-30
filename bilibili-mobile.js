@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.3.4.1
+// @version            3.3.5
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -52,6 +52,11 @@
   if (window.location.pathname.startsWith('/video')) {
     handleScriptPreSetting()
   }
+
+  waitDOMContentLoaded(() => {
+    const interval = setInterval(() => { console.log(document.getElementsByClassName('right-container')[0].classList) }, 50)
+    setTimeout(() => { clearInterval(interval) }, 2000)
+  })
 
   waitDOMContentLoaded(() => {
     localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
@@ -115,6 +120,7 @@
           #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
           /* 父布局不要用 transform */
           .video-container-v1.video-container-v1 {top: -64px !important;}
+          .center-search-container {margin-top: var(--header-height) !important;}
         `
     })
     ensureHeadGetted(hiddenStyle)
@@ -138,7 +144,7 @@
       <div id="menu-fab">
         <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path></svg>
       </div>
-      <div id="sidebar">
+      <div id="sidebar-btn">
         <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M21 6H3V5h18v1zm0 5H3v1h18v-1zm0 6H3v1h18v-1z"></path></svg>
       </div>
       `
@@ -183,20 +189,20 @@
     })
   }
 
-  // 侧边栏
+  // 侧边栏(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)
   function handleSidebar () {
     const rightContainer = document.getElementsByClassName('right-container')[0]
 
-    const sidebar = document.getElementById('sidebar')
+    const sidebarBtn = document.getElementById('sidebar-btn')
 
-    sidebar.addEventListener('click', function () {
-      if (!rightContainer.classList.contains('show')) {
-        rightContainer.classList.add('show')
+    sidebarBtn.addEventListener('click', function () {
+      if (rightContainer.getAttribute('show') !== 'true') {
+        rightContainer.setAttribute('show', 'true')
       } else { closeSidebar() }
     })
 
     function closeSidebar () {
-      rightContainer.classList.remove('show')
+      rightContainer.setAttribute('show', '')
     }
 
     const backdrop = document.getElementsByClassName('left-container')[0] // 伪元素的真实元素
@@ -565,12 +571,12 @@
 #my-home,
 #search-fab,
 #menu-fab,
-#sidebar {
+#sidebar-btn {
   padding: 8px;
 }
 
 #actionbar.home #full-now,
-#actionbar.home #sidebar {
+#actionbar.home #sidebar-btn {
   visibility: hidden;
   pointer-events: none;
 }
@@ -1371,7 +1377,7 @@ svg.mini-header__logo path {
   border-left: 1px solid var(--line_regular);
 }
 
-.right-container.show {
+.right-container[show="true"] {
   transform: none;
 }
 
@@ -1394,7 +1400,7 @@ svg.mini-header__logo path {
   pointer-events: none;
 }
 
-.video-container-v1:has(>.right-container.show) .left-container:after {
+.video-container-v1:has(>.right-container[show="true"]) .left-container:after {
   opacity: 0.5;
   pointer-events: auto;
 }
