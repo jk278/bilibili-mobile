@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.3.5.4
+// @version            3.3.6
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -1352,7 +1352,7 @@ svg.mini-header__logo path {
 * ----------------------- 推荐块 ---------------------- *
  ----------------------------------------------------- */
 
-/* 推荐块 */
+/* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
 .right-container {
   position: fixed !important;
   width: 85% !important;
@@ -1630,6 +1630,30 @@ svg.mini-header__logo path {
 
 .sub-reply-item {
   padding: 4px 0 4px 37px !important;
+}
+
+/* 评论图片 */
+.reply-view-image .show-image-wrap .image-content {
+  width: 100vw !important;
+}
+
+.reply-view-image .operation-btn {
+  .last-image,
+  .next-image,
+  .close-container {
+    top: unset !important;
+    bottom: 100px;
+  }
+
+  .last-image,
+  .next-image {
+    transform: none !important;
+  }
+
+  .close-container {
+    right: 50% !important;
+    transform: translateX(50%);
+  }
 }
 
 /* 块状广告（包括推荐列） */
