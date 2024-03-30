@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.4.5
+// @version            3.4.7
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -171,7 +171,6 @@
     if (window.location.pathname.startsWith('/video')) {
       const fullBtn = document.getElementById('full-now')
       fullBtn.addEventListener('click', () => {
-        document.getElementsByClassName('bpx-player-ctrl-full')[0].click()
         const video = document.getElementsByTagName('video')[0]
         // 等于符号优先级更高
         if ((localStorage.getItem('full-unmuted') || '0') === '1') {
@@ -182,6 +181,8 @@
             document.getElementsByClassName('bpx-player-ctrl-muted-icon')[0].click()
           }
         }
+        // 先全屏via会出现点击播放不生效的问题
+        document.getElementsByClassName('bpx-player-ctrl-full')[0].click()
       })
     }
 
@@ -1295,9 +1296,18 @@ svg.mini-header__logo path {
   padding-bottom: 3px !important;
 }
 
-/* 阴影(高能区 100% - 1px) */
+/* 阴影(控制栏展开时: 高能区 100% - 1px) */
 .bpx-player-pbp {
+  bottom: 1px !important;
+}
+
+.bpx-player-pbp.show {
   bottom: calc(100% + 6px) !important;
+}
+
+/* 替换via暗色异常的阴影 */
+.bpx-player-control-mask {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .5) 100%) !important;
 }
 
 /* 清晰度弹窗 */
