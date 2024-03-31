@@ -1749,8 +1749,6 @@ body[show-sidebar="true"] .left-container:after {
     width: 100% !important;
   }
 }
-.reply-view-image .show-image-wrap {
-}
 
 .reply-view-image .operation-btn {
   .last-image,
