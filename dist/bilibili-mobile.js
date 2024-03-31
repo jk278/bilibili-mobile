@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.5.1
+// @version            3.5.4.2
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -1049,6 +1049,12 @@ svg.mini-header__logo path {
     max-height: var(--video-height) !important;
 }
 
+/* 倍速弹窗 */
+.bpx-player-ctrl-playbackrate-menu-item {
+    height: 30px !important;
+    line-height: 30px !important;
+}
+
 /* 设置弹窗 */
 .bpx-player-ctrl-setting-box {
     right: 0 !important;
@@ -1064,6 +1070,20 @@ svg.mini-header__logo path {
 /* 更多设置 */
 .bui.bui-radio.bui-dark {
     margin-bottom: 5px !important;
+}
+
+/* 播放器弹幕设置弹窗 */
+.bpx-player-dm-setting-wrap {
+    bottom: 20px !important;
+}
+
+/* 弹幕行弹幕设置弹窗 */
+.bpx-player-dm-setting-wrap {
+    bottom: unset !important;
+    top: 0;
+    position: fixed !important;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 /* 全屏控制栏 */
@@ -1807,7 +1827,9 @@ function handleScriptPreSetting () {
     css4: `
       .copyright.item {display: none !important;}
       .show-more {display: none;}`,
-    css5: '.trending {display: none;}'
+    css5: '.trending {display: none;}',
+    css6: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full {position: fixed !important;z-index: -10;visibility: hidden;}',
+    css7: '.bpx-player-contextmenu {display: none;}'
   }
 
   readScriptSetting()
@@ -1838,7 +1860,7 @@ function handleScriptPreSetting () {
             ensureHeadGetted(scriptPreStyle)
           } else {
             document.head
-              ? document.getElementById(`script-pre-style-${index + 1}`).remove()
+              ? document.getElementById(`script-pre-style-${index + 1}`)?.remove()
               : waitDOMContentLoaded(document.getElementById(`script-pre-style-${index + 1}`))
           }
         }
@@ -1867,7 +1889,9 @@ function handleScriptPreSetting () {
           <label><input type="checkbox" value="2"><span>评论行</span></label>
           <label><input type="checkbox" value="3"><span>标签块</span></label>
           <label><input type="checkbox" value="4"><span>转载声明</span></label>
-          <label><input type="checkbox" value="4"><span>搜索热榜</span></label>
+          <label><input type="checkbox" value="5"><span>热搜榜</span></label>
+          <label><input type="checkbox" value="6"><span>播放器全屏音量键</span></label>
+          <label><input type="checkbox" value="7"><span>视频色彩音效调节</span></label>
         </div>
         `
     })
@@ -1884,6 +1908,7 @@ function handleScriptPreSetting () {
     }
 
     settingConform.addEventListener('click', () => {
+      const oldValues = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
       const selectedValues = Array.from(checkboxElements).map((checkbox) => (checkbox.checked ? 1 : 0))
 
       localStorage.setItem('settingShowHidden', JSON.stringify(selectedValues))
@@ -2154,7 +2179,7 @@ __webpack_require__.r(__webpack_exports__);
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.5.1
+// @version            3.5.4.2
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -2225,6 +2250,7 @@ __webpack_require__.r(__webpack_exports__);
     if (window.location.pathname.startsWith('/video')) {
       handleSidebar()
       ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptSetting)()
+      handleVideoLongPress()
     }
   })
 
@@ -2504,6 +2530,32 @@ __webpack_require__.r(__webpack_exports__);
       const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
       element.dispatchEvent(event)
     }
+  }
+
+  function handleVideoLongPress () {
+    const video = document.querySelector('video') // 获取视频元素
+    let isLongPress = false // 长按标志
+    let timeoutId
+
+    video.addEventListener('touchstart', (event) => {
+      timeoutId = setTimeout(() => {
+        video.playbackRate = video.playbackRate * 2
+        isLongPress = true
+      }, 500)
+    })
+
+    video.addEventListener('touchmove', (event) => {
+      clearTimeout(timeoutId) // 触摸移动时取消长按
+    })
+
+    video.addEventListener('touchend', (event) => {
+      clearTimeout(timeoutId) // 触摸结束时清除定时器
+
+      if (isLongPress) {
+        video.playbackRate = video.playbackRate / 2
+        isLongPress = false
+      }
+    })
   }
 }())
 

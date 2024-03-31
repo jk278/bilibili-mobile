@@ -15,7 +15,9 @@ export function handleScriptPreSetting () {
     css4: `
       .copyright.item {display: none !important;}
       .show-more {display: none;}`,
-    css5: '.trending {display: none;}'
+    css5: '.trending {display: none;}',
+    css6: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full {position: fixed !important;z-index: -10;visibility: hidden;}',
+    css7: '.bpx-player-contextmenu {display: none;}'
   }
 
   readScriptSetting()
@@ -46,7 +48,7 @@ export function handleScriptPreSetting () {
             ensureHeadGetted(scriptPreStyle)
           } else {
             document.head
-              ? document.getElementById(`script-pre-style-${index + 1}`).remove()
+              ? document.getElementById(`script-pre-style-${index + 1}`)?.remove()
               : waitDOMContentLoaded(document.getElementById(`script-pre-style-${index + 1}`))
           }
         }
@@ -75,7 +77,9 @@ export function handleScriptPreSetting () {
           <label><input type="checkbox" value="2"><span>评论行</span></label>
           <label><input type="checkbox" value="3"><span>标签块</span></label>
           <label><input type="checkbox" value="4"><span>转载声明</span></label>
-          <label><input type="checkbox" value="4"><span>热搜榜</span></label>
+          <label><input type="checkbox" value="5"><span>热搜榜</span></label>
+          <label><input type="checkbox" value="6"><span>播放器全屏音量键</span></label>
+          <label><input type="checkbox" value="7"><span>视频色彩音效调节</span></label>
         </div>
         `
     })
@@ -92,6 +96,7 @@ export function handleScriptPreSetting () {
     }
 
     settingConform.addEventListener('click', () => {
+      const oldValues = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
       const selectedValues = Array.from(checkboxElements).map((checkbox) => (checkbox.checked ? 1 : 0))
 
       localStorage.setItem('settingShowHidden', JSON.stringify(selectedValues))

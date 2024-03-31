@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.5.1
+// @version            3.5.4.2
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -73,6 +73,7 @@ import { handleHeaderImage } from './header-image.js'
     if (window.location.pathname.startsWith('/video')) {
       handleSidebar()
       handleScriptSetting()
+      handleVideoLongPress()
     }
   })
 
@@ -352,5 +353,31 @@ import { handleHeaderImage } from './header-image.js'
       const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
       element.dispatchEvent(event)
     }
+  }
+
+  function handleVideoLongPress () {
+    const video = document.querySelector('video') // 获取视频元素
+    let isLongPress = false // 长按标志
+    let timeoutId
+
+    video.addEventListener('touchstart', (event) => {
+      timeoutId = setTimeout(() => {
+        video.playbackRate = video.playbackRate * 2
+        isLongPress = true
+      }, 500)
+    })
+
+    video.addEventListener('touchmove', (event) => {
+      clearTimeout(timeoutId) // 触摸移动时取消长按
+    })
+
+    video.addEventListener('touchend', (event) => {
+      clearTimeout(timeoutId) // 触摸结束时清除定时器
+
+      if (isLongPress) {
+        video.playbackRate = video.playbackRate / 2
+        isLongPress = false
+      }
+    })
   }
 }())

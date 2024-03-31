@@ -720,6 +720,12 @@ svg.mini-header__logo path {
     max-height: var(--video-height) !important;
 }
 
+/* 倍速弹窗 */
+.bpx-player-ctrl-playbackrate-menu-item {
+    height: 30px !important;
+    line-height: 30px !important;
+}
+
 /* 设置弹窗 */
 .bpx-player-ctrl-setting-box {
     right: 0 !important;
@@ -735,6 +741,15 @@ svg.mini-header__logo path {
 /* 更多设置 */
 .bui.bui-radio.bui-dark {
     margin-bottom: 5px !important;
+}
+
+/* 弹幕设置弹窗 */
+.bpx-player-dm-setting-wrap {
+    bottom: unset !important;
+    top: 0;
+    position: fixed !important;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 /* 全屏控制栏 */
