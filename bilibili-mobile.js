@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.4.7
+// @version            3.4.8
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -177,8 +177,11 @@
           if (video.paused === true) {
             document.getElementsByClassName('bpx-player-ctrl-play')[0].click()
           }
+          // 手动静音是音量，自动开播是静音
           if (video.volume === 0) {
             document.getElementsByClassName('bpx-player-ctrl-muted-icon')[0].click()
+          } else if (video.muted === true) {
+            video.muted = false
           }
         }
         // 先全屏via会出现点击播放不生效的问题
@@ -1261,8 +1264,16 @@ svg.mini-header__logo path {
   overflow: hidden;
 }
 
+/* 倍速文本:禁止换行 */
 .bpx-player-ctrl-playbackrate {
   text-wrap: nowrap;
+}
+
+/* 清晰度文本:全屏时恢复大小 */
+@media screen and (min-width: 750px){
+  .bpx-player-container[data-screen=full] .bpx-player-ctrl-quality-result {
+    font-size: 16px !important;
+  }
 }
 
 /* 按钮区(图标22px，算 margin 37px) */
