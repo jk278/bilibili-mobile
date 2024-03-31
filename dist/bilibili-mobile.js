@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.4.9.1
+// @version            3.5.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -350,7 +350,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 [scroll-hidden=true] .top-btn {
     transform: translateY(var(--header-height));
 }
-
 
 #actionbar>* {
     opacity: 0;
@@ -948,6 +947,7 @@ svg.mini-header__logo path {
     display: none !important;
 }
 
+/* 横屏时恢复时间显示 */
 @media screen and (orientation: landscape) {
     .bpx-player-ctrl-time {
         display: block !important;
@@ -1795,7 +1795,7 @@ function ensureHeadGetted (element) { document.head ? document.head.appendChild(
 
 // 脚本预加载设置
 function handleScriptPreSetting () {
-  const defaultValue = [0, 0, 0, 0]
+  const defaultValue = [0, 0, 0, 0, 0]
 
   const css = {
     css1: `
@@ -1806,7 +1806,8 @@ function handleScriptPreSetting () {
     css3: '#v_tag {display: none !important;}',
     css4: `
       .copyright.item {display: none !important;}
-      .show-more {display: none;}`
+      .show-more {display: none;}`,
+    css5: '.trending {display: none;}'
   }
 
   readScriptSetting()
@@ -1866,6 +1867,7 @@ function handleScriptPreSetting () {
           <label><input type="checkbox" value="2"><span>评论行</span></label>
           <label><input type="checkbox" value="3"><span>标签块</span></label>
           <label><input type="checkbox" value="4"><span>转载声明</span></label>
+          <label><input type="checkbox" value="4"><span>搜索热榜</span></label>
         </div>
         `
     })
@@ -1902,7 +1904,26 @@ function handleScriptSetting () {
   const defaultValue = '0'
 
   const keyValue = {
-    key1: 'full-unmuted'
+    key1: 'full-unmuted',
+    key2: 'ban-action-hidden'
+  }
+
+  if ((localStorage.getItem('ban-action-hidden') || '0') === '1') {
+    banActionHidden()
+  }
+
+  function banActionHidden () {
+    const style = Object.assign(document.createElement('style'), {
+      id: 'ban-action-hidden',
+      textContent: `
+        [scroll-hidden=true] #actionbar,
+        [scroll-hidden=true] .flexible-roll-btn-inner,
+        [scroll-hidden=true] .top-btn {
+          transform: none !important;
+        }
+      `
+    })
+    ensureHeadGetted(style)
   }
 
   waitDOMContentLoaded(() => {
@@ -1921,7 +1942,8 @@ function handleScriptSetting () {
       innerHTML: `
         <div class="setting-title">选择操作偏好：</div>
         <div class="setting-checkboxes">
-          <label><input type="checkbox" value="1"><span>使用底部全屏按钮播放和打开声音</span></label>
+          <label><input type="checkbox" value="1"><span>用底部全屏键播放和打开声音</span></label>
+          <label><input type="checkbox" value="2"><span>禁止底栏滚动时隐藏</span></label>
         </div>
         `
     })
@@ -1938,10 +1960,21 @@ function handleScriptSetting () {
     }
 
     settingConform.addEventListener('click', () => {
+      const isBanActionHidden = localStorage.getItem('ban-action-hidden') || '0'
+
       for (const [index, value] of values.entries()) {
         localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
       }
       settingPanel.classList.remove('show')
+
+      const newIsBanActionHidden = localStorage.getItem('ban-action-hidden')
+      if (newIsBanActionHidden !== isBanActionHidden) {
+        if (newIsBanActionHidden === '1') {
+          banActionHidden()
+        } else {
+          document.getElementById('ban-action-hidden').remove()
+        }
+      }
     })
 
     settingPanel.appendChild(settingConform)
@@ -2121,7 +2154,7 @@ __webpack_require__.r(__webpack_exports__);
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.4.9.1
+// @version            3.5.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -2295,12 +2328,23 @@ __webpack_require__.r(__webpack_exports__);
     home.addEventListener('click', () => { window.location.href = '/' })
 
     const searchbarBtn = document.getElementById('search-fab')
-    searchbarBtn.addEventListener('click', () => {
-      const searchbar = document.getElementsByClassName('center-search-container')[0]
-      searchbar.classList.add('show')
-      const input = searchbar.querySelector('input')
+    searchbarBtn.addEventListener('click', (event) => {
+      // 事件完成后立即冒泡
+      event.stopPropagation()
+      const searchbarContainer = document.getElementsByClassName('center-search-container')[0]
+      searchbarContainer.classList.add('show')
+      const input = searchbarContainer.querySelector('input')
       input.focus()
-      input.addEventListener('blur', () => { searchbar.classList.remove('show') })
+
+      const searchbar = searchbarContainer.querySelector('.center-search__bar')
+      searchbar.addEventListener('click', (event) => {
+        event.stopPropagation()
+      })
+      document.body.addEventListener('click', (event) => {
+        if (event.target !== searchbar) {
+          searchbarContainer.classList.remove('show')
+        }
+      }, { once: true })
     })
 
     const entryBtn = document.getElementById('menu-fab')

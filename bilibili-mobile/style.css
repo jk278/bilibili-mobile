@@ -22,7 +22,6 @@
     transform: translateY(var(--header-height));
 }
 
-
 #actionbar>* {
     opacity: 0;
     animation: fadeIn 1s ease-in forwards;
@@ -619,6 +618,7 @@ svg.mini-header__logo path {
     display: none !important;
 }
 
+/* 横屏时恢复时间显示 */
 @media screen and (orientation: landscape) {
     .bpx-player-ctrl-time {
         display: block !important;

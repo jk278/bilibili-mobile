@@ -3,7 +3,7 @@ function ensureHeadGetted (element) { document.head ? document.head.appendChild(
 
 // 脚本预加载设置
 export function handleScriptPreSetting () {
-  const defaultValue = [0, 0, 0, 0]
+  const defaultValue = [0, 0, 0, 0, 0]
 
   const css = {
     css1: `
@@ -14,7 +14,8 @@ export function handleScriptPreSetting () {
     css3: '#v_tag {display: none !important;}',
     css4: `
       .copyright.item {display: none !important;}
-      .show-more {display: none;}`
+      .show-more {display: none;}`,
+    css5: '.trending {display: none;}'
   }
 
   readScriptSetting()
@@ -74,6 +75,7 @@ export function handleScriptPreSetting () {
           <label><input type="checkbox" value="2"><span>评论行</span></label>
           <label><input type="checkbox" value="3"><span>标签块</span></label>
           <label><input type="checkbox" value="4"><span>转载声明</span></label>
+          <label><input type="checkbox" value="4"><span>热搜榜</span></label>
         </div>
         `
     })
@@ -110,7 +112,26 @@ export function handleScriptSetting () {
   const defaultValue = '0'
 
   const keyValue = {
-    key1: 'full-unmuted'
+    key1: 'full-unmuted',
+    key2: 'ban-action-hidden'
+  }
+
+  if ((localStorage.getItem('ban-action-hidden') || '0') === '1') {
+    banActionHidden()
+  }
+
+  function banActionHidden () {
+    const style = Object.assign(document.createElement('style'), {
+      id: 'ban-action-hidden',
+      textContent: `
+        [scroll-hidden=true] #actionbar,
+        [scroll-hidden=true] .flexible-roll-btn-inner,
+        [scroll-hidden=true] .top-btn {
+          transform: none !important;
+        }
+      `
+    })
+    ensureHeadGetted(style)
   }
 
   waitDOMContentLoaded(() => {
@@ -129,7 +150,8 @@ export function handleScriptSetting () {
       innerHTML: `
         <div class="setting-title">选择操作偏好：</div>
         <div class="setting-checkboxes">
-          <label><input type="checkbox" value="1"><span>使用底部全屏按钮播放和打开声音</span></label>
+          <label><input type="checkbox" value="1"><span>用底部全屏键播放和打开声音</span></label>
+          <label><input type="checkbox" value="2"><span>禁止底栏滚动时隐藏</span></label>
         </div>
         `
     })
@@ -146,10 +168,21 @@ export function handleScriptSetting () {
     }
 
     settingConform.addEventListener('click', () => {
+      const isBanActionHidden = localStorage.getItem('ban-action-hidden') || '0'
+
       for (const [index, value] of values.entries()) {
         localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
       }
       settingPanel.classList.remove('show')
+
+      const newIsBanActionHidden = localStorage.getItem('ban-action-hidden')
+      if (newIsBanActionHidden !== isBanActionHidden) {
+        if (newIsBanActionHidden === '1') {
+          banActionHidden()
+        } else {
+          document.getElementById('ban-action-hidden').remove()
+        }
+      }
     })
 
     settingPanel.appendChild(settingConform)

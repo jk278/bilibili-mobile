@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.4.9.1
+// @version            3.5.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -176,12 +176,23 @@ import { handleHeaderImage } from './header-image.js'
     home.addEventListener('click', () => { window.location.href = '/' })
 
     const searchbarBtn = document.getElementById('search-fab')
-    searchbarBtn.addEventListener('click', () => {
-      const searchbar = document.getElementsByClassName('center-search-container')[0]
-      searchbar.classList.add('show')
-      const input = searchbar.querySelector('input')
+    searchbarBtn.addEventListener('click', (event) => {
+      // 事件完成后立即冒泡
+      event.stopPropagation()
+      const searchbarContainer = document.getElementsByClassName('center-search-container')[0]
+      searchbarContainer.classList.add('show')
+      const input = searchbarContainer.querySelector('input')
       input.focus()
-      input.addEventListener('blur', () => { searchbar.classList.remove('show') })
+
+      const searchbar = searchbarContainer.querySelector('.center-search__bar')
+      searchbar.addEventListener('click', (event) => {
+        event.stopPropagation()
+      })
+      document.body.addEventListener('click', (event) => {
+        if (event.target !== searchbar) {
+          searchbarContainer.classList.remove('show')
+        }
+      }, { once: true })
     })
 
     const entryBtn = document.getElementById('menu-fab')
