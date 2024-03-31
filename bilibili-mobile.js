@@ -1743,8 +1743,13 @@ body[show-sidebar="true"] .left-container:after {
 }
 
 /* 评论图片 */
-.reply-view-image .show-image-wrap .image-content {
-  width: 100vw !important;
+.reply-view-image .show-image-wrap {
+  padding: 0 0 145px !important;
+  .image-content {
+    width: 100% !important;
+  }
+}
+.reply-view-image .show-image-wrap {
 }
 
 .reply-view-image .operation-btn {
