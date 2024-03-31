@@ -7,7 +7,7 @@ Provides an API for ESLint custom rules that is compatible with the latest ESLin
 ## Installation
 
 ```bash
-npm install --save-dev eslint-compat-utils
+npm install eslint-compat-utils
 ```
 
 ## Usage

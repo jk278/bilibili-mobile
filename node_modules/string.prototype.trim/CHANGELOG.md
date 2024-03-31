@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.2.9](https://github.com/es-shims/String.prototype.trim/compare/v1.2.8...v1.2.9) - 2024-03-16
+
+### Commits
+
+- [Refactor] use `es-object-atoms`; update `call-bind`, `define-properties`, `es-abstract` [`f6fe1af`](https://github.com/es-shims/String.prototype.trim/commit/f6fe1af4cb9381757971b294afc845e3b2e7c1e9)
+- [Dev Deps] update `aud`, `npmignore`, `tape` [`d4e2b81`](https://github.com/es-shims/String.prototype.trim/commit/d4e2b81878478d7090826b73d52bc42f117a2189)
+
 ## [v1.2.8](https://github.com/es-shims/String.prototype.trim/compare/v1.2.7...v1.2.8) - 2023-09-07
 
 ### Commits

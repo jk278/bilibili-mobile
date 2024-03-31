@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.6](https://github.com/inspect-js/typed-array-length/compare/v1.0.5...v1.0.6) - 2024-03-21
+
+### Commits
+
+- [types] vastly improve types [`9f68d36`](https://github.com/inspect-js/typed-array-length/commit/9f68d36cdc1abeb412f47e91de289b5fb903a696)
+- [types] use shared config [`b6b3cbc`](https://github.com/inspect-js/typed-array-length/commit/b6b3cbcaf8f4a46f5bcb77226d4cea2b3f62ffe2)
+- [actions] remove redundant finisher [`c69896e`](https://github.com/inspect-js/typed-array-length/commit/c69896e0d71e9f6da562b9ae0eaba415e4cbff26)
+- [Tests] actually check types in tests, and add attw [`e2c3f94`](https://github.com/inspect-js/typed-array-length/commit/e2c3f948bd0b898c38e1d9f63cd9702e728a7109)
+
 ## [v1.0.5](https://github.com/inspect-js/typed-array-length/compare/v1.0.4...v1.0.5) - 2024-02-20
 
 ### Commits

@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.2.5](https://github.com/es-shims/Array.prototype.findLastIndex/compare/v1.2.4...v1.2.5) - 2024-03-19
+
+### Commits
+
+- [meta] remove useless ESM [`4ed36ab`](https://github.com/es-shims/Array.prototype.findLastIndex/commit/4ed36ab7bde25f3b265a2769163409a939d9a4de)
+- [Deps] update `call-bind`, `es-abstract` [`a6e3816`](https://github.com/es-shims/Array.prototype.findLastIndex/commit/a6e38162c958d3a54c73094a84fd27e9e48992d3)
+- [Refactor] use `es-object-atoms` where possible [`3fbee9b`](https://github.com/es-shims/Array.prototype.findLastIndex/commit/3fbee9b07d97a472b59204360620a491ff1f3cdd)
+- [Dev Deps] update `hasown`, `tape` [`dc6356c`](https://github.com/es-shims/Array.prototype.findLastIndex/commit/dc6356c69902912aa1eaee0f5677c6c64fb8ee11)
+
 ## [v1.2.4](https://github.com/es-shims/Array.prototype.findLastIndex/compare/v1.2.3...v1.2.4) - 2024-02-05
 
 ### Commits

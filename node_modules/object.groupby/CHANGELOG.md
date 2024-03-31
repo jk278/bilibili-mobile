@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.3](https://github.com/es-shims/Object.groupBy/compare/v1.0.2...v1.0.3) - 2024-03-18
+
+### Commits
+
+- [Deps] update `call-bind`, `es-abstract` [`f1d3e70`](https://github.com/es-shims/Object.groupBy/commit/f1d3e701aff0a36e4d7373059812a9b978c7ad7f)
+- [Dev Deps] update `tape` [`272a736`](https://github.com/es-shims/Object.groupBy/commit/272a73672f27f90fd6d5054ca13e039c45815a8a)
+- [meta] add missing `engines.node` [`7a9c8b0`](https://github.com/es-shims/Object.groupBy/commit/7a9c8b0f636a5703ea923c9d0721fbf5861c6949)
+
 ## [v1.0.2](https://github.com/es-shims/Object.groupBy/compare/v1.0.1...v1.0.2) - 2024-02-04
 
 ### Commits
