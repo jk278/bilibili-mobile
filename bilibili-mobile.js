@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.4.8
+// @version            3.4.8.3
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -174,19 +174,18 @@
         const video = document.getElementsByTagName('video')[0]
         // 等于符号优先级更高
         if ((localStorage.getItem('full-unmuted') || '0') === '1') {
-          if (video.paused === true) {
-            document.getElementsByClassName('bpx-player-ctrl-play')[0].click()
-          }
-          // 手动静音是音量，自动开播是静音
+          video.play()
+          video.muted = false
           if (video.volume === 0) {
             document.getElementsByClassName('bpx-player-ctrl-muted-icon')[0].click()
-          } else if (video.muted === true) {
-            video.muted = false
           }
         }
-        // 先全屏via会出现点击播放不生效的问题
-        document.getElementsByClassName('bpx-player-ctrl-full')[0].click()
+        fullScreen()
       })
+      function fullScreen () {
+        const fullBtn = document.getElementsByClassName('bpx-player-ctrl-full')[0]
+        fullBtn ? fullBtn.click() : setTimeout(fullScreen, 500)
+      }
     }
 
     const home = document.getElementById('my-home')
@@ -1273,6 +1272,7 @@ svg.mini-header__logo path {
 @media screen and (min-width: 750px){
   .bpx-player-container[data-screen=full] .bpx-player-ctrl-quality-result {
     font-size: 16px !important;
+    height: unset !important;
   }
 }
 
