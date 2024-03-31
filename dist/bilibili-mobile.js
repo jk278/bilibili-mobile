@@ -1,8 +1,1733 @@
+// ==UserScript==
+// @name               Bilibili Mobile
+// @name:zh-CN         bilibili 移动端
+// @namespace          https://github.com/jk278/bilibili-pc2mobile
+// @version            3.4.9.1
+// @description        view bilibili pc page on mobile phone
+// @description:zh-CN  只需一点配置，即可获得足够好的使用体验
+// @author             jk278
+// @license            MIT
+// @match              *://www.bilibili.com/*
+// @grant              unsafeWindow
+// @grant              GM_registerMenuCommand
+// @run-at             document-start
+// @icon               https://www.bilibili.com/favicon.ico
+// ==/UserScript==
+
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ([
 /* 0 */,
 /* 1 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(8);
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+/* 2 */
+/***/ ((module) => {
+
+
+
+var stylesInDOM = [];
+function getIndexByIdentifier(identifier) {
+  var result = -1;
+  for (var i = 0; i < stylesInDOM.length; i++) {
+    if (stylesInDOM[i].identifier === identifier) {
+      result = i;
+      break;
+    }
+  }
+  return result;
+}
+function modulesToDom(list, options) {
+  var idCountMap = {};
+  var identifiers = [];
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i];
+    var id = options.base ? item[0] + options.base : item[0];
+    var count = idCountMap[id] || 0;
+    var identifier = "".concat(id, " ").concat(count);
+    idCountMap[id] = count + 1;
+    var indexByIdentifier = getIndexByIdentifier(identifier);
+    var obj = {
+      css: item[1],
+      media: item[2],
+      sourceMap: item[3],
+      supports: item[4],
+      layer: item[5]
+    };
+    if (indexByIdentifier !== -1) {
+      stylesInDOM[indexByIdentifier].references++;
+      stylesInDOM[indexByIdentifier].updater(obj);
+    } else {
+      var updater = addElementStyle(obj, options);
+      options.byIndex = i;
+      stylesInDOM.splice(i, 0, {
+        identifier: identifier,
+        updater: updater,
+        references: 1
+      });
+    }
+    identifiers.push(identifier);
+  }
+  return identifiers;
+}
+function addElementStyle(obj, options) {
+  var api = options.domAPI(options);
+  api.update(obj);
+  var updater = function updater(newObj) {
+    if (newObj) {
+      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap && newObj.supports === obj.supports && newObj.layer === obj.layer) {
+        return;
+      }
+      api.update(obj = newObj);
+    } else {
+      api.remove();
+    }
+  };
+  return updater;
+}
+module.exports = function (list, options) {
+  options = options || {};
+  list = list || [];
+  var lastIdentifiers = modulesToDom(list, options);
+  return function update(newList) {
+    newList = newList || [];
+    for (var i = 0; i < lastIdentifiers.length; i++) {
+      var identifier = lastIdentifiers[i];
+      var index = getIndexByIdentifier(identifier);
+      stylesInDOM[index].references--;
+    }
+    var newLastIdentifiers = modulesToDom(newList, options);
+    for (var _i = 0; _i < lastIdentifiers.length; _i++) {
+      var _identifier = lastIdentifiers[_i];
+      var _index = getIndexByIdentifier(_identifier);
+      if (stylesInDOM[_index].references === 0) {
+        stylesInDOM[_index].updater();
+        stylesInDOM.splice(_index, 1);
+      }
+    }
+    lastIdentifiers = newLastIdentifiers;
+  };
+};
+
+/***/ }),
+/* 3 */
+/***/ ((module) => {
+
+
+
+/* istanbul ignore next  */
+function apply(styleElement, options, obj) {
+  var css = "";
+  if (obj.supports) {
+    css += "@supports (".concat(obj.supports, ") {");
+  }
+  if (obj.media) {
+    css += "@media ".concat(obj.media, " {");
+  }
+  var needLayer = typeof obj.layer !== "undefined";
+  if (needLayer) {
+    css += "@layer".concat(obj.layer.length > 0 ? " ".concat(obj.layer) : "", " {");
+  }
+  css += obj.css;
+  if (needLayer) {
+    css += "}";
+  }
+  if (obj.media) {
+    css += "}";
+  }
+  if (obj.supports) {
+    css += "}";
+  }
+  var sourceMap = obj.sourceMap;
+  if (sourceMap && typeof btoa !== "undefined") {
+    css += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), " */");
+  }
+
+  // For old IE
+  /* istanbul ignore if  */
+  options.styleTagTransform(css, styleElement, options.options);
+}
+function removeStyleElement(styleElement) {
+  // istanbul ignore if
+  if (styleElement.parentNode === null) {
+    return false;
+  }
+  styleElement.parentNode.removeChild(styleElement);
+}
+
+/* istanbul ignore next  */
+function domAPI(options) {
+  if (typeof document === "undefined") {
+    return {
+      update: function update() {},
+      remove: function remove() {}
+    };
+  }
+  var styleElement = options.insertStyleElement(options);
+  return {
+    update: function update(obj) {
+      apply(styleElement, options, obj);
+    },
+    remove: function remove() {
+      removeStyleElement(styleElement);
+    }
+  };
+}
+module.exports = domAPI;
+
+/***/ }),
+/* 4 */
+/***/ ((module) => {
+
+
+
+var memo = {};
+
+/* istanbul ignore next  */
+function getTarget(target) {
+  if (typeof memo[target] === "undefined") {
+    var styleTarget = document.querySelector(target);
+
+    // Special case to return head of iframe instead of iframe itself
+    if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
+      try {
+        // This will throw an exception if access to iframe is blocked
+        // due to cross-origin restrictions
+        styleTarget = styleTarget.contentDocument.head;
+      } catch (e) {
+        // istanbul ignore next
+        styleTarget = null;
+      }
+    }
+    memo[target] = styleTarget;
+  }
+  return memo[target];
+}
+
+/* istanbul ignore next  */
+function insertBySelector(insert, style) {
+  var target = getTarget(insert);
+  if (!target) {
+    throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");
+  }
+  target.appendChild(style);
+}
+module.exports = insertBySelector;
+
+/***/ }),
+/* 5 */
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+
+
+/* istanbul ignore next  */
+function setAttributesWithoutAttributes(styleElement) {
+  var nonce =  true ? __webpack_require__.nc : 0;
+  if (nonce) {
+    styleElement.setAttribute("nonce", nonce);
+  }
+}
+module.exports = setAttributesWithoutAttributes;
+
+/***/ }),
+/* 6 */
+/***/ ((module) => {
+
+
+
+/* istanbul ignore next  */
+function insertStyleElement(options) {
+  var element = document.createElement("style");
+  options.setAttributes(element, options.attributes);
+  options.insert(element, options.options);
+  return element;
+}
+module.exports = insertStyleElement;
+
+/***/ }),
+/* 7 */
+/***/ ((module) => {
+
+
+
+/* istanbul ignore next  */
+function styleTagTransform(css, styleElement) {
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = css;
+  } else {
+    while (styleElement.firstChild) {
+      styleElement.removeChild(styleElement.firstChild);
+    }
+    styleElement.appendChild(document.createTextNode(css));
+  }
+}
+module.exports = styleTagTransform;
+
+/***/ }),
+/* 8 */
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------------------------------------- *
+* ----------------------- 操作栏 ----------------------- *
+* ---------------------------------------------------- */
+
+/* 操作栏 */
+#actionbar {
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    height: var(--header-height);
+    z-index: 1;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background: inherit;
+    transition: .5s transform ease-in;
+}
+
+[scroll-hidden=true] #actionbar,
+[scroll-hidden=true] .flexible-roll-btn-inner,
+[scroll-hidden=true] .top-btn {
+    transform: translateY(var(--header-height));
+}
+
+
+#actionbar>* {
+    opacity: 0;
+    animation: fadeIn 1s ease-in forwards;
+}
+
+#full-now,
+#my-home,
+#search-fab,
+#menu-fab,
+#sidebar-btn {
+    padding: 8px;
+}
+
+#actionbar.home #full-now,
+#actionbar.home #sidebar-btn {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* --------------------- 其它适配 --------------------- */
+
+/* 扩增载入后产生的骨架空位 */
+.floor-single-card:has(.skeleton, .skeleton-item) {
+    display: none;
+}
+
+/* 脚本设置窗口 */
+.setting-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: inherit;
+    z-index: 1;
+    border: 1px solid var(--line_regular);
+    display: none;
+    flex-direction: column;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.setting-panel.show {
+    display: flex;
+}
+
+.setting-title {
+    padding-bottom: 5px;
+    margin: 0 5px;
+    border-bottom: 1px solid var(--line_regular);
+}
+
+.setting-checkboxes {
+    display: flex;
+    flex-direction: column;
+}
+
+.setting-checkboxes label {
+    margin: 5px;
+    display: flex;
+}
+
+.setting-checkboxes span {
+    flex-grow: 1;
+    text-align: center;
+    user-select: none;
+}
+
+.setting-conform {
+    margin: 0 20px;
+    border-radius: 5px;
+}
+
+/* ----------------------------------------------------
+  * ---------------------------------------------------- *
+  * ----------------------- 首页 ----------------------- *
+  * ---------------------------------------------------- *
+   ----------------------------------------------------- */
+
+body {
+    /* 避免评论未加载时显示灰色 */
+    background: white !important;
+
+    /* 添加透明 animation 为 Via 预留加载 initViewport 的时间后，刷新加载出现白屏 */
+
+    --header-height: 46px;
+}
+
+/* 顶栏点击遮罩层 */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height);
+    background-color: transparent;
+    z-index: 1002;
+}
+
+/* 双列视频 */
+.recommended-container_floor-aside .container {
+    grid-template-columns: repeat(2, 1fr) !important;
+    padding: 5px;
+    grid-gap: 5px !important;
+    background: #f1f2f3;
+}
+
+/* 头图底色 */
+.bili-header__banner {
+    background-color: #f1f2f3 !important;
+}
+
+/* 显示根据屏宽隐藏的 feed */
+.container>.feed-card {
+    display: block !important;
+}
+
+/* 最小宽度（body、顶栏） */
+body,
+.bili-header,
+.bili-header__banner {
+    min-width: 0 !important;
+}
+
+/* 主页视频流 */
+.bili-feed4-layout {
+    width: 100% !important;
+}
+
+/* -------------------------------------------------- 
+   ------------------------ 顶栏 ----------------------- 
+   -------------------------------------------------- */
+
+/* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
+
+/* 避免初始内联高度影响计算 */
+#biliMainHeader {
+    position: fixed;
+    z-index: 2;
+}
+
+/* 顶栏边距（右边距减去头像右空隙） */
+.bili-header__bar {
+    padding: 0 10px 0 15px !important;
+    transition: transform 0.5s ease-in;
+}
+
+/* 顶栏高度 */
+.bili-header .bili-header__bar {
+    height: var(--header-height) !important;
+}
+
+/* 视频页顶栏高度 */
+.header-v3 #biliMainHeader .bili-header .bili-header__bar {
+    height: var(--header-height) !important;
+}
+
+/* 顶部按钮高度 */
+.entry-title,
+.right-entry,
+.mini-header__logo {
+    max-height: var(--header-height);
+}
+
+.left-entry__title {
+    height: var(--header-height) !important;
+}
+
+/* 头像高度 */
+.v-popover-wrap.header-avatar-wrap {
+    height: var(--header-height) !important;
+}
+
+/* 收藏按钮高度 */
+.header-favorite-container-box,
+.header-favorite-container {
+    max-height: var(--header-height) !important;
+}
+
+/* 顶栏高度：HTML 初始加载时，biliMainHeader 已有内联高度，
+     保留顶栏外框（biliMainHeader）高度，修改其它元素 */
+
+/* 不影响结果 */
+#biliMainHeader .bili-header {
+    min-height: var(--header-height);
+    height: var(--header-height);
+}
+
+/* 搜索框 */
+.center-search-container {
+    position: absolute !important;
+    width: 100%;
+    left: 0;
+    top: 0;
+    padding: 10px 20px 5px !important;
+    z-index: 3;
+    margin: 0 !important;
+    display: none;
+}
+
+.center-search-container.show {
+    display: block;
+}
+
+/* 顶栏右侧图标 */
+.right-entry {
+    flex: 1;
+    min-width: 0;
+    margin: 0 !important;
+    justify-content: space-evenly;
+}
+
+.right-entry>* {
+    animation: fadeIn 1s ease-in;
+}
+
+.left-entry {
+    min-width: 0;
+    margin: 0 !important;
+}
+
+/* 头像图表边距 */
+.header-avatar-wrap {
+    padding-right: 0 !important;
+}
+
+/* 禁止换行 */
+.left-entry__title,
+.dm.item {
+    white-space: nowrap;
+}
+
+/* 头像置右 */
+.v-popover-wrap.header-avatar-wrap {
+    order: 5;
+    margin-left: auto;
+}
+
+/* 剩余元素均分 */
+.v-popover-wrap:not(.header-avatar-wrap) {
+    flex: 1;
+}
+
+/* 肉眼个别微调 */
+.right-entry--message {
+    padding-left: 3px;
+}
+
+/* 顶栏元素间距 */
+.left-entry__title {
+    margin-right: 0px !important;
+}
+
+/* 与头像左空隙对齐 */
+.mini-header__logo {
+    margin-right: 7px !important;
+}
+
+/* 禁用主题色重载 */
+svg.mini-header__logo path {
+    fill: var(--brand_blue) !important;
+}
+
+/* 移除“首页”字样 */
+.mini-header__title {
+    display: none !important;
+}
+
+/* 移除顶部动图和临时静图 */
+.animated-banner,
+#bili-header-banner-img {
+    display: none !important;
+}
+
+/* 使用 controlHeaderImage 获取随机头图 */
+
+.biliheader__banner {
+    display: none !important;
+}
+
+/* -------------------------------------------------- 
+   ---------------------- 展开图类 --------------------- 
+   -------------------------------------------------- */
+
+.v-popover {
+    position: fixed !important;
+    top: var(--header-height) !important;
+    margin: 0 !important;
+    max-width: 100%;
+    padding: 5px !important;
+}
+
+/* 分类(左侧入口)展开图 */
+.channel-panel__column {
+    width: 100% !important;
+    flex: 1;
+    padding: 0 !important;
+}
+
+/* 右侧入口展开图 */
+.dynamic-panel-popover,
+.favorite-panel-popover,
+.history-panel-popover {
+    max-width: 100%;
+    padding: 0 5px !important;
+}
+
+/* 动态展开图 */
+.dynamic-video-item {
+    margin-right: 0 !important;
+}
+
+.header-dynamic-list-item {
+    padding: 0 !important;
+}
+
+.header-dynamic__box--center {
+    max-width: 60%;
+}
+
+.header-dynamic__box--right {
+    top: 0 !important;
+    margin-bottom: 0 !important;
+    width: unset !important;
+    flex: 1;
+
+    .cover {
+        width: unset !important;
+        height: unset !important;
+    }
+}
+
+/* 收藏展开图 */
+.favorite-panel-popover__nav {
+    max-width: 25%;
+}
+
+.header-fav-card__image {
+    max-width: 40%;
+
+    picture {
+        max-width: 100%;
+        height: 100% !important;
+    }
+}
+
+/* 间距（收藏展开图） */
+.favorite-panel-popover__nav .tab-item {
+    padding: 0 6px !important;
+}
+
+.header-fav-card {
+    padding: 6px !important;
+}
+
+.favorite-panel-popover__nav {
+    margin-top: 6px !important;
+}
+
+/* 历史展开图 */
+.header-history-video {
+    padding: 5px 10px !important;
+}
+
+/* 移除头像大图 */
+.header-entry-avatar {
+    display: none !important;
+}
+
+/* 关闭头像动画 */
+.header-entry-mini {
+    animation: unset !important;
+}
+
+/* 移除次要入口 */
+.left-entry>li:not(:nth-of-type(1)),
+.vip-wrap,
+.right-entry-item:has(>.vip-wrap),
+.right-entry-item:nth-of-type(6),
+.right-entry-item--upload,
+.header-channel,
+.bili-header__channel,
+.recommended-swipe,
+.feed-roll-btn {
+    display: none !important;
+}
+
+/* 广告、推广图块 */
+/* 底部登录弹窗类 .lt-row 可能包含其它元素 */
+/* 首页顶部动图上的大 Logo */
+.container>*:has(.bili-video-card__info--ad),
+.floor-single-card,
+.desktop-download-tip,
+.lt-row,
+.header-banner__inner {
+    display: none !important;
+}
+
+/* ----------------------------------------------------
+  * --------------------- 主页视频卡片 ------------------- *
+   ----------------------------------------------------- */
+
+.container>* {
+    margin-top: 0 !important;
+}
+
+/* 卡片底板 */
+.bili-video-card__wrap {
+    border-radius: 5px;
+}
+
+/* 封面宽长比 */
+.bili-video-card.is-rcmd {
+    --cover-radio: 75% !important;
+}
+
+/* 封面圆角 */
+.v-img.bili-video-card__cover {
+    border-radius: 5px 5px 0 0;
+}
+
+/* 封面信息（阴影层圆角） */
+.bili-video-card__stats {
+    border-radius: 0 !important;
+    --icon-size: 16px;
+    --subtitle-font-size: 11px;
+    white-space: nowrap;
+}
+
+/* 卡片标题 - 字样 */
+.bili-video-card__info--tit {
+    --title-padding-right: 0;
+    --title-font-size: 14px;
+    --title-line-height: 20px;
+}
+
+/* 标题 - 上下距 */
+/* .bili-video-card__info  */
+
+/* 标题 - 左右距 */
+.bili-video-card__info--right {
+    padding: 0 5px;
+}
+
+/* 标题 - 字重 */
+/* .bili-video-card__info--tit > a */
+
+/* 小标 */
+.bili-video-card__info--bottom {
+    --subtitle-font-size: 12px;
+}
+
+.bili-video-card__info--icon-text {
+    padding: 0 5px !important;
+}
+
+/* 小标 - 日期 */
+.bili-video-card__info--owner {
+    flex: 1;
+}
+
+.bili-video-card__info--date {
+    margin-left: auto !important;
+}
+
+/* 小标 - 点赞数 */
+.bili-video-card__info--icon-text {
+    --follow-icon-font-size: 11px;
+    --follow-icon-line-height: 15px;
+}
+
+/* ----------------------------------------------------
+  * ---------------------------------------------------- *
+  * --------------------- 视频详情页 -------------------- *
+  * ---------------------------------------------------- *
+   ----------------------------------------------------- */
+
+/* 主应用块 */
+#app {
+    overflow: hidden;
+}
+
+/* 主体内容块 */
+.video-container-v1 {
+    min-width: 0 !important;
+    padding: 0 !important;
+    top: var(--header-height);
+}
+
+/* ----------------------------------------------------
+  * ---------------------- 主视频块 --------------------- *
+   ----------------------------------------------------- */
+
+/* 主视频块 */
+.left-container {
+    --video-height: calc(100vw * 0.5625);
+    --dm-row-height: 44px;
+}
+
+/* 有初始内联 top */
+/* 视频块（宽度） (#mainheight与header的高度差导致了64px-48px的可滚动区域) */
+.left-container {
+    /* 移动 Safari 百分比宽高自动考虑边框和填充 */
+    padding: calc(var(--video-height) + var(--dm-row-height)) 10px 0;
+    box-sizing: border-box;
+    width: 100% !important;
+
+    /* 填充评论未加载时的空白，video-container-v1 已考虑顶部留空，但 #app 的高度把顶部重叠的部分加上了 */
+    min-height: calc(100vh - var(--header-height));
+}
+
+/* ----------------------------------------------------
+  * ----------------------- 播放器 ---------------------- *
+   ----------------------------------------------------- */
+
+/* 修改播放器固定尺寸 */
+#bilibili-player {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+/* 固定视频（外框尺寸） */
+#playerWrap {
+    position: fixed;
+    left: 0;
+    top: var(--header-height);
+    width: 100vw;
+    height: var(--video-height) !important;
+    z-index: 75;
+    transition: transform 0.5s ease-in;
+}
+
+/* 小窗时的隐藏 - 始终隐藏*/
+/* 顶部关注、音乐、反馈 */
+/* 右下角暂停图标 */
+/* 取消静音 */
+.bpx-player-top-wrap,
+.bpx-player-state-wrap,
+.bpx-player-toast-wrap {
+    display: none !important;
+}
+
+/* 小窗时的隐藏 - 固定显示*/
+/* 视频控制栏 */
+/* 弹幕行 */
+.bpx-player-control-wrap,
+.bpx-player-sending-area {
+    display: block !important;
+}
+
+/* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
+/*.bpx-player-toast-wrap {
+    bottom: unset !important;
+    top: 50%;
+    transform: translateY(-50%);
+  }*/
+
+.bpx-player-toast-item {
+    margin: 0 !important;
+}
+
+/* 小窗时的暂停图标 */
+.bpx-player-mini-warp {
+    display: none !important;
+}
+
+/* 彻底移除小窗样式 */
+#playerWrap .bpx-player-container[data-screen=mini] {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    transition: top 0.5s ease-in;
+}
+
+/* 移除小窗等按钮 */
+.fixed-sidenav-storage>*:nth-child(1),
+.fixed-sidenav-storage>*:nth-child(2) {
+    display: none !important;
+}
+
+/* 窄屏不隐藏控制条和阴影 */
+.bpx-player-control-entity,
+.bpx-player-control-mask {
+    display: block !important;
+}
+
+/* 移除次要按钮：画中画、宽屏、页面全屏、时间、选集 */
+.bpx-player-ctrl-pip,
+.bpx-player-ctrl-wide,
+.bpx-player-ctrl-web,
+.bpx-player-ctrl-time,
+.bpx-player-ctrl-eplist {
+    display: none !important;
+}
+
+@media screen and (orientation: landscape) {
+    .bpx-player-ctrl-time {
+        display: block !important;
+    }
+}
+
+/* 左右控制区 */
+.bpx-player-control-bottom-left,
+.bpx-player-control-bottom-right {
+    flex: unset !important;
+}
+
+/* 全屏时 */
+.bpx-player-container .bpx-player-control-bottom-left,
+.bpx-player-container .bpx-player-control-bottom-right {
+    min-width: 0 !important;
+}
+
+/* 清晰度(width:auto 不换行，隐藏不掉高清字样) */
+.bpx-player-ctrl-quality {
+    margin-right: 0 !important;
+    min-width: 0;
+    flex: auto !important;
+}
+
+/* 清晰度、倍速文本 */
+.bpx-player-ctrl-quality-result,
+.bpx-player-ctrl-playbackrate {
+    font-size: 12px !important;
+}
+
+/* 清晰度文本:隐藏换行的部分 */
+.bpx-player-ctrl-quality-result {
+    height: 22px;
+    overflow: hidden;
+}
+
+/* 倍速文本:禁止换行 */
+.bpx-player-ctrl-playbackrate {
+    text-wrap: nowrap;
+}
+
+/* 清晰度文本:全屏时恢复大小 */
+@media screen and (min-width: 750px) {
+    .bpx-player-container[data-screen=full] .bpx-player-ctrl-quality-result {
+        font-size: 16px !important;
+        height: unset !important;
+    }
+}
+
+/* 按钮区(图标22px，算 margin 37px) */
+.bpx-player-control-bottom {
+    height: 29px !important;
+    margin-top: 7px !important;
+    padding: 0 7px !important;
+}
+
+/* 进度条 */
+.bpx-player-control-top {
+    bottom: 36px !important;
+}
+
+/* 修复部分情况下的控制栏图标增大导致的高度过高 */
+@media screen and (min-width: 750px) {
+    .bpx-player-container[data-screen=full] {
+        .bpx-player-control-wrap {
+            height: 43px !important;
+        }
+
+        .bpx-player-control-top {
+            bottom: 43px !important;
+        }
+    }
+}
+
+/* 进度条细条包含块（高12px） */
+.bpx-player-progress-wrap {
+    height: 7px !important;
+    padding-bottom: 3px !important;
+}
+
+/* 阴影(控制栏展开时: 高能区 100% - 1px) */
+.bpx-player-pbp {
+    bottom: 1px !important;
+}
+
+.bpx-player-pbp.show {
+    bottom: calc(100% + 6px) !important;
+}
+
+/* 替换via暗色异常的阴影 */
+.bpx-player-control-mask {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .5) 100%) !important;
+}
+
+/* 清晰度弹窗 */
+.bpx-player-ctrl-quality-menu-wrap {
+    bottom: 0 !important;
+    max-height: var(--video-height) !important;
+}
+
+/* 设置弹窗 */
+.bpx-player-ctrl-setting-box {
+    right: 0 !important;
+    bottom: 0 !important;
+}
+
+/* 更多设置 */
+.bpx-player-ctrl-setting-menu-right {
+    padding: 5px !important;
+    max-height: var(--video-height) !important;
+}
+
+/* 更多设置 */
+.bui.bui-radio.bui-dark {
+    margin-bottom: 5px !important;
+}
+
+/* 全屏控制栏 */
+.bpx-player-control-bottom-center .bpx-player-sending-bar {
+    padding-right: 6px !important;
+    height: 24px !important;
+}
+
+/* 存在章节时(允许章节缩小) */
+.bpx-player-ctrl-viewpoint {
+    margin: 0 !important;
+    min-width: 0 !important;
+    width: 45px !important;
+    flex-shrink: 1 !important;
+}
+
+.bpx-player-ctrl-viewpoint-text {
+    width: 24px !important;
+    text-overflow: unset !important;
+    font-size: 12px;
+    flex: none;
+}
+
+/* ----------------------------------------------------
+  * ----------------------- 弹幕行 ---------------------- *
+   ----------------------------------------------------- */
+
+/* 弹幕行：滚动隐藏 */
+.bpx-player-sending-area {
+    position: absolute !important;
+    bottom: 0;
+    width: 100%;
+    transform: translateY(100%);
+
+    transition: 0.5s transform ease-in;
+    display: block !important;
+    z-index: 0;
+}
+
+[scroll-hidden=true] .bpx-player-sending-area {
+    transform: none;
+}
+
+.bpx-player-video-area {
+    z-index: 1;
+}
+
+/* 修改小窗样式的时候把这行删了，导致弹幕行显示异常 */
+.bpx-player-container[data-screen=mini] {
+    overflow: unset !important;
+}
+
+/* 弹幕行预加载灰块白条(视频底下也有，预加载有时会看到) */
+.bpx-player-sending-bar-left,
+.bpx-player-sending-bar-right,
+#bilibili-player-placeholder-bottom {
+    display: none !important;
+}
+
+/* 弹幕行高度 */
+.bpx-player-sending-bar {
+    height: var(--dm-row-height) !important;
+}
+
+.bpx-player-dm-input {
+    height: 26px !important;
+}
+
+/* 弹幕输入栏外 */
+.bpx-player-video-inputbar {
+    height: 26px !important;
+    border-radius: 13px !important;
+
+    min-width: 0 !important;
+}
+
+.bpx-player-video-inputbar-wrap {
+    width: 100% !important;
+}
+
+/* 不输入隐藏发送 */
+.bpx-player-dm-btn-send {
+    display: none !important;
+}
+
+.bpx-player-video-inputbar-wrap:has(>input:focus)+.bpx-player-dm-btn-send {
+    display: flex !important;
+}
+
+.bpx-player-dm-btn-send {
+    border-radius: 0 13px 13px 0 !important;
+    height: 26px !important;
+    min-width: 50px !important;
+    width: 50px !important;
+}
+
+.bui-button-blue {
+    min-width: 50px !important;
+}
+
+/* 观看人数 */
+.bpx-player-video-info {
+    margin-right: 6px !important;
+}
+
+/* 弹幕数量、弹幕礼仪 */
+.bpx-player-video-info-divide,
+.bpx-player-video-info-dm,
+.bpx-player-dm-hint {
+    display: none !important;
+}
+
+/* 播放组件在下面 */
+
+/* ----------------------------------------------------
+  * ----------------------- 推荐块 ---------------------- *
+   ----------------------------------------------------- */
+
+/* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
+.right-container {
+    position: fixed !important;
+    width: 85% !important;
+    left: 85%;
+    padding: 10px;
+    margin: 0 0 0 15% !important;
+
+    z-index: 76;
+    background: white;
+    transition: transform .6s ease-in;
+    height: calc(100% - var(--header-height) * 2);
+    overflow-y: auto;
+    /* 避免到达边界后的滚动事件穿透 */
+    overscroll-behavior: contain;
+
+    box-sizing: border-box;
+    border-left: 1px solid var(--line_regular);
+}
+
+body[show-sidebar="true"] .right-container {
+    transform: translateX(-100%);
+}
+
+.right-container-inner {
+    padding: 0 !important;
+}
+
+/* 推荐块蒙版（加到左视频块才不会被冒泡事件影响） */
+.left-container:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 75;
+    background-color: rgb(0, 0, 0);
+    opacity: 0;
+    transition: opacity 0.6s ease-in;
+    pointer-events: none;
+}
+
+body[show-sidebar="true"] .left-container:after {
+    opacity: 0.5;
+    pointer-events: auto;
+}
+
+/* UP信息 */
+.upinfo-btn-panel .default-btn {
+    font-size: 12px !important;
+}
+
+.new-charge-btn {
+    max-width: 35%;
+}
+
+.follow-btn {
+    max-width: 150px !important;
+}
+
+/* UP头像 */
+/*.up-avatar-wrap .bili-avatar,
+  .up-avatar-wrap {
+    width: 38px !important;
+    height: 38px !important;
+  }*/
+
+/* 推荐视频图块 */
+#reco_list .card-box .pic-box {
+    max-width: 50%;
+}
+
+/* ----------------------------------------------------
+  * ---------------------- 播放页组件 ------------------- *
+   ----------------------------------------------------- */
+
+/* 信息块（标题） */
+.video-info-container {
+    height: auto !important;
+    padding-top: 0 !important;
+}
+
+/* 标题（可两行显示） */
+.video-title {
+    font-size: 18px !important;
+
+    white-space: wrap !important;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+
+    /* 去除折叠时的 show-more 按钮 margin */
+    margin-right: 0 !important;
+}
+
+.show-more {
+    top: unset !important;
+    transform: none !important;
+    bottom: 4px;
+    right: 4px !important;
+}
+
+.video-desc-container {
+    margin: 10px 0 !important;
+}
+
+/* 点赞投币行 */
+.video-toolbar-container {
+    padding: 10px 0 8px !important;
+}
+
+.video-toolbar-left,
+.video-toolbar-left-main {
+    min-width: 0;
+}
+
+.toolbar-left-item-wrap {
+    flex: 1;
+    min-width: 0;
+}
+
+.video-toolbar-container * {
+    margin: 0 !important;
+}
+
+.video-share-info {
+    width: 40px !important;
+}
+
+.video-share-popover {
+    display: none !important;
+}
+
+/* AI 助手“测试版”字样 */
+.video-ai-assistant-badge {
+    display: none !important;
+}
+
+/* AI 总结 */
+.resizable-component.resizable-component {
+    width: 100% !important;
+    left: 0 !important;
+    position: fixed !important;
+    height: 100vw !important;
+    top: 50% !important;
+    transform: translateY(-50%);
+}
+
+/* 简介 */
+.video-desc-container .toggle-btn {
+    text-align: right;
+    margin-right: 7px;
+}
+
+/* 标签 */
+.video-tag-container {
+    margin: 6px 0 0 !important;
+    padding-bottom: 1px !important;
+}
+
+.tag-panel .tag {
+    margin-bottom: 6px !important;
+    opacity: 0;
+    animation: fadeIn 1s ease-in 2s forwards;
+}
+
+/* 投票卡片 */
+.top-vote-card-left {
+    width: unset !important;
+    max-width: unset !important;
+}
+
+/* ----------------------------------------------------
+  * ----------------- 播放组件（评论以下） -------------- *
+   ----------------------------------------------------- */
+
+@keyframes fadeIn {
+    form {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* 固定评论栏 */
+.main-reply-box {
+    position: fixed;
+    left: 0;
+    bottom: var(--header-height);
+    z-index: 10;
+    background: white;
+    width: 100%;
+    padding: 8px 12px;
+    border-top: 1px solid var(--line_regular);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    transition: .75s transform ease-in;
+    display: block !important;
+}
+
+/* 评论行滚动隐藏 */
+[scroll-hidden=true] .main-reply-box {
+    transform: translateY(calc(100% + var(--header-height)))
+}
+
+/* 移除原底部评论栏 */
+.fixed-reply-box {
+    display: none !important;
+}
+
+/* 移除评论头像 */
+.reply-box-avatar {
+    display: none !important;
+}
+
+/* 输入块外 */
+.reply-box-warp {
+    border-radius: 13px !important;
+}
+
+/* 输入块内 */
+.textarea-wrap {
+    padding: 0 !important;
+}
+
+/* 文字输入 */
+.reply-box-textarea {
+    height: 26px !important;
+    line-height: 26px !important;
+    min-height: 26px !important;
+}
+
+/* 输入展开块 */
+.main-reply-box .reply-box .box-expand[data-v-a6daab22] {
+    height: 26px;
+    margin: 8px 0 0 0;
+}
+
+/* 插入表情图片 */
+.box-left {
+    flex: 1;
+    justify-content: space-evenly !important;
+}
+
+/* 点击发送 */
+.reply-box-send {
+    width: 50px !important;
+    height: 26px !important;
+}
+
+/* 评论块 */
+#comment {
+    margin-top: 12px !important;
+}
+
+/* 评论导航 */
+.reply-navigation {
+    margin-bottom: 0 !important;
+}
+
+/* 评论 */
+.root-reply-container {
+    padding: 12px 0 0 36px !important;
+}
+
+.root-reply-avatar,
+.root-reply-avatar .bili-avatar {
+    width: 36px !important;
+    height: 36px !important;
+}
+
+.user-info {
+    margin: 3px 5px 0 !important;
+}
+
+/* 回复评论 */
+.sub-reply-container {
+    padding-left: 28px !important;
+}
+
+.sub-reply-item {
+    padding: 4px 0 4px 37px !important;
+}
+
+/* 评论图片 */
+.reply-view-image .show-image-wrap {
+    padding: 0 0 145px !important;
+
+    .image-content {
+        width: 100% !important;
+    }
+}
+
+.reply-view-image .operation-btn {
+
+    .last-image,
+    .next-image,
+    .close-container {
+        top: unset !important;
+        bottom: 100px;
+    }
+
+    .last-image,
+    .next-image {
+        transform: none !important;
+    }
+
+    .close-container {
+        right: 50% !important;
+        transform: translateX(50%);
+    }
+
+    .last-image {
+        left: 20vw !important;
+    }
+
+    .next-image {
+        right: 20vw !important;
+    }
+
+}
+
+/* 块状广告（包括推荐列） */
+#activity_vote,
+#bannerAd,
+.reply-notice,
+.ad-report,
+.pop-live-small-mode,
+#slide_ad {
+    display: none !important;
+}
+
+/* ----------------------------------------------------
+  * ---------------------------------------------------- *
+  * ------------------------ 按钮 ---------------------- *
+  * ---------------------------------------------------- *
+   ----------------------------------------------------- */
+
+/* 按钮 */
+.primary-btn:hover {
+    background-color: unset !important;
+}
+
+.primary-btn {
+    background: none !important;
+}
+
+/* 刷新按钮 */
+.flexible-roll-btn-inner {
+    border: none !important;
+    color: inherit !important;
+    background: none !important;
+    padding: 7px 8px 7px 7px !important;
+    display: block !important;
+    position: fixed;
+    bottom: -17px;
+    right: 5vw;
+    width: 40px !important;
+    transition: .5s transform ease-in;
+}
+
+/* 首页置顶按钮 */
+.top-btn {
+    border: none !important;
+    position: fixed;
+    bottom: -17px;
+    right: 77vw;
+    width: 40px !important;
+    transition: .5s transform ease-in !important
+}
+
+.top-btn .primary-btn-text {
+    display: none;
+}
+
+/* svg 大小 */
+.flexible-roll-btn-inner svg {
+    width: 26px;
+    height: 26px;
+}
+
+.palette-button-wrap.translucent>.flexible-roll-btn.flexible-roll-btn,
+.palette-button-wrap.translucent>.top-btn-wrap.top-btn-wrap {
+    opacity: 1 !important;
+}
+
+/* 按钮组 */
+span.btn-text-inner,
+.storage-box {
+    display: none !important;
+}
+
+/* 返回顶部按钮（添加渐变） */
+/* 权重：基本设置属性 < transition < animation */
+.back-to-top {
+    border-radius: 0 25% 25% 0 !important;
+    border-left: 0 !important;
+    margin-bottom: 0 !important;
+    width: 42px !important;
+
+    visibility: visible !important;
+    transform: translateX(-100%);
+    transition: transform .5s ease-in-out;
+}
+
+.back-to-top.visible {
+    transform: none;
+}
+
+/* 回顶按钮的位置 */
+.fixed-sidenav-storage {
+    left: 0;
+    right: unset !important;
+    bottom: 78px !important;
+    z-index: 1 !important;
+}
+
+/* ----------------------------------------------------
+  * ---------------------------------------------------- *
+  * ---------------------- 其它窗口 -------------------- *
+  * ---------------------------------------------------- *
+   ----------------------------------------------------- */
+
+/* 登录窗 */
+.login-scan-wp,
+.bili-mini-line {
+    display: none !important;
+}
+
+.bili-mini-content-wp {
+    padding: 52px 0 29px !important;
+}
+
+.bili-mini-login-right-wp,
+.bili-mini-login-right-wp * {
+    max-width: 80vw;
+}`, ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+/* 9 */
+/***/ ((module) => {
+
+
+
+module.exports = function (i) {
+  return i[1];
+};
+
+/***/ }),
+/* 10 */
+/***/ ((module) => {
+
+
+
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+*/
+module.exports = function (cssWithMappingToString) {
+  var list = [];
+
+  // return the list of modules as css string
+  list.toString = function toString() {
+    return this.map(function (item) {
+      var content = "";
+      var needLayer = typeof item[5] !== "undefined";
+      if (item[4]) {
+        content += "@supports (".concat(item[4], ") {");
+      }
+      if (item[2]) {
+        content += "@media ".concat(item[2], " {");
+      }
+      if (needLayer) {
+        content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {");
+      }
+      content += cssWithMappingToString(item);
+      if (needLayer) {
+        content += "}";
+      }
+      if (item[2]) {
+        content += "}";
+      }
+      if (item[4]) {
+        content += "}";
+      }
+      return content;
+    }).join("");
+  };
+
+  // import a list of modules into the list
+  list.i = function i(modules, media, dedupe, supports, layer) {
+    if (typeof modules === "string") {
+      modules = [[null, modules, undefined]];
+    }
+    var alreadyImportedModules = {};
+    if (dedupe) {
+      for (var k = 0; k < this.length; k++) {
+        var id = this[k][0];
+        if (id != null) {
+          alreadyImportedModules[id] = true;
+        }
+      }
+    }
+    for (var _k = 0; _k < modules.length; _k++) {
+      var item = [].concat(modules[_k]);
+      if (dedupe && alreadyImportedModules[item[0]]) {
+        continue;
+      }
+      if (typeof layer !== "undefined") {
+        if (typeof item[5] === "undefined") {
+          item[5] = layer;
+        } else {
+          item[1] = "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {").concat(item[1], "}");
+          item[5] = layer;
+        }
+      }
+      if (media) {
+        if (!item[2]) {
+          item[2] = media;
+        } else {
+          item[1] = "@media ".concat(item[2], " {").concat(item[1], "}");
+          item[2] = media;
+        }
+      }
+      if (supports) {
+        if (!item[4]) {
+          item[4] = "".concat(supports);
+        } else {
+          item[1] = "@supports (".concat(item[4], ") {").concat(item[1], "}");
+          item[4] = supports;
+        }
+      }
+      list.push(item);
+    }
+  };
+  return list;
+};
+
+/***/ }),
+/* 11 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -20,7 +1745,7 @@ function initViewport () {
 
 
 /***/ }),
-/* 2 */
+/* 12 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -57,7 +1782,7 @@ function increaseVideoLoadSize () {
 
 
 /***/ }),
-/* 3 */
+/* 13 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -70,7 +1795,7 @@ function ensureHeadGetted (element) { document.head ? document.head.appendChild(
 
 // 脚本预加载设置
 function handleScriptPreSetting () {
-  const defaultValue = [1, 1, 1, 1]
+  const defaultValue = [0, 0, 0, 0]
 
   const css = {
     css1: `
@@ -226,7 +1951,7 @@ function handleScriptSetting () {
 
 
 /***/ }),
-/* 4 */
+/* 14 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -324,7 +2049,7 @@ function handleHeaderImage () {
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
+/******/ 			id: moduleId,
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
@@ -337,6 +2062,18 @@ function handleHeaderImage () {
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -365,15 +2102,21 @@ function handleHeaderImage () {
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/nonce */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nc = undefined;
+/******/ 	})();
+/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
-/* harmony import */ var _override_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
-/* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
-/* harmony import */ var _header_image_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4);
+/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
+/* harmony import */ var _override_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(12);
+/* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(13);
+/* harmony import */ var _header_image_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(14);
 // ==UserScript==
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
@@ -389,9 +2132,6 @@ __webpack_require__.r(__webpack_exports__);
 // @run-at             document-start
 // @icon               https://www.bilibili.com/favicon.ico
 // ==/UserScript==
-
-// @downloadURL https://dreamforest.pages.dev/source/script/bilibili-mobile.user.js
-// @updateURL https://dreamforest.pages.dev/source/script/bilibili-mobile.meta.js
 
 // @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
 
@@ -409,6 +2149,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
 (function () {
   console.log('Bilibili mobile execute!')
   // setInterval(() => {
@@ -419,21 +2161,20 @@ __webpack_require__.r(__webpack_exports__);
   const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
   // 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
 
-  ;(0,_init_js__WEBPACK_IMPORTED_MODULE_0__.initViewport)()
-  initElementStyle()
+  ;(0,_init_js__WEBPACK_IMPORTED_MODULE_1__.initViewport)()
 
-  ;(0,_override_js__WEBPACK_IMPORTED_MODULE_1__.preventBeforeUnload)()
+  ;(0,_override_js__WEBPACK_IMPORTED_MODULE_2__.preventBeforeUnload)()
 
   if (localStorage.getItem('hidden-header') === '1') { addHiddenStyle() }
 
   if (window.location.pathname === '/') {
     // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
-    (0,_override_js__WEBPACK_IMPORTED_MODULE_1__.increaseVideoLoadSize)()
-    ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_3__.handleHeaderImage)()
+    (0,_override_js__WEBPACK_IMPORTED_MODULE_2__.increaseVideoLoadSize)()
+    ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_4__.handleHeaderImage)()
   }
 
   if (window.location.pathname.startsWith('/video')) {
-    (0,_setting_js__WEBPACK_IMPORTED_MODULE_2__.handleScriptPreSetting)()
+    (0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptPreSetting)()
   }
 
   waitDOMContentLoaded(() => {
@@ -450,7 +2191,7 @@ __webpack_require__.r(__webpack_exports__);
 
     if (window.location.pathname.startsWith('/video')) {
       handleSidebar()
-      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_2__.handleScriptSetting)()
+      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptSetting)()
     }
   })
 
@@ -719,1305 +2460,6 @@ __webpack_require__.r(__webpack_exports__);
       const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
       element.dispatchEvent(event)
     }
-  }
-
-  function initElementStyle () {
-    /* css */
-    const initialInsertStyle = `
-/* ---------------------------------------------------- *
-* ----------------------- 操作栏 ----------------------- *
-* ---------------------------------------------------- */
-
-/* 操作栏 */
-#actionbar {
-  position: fixed;
-  bottom: 0;
-  width: 100vw;
-  height: var(--header-height);
-  z-index: 1;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  background: inherit;
-  transition: .5s transform ease-in;
-}
-
-[scroll-hidden=true] #actionbar,
-[scroll-hidden=true] .flexible-roll-btn-inner,
-[scroll-hidden=true] .top-btn {
-  transform: translateY(var(--header-height));
-}
-
-
-#actionbar > * {
-  opacity: 0;
-  animation: fadeIn 1s ease-in forwards;
-}
-
-#full-now,
-#my-home,
-#search-fab,
-#menu-fab,
-#sidebar-btn {
-  padding: 8px;
-}
-
-#actionbar.home #full-now,
-#actionbar.home #sidebar-btn {
-  visibility: hidden;
-  pointer-events: none;
-}
-/* --------------------- 其它适配 --------------------- */
-
-/* 扩增载入后产生的骨架空位 */
-.floor-single-card:has(.skeleton, .skeleton-item) {
-  display: none;
-}
-
-/* 脚本设置窗口 */
-.setting-panel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: inherit;
-  z-index: 1;
-  border: 1px solid var(--line_regular);
-  display: none;
-  flex-direction: column;
-  padding: 5px;
-  border-radius: 5px;
-}
-
-.setting-panel.show {
-  display: flex;
-}
-
-.setting-title {
-  padding-bottom: 5px;
-  margin: 0 5px;
-  border-bottom: 1px solid var(--line_regular);
-}
-.setting-checkboxes {
-  display: flex;
-  flex-direction: column;
-}
-
-.setting-checkboxes label {
-  margin: 5px;
-  display: flex;
-}
-
-.setting-checkboxes span {
-  flex-grow: 1;
-  text-align: center;
-  user-select: none;
-}
-
-.setting-conform {
-  margin: 0 20px;
-  border-radius: 5px;
-}
-
-/* ----------------------------------------------------
-* ---------------------------------------------------- *
-* ----------------------- 首页 ----------------------- *
-* ---------------------------------------------------- *
- ----------------------------------------------------- */
-
- body {
-  /* 避免评论未加载时显示灰色 */
-  background: white !important;
-
-  /* 添加透明 animation 为 Via 预留加载 initViewport 的时间后，刷新加载出现白屏 */
-
-  --header-height: 46px;
-}
-
-/* 顶栏点击遮罩层 */
-#overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: var(--header-height);
-  background-color: transparent;
-  z-index: 1002;
-}
-
-/* 双列视频 */
-.recommended-container_floor-aside .container {
-  grid-template-columns: repeat(2, 1fr) !important;
-  padding: 5px;
-  grid-gap: 5px !important;
-  background: #f1f2f3;
-}
-
-/* 头图底色 */
-.bili-header__banner {
-  background-color: #f1f2f3 !important;
-}
-
-/* 显示根据屏宽隐藏的 feed */
-.container>.feed-card {
-  display: block !important;
-}
-
-/* 最小宽度（body、顶栏） */
-body,
-.bili-header,
-.bili-header__banner {
-  min-width: 0 !important;
-}
-
-/* 主页视频流 */
-.bili-feed4-layout {
-  width: 100% !important;
-}
-
-/* -------------------------------------------------- 
- ------------------------ 顶栏 ----------------------- 
- -------------------------------------------------- */
-
-/* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
-
-/* 避免初始内联高度影响计算 */
-#biliMainHeader {
-  position: fixed;
-  z-index: 2;
-}
-
-/* 顶栏边距（右边距减去头像右空隙） */
-.bili-header__bar {
-  padding: 0 10px 0 15px !important;
-  transition: transform 0.5s ease-in;
-}
-
-/* 顶栏高度 */
-.bili-header .bili-header__bar {
-  height: var(--header-height) !important;
-}
-
-/* 视频页顶栏高度 */
-.header-v3 #biliMainHeader .bili-header .bili-header__bar {
-  height: var(--header-height) !important;
-}
-
-/* 顶部按钮高度 */
-.entry-title,
-.right-entry,
-.mini-header__logo {
-  max-height: var(--header-height);
-}
-
-.left-entry__title {
-  height: var(--header-height) !important;
-}
-
-/* 头像高度 */
-.v-popover-wrap.header-avatar-wrap {
-  height: var(--header-height) !important;
-}
-
-/* 收藏按钮高度 */
-.header-favorite-container-box,
-.header-favorite-container  {
-  max-height: var(--header-height) !important;
-}
-
-/* 顶栏高度：HTML 初始加载时，biliMainHeader 已有内联高度，
-   保留顶栏外框（biliMainHeader）高度，修改其它元素 */
-
-/* 不影响结果 */
-#biliMainHeader .bili-header {
-  min-height: var(--header-height);
-  height: var(--header-height);
-}
-
-/* 搜索框 */
-.center-search-container {
-  position: absolute !important;
-  width: 100%;
-  left: 0;
-  top: 0;
-  padding: 10px 20px 5px !important;
-  z-index: 3;
-  margin: 0 !important;
-  display: none;
-}
-
-.center-search-container.show {
-  display: block;
-}
-
-/* 顶栏右侧图标 */
-.right-entry {
-  flex: 1;
-  min-width: 0;
-  margin: 0 !important;
-  justify-content: space-evenly;
-}
- 
-.right-entry > * {
-  animation: fadeIn 1s ease-in;
-}
-
-.left-entry {
-  min-width: 0;
-  margin: 0 !important;
-}
-
-/* 头像图表边距 */
-.header-avatar-wrap {
-  padding-right: 0 !important;
-}
-
-/* 禁止换行 */
-.left-entry__title,
-.dm.item {
-  white-space: nowrap;
-}
-
-/* 头像置右 */
-.v-popover-wrap.header-avatar-wrap {
-  order: 5;
-  margin-left: auto;
-}
-
-/* 剩余元素均分 */
-.v-popover-wrap:not(.header-avatar-wrap) {
-  flex: 1;
-}
-
-/* 肉眼个别微调 */
-.right-entry--message {
-  padding-left: 3px;
-}
-
-/* 顶栏元素间距 */
-.left-entry__title {
-  margin-right: 0px !important;
-}
-
-/* 与头像左空隙对齐 */
-.mini-header__logo {
-  margin-right: 7px !important;
-}
-
-/* 禁用主题色重载 */
-svg.mini-header__logo path {
-  fill: var(--brand_blue) !important;
-}
-
-/* 移除“首页”字样 */
-.mini-header__title {
-  display: none !important;
-}
-
-/* 移除顶部动图和临时静图 */
-.animated-banner,
-#bili-header-banner-img {
-  display: none !important;
-}
-
-/* 使用 controlHeaderImage 获取随机头图 */
-
-.biliheader__banner {
-  display: none !important;
-}
-
-/* -------------------------------------------------- 
- ---------------------- 展开图类 --------------------- 
- -------------------------------------------------- */
-
-.v-popover {
-  position: fixed !important;
-  top: var(--header-height) !important;
-  margin: 0 !important;
-  max-width: 100%;
-  padding: 5px !important;
-}
-
-/* 分类(左侧入口)展开图 */
-.channel-panel__column {
-  width: 100% !important;
-  flex: 1;
-  padding: 0 !important;
-}
-
-/* 右侧入口展开图 */
-.dynamic-panel-popover,
-.favorite-panel-popover,
-.history-panel-popover {
-  max-width: 100%;
-  padding: 0 5px !important;
-}
-
-/* 动态展开图 */
-.dynamic-video-item {
-  margin-right: 0 !important;
-}
-
-.header-dynamic-list-item {
-  padding: 0 !important;
-}
-
-.header-dynamic__box--center {
-  max-width: 60%;
-}
-
-.header-dynamic__box--right {
-  top: 0 !important;
-  margin-bottom: 0 !important;
-  width: unset !important;
-  flex: 1;
-
-  .cover {
-      width: unset !important;
-      height: unset !important;
-  }
-}
-
-/* 收藏展开图 */
-.favorite-panel-popover__nav {
-  max-width: 25%;
-}
-
-.header-fav-card__image {
-  max-width: 40%;
-
-  picture {
-      max-width: 100%;
-      height: 100% !important;
-  }
-}
-
-/* 间距（收藏展开图） */
-.favorite-panel-popover__nav .tab-item {
-  padding: 0 6px !important;
-}
-
-.header-fav-card {
-  padding: 6px !important;
-}
-
-.favorite-panel-popover__nav {
-  margin-top: 6px !important;
-}
-
-/* 历史展开图 */
-.header-history-video {
-  padding: 5px 10px !important;
-}
-
-/* 移除头像大图 */
-.header-entry-avatar {
-  display: none !important;
-}
-
-/* 关闭头像动画 */
-.header-entry-mini {
-  animation: unset !important;
-}
-
-/* 移除次要入口 */
-.left-entry>li:not(:nth-of-type(1)),
-.vip-wrap,
-.right-entry-item:has(>.vip-wrap),
-.right-entry-item:nth-of-type(6),
-.right-entry-item--upload,
-.header-channel,
-.bili-header__channel,
-.recommended-swipe,
-.feed-roll-btn {
-  display: none !important;
-}
-
-/* 广告、推广图块 */
-/* 底部登录弹窗类 .lt-row 可能包含其它元素 */
-/* 首页顶部动图上的大 Logo */
-.container>*:has(.bili-video-card__info--ad),
-.floor-single-card,
-.desktop-download-tip,
-.lt-row,
-.header-banner__inner {
-  display: none !important;
-}
-
-/* ----------------------------------------------------
-* --------------------- 主页视频卡片 ------------------- *
- ----------------------------------------------------- */
-
-.container>* {
-  margin-top: 0 !important;
-}
-
-/* 卡片底板 */
-.bili-video-card__wrap {
-  border-radius: 5px;
-}
-
-/* 封面宽长比 */
-.bili-video-card.is-rcmd {
-  --cover-radio: 75% !important;
-}
-
-/* 封面圆角 */
-.v-img.bili-video-card__cover {
-  border-radius: 5px 5px 0 0;
-}
-
-/* 封面信息（阴影层圆角） */
-.bili-video-card__stats {
-  border-radius: 0 !important;
-  --icon-size: 16px;
-  --subtitle-font-size: 11px;
-  white-space: nowrap;
-}
-
-/* 卡片标题 - 字样 */
-.bili-video-card__info--tit {
-  --title-padding-right: 0;
-  --title-font-size: 14px;
-  --title-line-height: 20px;
-}
-
-/* 标题 - 上下距 */
-/* .bili-video-card__info  */
-
-/* 标题 - 左右距 */
-.bili-video-card__info--right {
-  padding: 0 5px;
-}
-
-/* 标题 - 字重 */
-/* .bili-video-card__info--tit > a */
-
-/* 小标 */
-.bili-video-card__info--bottom {
-  --subtitle-font-size: 12px;
-}
-
-.bili-video-card__info--icon-text {
-  padding: 0 5px !important;
-}
-
-/* 小标 - 日期 */
-.bili-video-card__info--owner {
-  flex: 1;
-}
-
-.bili-video-card__info--date {
-  margin-left: auto !important;
-}
-
-/* 小标 - 点赞数 */
-.bili-video-card__info--icon-text {
-  --follow-icon-font-size: 11px;
-  --follow-icon-line-height: 15px;
-}
-
-/* ----------------------------------------------------
-* ---------------------------------------------------- *
-* --------------------- 视频详情页 -------------------- *
-* ---------------------------------------------------- *
- ----------------------------------------------------- */
-
-/* 主应用块 */
-#app {
-  overflow: hidden;
-}
-
-/* 主体内容块 */
-.video-container-v1 {
-  min-width: 0 !important;
-  padding: 0 !important;
-  top: var(--header-height);
-}
-
-/* ----------------------------------------------------
-* ---------------------- 主视频块 --------------------- *
- ----------------------------------------------------- */
-
-/* 主视频块 */
-.left-container {
-  --video-height: calc(100vw * 0.5625);
-  --dm-row-height: 44px;
-}
-
-/* 有初始内联 top */
-/* 视频块（宽度） (#mainheight与header的高度差导致了64px-48px的可滚动区域) */
-.left-container {
-  /* 移动 Safari 百分比宽高自动考虑边框和填充 */
-  padding: calc(var(--video-height) + var(--dm-row-height)) 10px 0;
-  box-sizing: border-box;
-  width: 100% !important;
-
-  /* 填充评论未加载时的空白，video-container-v1 已考虑顶部留空，但 #app 的高度把顶部重叠的部分加上了 */
-  min-height: calc(100vh - var(--header-height));
-}
-
-/* ----------------------------------------------------
-* ----------------------- 播放器 ---------------------- *
- ----------------------------------------------------- */
-
-/* 修改播放器固定尺寸 */
-#bilibili-player {
-  height: 100% !important;
-  width: 100% !important;
-}
-
-/* 固定视频（外框尺寸） */
-#playerWrap {
-  position: fixed;
-  left: 0;
-  top: var(--header-height);
-  width: 100vw;
-  height: var(--video-height) !important;
-  z-index: 75;
-  transition: transform 0.5s ease-in;
-}
-
-/* 小窗时的隐藏 - 始终隐藏*/
-/* 顶部关注、音乐、反馈 */
-/* 右下角暂停图标 */
-/* 取消静音 */
-.bpx-player-top-wrap,
-.bpx-player-state-wrap,
-.bpx-player-toast-wrap {
-  display: none !important;
-}
-
-/* 小窗时的隐藏 - 固定显示*/
-/* 视频控制栏 */
-/* 弹幕行 */
-.bpx-player-control-wrap,
-.bpx-player-sending-area {
-  display: block !important;
-}
-
-/* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
-/*.bpx-player-toast-wrap {
-  bottom: unset !important;
-  top: 50%;
-  transform: translateY(-50%);
-}*/
-
-.bpx-player-toast-item {
-  margin: 0 !important;
-}
-
-/* 小窗时的暂停图标 */
-.bpx-player-mini-warp {
-  display: none !important;
-}
-
-/* 彻底移除小窗样式 */
-#playerWrap .bpx-player-container[data-screen=mini] {
-  position: relative !important;
-  width: 100% !important;
-  height: 100% !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  transition: top 0.5s ease-in;
-}
-
-/* 移除小窗等按钮 */
-.fixed-sidenav-storage>*:nth-child(1),
-.fixed-sidenav-storage>*:nth-child(2) {
-  display: none !important;
-}
-
-/* 窄屏不隐藏控制条和阴影 */
-.bpx-player-control-entity,
-.bpx-player-control-mask {
-  display: block !important;
-}
-
-/* 移除次要按钮：画中画、宽屏、页面全屏、时间、选集 */
-.bpx-player-ctrl-pip,
-.bpx-player-ctrl-wide,
-.bpx-player-ctrl-web,
-.bpx-player-ctrl-time,
-.bpx-player-ctrl-eplist {
-  display: none !important;
-}
-
-/* 左右控制区 */
-.bpx-player-control-bottom-left,
-.bpx-player-control-bottom-right {
-  flex: unset !important;
-}
-
-/* 全屏时 */
-.bpx-player-container .bpx-player-control-bottom-left,
-.bpx-player-container .bpx-player-control-bottom-right {
-  min-width: 0 !important;
-}
-
-/* 清晰度(width:auto 不换行，隐藏不掉高清字样) */
-.bpx-player-ctrl-quality {
-  margin-right: 0 !important;
-  min-width: 0;
-  flex: auto !important;
-}
-
-/* 清晰度、倍速文本 */
-.bpx-player-ctrl-quality-result,
-.bpx-player-ctrl-playbackrate {
-  font-size: 12px !important;
-}
-
-/* 清晰度文本:隐藏换行的部分 */
-.bpx-player-ctrl-quality-result {
-  height: 22px;
-  overflow: hidden;
-}
-
-/* 倍速文本:禁止换行 */
-.bpx-player-ctrl-playbackrate {
-  text-wrap: nowrap;
-}
-
-/* 清晰度文本:全屏时恢复大小 */
-@media screen and (min-width: 750px){
-  .bpx-player-container[data-screen=full] .bpx-player-ctrl-quality-result {
-    font-size: 16px !important;
-    height: unset !important;
-  }
-}
-
-/* 按钮区(图标22px，算 margin 37px) */
-.bpx-player-control-bottom {
-  height: 29px !important;
-  margin-top: 7px !important;
-  padding: 0 7px !important;
-}
-
-/* 进度条 */
-.bpx-player-control-top {
-  bottom: 36px !important;
-}
-
-/* 修复部分情况下的控制栏图标增大导致的高度过高 */
-@media screen and (min-width: 750px) {
-  .bpx-player-container[data-screen=full] {
-    .bpx-player-control-wrap {
-      height: 43px !important;
-    }
-
-    .bpx-player-control-top {
-      bottom: 43px !important;
-    }
-  }
-}
-
-/* 进度条细条包含块（高12px） */
-.bpx-player-progress-wrap {
-  height: 7px !important;
-  padding-bottom: 3px !important;
-}
-
-/* 阴影(控制栏展开时: 高能区 100% - 1px) */
-.bpx-player-pbp {
-  bottom: 1px !important;
-}
-
-.bpx-player-pbp.show {
-  bottom: calc(100% + 6px) !important;
-}
-
-/* 替换via暗色异常的阴影 */
-.bpx-player-control-mask {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .5) 100%) !important;
-}
-
-/* 清晰度弹窗 */
-.bpx-player-ctrl-quality-menu-wrap {
-  bottom: 0 !important;
-  max-height: var(--video-height) !important;
-}
-
-/* 设置弹窗 */
-.bpx-player-ctrl-setting-box {
-  right: 0 !important;
-  bottom: 0 !important;
-}
-
-/* 更多设置 */
-.bpx-player-ctrl-setting-menu-right {
-  padding: 5px !important;
-  max-height: var(--video-height) !important;
-}
-
-/* 更多设置 */
-.bui.bui-radio.bui-dark {
-  margin-bottom: 5px !important;
-}
-
-/* 全屏控制栏 */
-.bpx-player-control-bottom-center .bpx-player-sending-bar {
-  padding-right: 6px !important;
-  height: 24px !important;
-}
-
-/* 存在章节时(允许章节缩小) */
-.bpx-player-ctrl-viewpoint {
-  margin: 0 !important;
-  min-width: 0 !important;
-  width: 45px !important;
-  flex-shrink: 1 !important;
-}
-
-.bpx-player-ctrl-viewpoint-text {
-  width: 24px !important;
-  text-overflow: unset !important;
-  font-size: 12px;
-  flex: none;
-}
-
-/* ----------------------------------------------------
-* ----------------------- 弹幕行 ---------------------- *
- ----------------------------------------------------- */
-
-/* 弹幕行：滚动隐藏 */
-.bpx-player-sending-area {
-  position: absolute !important;
-  bottom: 0;
-  width: 100%;
-  transform: translateY(100%);
-
-  transition: 0.5s transform ease-in;
-  display: block !important;
-  z-index: 0;
-}
-
-[scroll-hidden=true] .bpx-player-sending-area {
-  transform: none;
-}
-
-.bpx-player-video-area {
-  z-index: 1;
-}
-
-/* 修改小窗样式的时候把这行删了，导致弹幕行显示异常 */
-.bpx-player-container[data-screen=mini] {
-  overflow: unset !important;
-}
-
-/* 弹幕行预加载灰块白条(视频底下也有，预加载有时会看到) */
-.bpx-player-sending-bar-left,
-.bpx-player-sending-bar-right,
-#bilibili-player-placeholder-bottom {
-  display: none !important;
-}
-
-/* 弹幕行高度 */
-.bpx-player-sending-bar {
-  height: var(--dm-row-height) !important;
-}
-
-.bpx-player-dm-input {
-  height: 26px !important;
-}
-
-/* 弹幕输入栏外 */
-.bpx-player-video-inputbar {
-  height: 26px !important;
-  border-radius: 13px !important;
-
-  min-width: 0 !important;
-}
-
-.bpx-player-video-inputbar-wrap {
-  width: 100% !important;
-}
-
-/* 不输入隐藏发送 */
-.bpx-player-dm-btn-send {
-  display: none !important;
-}
-
-.bpx-player-video-inputbar-wrap:has(>input:focus)+.bpx-player-dm-btn-send {
-  display: flex !important;
-}
-
-.bpx-player-dm-btn-send {
-  border-radius: 0 13px 13px 0 !important;
-  height: 26px !important;
-  min-width: 50px !important;
-  width: 50px !important;
-}
-
-.bui-button-blue {
-  min-width: 50px !important;
-}
-
-/* 观看人数 */
-.bpx-player-video-info {
-  margin-right: 6px !important;
-}
-
-/* 弹幕数量、弹幕礼仪 */
-.bpx-player-video-info-divide,
-.bpx-player-video-info-dm,
-.bpx-player-dm-hint {
-  display: none !important;
-}
-
-/* 播放组件在下面 */
-
-/* ----------------------------------------------------
-* ----------------------- 推荐块 ---------------------- *
- ----------------------------------------------------- */
-
-/* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
-.right-container {
-  position: fixed !important;
-  width: 85% !important;
-  left: 85%;
-  padding: 10px;
-  margin: 0 0 0 15% !important;
-
-  z-index: 76;
-  background: white;
-  transition: transform .6s ease-in;
-  height: calc(100% - var(--header-height) * 2);
-  overflow-y: auto;
-  /* 避免到达边界后的滚动事件穿透 */
-  overscroll-behavior: contain;
-
-  box-sizing: border-box;
-  border-left: 1px solid var(--line_regular);
-}
-
-body[show-sidebar="true"] .right-container {
-  transform: translateX(-100%);
-}
-
-.right-container-inner {
-  padding: 0 !important;
-}
-
-/* 推荐块蒙版（加到左视频块才不会被冒泡事件影响） */
-.left-container:after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 75;
-  background-color: rgb(0, 0, 0);
-  opacity: 0;
-  transition: opacity 0.6s ease-in;
-  pointer-events: none;
-}
-
-body[show-sidebar="true"] .left-container:after {
-  opacity: 0.5;
-  pointer-events: auto;
-}
-
-/* UP信息 */
-.upinfo-btn-panel .default-btn {
-  font-size: 12px !important;
-}
-
-.new-charge-btn {
-  max-width: 35%;
-}
-
-.follow-btn {
-  max-width: 150px !important;
-}
-
-/* UP头像 */
-/*.up-avatar-wrap .bili-avatar,
-.up-avatar-wrap {
-  width: 38px !important;
-  height: 38px !important;
-}*/
-
-/* 推荐视频图块 */
-#reco_list .card-box .pic-box {
-  max-width: 50%;
-}
-
-/* ----------------------------------------------------
-* ---------------------- 播放页组件 ------------------- *
- ----------------------------------------------------- */
-
- #viewbox_report {
-}
-
-/* 信息块（标题） */
-.video-info-container {
-  height: auto !important;
-  padding-top: 0 !important;
-}
-
-/* 标题（可两行显示） */
-.video-title {
-  font-size: 18px !important;
-
-  white-space: wrap !important;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-
-  /* 去除折叠时的 show-more 按钮 margin */
-  margin-right: 0 !important;
-}
-
-.show-more {
-  top: unset !important;
-  transform: none !important;
-  bottom: 4px;
-  right: 4px !important;
-}
-
-.video-desc-container {
-  margin: 10px 0 !important;
-}
-
-/* 点赞投币行 */
-.video-toolbar-container {
-  padding: 10px 0 8px !important;
-}
-
-.video-toolbar-left,
-.video-toolbar-left-main {
-  min-width: 0;
-}
-
-.toolbar-left-item-wrap {
-  flex: 1;
-  min-width: 0;
-}
-
-.video-toolbar-container * {
-  margin: 0 !important;
-}
-
-.video-share-info {
-  width: 40px !important;
-}
-
-.video-share-popover {
-  display: none !important;
-}
-
-/* AI 助手“测试版”字样 */
-.video-ai-assistant-badge {
-  display: none !important;
-}
-
-/* AI 总结 */
-.resizable-component.resizable-component {
-  width: 100% !important;
-  left: 0 !important;
-  position: fixed !important;
-  height: 100vw !important;
-  top: 50% !important;
-  transform: translateY(-50%);
-}
-
-/* 简介 */
-.video-desc-container .toggle-btn {
-  text-align: right;
-  margin-right: 7px;
-}
-
-/* 标签 */
-.video-tag-container {
-  margin: 6px 0 0 !important;
-  padding-bottom: 1px !important;
-}
-
-.tag-panel .tag {
-  margin-bottom: 6px !important;
-  opacity: 0;
-  animation: fadeIn 1s ease-in 2s forwards;
-}
-
-/* 投票卡片 */
-.top-vote-card-left {
-  width: unset !important;
-  max-width: unset !important;
-}
-
-/* ----------------------------------------------------
-* ----------------- 播放组件（评论以下） -------------- *
- ----------------------------------------------------- */
-
-@keyframes fadeIn {
-  form {
-      opacity: 0;
-  }
-
-  to {
-      opacity: 1;
-  }
-}
-
-/* 固定评论栏 */
-.main-reply-box {
-  position: fixed;
-  left: 0;
-  bottom: var(--header-height);
-  z-index: 10;
-  background: white;
-  width: 100%;
-  padding: 8px 12px;
-  border-top: 1px solid var(--line_regular);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-
-  transition: .75s transform ease-in;
-  display: block !important;
-}
-
-/* 评论行滚动隐藏 */
-[scroll-hidden=true] .main-reply-box {
-  transform: translateY(calc(100% + var(--header-height)))
-}
-
-/* 移除原底部评论栏 */
-.fixed-reply-box {
-  display: none !important;
-}
-
-/* 移除评论头像 */
-.reply-box-avatar {
-  display: none !important;
-}
-
-/* 输入块外 */
-.reply-box-warp {
-  border-radius: 13px !important;
-}
-
-/* 输入块内 */
-.textarea-wrap {
-  padding: 0 !important;
-}
-
-/* 文字输入 */
-.reply-box-textarea {
-  height: 26px !important;
-  line-height: 26px !important;
-  min-height: 26px !important;
-}
-
-/* 输入展开块 */
-.main-reply-box .reply-box .box-expand[data-v-a6daab22] {
-  height: 26px;
-  margin: 8px 0 0 0;
-}
-
-/* 插入表情图片 */
-.box-left {
-  flex: 1;
-  justify-content: space-evenly !important;
-}
-
-/* 点击发送 */
-.reply-box-send {
-  width: 50px !important;
-  height: 26px !important;
-}
-
-/* 评论块 */
-#comment {
-  margin-top: 12px !important;
-}
-
-/* 评论导航 */
-.reply-navigation {
-  margin-bottom: 0 !important;
-}
-
-/* 评论 */
-.root-reply-container {
-  padding: 12px 0 0 36px !important;
-}
-
-.root-reply-avatar,
-.root-reply-avatar .bili-avatar {
-  width: 36px !important;
-  height: 36px !important;
-}
-
-.user-info {
-  margin: 3px 5px 0 !important;
-}
-
-/* 回复评论 */
-.sub-reply-container {
-  padding-left: 28px !important;
-}
-
-.sub-reply-item {
-  padding: 4px 0 4px 37px !important;
-}
-
-/* 评论图片 */
-.reply-view-image .show-image-wrap {
-  padding: 0 0 145px !important;
-  .image-content {
-    width: 100% !important;
-  }
-}
-
-.reply-view-image .operation-btn {
-  .last-image,
-  .next-image,
-  .close-container {
-    top: unset !important;
-    bottom: 100px;
-  }
-
-  .last-image,
-  .next-image {
-    transform: none !important;
-  }
-
-  .close-container {
-    right: 50% !important;
-    transform: translateX(50%);
-  }
-  
-  .last-image {
-    left: 20vw !important;
-  }
-
-  .next-image {
-    right: 20vw !important;
-  }
-
-}
-
-/* 块状广告（包括推荐列） */
-#activity_vote,
-#bannerAd,
-.reply-notice,
-.ad-report,
-.pop-live-small-mode,
-#slide_ad {
-  display: none !important;
-}
-
-/* ----------------------------------------------------
-* ---------------------------------------------------- *
-* ------------------------ 按钮 ---------------------- *
-* ---------------------------------------------------- *
- ----------------------------------------------------- */
-
-/* 按钮 */
-.primary-btn:hover {
-  background-color: unset !important;
-}
-
-.primary-btn {
-  background: none !important;
-}
-
-/* 刷新按钮 */
-.flexible-roll-btn-inner {
-  border: none !important;
-  color: inherit !important;
-  background: none !important;
-  padding: 7px 8px 7px 7px !important;
-  display: block !important;
-  position: fixed;
-  bottom: -17px;
-  right: 5vw;
-  width: 40px !important;
-  transition: .5s transform ease-in;
-}
-
-/* 首页置顶按钮 */
-.top-btn {
-  border: none !important;
-  position: fixed;
-  bottom: -17px;
-  right: 77vw;
-  width: 40px !important;
-  transition: .5s transform ease-in !important
-}
-
-.top-btn .primary-btn-text {
-  display: none;
-}
-
-/* svg 大小 */
-.flexible-roll-btn-inner svg {
-  width: 26px;
-  height: 26px;
-}
-
-.palette-button-wrap.translucent>.flexible-roll-btn.flexible-roll-btn,
-.palette-button-wrap.translucent>.top-btn-wrap.top-btn-wrap {
-  opacity: 1 !important;
-}
-
-/* 按钮组 */
-span.btn-text-inner,
-.storage-box {
-  display: none !important;
-}
-
-/* 返回顶部按钮（添加渐变） */
-/* 权重：基本设置属性 < transition < animation */
-.back-to-top {
-  border-radius: 0 25% 25% 0 !important;
-  border-left: 0 !important;
-  margin-bottom: 0 !important;
-  width: 42px !important;
-
-  visibility: visible !important;
-  transform: translateX(-100%);
-  transition: transform .5s ease-in-out;
-}
-
-.back-to-top.visible {
-  transform: none;
-}
-
-/* 回顶按钮的位置 */
-.fixed-sidenav-storage {
-  left: 0;
-  right: unset !important;
-  bottom: 78px !important;
-  z-index: 1 !important;
-}
-
-/* ----------------------------------------------------
-* ---------------------------------------------------- *
-* ---------------------- 其它窗口 -------------------- *
-* ---------------------------------------------------- *
- ----------------------------------------------------- */
-
-/* 登录窗 */
-.login-scan-wp,
-.bili-mini-line {
-  display: none !important;
-}
-
-.bili-mini-content-wp {
-  padding: 52px 0 29px !important;
-}
-
-.bili-mini-login-right-wp,
-.bili-mini-login-right-wp * {
-  max-width: 80vw;
-}
-    `
-    const style = document.createElement('style')
-    style.textContent = initialInsertStyle
-
-    // 如果 document.head 可用，将样式添加到文档
-    ensureHeadGetted(style)
   }
 }())
 

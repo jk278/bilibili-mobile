@@ -14,9 +14,6 @@
 // @icon               https://www.bilibili.com/favicon.ico
 // ==/UserScript==
 
-// @downloadURL https://dreamforest.pages.dev/source/script/bilibili-mobile.user.js
-// @updateURL https://dreamforest.pages.dev/source/script/bilibili-mobile.meta.js
-
 // @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
 
 /**

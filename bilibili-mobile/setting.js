@@ -3,7 +3,7 @@ function ensureHeadGetted (element) { document.head ? document.head.appendChild(
 
 // 脚本预加载设置
 export function handleScriptPreSetting () {
-  const defaultValue = [1, 1, 1, 1]
+  const defaultValue = [0, 0, 0, 0]
 
   const css = {
     css1: `
