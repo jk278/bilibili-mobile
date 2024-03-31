@@ -22,5 +22,6 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
-  }
+  },
+  ignorePatterns: ['node_modules/**/*.js', 'dist/**/*.js']
 }

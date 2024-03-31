@@ -1,4 +1,5 @@
-import { waitDOMContentLoaded, ensureHeadGetted } from './app'
+function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
+function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
 
 // 脚本预加载设置
 export function handleScriptPreSetting () {

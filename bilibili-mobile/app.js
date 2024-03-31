@@ -25,10 +25,10 @@
  * Safari 浏览器 直接打开电脑模式即可
  */
 
-import { initViewport } from './init'
-import { preventBeforeUnload, increaseVideoLoadSize } from './override'
-import { handleScriptPreSetting, handleScriptSetting } from './setting'
-import { handleHeaderImage } from './header-image'
+import { initViewport } from './init.js'
+import { preventBeforeUnload, increaseVideoLoadSize } from './override.js'
+import { handleScriptPreSetting, handleScriptSetting } from './setting.js'
+import { handleHeaderImage } from './header-image.js'
 
 (function () {
   console.log('Bilibili mobile execute!')
