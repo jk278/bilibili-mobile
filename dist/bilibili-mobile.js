@@ -1,2 +1,2027 @@
-/*! For license information please see bilibili-mobile.js.LICENSE.txt */
-(()=>{"use strict";const n=(()=>"undefined"!=typeof unsafeWindow?unsafeWindow:window)();function t(){const t=n.fetch;n.fetch=function(n,e){return"string"==typeof n&&n.includes("api.bilibili.com")&&n.includes("feed/rcmd")&&"GET"===e.method.toUpperCase()&&(n=n.replace("&ps=12&","&ps=30&")),t(n,e)}}function e(n){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",n):n()}function i(n){document.head?document.head.appendChild(n):e(document.head.appendChild(n))}function a(){const n=[1,1,1,1],t={css1:"\n      .bpx-player-sending-area.bpx-player-sending-area {display: none !important;}\n      .left-container.left-container {padding: calc(var(--video-height) + 5px ) 10px 0;}\n    ",css2:".main-reply-box.main-reply-box {display: none !important;}",css3:"#v_tag {display: none !important;}",css4:"\n      .copyright.item {display: none !important;}\n      .show-more {display: none;}"};function a(a){a=a||!1;const o=JSON.parse(localStorage.getItem("settingShowHidden"))||n,r=Object.values(t);if(a)for(const[n,r]of a.entries())r&&(o[n]?i(Object.assign(document.createElement("style"),{id:`script-pre-style-${n+1}`,textContent:t[`css${n+1}`]})):document.head?document.getElementById(`script-pre-style-${n+1}`).remove():e(document.getElementById(`script-pre-style-${n+1}`)));else for(const[n,t]of r.entries())o[n]&&i(Object.assign(document.createElement("style"),{id:`script-pre-style-${n+1}`,textContent:t}))}a(),e((()=>{!function(){const t=Object.assign(document.createElement("div"),{id:"setting-panel-style",className:"setting-panel",innerHTML:'\n        <div class="setting-title">选择隐藏元素：</div>\n        <div class="setting-checkboxes">\n          <label><input type="checkbox" value="1"><span>弹幕行</span></label>\n          <label><input type="checkbox" value="2"><span>评论行</span></label>\n          <label><input type="checkbox" value="3"><span>标签块</span></label>\n          <label><input type="checkbox" value="4"><span>转载声明</span></label>\n        </div>\n        '}),e=Object.assign(document.createElement("button"),{class:"setting-conform",textContent:"确认"}),i=t.querySelectorAll('.setting-checkboxes input[type="checkbox"]'),o=JSON.parse(localStorage.getItem("settingShowHidden"))||n;for(const[n,t]of o.entries())i[n].checked=t;e.addEventListener("click",(()=>{const n=Array.from(i).map((n=>n.checked?1:0));localStorage.setItem("settingShowHidden",JSON.stringify(n)),a(n.map(((n,t)=>n===o[t]?0:1))),t.classList.remove("show")})),t.appendChild(e),document.body.appendChild(t)}(),GM_registerMenuCommand("元素隐藏设置",(()=>{document.getElementById("setting-panel-style").classList.add("show")}))}))}function o(){const n={key1:"full-unmuted"};e((()=>{!function(){const t=Object.assign(document.createElement("div"),{id:"setting-panel-preference",className:"setting-panel",innerHTML:'\n        <div class="setting-title">选择操作偏好：</div>\n        <div class="setting-checkboxes">\n          <label><input type="checkbox" value="1"><span>使用底部全屏按钮播放和打开声音</span></label>\n        </div>\n        '}),e=Object.assign(document.createElement("button"),{class:"setting-conform",textContent:"确认"}),i=Object.values(n),a=t.querySelectorAll('.setting-checkboxes input[type="checkbox"]');for(const[n,t]of i.entries())a[n].checked="1"===(localStorage.getItem(t)||"0");e.addEventListener("click",(()=>{for(const[n,t]of i.entries())localStorage.setItem(t,a[n].checked?"1":"0");t.classList.remove("show")})),t.appendChild(e),document.body.appendChild(t)}(),GM_registerMenuCommand("操作偏好设置",(()=>{document.getElementById("setting-panel-preference").classList.add("show")}))}))}!function(){console.log("Bilibili mobile execute!");const n=(()=>"undefined"!=typeof unsafeWindow?unsafeWindow:window)();function e(n){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",n):n()}function i(n){document.head?document.head.appendChild(n):e(document.head.appendChild(n))}function r(){i(Object.assign(document.createElement("style"),{id:"hidden-header",textContent:"\n          .bili-header__bar, #overlay {transform: translateY(-100%);}\n          #playerWrap {transform: translateY(calc(var(--header-height) * -1));}\n          /* 父布局不要用 transform */\n          .video-container-v1.video-container-v1 {top: 0 !important;}\n          .right-container.right-container {height: 100%;}\n          .center-search-container {margin-top: var(--header-height) !important;}\n          /* 隐藏时操作栏蒙版 */\n          #actionbar:after {\n            content: '';\n            position: absolute;\n            top: 0;\n            left: 0;\n            width: 100%;\n            height: 100%;\n            background-color: rgb(0, 0, 0);\n            opacity: 0;\n            transition: opacity 0.6s ease-in;\n            pointer-events: none;\n          }\n          \n          body[show-sidebar=\"true\"] #actionbar:after {\n            opacity: 0.5;\n            pointer-events: auto;\n          }\n        "}))}!function(){if(document.head){const n=document.createElement("meta");n.setAttribute("name","viewport"),n.setAttribute("content","width=device-width, initial-scale=1.0"),document.head.appendChild(n)}}(),function(){const n=document.createElement("style");n.textContent='\n/* ---------------------------------------------------- *\n* ----------------------- 操作栏 ----------------------- *\n* ---------------------------------------------------- */\n\n/* 操作栏 */\n#actionbar {\n  position: fixed;\n  bottom: 0;\n  width: 100vw;\n  height: var(--header-height);\n  z-index: 1;\n  display: flex;\n  justify-content: space-evenly;\n  align-items: center;\n  background: inherit;\n  transition: .5s transform ease-in;\n}\n\n[scroll-hidden=true] #actionbar,\n[scroll-hidden=true] .flexible-roll-btn-inner,\n[scroll-hidden=true] .top-btn {\n  transform: translateY(var(--header-height));\n}\n\n\n#actionbar > * {\n  opacity: 0;\n  animation: fadeIn 1s ease-in forwards;\n}\n\n#full-now,\n#my-home,\n#search-fab,\n#menu-fab,\n#sidebar-btn {\n  padding: 8px;\n}\n\n#actionbar.home #full-now,\n#actionbar.home #sidebar-btn {\n  visibility: hidden;\n  pointer-events: none;\n}\n/* --------------------- 其它适配 --------------------- */\n\n/* 扩增载入后产生的骨架空位 */\n.floor-single-card:has(.skeleton, .skeleton-item) {\n  display: none;\n}\n\n/* 脚本设置窗口 */\n.setting-panel {\n  position: fixed;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background: inherit;\n  z-index: 1;\n  border: 1px solid var(--line_regular);\n  display: none;\n  flex-direction: column;\n  padding: 5px;\n  border-radius: 5px;\n}\n\n.setting-panel.show {\n  display: flex;\n}\n\n.setting-title {\n  padding-bottom: 5px;\n  margin: 0 5px;\n  border-bottom: 1px solid var(--line_regular);\n}\n.setting-checkboxes {\n  display: flex;\n  flex-direction: column;\n}\n\n.setting-checkboxes label {\n  margin: 5px;\n  display: flex;\n}\n\n.setting-checkboxes span {\n  flex-grow: 1;\n  text-align: center;\n  user-select: none;\n}\n\n.setting-conform {\n  margin: 0 20px;\n  border-radius: 5px;\n}\n\n/* ----------------------------------------------------\n* ---------------------------------------------------- *\n* ----------------------- 首页 ----------------------- *\n* ---------------------------------------------------- *\n ----------------------------------------------------- */\n\n body {\n  /* 避免评论未加载时显示灰色 */\n  background: white !important;\n\n  /* 添加透明 animation 为 Via 预留加载 initViewport 的时间后，刷新加载出现白屏 */\n\n  --header-height: 46px;\n}\n\n/* 顶栏点击遮罩层 */\n#overlay {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: var(--header-height);\n  background-color: transparent;\n  z-index: 1002;\n}\n\n/* 双列视频 */\n.recommended-container_floor-aside .container {\n  grid-template-columns: repeat(2, 1fr) !important;\n  padding: 5px;\n  grid-gap: 5px !important;\n  background: #f1f2f3;\n}\n\n/* 头图底色 */\n.bili-header__banner {\n  background-color: #f1f2f3 !important;\n}\n\n/* 显示根据屏宽隐藏的 feed */\n.container>.feed-card {\n  display: block !important;\n}\n\n/* 最小宽度（body、顶栏） */\nbody,\n.bili-header,\n.bili-header__banner {\n  min-width: 0 !important;\n}\n\n/* 主页视频流 */\n.bili-feed4-layout {\n  width: 100% !important;\n}\n\n/* -------------------------------------------------- \n ------------------------ 顶栏 ----------------------- \n -------------------------------------------------- */\n\n/* #i_cecream 属首页，#app #biliMainHeader 属视频页 */\n\n/* 避免初始内联高度影响计算 */\n#biliMainHeader {\n  position: fixed;\n  z-index: 2;\n}\n\n/* 顶栏边距（右边距减去头像右空隙） */\n.bili-header__bar {\n  padding: 0 10px 0 15px !important;\n  transition: transform 0.5s ease-in;\n}\n\n/* 顶栏高度 */\n.bili-header .bili-header__bar {\n  height: var(--header-height) !important;\n}\n\n/* 视频页顶栏高度 */\n.header-v3 #biliMainHeader .bili-header .bili-header__bar {\n  height: var(--header-height) !important;\n}\n\n/* 顶部按钮高度 */\n.entry-title,\n.right-entry,\n.mini-header__logo {\n  max-height: var(--header-height);\n}\n\n.left-entry__title {\n  height: var(--header-height) !important;\n}\n\n/* 头像高度 */\n.v-popover-wrap.header-avatar-wrap {\n  height: var(--header-height) !important;\n}\n\n/* 收藏按钮高度 */\n.header-favorite-container-box,\n.header-favorite-container  {\n  max-height: var(--header-height) !important;\n}\n\n/* 顶栏高度：HTML 初始加载时，biliMainHeader 已有内联高度，\n   保留顶栏外框（biliMainHeader）高度，修改其它元素 */\n\n/* 不影响结果 */\n#biliMainHeader .bili-header {\n  min-height: var(--header-height);\n  height: var(--header-height);\n}\n\n/* 搜索框 */\n.center-search-container {\n  position: absolute !important;\n  width: 100%;\n  left: 0;\n  top: 0;\n  padding: 10px 20px 5px !important;\n  z-index: 3;\n  margin: 0 !important;\n  display: none;\n}\n\n.center-search-container.show {\n  display: block;\n}\n\n/* 顶栏右侧图标 */\n.right-entry {\n  flex: 1;\n  min-width: 0;\n  margin: 0 !important;\n  justify-content: space-evenly;\n}\n \n.right-entry > * {\n  animation: fadeIn 1s ease-in;\n}\n\n.left-entry {\n  min-width: 0;\n  margin: 0 !important;\n}\n\n/* 头像图表边距 */\n.header-avatar-wrap {\n  padding-right: 0 !important;\n}\n\n/* 禁止换行 */\n.left-entry__title,\n.dm.item {\n  white-space: nowrap;\n}\n\n/* 头像置右 */\n.v-popover-wrap.header-avatar-wrap {\n  order: 5;\n  margin-left: auto;\n}\n\n/* 剩余元素均分 */\n.v-popover-wrap:not(.header-avatar-wrap) {\n  flex: 1;\n}\n\n/* 肉眼个别微调 */\n.right-entry--message {\n  padding-left: 3px;\n}\n\n/* 顶栏元素间距 */\n.left-entry__title {\n  margin-right: 0px !important;\n}\n\n/* 与头像左空隙对齐 */\n.mini-header__logo {\n  margin-right: 7px !important;\n}\n\n/* 禁用主题色重载 */\nsvg.mini-header__logo path {\n  fill: var(--brand_blue) !important;\n}\n\n/* 移除“首页”字样 */\n.mini-header__title {\n  display: none !important;\n}\n\n/* 移除顶部动图和临时静图 */\n.animated-banner,\n#bili-header-banner-img {\n  display: none !important;\n}\n\n/* 使用 controlHeaderImage 获取随机头图 */\n\n.biliheader__banner {\n  display: none !important;\n}\n\n/* -------------------------------------------------- \n ---------------------- 展开图类 --------------------- \n -------------------------------------------------- */\n\n.v-popover {\n  position: fixed !important;\n  top: var(--header-height) !important;\n  margin: 0 !important;\n  max-width: 100%;\n  padding: 5px !important;\n}\n\n/* 分类(左侧入口)展开图 */\n.channel-panel__column {\n  width: 100% !important;\n  flex: 1;\n  padding: 0 !important;\n}\n\n/* 右侧入口展开图 */\n.dynamic-panel-popover,\n.favorite-panel-popover,\n.history-panel-popover {\n  max-width: 100%;\n  padding: 0 5px !important;\n}\n\n/* 动态展开图 */\n.dynamic-video-item {\n  margin-right: 0 !important;\n}\n\n.header-dynamic-list-item {\n  padding: 0 !important;\n}\n\n.header-dynamic__box--center {\n  max-width: 60%;\n}\n\n.header-dynamic__box--right {\n  top: 0 !important;\n  margin-bottom: 0 !important;\n  width: unset !important;\n  flex: 1;\n\n  .cover {\n      width: unset !important;\n      height: unset !important;\n  }\n}\n\n/* 收藏展开图 */\n.favorite-panel-popover__nav {\n  max-width: 25%;\n}\n\n.header-fav-card__image {\n  max-width: 40%;\n\n  picture {\n      max-width: 100%;\n      height: 100% !important;\n  }\n}\n\n/* 间距（收藏展开图） */\n.favorite-panel-popover__nav .tab-item {\n  padding: 0 6px !important;\n}\n\n.header-fav-card {\n  padding: 6px !important;\n}\n\n.favorite-panel-popover__nav {\n  margin-top: 6px !important;\n}\n\n/* 历史展开图 */\n.header-history-video {\n  padding: 5px 10px !important;\n}\n\n/* 移除头像大图 */\n.header-entry-avatar {\n  display: none !important;\n}\n\n/* 关闭头像动画 */\n.header-entry-mini {\n  animation: unset !important;\n}\n\n/* 移除次要入口 */\n.left-entry>li:not(:nth-of-type(1)),\n.vip-wrap,\n.right-entry-item:has(>.vip-wrap),\n.right-entry-item:nth-of-type(6),\n.right-entry-item--upload,\n.header-channel,\n.bili-header__channel,\n.recommended-swipe,\n.feed-roll-btn {\n  display: none !important;\n}\n\n/* 广告、推广图块 */\n/* 底部登录弹窗类 .lt-row 可能包含其它元素 */\n/* 首页顶部动图上的大 Logo */\n.container>*:has(.bili-video-card__info--ad),\n.floor-single-card,\n.desktop-download-tip,\n.lt-row,\n.header-banner__inner {\n  display: none !important;\n}\n\n/* ----------------------------------------------------\n* --------------------- 主页视频卡片 ------------------- *\n ----------------------------------------------------- */\n\n.container>* {\n  margin-top: 0 !important;\n}\n\n/* 卡片底板 */\n.bili-video-card__wrap {\n  border-radius: 5px;\n}\n\n/* 封面宽长比 */\n.bili-video-card.is-rcmd {\n  --cover-radio: 75% !important;\n}\n\n/* 封面圆角 */\n.v-img.bili-video-card__cover {\n  border-radius: 5px 5px 0 0;\n}\n\n/* 封面信息（阴影层圆角） */\n.bili-video-card__stats {\n  border-radius: 0 !important;\n  --icon-size: 16px;\n  --subtitle-font-size: 11px;\n  white-space: nowrap;\n}\n\n/* 卡片标题 - 字样 */\n.bili-video-card__info--tit {\n  --title-padding-right: 0;\n  --title-font-size: 14px;\n  --title-line-height: 20px;\n}\n\n/* 标题 - 上下距 */\n/* .bili-video-card__info  */\n\n/* 标题 - 左右距 */\n.bili-video-card__info--right {\n  padding: 0 5px;\n}\n\n/* 标题 - 字重 */\n/* .bili-video-card__info--tit > a */\n\n/* 小标 */\n.bili-video-card__info--bottom {\n  --subtitle-font-size: 12px;\n}\n\n.bili-video-card__info--icon-text {\n  padding: 0 5px !important;\n}\n\n/* 小标 - 日期 */\n.bili-video-card__info--owner {\n  flex: 1;\n}\n\n.bili-video-card__info--date {\n  margin-left: auto !important;\n}\n\n/* 小标 - 点赞数 */\n.bili-video-card__info--icon-text {\n  --follow-icon-font-size: 11px;\n  --follow-icon-line-height: 15px;\n}\n\n/* ----------------------------------------------------\n* ---------------------------------------------------- *\n* --------------------- 视频详情页 -------------------- *\n* ---------------------------------------------------- *\n ----------------------------------------------------- */\n\n/* 主应用块 */\n#app {\n  overflow: hidden;\n}\n\n/* 主体内容块 */\n.video-container-v1 {\n  min-width: 0 !important;\n  padding: 0 !important;\n  top: var(--header-height);\n}\n\n/* ----------------------------------------------------\n* ---------------------- 主视频块 --------------------- *\n ----------------------------------------------------- */\n\n/* 主视频块 */\n.left-container {\n  --video-height: calc(100vw * 0.5625);\n  --dm-row-height: 44px;\n}\n\n/* 有初始内联 top */\n/* 视频块（宽度） (#mainheight与header的高度差导致了64px-48px的可滚动区域) */\n.left-container {\n  /* 移动 Safari 百分比宽高自动考虑边框和填充 */\n  padding: calc(var(--video-height) + var(--dm-row-height)) 10px 0;\n  box-sizing: border-box;\n  width: 100% !important;\n\n  /* 填充评论未加载时的空白，video-container-v1 已考虑顶部留空，但 #app 的高度把顶部重叠的部分加上了 */\n  min-height: calc(100vh - var(--header-height));\n}\n\n/* ----------------------------------------------------\n* ----------------------- 播放器 ---------------------- *\n ----------------------------------------------------- */\n\n/* 修改播放器固定尺寸 */\n#bilibili-player {\n  height: 100% !important;\n  width: 100% !important;\n}\n\n/* 固定视频（外框尺寸） */\n#playerWrap {\n  position: fixed;\n  left: 0;\n  top: var(--header-height);\n  width: 100vw;\n  height: var(--video-height) !important;\n  z-index: 75;\n  transition: transform 0.5s ease-in;\n}\n\n/* 小窗时的隐藏 - 始终隐藏*/\n/* 顶部关注、音乐、反馈 */\n/* 右下角暂停图标 */\n/* 取消静音 */\n.bpx-player-top-wrap,\n.bpx-player-state-wrap,\n.bpx-player-toast-wrap {\n  display: none !important;\n}\n\n/* 小窗时的隐藏 - 固定显示*/\n/* 视频控制栏 */\n/* 弹幕行 */\n.bpx-player-control-wrap,\n.bpx-player-sending-area {\n  display: block !important;\n}\n\n/* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */\n/*.bpx-player-toast-wrap {\n  bottom: unset !important;\n  top: 50%;\n  transform: translateY(-50%);\n}*/\n\n.bpx-player-toast-item {\n  margin: 0 !important;\n}\n\n/* 小窗时的暂停图标 */\n.bpx-player-mini-warp {\n  display: none !important;\n}\n\n/* 彻底移除小窗样式 */\n#playerWrap .bpx-player-container[data-screen=mini] {\n  position: relative !important;\n  width: 100% !important;\n  height: 100% !important;\n  right: 0 !important;\n  bottom: 0 !important;\n  transition: top 0.5s ease-in;\n}\n\n/* 移除小窗等按钮 */\n.fixed-sidenav-storage>*:nth-child(1),\n.fixed-sidenav-storage>*:nth-child(2) {\n  display: none !important;\n}\n\n/* 窄屏不隐藏控制条和阴影 */\n.bpx-player-control-entity,\n.bpx-player-control-mask {\n  display: block !important;\n}\n\n/* 移除次要按钮：画中画、宽屏、页面全屏、时间、选集 */\n.bpx-player-ctrl-pip,\n.bpx-player-ctrl-wide,\n.bpx-player-ctrl-web,\n.bpx-player-ctrl-time,\n.bpx-player-ctrl-eplist {\n  display: none !important;\n}\n\n/* 左右控制区 */\n.bpx-player-control-bottom-left,\n.bpx-player-control-bottom-right {\n  flex: unset !important;\n}\n\n/* 全屏时 */\n.bpx-player-container .bpx-player-control-bottom-left,\n.bpx-player-container .bpx-player-control-bottom-right {\n  min-width: 0 !important;\n}\n\n/* 清晰度(width:auto 不换行，隐藏不掉高清字样) */\n.bpx-player-ctrl-quality {\n  margin-right: 0 !important;\n  min-width: 0;\n  flex: auto !important;\n}\n\n/* 清晰度、倍速文本 */\n.bpx-player-ctrl-quality-result,\n.bpx-player-ctrl-playbackrate {\n  font-size: 12px !important;\n}\n\n/* 清晰度文本:隐藏换行的部分 */\n.bpx-player-ctrl-quality-result {\n  height: 22px;\n  overflow: hidden;\n}\n\n/* 倍速文本:禁止换行 */\n.bpx-player-ctrl-playbackrate {\n  text-wrap: nowrap;\n}\n\n/* 清晰度文本:全屏时恢复大小 */\n@media screen and (min-width: 750px){\n  .bpx-player-container[data-screen=full] .bpx-player-ctrl-quality-result {\n    font-size: 16px !important;\n    height: unset !important;\n  }\n}\n\n/* 按钮区(图标22px，算 margin 37px) */\n.bpx-player-control-bottom {\n  height: 29px !important;\n  margin-top: 7px !important;\n  padding: 0 7px !important;\n}\n\n/* 进度条 */\n.bpx-player-control-top {\n  bottom: 36px !important;\n}\n\n/* 修复部分情况下的控制栏图标增大导致的高度过高 */\n@media screen and (min-width: 750px) {\n  .bpx-player-container[data-screen=full] {\n    .bpx-player-control-wrap {\n      height: 43px !important;\n    }\n\n    .bpx-player-control-top {\n      bottom: 43px !important;\n    }\n  }\n}\n\n/* 进度条细条包含块（高12px） */\n.bpx-player-progress-wrap {\n  height: 7px !important;\n  padding-bottom: 3px !important;\n}\n\n/* 阴影(控制栏展开时: 高能区 100% - 1px) */\n.bpx-player-pbp {\n  bottom: 1px !important;\n}\n\n.bpx-player-pbp.show {\n  bottom: calc(100% + 6px) !important;\n}\n\n/* 替换via暗色异常的阴影 */\n.bpx-player-control-mask {\n  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .5) 100%) !important;\n}\n\n/* 清晰度弹窗 */\n.bpx-player-ctrl-quality-menu-wrap {\n  bottom: 0 !important;\n  max-height: var(--video-height) !important;\n}\n\n/* 设置弹窗 */\n.bpx-player-ctrl-setting-box {\n  right: 0 !important;\n  bottom: 0 !important;\n}\n\n/* 更多设置 */\n.bpx-player-ctrl-setting-menu-right {\n  padding: 5px !important;\n  max-height: var(--video-height) !important;\n}\n\n/* 更多设置 */\n.bui.bui-radio.bui-dark {\n  margin-bottom: 5px !important;\n}\n\n/* 全屏控制栏 */\n.bpx-player-control-bottom-center .bpx-player-sending-bar {\n  padding-right: 6px !important;\n  height: 24px !important;\n}\n\n/* 存在章节时(允许章节缩小) */\n.bpx-player-ctrl-viewpoint {\n  margin: 0 !important;\n  min-width: 0 !important;\n  width: 45px !important;\n  flex-shrink: 1 !important;\n}\n\n.bpx-player-ctrl-viewpoint-text {\n  width: 24px !important;\n  text-overflow: unset !important;\n  font-size: 12px;\n  flex: none;\n}\n\n/* ----------------------------------------------------\n* ----------------------- 弹幕行 ---------------------- *\n ----------------------------------------------------- */\n\n/* 弹幕行：滚动隐藏 */\n.bpx-player-sending-area {\n  position: absolute !important;\n  bottom: 0;\n  width: 100%;\n  transform: translateY(100%);\n\n  transition: 0.5s transform ease-in;\n  display: block !important;\n  z-index: 0;\n}\n\n[scroll-hidden=true] .bpx-player-sending-area {\n  transform: none;\n}\n\n.bpx-player-video-area {\n  z-index: 1;\n}\n\n/* 修改小窗样式的时候把这行删了，导致弹幕行显示异常 */\n.bpx-player-container[data-screen=mini] {\n  overflow: unset !important;\n}\n\n/* 弹幕行预加载灰块白条(视频底下也有，预加载有时会看到) */\n.bpx-player-sending-bar-left,\n.bpx-player-sending-bar-right,\n#bilibili-player-placeholder-bottom {\n  display: none !important;\n}\n\n/* 弹幕行高度 */\n.bpx-player-sending-bar {\n  height: var(--dm-row-height) !important;\n}\n\n.bpx-player-dm-input {\n  height: 26px !important;\n}\n\n/* 弹幕输入栏外 */\n.bpx-player-video-inputbar {\n  height: 26px !important;\n  border-radius: 13px !important;\n\n  min-width: 0 !important;\n}\n\n.bpx-player-video-inputbar-wrap {\n  width: 100% !important;\n}\n\n/* 不输入隐藏发送 */\n.bpx-player-dm-btn-send {\n  display: none !important;\n}\n\n.bpx-player-video-inputbar-wrap:has(>input:focus)+.bpx-player-dm-btn-send {\n  display: flex !important;\n}\n\n.bpx-player-dm-btn-send {\n  border-radius: 0 13px 13px 0 !important;\n  height: 26px !important;\n  min-width: 50px !important;\n  width: 50px !important;\n}\n\n.bui-button-blue {\n  min-width: 50px !important;\n}\n\n/* 观看人数 */\n.bpx-player-video-info {\n  margin-right: 6px !important;\n}\n\n/* 弹幕数量、弹幕礼仪 */\n.bpx-player-video-info-divide,\n.bpx-player-video-info-dm,\n.bpx-player-dm-hint {\n  display: none !important;\n}\n\n/* 播放组件在下面 */\n\n/* ----------------------------------------------------\n* ----------------------- 推荐块 ---------------------- *\n ----------------------------------------------------- */\n\n/* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */\n.right-container {\n  position: fixed !important;\n  width: 85% !important;\n  left: 85%;\n  padding: 10px;\n  margin: 0 0 0 15% !important;\n\n  z-index: 76;\n  background: white;\n  transition: transform .6s ease-in;\n  height: calc(100% - var(--header-height) * 2);\n  overflow-y: auto;\n  /* 避免到达边界后的滚动事件穿透 */\n  overscroll-behavior: contain;\n\n  box-sizing: border-box;\n  border-left: 1px solid var(--line_regular);\n}\n\nbody[show-sidebar="true"] .right-container {\n  transform: translateX(-100%);\n}\n\n.right-container-inner {\n  padding: 0 !important;\n}\n\n/* 推荐块蒙版（加到左视频块才不会被冒泡事件影响） */\n.left-container:after {\n  content: \'\';\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 75;\n  background-color: rgb(0, 0, 0);\n  opacity: 0;\n  transition: opacity 0.6s ease-in;\n  pointer-events: none;\n}\n\nbody[show-sidebar="true"] .left-container:after {\n  opacity: 0.5;\n  pointer-events: auto;\n}\n\n/* UP信息 */\n.upinfo-btn-panel .default-btn {\n  font-size: 12px !important;\n}\n\n.new-charge-btn {\n  max-width: 35%;\n}\n\n.follow-btn {\n  max-width: 150px !important;\n}\n\n/* UP头像 */\n/*.up-avatar-wrap .bili-avatar,\n.up-avatar-wrap {\n  width: 38px !important;\n  height: 38px !important;\n}*/\n\n/* 推荐视频图块 */\n#reco_list .card-box .pic-box {\n  max-width: 50%;\n}\n\n/* ----------------------------------------------------\n* ---------------------- 播放页组件 ------------------- *\n ----------------------------------------------------- */\n\n #viewbox_report {\n}\n\n/* 信息块（标题） */\n.video-info-container {\n  height: auto !important;\n  padding-top: 0 !important;\n}\n\n/* 标题（可两行显示） */\n.video-title {\n  font-size: 18px !important;\n\n  white-space: wrap !important;\n  display: -webkit-box;\n  -webkit-box-orient: vertical;\n  -webkit-line-clamp: 2;\n\n  /* 去除折叠时的 show-more 按钮 margin */\n  margin-right: 0 !important;\n}\n\n.show-more {\n  top: unset !important;\n  transform: none !important;\n  bottom: 4px;\n  right: 4px !important;\n}\n\n.video-desc-container {\n  margin: 10px 0 !important;\n}\n\n/* 点赞投币行 */\n.video-toolbar-container {\n  padding: 10px 0 8px !important;\n}\n\n.video-toolbar-left,\n.video-toolbar-left-main {\n  min-width: 0;\n}\n\n.toolbar-left-item-wrap {\n  flex: 1;\n  min-width: 0;\n}\n\n.video-toolbar-container * {\n  margin: 0 !important;\n}\n\n.video-share-info {\n  width: 40px !important;\n}\n\n.video-share-popover {\n  display: none !important;\n}\n\n/* AI 助手“测试版”字样 */\n.video-ai-assistant-badge {\n  display: none !important;\n}\n\n/* AI 总结 */\n.resizable-component.resizable-component {\n  width: 100% !important;\n  left: 0 !important;\n  position: fixed !important;\n  height: 100vw !important;\n  top: 50% !important;\n  transform: translateY(-50%);\n}\n\n/* 简介 */\n.video-desc-container .toggle-btn {\n  text-align: right;\n  margin-right: 7px;\n}\n\n/* 标签 */\n.video-tag-container {\n  margin: 6px 0 0 !important;\n  padding-bottom: 1px !important;\n}\n\n.tag-panel .tag {\n  margin-bottom: 6px !important;\n  opacity: 0;\n  animation: fadeIn 1s ease-in 2s forwards;\n}\n\n/* 投票卡片 */\n.top-vote-card-left {\n  width: unset !important;\n  max-width: unset !important;\n}\n\n/* ----------------------------------------------------\n* ----------------- 播放组件（评论以下） -------------- *\n ----------------------------------------------------- */\n\n@keyframes fadeIn {\n  form {\n      opacity: 0;\n  }\n\n  to {\n      opacity: 1;\n  }\n}\n\n/* 固定评论栏 */\n.main-reply-box {\n  position: fixed;\n  left: 0;\n  bottom: var(--header-height);\n  z-index: 10;\n  background: white;\n  width: 100%;\n  padding: 8px 12px;\n  border-top: 1px solid var(--line_regular);\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n\n  transition: .75s transform ease-in;\n  display: block !important;\n}\n\n/* 评论行滚动隐藏 */\n[scroll-hidden=true] .main-reply-box {\n  transform: translateY(calc(100% + var(--header-height)))\n}\n\n/* 移除原底部评论栏 */\n.fixed-reply-box {\n  display: none !important;\n}\n\n/* 移除评论头像 */\n.reply-box-avatar {\n  display: none !important;\n}\n\n/* 输入块外 */\n.reply-box-warp {\n  border-radius: 13px !important;\n}\n\n/* 输入块内 */\n.textarea-wrap {\n  padding: 0 !important;\n}\n\n/* 文字输入 */\n.reply-box-textarea {\n  height: 26px !important;\n  line-height: 26px !important;\n  min-height: 26px !important;\n}\n\n/* 输入展开块 */\n.main-reply-box .reply-box .box-expand[data-v-a6daab22] {\n  height: 26px;\n  margin: 8px 0 0 0;\n}\n\n/* 插入表情图片 */\n.box-left {\n  flex: 1;\n  justify-content: space-evenly !important;\n}\n\n/* 点击发送 */\n.reply-box-send {\n  width: 50px !important;\n  height: 26px !important;\n}\n\n/* 评论块 */\n#comment {\n  margin-top: 12px !important;\n}\n\n/* 评论导航 */\n.reply-navigation {\n  margin-bottom: 0 !important;\n}\n\n/* 评论 */\n.root-reply-container {\n  padding: 12px 0 0 36px !important;\n}\n\n.root-reply-avatar,\n.root-reply-avatar .bili-avatar {\n  width: 36px !important;\n  height: 36px !important;\n}\n\n.user-info {\n  margin: 3px 5px 0 !important;\n}\n\n/* 回复评论 */\n.sub-reply-container {\n  padding-left: 28px !important;\n}\n\n.sub-reply-item {\n  padding: 4px 0 4px 37px !important;\n}\n\n/* 评论图片 */\n.reply-view-image .show-image-wrap {\n  padding: 0 0 145px !important;\n  .image-content {\n    width: 100% !important;\n  }\n}\n\n.reply-view-image .operation-btn {\n  .last-image,\n  .next-image,\n  .close-container {\n    top: unset !important;\n    bottom: 100px;\n  }\n\n  .last-image,\n  .next-image {\n    transform: none !important;\n  }\n\n  .close-container {\n    right: 50% !important;\n    transform: translateX(50%);\n  }\n  \n  .last-image {\n    left: 20vw !important;\n  }\n\n  .next-image {\n    right: 20vw !important;\n  }\n\n}\n\n/* 块状广告（包括推荐列） */\n#activity_vote,\n#bannerAd,\n.reply-notice,\n.ad-report,\n.pop-live-small-mode,\n#slide_ad {\n  display: none !important;\n}\n\n/* ----------------------------------------------------\n* ---------------------------------------------------- *\n* ------------------------ 按钮 ---------------------- *\n* ---------------------------------------------------- *\n ----------------------------------------------------- */\n\n/* 按钮 */\n.primary-btn:hover {\n  background-color: unset !important;\n}\n\n.primary-btn {\n  background: none !important;\n}\n\n/* 刷新按钮 */\n.flexible-roll-btn-inner {\n  border: none !important;\n  color: inherit !important;\n  background: none !important;\n  padding: 7px 8px 7px 7px !important;\n  display: block !important;\n  position: fixed;\n  bottom: -17px;\n  right: 5vw;\n  width: 40px !important;\n  transition: .5s transform ease-in;\n}\n\n/* 首页置顶按钮 */\n.top-btn {\n  border: none !important;\n  position: fixed;\n  bottom: -17px;\n  right: 77vw;\n  width: 40px !important;\n  transition: .5s transform ease-in !important\n}\n\n.top-btn .primary-btn-text {\n  display: none;\n}\n\n/* svg 大小 */\n.flexible-roll-btn-inner svg {\n  width: 26px;\n  height: 26px;\n}\n\n.palette-button-wrap.translucent>.flexible-roll-btn.flexible-roll-btn,\n.palette-button-wrap.translucent>.top-btn-wrap.top-btn-wrap {\n  opacity: 1 !important;\n}\n\n/* 按钮组 */\nspan.btn-text-inner,\n.storage-box {\n  display: none !important;\n}\n\n/* 返回顶部按钮（添加渐变） */\n/* 权重：基本设置属性 < transition < animation */\n.back-to-top {\n  border-radius: 0 25% 25% 0 !important;\n  border-left: 0 !important;\n  margin-bottom: 0 !important;\n  width: 42px !important;\n\n  visibility: visible !important;\n  transform: translateX(-100%);\n  transition: transform .5s ease-in-out;\n}\n\n.back-to-top.visible {\n  transform: none;\n}\n\n/* 回顶按钮的位置 */\n.fixed-sidenav-storage {\n  left: 0;\n  right: unset !important;\n  bottom: 78px !important;\n  z-index: 1 !important;\n}\n\n/* ----------------------------------------------------\n* ---------------------------------------------------- *\n* ---------------------- 其它窗口 -------------------- *\n* ---------------------------------------------------- *\n ----------------------------------------------------- */\n\n/* 登录窗 */\n.login-scan-wp,\n.bili-mini-line {\n  display: none !important;\n}\n\n.bili-mini-content-wp {\n  padding: 52px 0 29px !important;\n}\n\n.bili-mini-login-right-wp,\n.bili-mini-login-right-wp * {\n  max-width: 80vw;\n}\n    ',i(n)}(),function(){const n=window.addEventListener;window.addEventListener=function(t,e,i){"beforeunload"!==t&&n.call(this,t,e,i)}}(),"1"===localStorage.getItem("hidden-header")&&r(),"/"===window.location.pathname&&(t(),function(){const n="header-image",t="https://source.unsplash.com/random/840x400";function e(n){return new Promise(((t,e)=>{const i=new Image;i.crossOrigin="Anonymous",i.src=n,i.onload=()=>t(i),i.onerror=e}))}function i(n){const t=document.createElement("canvas");return t.width=n.width,t.height=n.height,t.getContext("2d").drawImage(n,0,0),t.toDataURL("image/jpeg")}function a(n,t){localStorage.setItem(n,t)}"/"===window.location.pathname&&(function n(o,r){const p=localStorage.getItem(o);if(p){const n=document.createElement("style");n.innerHTML=`\n          ${r}::after {\n            content: '';\n            position: absolute;\n            top: 0;\n            left: 0;\n            width: 100%;\n            height: 100%;\n            z-index: -1;\n            background-image: url(${p});\n            background-size: cover;\n            background-position: center;\n          }\n        `,document.head.appendChild(n)}else e(t).then((t=>{const e=i(t);a(o,e),n(o,r)})).catch((n=>{console.error("Failed to get image:",n)}))}(n,".bili-header__banner"),setTimeout((async()=>{try{const o=i(await e(t));a(n,o)}catch(n){console.error("Failed to get image:",n)}}),5e3))}()),window.location.pathname.startsWith("/video")&&a(),e((()=>{"1"===localStorage.getItem("hidden-header")&&document.body.setAttribute("hidden-header","true"),function(){const t=document.createElement("div");t.id="overlay",document.body.appendChild(t),t.addEventListener("click",(function(r){function p(){if(i)(function(t){const e=new MouseEvent("mouseleave",{bubbles:!0,view:n});t.dispatchEvent(e)})(e),i=!1;else{t.style.display="none";const a=document.elementFromPoint(r.clientX,r.clientY);(function(t){const e=new MouseEvent("mouseenter",{bubbles:!0,view:n});t.dispatchEvent(e)})(a),t.style.display="block",i=!0,e=a}}o++,a&&(clearTimeout(a),a=null),1===o?a=setTimeout((()=>{p(),o=0}),250):(t.style.display="none",function(t){const e=new MouseEvent("click",{bubbles:!0,view:n});t.dispatchEvent(e)}(document.elementFromPoint(r.clientX,r.clientY)),t.style.display="block",o=0)}));let e=null,i=!1,a=null,o=0}(),window.location.pathname.startsWith("/video")&&(function(){const n=document.getElementsByClassName("bpx-player-video-wrap>video")[0];n&&(n.playsInline=!0)}(),function(){document.getElementsByClassName("bpx-player-container")[0].addEventListener("click",(function(){(function(t){const e=new MouseEvent("mouseenter",{bubbles:!0,view:n});t.dispatchEvent(e)})(t),e&&clearTimeout(e),e=setTimeout((()=>{!function(t){const e=new MouseEvent("mouseleave",{bubbles:!0,view:n});t.dispatchEvent(e)}(t)}),5e3)}));const t=document.getElementsByClassName("bpx-player-control-wrap")[0];let e=null}()),function(){let t=0;n.addEventListener("scroll",(()=>{const n=window.scrollY;n-t>75?(document.body.setAttribute("scroll-hidden","true"),t=n):(n-t<-75||n<75)&&(document.body.setAttribute("scroll-hidden",""),t=n)}))}(),function(){const n=Object.assign(document.createElement("div"),{id:"actionbar",innerHTML:'\n      <div id="full-now">\n        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path transform="translate(4,4)" d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>\n      </div>\n      <div id="my-home">\n        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m12 4.44 7 6.09V20h-4v-6H9v6H5v-9.47l7-6.09m0-1.32-8 6.96V21h6v-6h4v6h6V10.08l-8-6.96z"></path></svg>\n      </div>\n      <div id="search-fab">\n        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m20.87 20.17-5.59-5.59C16.35 13.35 17 11.75 17 10c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path></svg>\n      </div>\n      <div id="menu-fab">\n        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path></svg>\n      </div>\n      <div id="sidebar-btn">\n        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M21 6H3V5h18v1zm0 5H3v1h18v-1zm0 6H3v1h18v-1z"></path></svg>\n      </div>\n      '});if(document.body.appendChild(n),"/"===window.location.pathname&&n.classList.add("home"),window.location.pathname.startsWith("/video")){function t(){const n=document.getElementsByClassName("bpx-player-ctrl-full")[0];n?n.click():setTimeout(t,500)}document.getElementById("full-now").addEventListener("click",(()=>{const n=document.getElementsByTagName("video")[0];"1"===(localStorage.getItem("full-unmuted")||"0")&&(n.play(),n.muted=!1,0===n.volume&&document.getElementsByClassName("bpx-player-ctrl-muted-icon")[0].click()),t()}))}document.getElementById("my-home").addEventListener("click",(()=>{window.location.href="/"})),document.getElementById("search-fab").addEventListener("click",(()=>{const n=document.getElementsByClassName("center-search-container")[0];n.classList.add("show");const t=n.querySelector("input");t.focus(),t.addEventListener("blur",(()=>{n.classList.remove("show")}))})),document.getElementById("menu-fab").addEventListener("click",(()=>{"1"===localStorage.getItem("hidden-header")?(document.getElementById("hidden-header")?.remove(),localStorage.setItem("hidden-header","0")):(r(),localStorage.setItem("hidden-header","1"))}))}(),window.location.pathname.startsWith("/video")&&(function(){function n(){document.body.setAttribute("show-sidebar","")}document.getElementById("sidebar-btn").addEventListener("click",(t=>{t.stopPropagation(),"true"===document.body.getAttribute("show-sidebar")?n():document.body.setAttribute("show-sidebar","true")})),document.getElementsByClassName("left-container")[0].addEventListener("click",n),document.getElementById("actionbar").addEventListener("click",(()=>{"1"===localStorage.getItem("hidden-header")&&"true"===document.body.getAttribute("show-sidebar")&&n()})),document.getElementById("reco_list").addEventListener("click",(t=>{const e=document.getElementsByClassName("rec-title")[0],i=document.getElementsByClassName("rec-footer")[0];e.contains(t.target)||i.contains(t.target)||n()}))}(),o())}))}()})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ([
+/* 0 */,
+/* 1 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   initViewport: () => (/* binding */ initViewport)
+/* harmony export */ });
+function initViewport () {
+  if (document.head) {
+    const viewport = document.createElement('meta')
+    viewport.setAttribute('name', 'viewport')
+    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0')
+    document.head.appendChild(viewport)
+  }
+}
+
+
+/***/ }),
+/* 2 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   increaseVideoLoadSize: () => (/* binding */ increaseVideoLoadSize),
+/* harmony export */   preventBeforeUnload: () => (/* binding */ preventBeforeUnload)
+/* harmony export */ });
+// eslint-disable-next-line no-undef
+const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
+
+function preventBeforeUnload () {
+  const originalAddEventListener = window.addEventListener
+
+  // 重写 addEventListener 方法，禁止网站刷新时的弹窗
+  window.addEventListener = function (type, listener, options) {
+    if (type === 'beforeunload') {
+      return
+    }
+    originalAddEventListener.call(this, type, listener, options)
+  }
+}
+
+// 增加视频加载数量函数
+function increaseVideoLoadSize () {
+  const origFetch = _unsafeWindow.fetch
+  _unsafeWindow.fetch = function (input, init) {
+    // console.log(input)
+    if (typeof input === 'string' && input.includes('api.bilibili.com') && input.includes('feed/rcmd') && init.method.toUpperCase() === 'GET') {
+      input = input.replace('&ps=12&', '&ps=30&')
+    }
+    return origFetch(input, init)
+  }
+}
+
+
+/***/ }),
+/* 3 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   handleScriptPreSetting: () => (/* binding */ handleScriptPreSetting),
+/* harmony export */   handleScriptSetting: () => (/* binding */ handleScriptSetting)
+/* harmony export */ });
+function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
+function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
+
+// 脚本预加载设置
+function handleScriptPreSetting () {
+  const defaultValue = [1, 1, 1, 1]
+
+  const css = {
+    css1: `
+      .bpx-player-sending-area.bpx-player-sending-area {display: none !important;}
+      .left-container.left-container {padding: calc(var(--video-height) + 5px ) 10px 0;}
+    `,
+    css2: '.main-reply-box.main-reply-box {display: none !important;}',
+    css3: '#v_tag {display: none !important;}',
+    css4: `
+      .copyright.item {display: none !important;}
+      .show-more {display: none;}`
+  }
+
+  readScriptSetting()
+
+  waitDOMContentLoaded(() => {
+    createSettingPanel()
+
+    // eslint-disable-next-line no-undef
+    GM_registerMenuCommand('元素隐藏设置', () => {
+      document.getElementById('setting-panel-style').classList.add('show')
+    })
+  })
+
+  function readScriptSetting (diference) {
+    diference = diference || false
+
+    const settingShowHidden = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
+    const values = Object.values(css)
+
+    if (diference) {
+      for (const [index, value] of diference.entries()) {
+        if (value) {
+          if (settingShowHidden[index]) {
+            const scriptPreStyle = Object.assign(document.createElement('style'), {
+              id: `script-pre-style-${index + 1}`,
+              textContent: css[`css${index + 1}`]
+            })
+            ensureHeadGetted(scriptPreStyle)
+          } else {
+            document.head
+              ? document.getElementById(`script-pre-style-${index + 1}`).remove()
+              : waitDOMContentLoaded(document.getElementById(`script-pre-style-${index + 1}`))
+          }
+        }
+      }
+    } else {
+      for (const [index, value] of values.entries()) {
+        if (settingShowHidden[index]) {
+          const scriptPreStyle = Object.assign(document.createElement('style'), {
+            id: `script-pre-style-${index + 1}`,
+            textContent: value
+          })
+          ensureHeadGetted(scriptPreStyle)
+        }
+      }
+    }
+  }
+
+  function createSettingPanel () {
+    const settingPanel = Object.assign(document.createElement('div'), {
+      id: 'setting-panel-style',
+      className: 'setting-panel',
+      innerHTML: `
+        <div class="setting-title">选择隐藏元素：</div>
+        <div class="setting-checkboxes">
+          <label><input type="checkbox" value="1"><span>弹幕行</span></label>
+          <label><input type="checkbox" value="2"><span>评论行</span></label>
+          <label><input type="checkbox" value="3"><span>标签块</span></label>
+          <label><input type="checkbox" value="4"><span>转载声明</span></label>
+        </div>
+        `
+    })
+
+    const settingConform = Object.assign(document.createElement('button'), {
+      class: 'setting-conform',
+      textContent: '确认'
+    })
+
+    const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
+    const oldValues = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
+    for (const [index, value] of oldValues.entries()) {
+      checkboxElements[index].checked = value
+    }
+
+    settingConform.addEventListener('click', () => {
+      const selectedValues = Array.from(checkboxElements).map((checkbox) => (checkbox.checked ? 1 : 0))
+
+      localStorage.setItem('settingShowHidden', JSON.stringify(selectedValues))
+      const difference = selectedValues.map((value, index) => (value === oldValues[index] ? 0 : 1))
+
+      readScriptSetting(difference)
+
+      settingPanel.classList.remove('show')
+    })
+
+    settingPanel.appendChild(settingConform)
+    document.body.appendChild(settingPanel)
+  }
+}
+
+// 脚本设置
+function handleScriptSetting () {
+  const defaultValue = '0'
+
+  const keyValue = {
+    key1: 'full-unmuted'
+  }
+
+  waitDOMContentLoaded(() => {
+    createSettingPanel()
+
+    // eslint-disable-next-line no-undef
+    GM_registerMenuCommand('操作偏好设置', () => {
+      document.getElementById('setting-panel-preference').classList.add('show')
+    })
+  })
+
+  function createSettingPanel () {
+    const settingPanel = Object.assign(document.createElement('div'), {
+      id: 'setting-panel-preference',
+      className: 'setting-panel',
+      innerHTML: `
+        <div class="setting-title">选择操作偏好：</div>
+        <div class="setting-checkboxes">
+          <label><input type="checkbox" value="1"><span>使用底部全屏按钮播放和打开声音</span></label>
+        </div>
+        `
+    })
+
+    const settingConform = Object.assign(document.createElement('button'), {
+      class: 'setting-conform',
+      textContent: '确认'
+    })
+
+    const values = Object.values(keyValue)
+    const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
+    for (const [index, value] of values.entries()) {
+      checkboxElements[index].checked = (localStorage.getItem(value) || defaultValue) === '1'
+    }
+
+    settingConform.addEventListener('click', () => {
+      for (const [index, value] of values.entries()) {
+        localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
+      }
+      settingPanel.classList.remove('show')
+    })
+
+    settingPanel.appendChild(settingConform)
+    document.body.appendChild(settingPanel)
+  }
+}
+
+
+/***/ }),
+/* 4 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   handleHeaderImage: () => (/* binding */ handleHeaderImage)
+/* harmony export */ });
+// 控制首页头图函数
+function handleHeaderImage () {
+  const key = 'header-image'
+  const url = 'https://source.unsplash.com/random/840x400'
+  const elementSelector = '.bili-header__banner'
+
+  if (window.location.pathname === '/') {
+    loadImage(key, elementSelector)
+
+    setTimeout(async () => {
+      try {
+        const img = await getImage(url)
+        const base64Data = imageToBase64(img)
+        storeImage(key, base64Data)
+      } catch (error) {
+        console.error('Failed to get image:', error)
+      }
+    }, 5000)
+  }
+
+  function getImage (url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.crossOrigin = 'Anonymous'
+      img.src = url
+      img.onload = () => resolve(img)
+      img.onerror = reject
+    })
+  }
+
+  function imageToBase64 (img) {
+    const canvas = document.createElement('canvas')
+    canvas.width = img.width
+    canvas.height = img.height
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(img, 0, 0)
+    return canvas.toDataURL('image/jpeg')
+  }
+
+  function storeImage (key, base64Data) {
+    localStorage.setItem(key, base64Data)
+  }
+
+  function loadImage (key, elementSelector) {
+    const base64Data = localStorage.getItem(key)
+    if (base64Data) {
+      const style = document.createElement('style')
+      style.innerHTML = `
+          ${elementSelector}::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: url(${base64Data});
+            background-size: cover;
+            background-position: center;
+          }
+        `
+      document.head.appendChild(style)
+    } else {
+      // 如果本地存储中不存在图片数据，则从 URL 中获取图片
+      getImage(url).then((img) => {
+        const base64Data = imageToBase64(img)
+        storeImage(key, base64Data)
+        loadImage(key, elementSelector)
+      }).catch((error) => {
+        console.error('Failed to get image:', error)
+      })
+    }
+  }
+}
+
+
+/***/ })
+/******/ 	]);
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _override_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
+/* harmony import */ var _header_image_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4);
+// ==UserScript==
+// @name               Bilibili Mobile
+// @name:zh-CN         bilibili 移动端
+// @namespace          https://github.com/jk278/bilibili-pc2mobile
+// @version            3.4.9.1
+// @description        view bilibili pc page on mobile phone
+// @description:zh-CN  只需一点配置，即可获得足够好的使用体验
+// @author             jk278
+// @license            MIT
+// @match              *://www.bilibili.com/*
+// @grant              unsafeWindow
+// @grant              GM_registerMenuCommand
+// @run-at             document-start
+// @icon               https://www.bilibili.com/favicon.ico
+// ==/UserScript==
+
+// @downloadURL https://dreamforest.pages.dev/source/script/bilibili-mobile.user.js
+// @updateURL https://dreamforest.pages.dev/source/script/bilibili-mobile.meta.js
+
+// @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
+
+/**
+ * 先完成配置，再打开桌面版B站
+ * Via 修改网站独立 UA 为 Windows 或 MacOS，但不要开电脑模式
+ * Firefox 下载扩展 Header Editor 并添加两条规则：
+    ① 修改请求头 ------ 正则表达式 ------ << 匹配规则 >> ------ 名称: user-agent ------ 内容: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0
+    ② 其中，规则一:  ^https://www\.bilibili\.com/.*  规则二:  ^https://.*\.bilivideo\.com/.*
+ * Safari 浏览器 直接打开电脑模式即可
+ */
+
+
+
+
+
+
+(function () {
+  console.log('Bilibili mobile execute!')
+  // setInterval(() => {
+  //   console.log(undefined)
+  // }, 100)
+
+  // eslint-disable-next-line no-undef
+  const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
+  // 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
+
+  ;(0,_init_js__WEBPACK_IMPORTED_MODULE_0__.initViewport)()
+  initElementStyle()
+
+  ;(0,_override_js__WEBPACK_IMPORTED_MODULE_1__.preventBeforeUnload)()
+
+  if (localStorage.getItem('hidden-header') === '1') { addHiddenStyle() }
+
+  if (window.location.pathname === '/') {
+    // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
+    (0,_override_js__WEBPACK_IMPORTED_MODULE_1__.increaseVideoLoadSize)()
+    ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_3__.handleHeaderImage)()
+  }
+
+  if (window.location.pathname.startsWith('/video')) {
+    (0,_setting_js__WEBPACK_IMPORTED_MODULE_2__.handleScriptPreSetting)()
+  }
+
+  waitDOMContentLoaded(() => {
+    localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
+    controlHeaderClick()
+    if (window.location.pathname.startsWith('/video')) {
+      addPlaysInline()
+      controlVideoClick()
+    }
+
+    scrollToHidden()
+
+    handleActionbar()
+
+    if (window.location.pathname.startsWith('/video')) {
+      handleSidebar()
+      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_2__.handleScriptSetting)()
+    }
+  })
+
+  // DOM 加载完后
+  function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
+  // head 获取到后
+  function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
+
+  function addPlaysInline () {
+    const videoElement = document.getElementsByClassName('bpx-player-video-wrap>video')[0]
+    // 新添加了路径判断，此处预留
+    if (videoElement) videoElement.playsInline = true
+  }
+
+  // 隐藏顶栏
+  function addHiddenStyle () {
+    const hiddenStyle = Object.assign(document.createElement('style'), {
+      id: 'hidden-header',
+      /* css */
+      textContent: `
+          .bili-header__bar, #overlay {transform: translateY(-100%);}
+          #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
+          /* 父布局不要用 transform */
+          .video-container-v1.video-container-v1 {top: 0 !important;}
+          .right-container.right-container {height: 100%;}
+          .center-search-container {margin-top: var(--header-height) !important;}
+          /* 隐藏时操作栏蒙版 */
+          #actionbar:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(0, 0, 0);
+            opacity: 0;
+            transition: opacity 0.6s ease-in;
+            pointer-events: none;
+          }
+          
+          body[show-sidebar="true"] #actionbar:after {
+            opacity: 0.5;
+            pointer-events: auto;
+          }
+        `
+    })
+    ensureHeadGetted(hiddenStyle)
+  }
+
+  // 操作栏
+  function handleActionbar () {
+    const actionbar = Object.assign(document.createElement('div'), {
+      id: 'actionbar',
+      /* html */
+      innerHTML: `
+      <div id="full-now">
+        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path transform="translate(4,4)" d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
+      </div>
+      <div id="my-home">
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m12 4.44 7 6.09V20h-4v-6H9v6H5v-9.47l7-6.09m0-1.32-8 6.96V21h6v-6h4v6h6V10.08l-8-6.96z"></path></svg>
+      </div>
+      <div id="search-fab">
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m20.87 20.17-5.59-5.59C16.35 13.35 17 11.75 17 10c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path></svg>
+      </div>
+      <div id="menu-fab">
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path></svg>
+      </div>
+      <div id="sidebar-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M21 6H3V5h18v1zm0 5H3v1h18v-1zm0 6H3v1h18v-1z"></path></svg>
+      </div>
+      `
+    })
+
+    document.body.appendChild(actionbar)
+
+    if (window.location.pathname === '/') {
+      actionbar.classList.add('home')
+    }
+
+    if (window.location.pathname.startsWith('/video')) {
+      const fullBtn = document.getElementById('full-now')
+      fullBtn.addEventListener('click', () => {
+        const video = document.getElementsByTagName('video')[0]
+        // 等于符号优先级更高
+        if ((localStorage.getItem('full-unmuted') || '0') === '1') {
+          video.play()
+          video.muted = false
+          if (video.volume === 0) {
+            document.getElementsByClassName('bpx-player-ctrl-muted-icon')[0].click()
+          }
+        }
+        fullScreen()
+      })
+      function fullScreen () {
+        const fullBtn = document.getElementsByClassName('bpx-player-ctrl-full')[0]
+        fullBtn ? fullBtn.click() : setTimeout(fullScreen, 500)
+      }
+    }
+
+    const home = document.getElementById('my-home')
+    home.addEventListener('click', () => { window.location.href = '/' })
+
+    const searchbarBtn = document.getElementById('search-fab')
+    searchbarBtn.addEventListener('click', () => {
+      const searchbar = document.getElementsByClassName('center-search-container')[0]
+      searchbar.classList.add('show')
+      const input = searchbar.querySelector('input')
+      input.focus()
+      input.addEventListener('blur', () => { searchbar.classList.remove('show') })
+    })
+
+    const entryBtn = document.getElementById('menu-fab')
+    entryBtn.addEventListener('click', () => {
+      if (localStorage.getItem('hidden-header') === '1') {
+        document.getElementById('hidden-header')?.remove()
+        localStorage.setItem('hidden-header', '0')
+      } else {
+        addHiddenStyle()
+        localStorage.setItem('hidden-header', '1')
+      }
+    })
+  }
+
+  // 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
+  function handleSidebar () {
+    const sidebarBtn = document.getElementById('sidebar-btn')
+
+    sidebarBtn.addEventListener('click', (event) => {
+      event.stopPropagation()
+      const isShow = document.body.getAttribute('show-sidebar') === 'true'
+      isShow ? closeSidebar() : document.body.setAttribute('show-sidebar', 'true')
+    })
+
+    function closeSidebar () { document.body.setAttribute('show-sidebar', '') }
+
+    document.getElementsByClassName('left-container')[0].addEventListener('click', closeSidebar)
+
+    document.getElementById('actionbar').addEventListener('click', () => {
+      // 子元素的监听器比 actionbar 先触发，所以这里的属性值始终为 'true'，阻止子元素的冒泡事件即可
+      localStorage.getItem('hidden-header') === '1' && document.body.getAttribute('show-sidebar') === 'true' && closeSidebar()
+    })
+
+    // // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
+    const recommendLiist = document.getElementById('reco_list')
+    recommendLiist.addEventListener('click', (event) => {
+      const nextPlay = document.getElementsByClassName('rec-title')[0]
+      const recommendFooter = document.getElementsByClassName('rec-footer')[0]
+      if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+    })
+  }
+
+  // 接管顶部点击事件，父元素point-events:none，子元素point-events:auto对有的手机无效
+  function controlHeaderClick () {
+    const overlay = document.createElement('div')
+    overlay.id = 'overlay'
+    document.body.appendChild(overlay)
+    overlay.addEventListener('click', handleClick)
+
+    let storedElement = null
+    let isMouseEntered = false
+    let clickTimer = null
+    let clickCount = 0
+
+    function handleClick (event) {
+      clickCount++
+
+      if (clickTimer) {
+        clearTimeout(clickTimer)
+        clickTimer = null
+      }
+
+      if (clickCount === 1) {
+        clickTimer = setTimeout(() => {
+          // 如果 100ms 内没有第二次点击，则执行操作 A
+          onceClick()
+          clickCount = 0
+        }, 250)
+      } else {
+        // 如果 100ms 内有第二次点击，则执行操作 B
+        twiceClick()
+        clickCount = 0
+      }
+
+      function onceClick () {
+        if (isMouseEntered) {
+          simulateMouseLeave(storedElement)
+          isMouseEntered = false
+        } else {
+          overlay.style.display = 'none'
+          const element = document.elementFromPoint(event.clientX, event.clientY)
+          simulateMouseEnter(element)
+          overlay.style.display = 'block'
+          isMouseEntered = true
+          storedElement = element
+        }
+      }
+
+      function twiceClick () {
+        overlay.style.display = 'none'
+        const element = document.elementFromPoint(event.clientX, event.clientY)
+        simulateClick(element)
+        overlay.style.display = 'block'
+      }
+    }
+
+    function simulateMouseEnter (element) {
+      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+
+    function simulateMouseLeave (element) {
+      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+
+    function simulateClick (element) {
+      const event = new MouseEvent('click', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+  }
+
+  // 滚动隐藏函数(弹幕行、评论行)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
+  function scrollToHidden () {
+    let lastScrollTop = 0
+    const scrollThreshold = 75 // 滚动距离阈值
+
+    _unsafeWindow.addEventListener('scroll', () => {
+      const currentScrollTop = window.scrollY
+      if ((currentScrollTop - lastScrollTop) > scrollThreshold) {
+        document.body.setAttribute('scroll-hidden', 'true')
+        lastScrollTop = currentScrollTop
+      } else if ((currentScrollTop - lastScrollTop) < -scrollThreshold ||
+       currentScrollTop < scrollThreshold) {
+        document.body.setAttribute('scroll-hidden', '')
+        lastScrollTop = currentScrollTop
+      }
+    })
+  }
+
+  // 接管视频点击事件
+  function controlVideoClick () {
+    const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
+    playerContainer.addEventListener('click', handleClick)
+    const controlWrap = document.getElementsByClassName('bpx-player-control-wrap')[0]
+
+    let clickTimer = null
+
+    function handleClick () {
+      simulateMouseEnter(controlWrap)
+
+      if (clickTimer) {
+        clearTimeout(clickTimer)
+      }
+
+      clickTimer = setTimeout(() => {
+        simulateMouseLeave(controlWrap)
+      }, 5000)
+    }
+
+    function simulateMouseEnter (element) {
+      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+
+    function simulateMouseLeave (element) {
+      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+  }
+
+  function initElementStyle () {
+    /* css */
+    const initialInsertStyle = `
+/* ---------------------------------------------------- *
+* ----------------------- 操作栏 ----------------------- *
+* ---------------------------------------------------- */
+
+/* 操作栏 */
+#actionbar {
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  height: var(--header-height);
+  z-index: 1;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background: inherit;
+  transition: .5s transform ease-in;
+}
+
+[scroll-hidden=true] #actionbar,
+[scroll-hidden=true] .flexible-roll-btn-inner,
+[scroll-hidden=true] .top-btn {
+  transform: translateY(var(--header-height));
+}
+
+
+#actionbar > * {
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
+}
+
+#full-now,
+#my-home,
+#search-fab,
+#menu-fab,
+#sidebar-btn {
+  padding: 8px;
+}
+
+#actionbar.home #full-now,
+#actionbar.home #sidebar-btn {
+  visibility: hidden;
+  pointer-events: none;
+}
+/* --------------------- 其它适配 --------------------- */
+
+/* 扩增载入后产生的骨架空位 */
+.floor-single-card:has(.skeleton, .skeleton-item) {
+  display: none;
+}
+
+/* 脚本设置窗口 */
+.setting-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: inherit;
+  z-index: 1;
+  border: 1px solid var(--line_regular);
+  display: none;
+  flex-direction: column;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.setting-panel.show {
+  display: flex;
+}
+
+.setting-title {
+  padding-bottom: 5px;
+  margin: 0 5px;
+  border-bottom: 1px solid var(--line_regular);
+}
+.setting-checkboxes {
+  display: flex;
+  flex-direction: column;
+}
+
+.setting-checkboxes label {
+  margin: 5px;
+  display: flex;
+}
+
+.setting-checkboxes span {
+  flex-grow: 1;
+  text-align: center;
+  user-select: none;
+}
+
+.setting-conform {
+  margin: 0 20px;
+  border-radius: 5px;
+}
+
+/* ----------------------------------------------------
+* ---------------------------------------------------- *
+* ----------------------- 首页 ----------------------- *
+* ---------------------------------------------------- *
+ ----------------------------------------------------- */
+
+ body {
+  /* 避免评论未加载时显示灰色 */
+  background: white !important;
+
+  /* 添加透明 animation 为 Via 预留加载 initViewport 的时间后，刷新加载出现白屏 */
+
+  --header-height: 46px;
+}
+
+/* 顶栏点击遮罩层 */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height);
+  background-color: transparent;
+  z-index: 1002;
+}
+
+/* 双列视频 */
+.recommended-container_floor-aside .container {
+  grid-template-columns: repeat(2, 1fr) !important;
+  padding: 5px;
+  grid-gap: 5px !important;
+  background: #f1f2f3;
+}
+
+/* 头图底色 */
+.bili-header__banner {
+  background-color: #f1f2f3 !important;
+}
+
+/* 显示根据屏宽隐藏的 feed */
+.container>.feed-card {
+  display: block !important;
+}
+
+/* 最小宽度（body、顶栏） */
+body,
+.bili-header,
+.bili-header__banner {
+  min-width: 0 !important;
+}
+
+/* 主页视频流 */
+.bili-feed4-layout {
+  width: 100% !important;
+}
+
+/* -------------------------------------------------- 
+ ------------------------ 顶栏 ----------------------- 
+ -------------------------------------------------- */
+
+/* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
+
+/* 避免初始内联高度影响计算 */
+#biliMainHeader {
+  position: fixed;
+  z-index: 2;
+}
+
+/* 顶栏边距（右边距减去头像右空隙） */
+.bili-header__bar {
+  padding: 0 10px 0 15px !important;
+  transition: transform 0.5s ease-in;
+}
+
+/* 顶栏高度 */
+.bili-header .bili-header__bar {
+  height: var(--header-height) !important;
+}
+
+/* 视频页顶栏高度 */
+.header-v3 #biliMainHeader .bili-header .bili-header__bar {
+  height: var(--header-height) !important;
+}
+
+/* 顶部按钮高度 */
+.entry-title,
+.right-entry,
+.mini-header__logo {
+  max-height: var(--header-height);
+}
+
+.left-entry__title {
+  height: var(--header-height) !important;
+}
+
+/* 头像高度 */
+.v-popover-wrap.header-avatar-wrap {
+  height: var(--header-height) !important;
+}
+
+/* 收藏按钮高度 */
+.header-favorite-container-box,
+.header-favorite-container  {
+  max-height: var(--header-height) !important;
+}
+
+/* 顶栏高度：HTML 初始加载时，biliMainHeader 已有内联高度，
+   保留顶栏外框（biliMainHeader）高度，修改其它元素 */
+
+/* 不影响结果 */
+#biliMainHeader .bili-header {
+  min-height: var(--header-height);
+  height: var(--header-height);
+}
+
+/* 搜索框 */
+.center-search-container {
+  position: absolute !important;
+  width: 100%;
+  left: 0;
+  top: 0;
+  padding: 10px 20px 5px !important;
+  z-index: 3;
+  margin: 0 !important;
+  display: none;
+}
+
+.center-search-container.show {
+  display: block;
+}
+
+/* 顶栏右侧图标 */
+.right-entry {
+  flex: 1;
+  min-width: 0;
+  margin: 0 !important;
+  justify-content: space-evenly;
+}
+ 
+.right-entry > * {
+  animation: fadeIn 1s ease-in;
+}
+
+.left-entry {
+  min-width: 0;
+  margin: 0 !important;
+}
+
+/* 头像图表边距 */
+.header-avatar-wrap {
+  padding-right: 0 !important;
+}
+
+/* 禁止换行 */
+.left-entry__title,
+.dm.item {
+  white-space: nowrap;
+}
+
+/* 头像置右 */
+.v-popover-wrap.header-avatar-wrap {
+  order: 5;
+  margin-left: auto;
+}
+
+/* 剩余元素均分 */
+.v-popover-wrap:not(.header-avatar-wrap) {
+  flex: 1;
+}
+
+/* 肉眼个别微调 */
+.right-entry--message {
+  padding-left: 3px;
+}
+
+/* 顶栏元素间距 */
+.left-entry__title {
+  margin-right: 0px !important;
+}
+
+/* 与头像左空隙对齐 */
+.mini-header__logo {
+  margin-right: 7px !important;
+}
+
+/* 禁用主题色重载 */
+svg.mini-header__logo path {
+  fill: var(--brand_blue) !important;
+}
+
+/* 移除“首页”字样 */
+.mini-header__title {
+  display: none !important;
+}
+
+/* 移除顶部动图和临时静图 */
+.animated-banner,
+#bili-header-banner-img {
+  display: none !important;
+}
+
+/* 使用 controlHeaderImage 获取随机头图 */
+
+.biliheader__banner {
+  display: none !important;
+}
+
+/* -------------------------------------------------- 
+ ---------------------- 展开图类 --------------------- 
+ -------------------------------------------------- */
+
+.v-popover {
+  position: fixed !important;
+  top: var(--header-height) !important;
+  margin: 0 !important;
+  max-width: 100%;
+  padding: 5px !important;
+}
+
+/* 分类(左侧入口)展开图 */
+.channel-panel__column {
+  width: 100% !important;
+  flex: 1;
+  padding: 0 !important;
+}
+
+/* 右侧入口展开图 */
+.dynamic-panel-popover,
+.favorite-panel-popover,
+.history-panel-popover {
+  max-width: 100%;
+  padding: 0 5px !important;
+}
+
+/* 动态展开图 */
+.dynamic-video-item {
+  margin-right: 0 !important;
+}
+
+.header-dynamic-list-item {
+  padding: 0 !important;
+}
+
+.header-dynamic__box--center {
+  max-width: 60%;
+}
+
+.header-dynamic__box--right {
+  top: 0 !important;
+  margin-bottom: 0 !important;
+  width: unset !important;
+  flex: 1;
+
+  .cover {
+      width: unset !important;
+      height: unset !important;
+  }
+}
+
+/* 收藏展开图 */
+.favorite-panel-popover__nav {
+  max-width: 25%;
+}
+
+.header-fav-card__image {
+  max-width: 40%;
+
+  picture {
+      max-width: 100%;
+      height: 100% !important;
+  }
+}
+
+/* 间距（收藏展开图） */
+.favorite-panel-popover__nav .tab-item {
+  padding: 0 6px !important;
+}
+
+.header-fav-card {
+  padding: 6px !important;
+}
+
+.favorite-panel-popover__nav {
+  margin-top: 6px !important;
+}
+
+/* 历史展开图 */
+.header-history-video {
+  padding: 5px 10px !important;
+}
+
+/* 移除头像大图 */
+.header-entry-avatar {
+  display: none !important;
+}
+
+/* 关闭头像动画 */
+.header-entry-mini {
+  animation: unset !important;
+}
+
+/* 移除次要入口 */
+.left-entry>li:not(:nth-of-type(1)),
+.vip-wrap,
+.right-entry-item:has(>.vip-wrap),
+.right-entry-item:nth-of-type(6),
+.right-entry-item--upload,
+.header-channel,
+.bili-header__channel,
+.recommended-swipe,
+.feed-roll-btn {
+  display: none !important;
+}
+
+/* 广告、推广图块 */
+/* 底部登录弹窗类 .lt-row 可能包含其它元素 */
+/* 首页顶部动图上的大 Logo */
+.container>*:has(.bili-video-card__info--ad),
+.floor-single-card,
+.desktop-download-tip,
+.lt-row,
+.header-banner__inner {
+  display: none !important;
+}
+
+/* ----------------------------------------------------
+* --------------------- 主页视频卡片 ------------------- *
+ ----------------------------------------------------- */
+
+.container>* {
+  margin-top: 0 !important;
+}
+
+/* 卡片底板 */
+.bili-video-card__wrap {
+  border-radius: 5px;
+}
+
+/* 封面宽长比 */
+.bili-video-card.is-rcmd {
+  --cover-radio: 75% !important;
+}
+
+/* 封面圆角 */
+.v-img.bili-video-card__cover {
+  border-radius: 5px 5px 0 0;
+}
+
+/* 封面信息（阴影层圆角） */
+.bili-video-card__stats {
+  border-radius: 0 !important;
+  --icon-size: 16px;
+  --subtitle-font-size: 11px;
+  white-space: nowrap;
+}
+
+/* 卡片标题 - 字样 */
+.bili-video-card__info--tit {
+  --title-padding-right: 0;
+  --title-font-size: 14px;
+  --title-line-height: 20px;
+}
+
+/* 标题 - 上下距 */
+/* .bili-video-card__info  */
+
+/* 标题 - 左右距 */
+.bili-video-card__info--right {
+  padding: 0 5px;
+}
+
+/* 标题 - 字重 */
+/* .bili-video-card__info--tit > a */
+
+/* 小标 */
+.bili-video-card__info--bottom {
+  --subtitle-font-size: 12px;
+}
+
+.bili-video-card__info--icon-text {
+  padding: 0 5px !important;
+}
+
+/* 小标 - 日期 */
+.bili-video-card__info--owner {
+  flex: 1;
+}
+
+.bili-video-card__info--date {
+  margin-left: auto !important;
+}
+
+/* 小标 - 点赞数 */
+.bili-video-card__info--icon-text {
+  --follow-icon-font-size: 11px;
+  --follow-icon-line-height: 15px;
+}
+
+/* ----------------------------------------------------
+* ---------------------------------------------------- *
+* --------------------- 视频详情页 -------------------- *
+* ---------------------------------------------------- *
+ ----------------------------------------------------- */
+
+/* 主应用块 */
+#app {
+  overflow: hidden;
+}
+
+/* 主体内容块 */
+.video-container-v1 {
+  min-width: 0 !important;
+  padding: 0 !important;
+  top: var(--header-height);
+}
+
+/* ----------------------------------------------------
+* ---------------------- 主视频块 --------------------- *
+ ----------------------------------------------------- */
+
+/* 主视频块 */
+.left-container {
+  --video-height: calc(100vw * 0.5625);
+  --dm-row-height: 44px;
+}
+
+/* 有初始内联 top */
+/* 视频块（宽度） (#mainheight与header的高度差导致了64px-48px的可滚动区域) */
+.left-container {
+  /* 移动 Safari 百分比宽高自动考虑边框和填充 */
+  padding: calc(var(--video-height) + var(--dm-row-height)) 10px 0;
+  box-sizing: border-box;
+  width: 100% !important;
+
+  /* 填充评论未加载时的空白，video-container-v1 已考虑顶部留空，但 #app 的高度把顶部重叠的部分加上了 */
+  min-height: calc(100vh - var(--header-height));
+}
+
+/* ----------------------------------------------------
+* ----------------------- 播放器 ---------------------- *
+ ----------------------------------------------------- */
+
+/* 修改播放器固定尺寸 */
+#bilibili-player {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+/* 固定视频（外框尺寸） */
+#playerWrap {
+  position: fixed;
+  left: 0;
+  top: var(--header-height);
+  width: 100vw;
+  height: var(--video-height) !important;
+  z-index: 75;
+  transition: transform 0.5s ease-in;
+}
+
+/* 小窗时的隐藏 - 始终隐藏*/
+/* 顶部关注、音乐、反馈 */
+/* 右下角暂停图标 */
+/* 取消静音 */
+.bpx-player-top-wrap,
+.bpx-player-state-wrap,
+.bpx-player-toast-wrap {
+  display: none !important;
+}
+
+/* 小窗时的隐藏 - 固定显示*/
+/* 视频控制栏 */
+/* 弹幕行 */
+.bpx-player-control-wrap,
+.bpx-player-sending-area {
+  display: block !important;
+}
+
+/* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
+/*.bpx-player-toast-wrap {
+  bottom: unset !important;
+  top: 50%;
+  transform: translateY(-50%);
+}*/
+
+.bpx-player-toast-item {
+  margin: 0 !important;
+}
+
+/* 小窗时的暂停图标 */
+.bpx-player-mini-warp {
+  display: none !important;
+}
+
+/* 彻底移除小窗样式 */
+#playerWrap .bpx-player-container[data-screen=mini] {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  transition: top 0.5s ease-in;
+}
+
+/* 移除小窗等按钮 */
+.fixed-sidenav-storage>*:nth-child(1),
+.fixed-sidenav-storage>*:nth-child(2) {
+  display: none !important;
+}
+
+/* 窄屏不隐藏控制条和阴影 */
+.bpx-player-control-entity,
+.bpx-player-control-mask {
+  display: block !important;
+}
+
+/* 移除次要按钮：画中画、宽屏、页面全屏、时间、选集 */
+.bpx-player-ctrl-pip,
+.bpx-player-ctrl-wide,
+.bpx-player-ctrl-web,
+.bpx-player-ctrl-time,
+.bpx-player-ctrl-eplist {
+  display: none !important;
+}
+
+/* 左右控制区 */
+.bpx-player-control-bottom-left,
+.bpx-player-control-bottom-right {
+  flex: unset !important;
+}
+
+/* 全屏时 */
+.bpx-player-container .bpx-player-control-bottom-left,
+.bpx-player-container .bpx-player-control-bottom-right {
+  min-width: 0 !important;
+}
+
+/* 清晰度(width:auto 不换行，隐藏不掉高清字样) */
+.bpx-player-ctrl-quality {
+  margin-right: 0 !important;
+  min-width: 0;
+  flex: auto !important;
+}
+
+/* 清晰度、倍速文本 */
+.bpx-player-ctrl-quality-result,
+.bpx-player-ctrl-playbackrate {
+  font-size: 12px !important;
+}
+
+/* 清晰度文本:隐藏换行的部分 */
+.bpx-player-ctrl-quality-result {
+  height: 22px;
+  overflow: hidden;
+}
+
+/* 倍速文本:禁止换行 */
+.bpx-player-ctrl-playbackrate {
+  text-wrap: nowrap;
+}
+
+/* 清晰度文本:全屏时恢复大小 */
+@media screen and (min-width: 750px){
+  .bpx-player-container[data-screen=full] .bpx-player-ctrl-quality-result {
+    font-size: 16px !important;
+    height: unset !important;
+  }
+}
+
+/* 按钮区(图标22px，算 margin 37px) */
+.bpx-player-control-bottom {
+  height: 29px !important;
+  margin-top: 7px !important;
+  padding: 0 7px !important;
+}
+
+/* 进度条 */
+.bpx-player-control-top {
+  bottom: 36px !important;
+}
+
+/* 修复部分情况下的控制栏图标增大导致的高度过高 */
+@media screen and (min-width: 750px) {
+  .bpx-player-container[data-screen=full] {
+    .bpx-player-control-wrap {
+      height: 43px !important;
+    }
+
+    .bpx-player-control-top {
+      bottom: 43px !important;
+    }
+  }
+}
+
+/* 进度条细条包含块（高12px） */
+.bpx-player-progress-wrap {
+  height: 7px !important;
+  padding-bottom: 3px !important;
+}
+
+/* 阴影(控制栏展开时: 高能区 100% - 1px) */
+.bpx-player-pbp {
+  bottom: 1px !important;
+}
+
+.bpx-player-pbp.show {
+  bottom: calc(100% + 6px) !important;
+}
+
+/* 替换via暗色异常的阴影 */
+.bpx-player-control-mask {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .5) 100%) !important;
+}
+
+/* 清晰度弹窗 */
+.bpx-player-ctrl-quality-menu-wrap {
+  bottom: 0 !important;
+  max-height: var(--video-height) !important;
+}
+
+/* 设置弹窗 */
+.bpx-player-ctrl-setting-box {
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+/* 更多设置 */
+.bpx-player-ctrl-setting-menu-right {
+  padding: 5px !important;
+  max-height: var(--video-height) !important;
+}
+
+/* 更多设置 */
+.bui.bui-radio.bui-dark {
+  margin-bottom: 5px !important;
+}
+
+/* 全屏控制栏 */
+.bpx-player-control-bottom-center .bpx-player-sending-bar {
+  padding-right: 6px !important;
+  height: 24px !important;
+}
+
+/* 存在章节时(允许章节缩小) */
+.bpx-player-ctrl-viewpoint {
+  margin: 0 !important;
+  min-width: 0 !important;
+  width: 45px !important;
+  flex-shrink: 1 !important;
+}
+
+.bpx-player-ctrl-viewpoint-text {
+  width: 24px !important;
+  text-overflow: unset !important;
+  font-size: 12px;
+  flex: none;
+}
+
+/* ----------------------------------------------------
+* ----------------------- 弹幕行 ---------------------- *
+ ----------------------------------------------------- */
+
+/* 弹幕行：滚动隐藏 */
+.bpx-player-sending-area {
+  position: absolute !important;
+  bottom: 0;
+  width: 100%;
+  transform: translateY(100%);
+
+  transition: 0.5s transform ease-in;
+  display: block !important;
+  z-index: 0;
+}
+
+[scroll-hidden=true] .bpx-player-sending-area {
+  transform: none;
+}
+
+.bpx-player-video-area {
+  z-index: 1;
+}
+
+/* 修改小窗样式的时候把这行删了，导致弹幕行显示异常 */
+.bpx-player-container[data-screen=mini] {
+  overflow: unset !important;
+}
+
+/* 弹幕行预加载灰块白条(视频底下也有，预加载有时会看到) */
+.bpx-player-sending-bar-left,
+.bpx-player-sending-bar-right,
+#bilibili-player-placeholder-bottom {
+  display: none !important;
+}
+
+/* 弹幕行高度 */
+.bpx-player-sending-bar {
+  height: var(--dm-row-height) !important;
+}
+
+.bpx-player-dm-input {
+  height: 26px !important;
+}
+
+/* 弹幕输入栏外 */
+.bpx-player-video-inputbar {
+  height: 26px !important;
+  border-radius: 13px !important;
+
+  min-width: 0 !important;
+}
+
+.bpx-player-video-inputbar-wrap {
+  width: 100% !important;
+}
+
+/* 不输入隐藏发送 */
+.bpx-player-dm-btn-send {
+  display: none !important;
+}
+
+.bpx-player-video-inputbar-wrap:has(>input:focus)+.bpx-player-dm-btn-send {
+  display: flex !important;
+}
+
+.bpx-player-dm-btn-send {
+  border-radius: 0 13px 13px 0 !important;
+  height: 26px !important;
+  min-width: 50px !important;
+  width: 50px !important;
+}
+
+.bui-button-blue {
+  min-width: 50px !important;
+}
+
+/* 观看人数 */
+.bpx-player-video-info {
+  margin-right: 6px !important;
+}
+
+/* 弹幕数量、弹幕礼仪 */
+.bpx-player-video-info-divide,
+.bpx-player-video-info-dm,
+.bpx-player-dm-hint {
+  display: none !important;
+}
+
+/* 播放组件在下面 */
+
+/* ----------------------------------------------------
+* ----------------------- 推荐块 ---------------------- *
+ ----------------------------------------------------- */
+
+/* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
+.right-container {
+  position: fixed !important;
+  width: 85% !important;
+  left: 85%;
+  padding: 10px;
+  margin: 0 0 0 15% !important;
+
+  z-index: 76;
+  background: white;
+  transition: transform .6s ease-in;
+  height: calc(100% - var(--header-height) * 2);
+  overflow-y: auto;
+  /* 避免到达边界后的滚动事件穿透 */
+  overscroll-behavior: contain;
+
+  box-sizing: border-box;
+  border-left: 1px solid var(--line_regular);
+}
+
+body[show-sidebar="true"] .right-container {
+  transform: translateX(-100%);
+}
+
+.right-container-inner {
+  padding: 0 !important;
+}
+
+/* 推荐块蒙版（加到左视频块才不会被冒泡事件影响） */
+.left-container:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 75;
+  background-color: rgb(0, 0, 0);
+  opacity: 0;
+  transition: opacity 0.6s ease-in;
+  pointer-events: none;
+}
+
+body[show-sidebar="true"] .left-container:after {
+  opacity: 0.5;
+  pointer-events: auto;
+}
+
+/* UP信息 */
+.upinfo-btn-panel .default-btn {
+  font-size: 12px !important;
+}
+
+.new-charge-btn {
+  max-width: 35%;
+}
+
+.follow-btn {
+  max-width: 150px !important;
+}
+
+/* UP头像 */
+/*.up-avatar-wrap .bili-avatar,
+.up-avatar-wrap {
+  width: 38px !important;
+  height: 38px !important;
+}*/
+
+/* 推荐视频图块 */
+#reco_list .card-box .pic-box {
+  max-width: 50%;
+}
+
+/* ----------------------------------------------------
+* ---------------------- 播放页组件 ------------------- *
+ ----------------------------------------------------- */
+
+ #viewbox_report {
+}
+
+/* 信息块（标题） */
+.video-info-container {
+  height: auto !important;
+  padding-top: 0 !important;
+}
+
+/* 标题（可两行显示） */
+.video-title {
+  font-size: 18px !important;
+
+  white-space: wrap !important;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+
+  /* 去除折叠时的 show-more 按钮 margin */
+  margin-right: 0 !important;
+}
+
+.show-more {
+  top: unset !important;
+  transform: none !important;
+  bottom: 4px;
+  right: 4px !important;
+}
+
+.video-desc-container {
+  margin: 10px 0 !important;
+}
+
+/* 点赞投币行 */
+.video-toolbar-container {
+  padding: 10px 0 8px !important;
+}
+
+.video-toolbar-left,
+.video-toolbar-left-main {
+  min-width: 0;
+}
+
+.toolbar-left-item-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.video-toolbar-container * {
+  margin: 0 !important;
+}
+
+.video-share-info {
+  width: 40px !important;
+}
+
+.video-share-popover {
+  display: none !important;
+}
+
+/* AI 助手“测试版”字样 */
+.video-ai-assistant-badge {
+  display: none !important;
+}
+
+/* AI 总结 */
+.resizable-component.resizable-component {
+  width: 100% !important;
+  left: 0 !important;
+  position: fixed !important;
+  height: 100vw !important;
+  top: 50% !important;
+  transform: translateY(-50%);
+}
+
+/* 简介 */
+.video-desc-container .toggle-btn {
+  text-align: right;
+  margin-right: 7px;
+}
+
+/* 标签 */
+.video-tag-container {
+  margin: 6px 0 0 !important;
+  padding-bottom: 1px !important;
+}
+
+.tag-panel .tag {
+  margin-bottom: 6px !important;
+  opacity: 0;
+  animation: fadeIn 1s ease-in 2s forwards;
+}
+
+/* 投票卡片 */
+.top-vote-card-left {
+  width: unset !important;
+  max-width: unset !important;
+}
+
+/* ----------------------------------------------------
+* ----------------- 播放组件（评论以下） -------------- *
+ ----------------------------------------------------- */
+
+@keyframes fadeIn {
+  form {
+      opacity: 0;
+  }
+
+  to {
+      opacity: 1;
+  }
+}
+
+/* 固定评论栏 */
+.main-reply-box {
+  position: fixed;
+  left: 0;
+  bottom: var(--header-height);
+  z-index: 10;
+  background: white;
+  width: 100%;
+  padding: 8px 12px;
+  border-top: 1px solid var(--line_regular);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  transition: .75s transform ease-in;
+  display: block !important;
+}
+
+/* 评论行滚动隐藏 */
+[scroll-hidden=true] .main-reply-box {
+  transform: translateY(calc(100% + var(--header-height)))
+}
+
+/* 移除原底部评论栏 */
+.fixed-reply-box {
+  display: none !important;
+}
+
+/* 移除评论头像 */
+.reply-box-avatar {
+  display: none !important;
+}
+
+/* 输入块外 */
+.reply-box-warp {
+  border-radius: 13px !important;
+}
+
+/* 输入块内 */
+.textarea-wrap {
+  padding: 0 !important;
+}
+
+/* 文字输入 */
+.reply-box-textarea {
+  height: 26px !important;
+  line-height: 26px !important;
+  min-height: 26px !important;
+}
+
+/* 输入展开块 */
+.main-reply-box .reply-box .box-expand[data-v-a6daab22] {
+  height: 26px;
+  margin: 8px 0 0 0;
+}
+
+/* 插入表情图片 */
+.box-left {
+  flex: 1;
+  justify-content: space-evenly !important;
+}
+
+/* 点击发送 */
+.reply-box-send {
+  width: 50px !important;
+  height: 26px !important;
+}
+
+/* 评论块 */
+#comment {
+  margin-top: 12px !important;
+}
+
+/* 评论导航 */
+.reply-navigation {
+  margin-bottom: 0 !important;
+}
+
+/* 评论 */
+.root-reply-container {
+  padding: 12px 0 0 36px !important;
+}
+
+.root-reply-avatar,
+.root-reply-avatar .bili-avatar {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.user-info {
+  margin: 3px 5px 0 !important;
+}
+
+/* 回复评论 */
+.sub-reply-container {
+  padding-left: 28px !important;
+}
+
+.sub-reply-item {
+  padding: 4px 0 4px 37px !important;
+}
+
+/* 评论图片 */
+.reply-view-image .show-image-wrap {
+  padding: 0 0 145px !important;
+  .image-content {
+    width: 100% !important;
+  }
+}
+
+.reply-view-image .operation-btn {
+  .last-image,
+  .next-image,
+  .close-container {
+    top: unset !important;
+    bottom: 100px;
+  }
+
+  .last-image,
+  .next-image {
+    transform: none !important;
+  }
+
+  .close-container {
+    right: 50% !important;
+    transform: translateX(50%);
+  }
+  
+  .last-image {
+    left: 20vw !important;
+  }
+
+  .next-image {
+    right: 20vw !important;
+  }
+
+}
+
+/* 块状广告（包括推荐列） */
+#activity_vote,
+#bannerAd,
+.reply-notice,
+.ad-report,
+.pop-live-small-mode,
+#slide_ad {
+  display: none !important;
+}
+
+/* ----------------------------------------------------
+* ---------------------------------------------------- *
+* ------------------------ 按钮 ---------------------- *
+* ---------------------------------------------------- *
+ ----------------------------------------------------- */
+
+/* 按钮 */
+.primary-btn:hover {
+  background-color: unset !important;
+}
+
+.primary-btn {
+  background: none !important;
+}
+
+/* 刷新按钮 */
+.flexible-roll-btn-inner {
+  border: none !important;
+  color: inherit !important;
+  background: none !important;
+  padding: 7px 8px 7px 7px !important;
+  display: block !important;
+  position: fixed;
+  bottom: -17px;
+  right: 5vw;
+  width: 40px !important;
+  transition: .5s transform ease-in;
+}
+
+/* 首页置顶按钮 */
+.top-btn {
+  border: none !important;
+  position: fixed;
+  bottom: -17px;
+  right: 77vw;
+  width: 40px !important;
+  transition: .5s transform ease-in !important
+}
+
+.top-btn .primary-btn-text {
+  display: none;
+}
+
+/* svg 大小 */
+.flexible-roll-btn-inner svg {
+  width: 26px;
+  height: 26px;
+}
+
+.palette-button-wrap.translucent>.flexible-roll-btn.flexible-roll-btn,
+.palette-button-wrap.translucent>.top-btn-wrap.top-btn-wrap {
+  opacity: 1 !important;
+}
+
+/* 按钮组 */
+span.btn-text-inner,
+.storage-box {
+  display: none !important;
+}
+
+/* 返回顶部按钮（添加渐变） */
+/* 权重：基本设置属性 < transition < animation */
+.back-to-top {
+  border-radius: 0 25% 25% 0 !important;
+  border-left: 0 !important;
+  margin-bottom: 0 !important;
+  width: 42px !important;
+
+  visibility: visible !important;
+  transform: translateX(-100%);
+  transition: transform .5s ease-in-out;
+}
+
+.back-to-top.visible {
+  transform: none;
+}
+
+/* 回顶按钮的位置 */
+.fixed-sidenav-storage {
+  left: 0;
+  right: unset !important;
+  bottom: 78px !important;
+  z-index: 1 !important;
+}
+
+/* ----------------------------------------------------
+* ---------------------------------------------------- *
+* ---------------------- 其它窗口 -------------------- *
+* ---------------------------------------------------- *
+ ----------------------------------------------------- */
+
+/* 登录窗 */
+.login-scan-wp,
+.bili-mini-line {
+  display: none !important;
+}
+
+.bili-mini-content-wp {
+  padding: 52px 0 29px !important;
+}
+
+.bili-mini-login-right-wp,
+.bili-mini-login-right-wp * {
+  max-width: 80vw;
+}
+    `
+    const style = document.createElement('style')
+    style.textContent = initialInsertStyle
+
+    // 如果 document.head 可用，将样式添加到文档
+    ensureHeadGetted(style)
+  }
+}())
+
+})();
+
+/******/ })()
+;
