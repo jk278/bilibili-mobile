@@ -31,6 +31,7 @@ import { initViewport } from './init.js'
 import { preventBeforeUnload, increaseVideoLoadSize } from './override.js'
 import { handleScriptPreSetting, handleScriptSetting } from './setting.js'
 import { handleHeaderImage } from './header-image.js'
+import { handlelVideoClick, handleVideoLongPress } from './video.js'
 
 import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from './actionbar.js'
 
@@ -61,11 +62,8 @@ import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from '.
   waitDOMContentLoaded(() => {
     localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
     handleHeaderClick()
-    if (window.location.pathname.startsWith('/video')) {
-      addPlaysInline()
-    }
 
-    scrollToHidden()
+    // 原内联播放位置，移至 video-interaction
 
     handleActionbar()
 
@@ -74,20 +72,18 @@ import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from '.
     handleScriptSetting()
 
     if (window.location.pathname.startsWith('/video')) {
+      // Video Interaction
+      handlelVideoClick()
+      handleVideoLongPress()
+
       handleSidebar()
-      handleVideoInteraction()
     }
+
+    scrollToHidden()
   })
 
   // DOM 加载完后
   function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
-  // head 获取到后
-
-  function addPlaysInline () {
-    const videoElement = document.getElementsByClassName('bpx-player-video-wrap>video')[0]
-    // 新添加了路径判断，此处预留
-    if (videoElement) videoElement.playsInline = true
-  }
 
   // 滚动隐藏函数(弹幕行、评论行)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
   function scrollToHidden () {
@@ -105,67 +101,5 @@ import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from '.
         lastScrollTop = currentScrollTop
       }
     })
-  }
-
-  function handleVideoInteraction () {
-    handlelVideoClick()
-    handleVideoLongPress()
-
-    // 接管视频点击事件
-    function handlelVideoClick () {
-      const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
-      playerContainer.addEventListener('click', handleClick)
-      const controlWrap = document.getElementsByClassName('bpx-player-control-wrap')[0]
-
-      let clickTimer = null
-
-      function handleClick () {
-        simulateMouseEnter(controlWrap)
-
-        if (clickTimer) {
-          clearTimeout(clickTimer)
-        }
-
-        clickTimer = setTimeout(() => {
-          simulateMouseLeave(controlWrap)
-        }, 5000)
-      }
-
-      function simulateMouseEnter (element) {
-        const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-        element.dispatchEvent(event)
-      }
-
-      function simulateMouseLeave (element) {
-        const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-        element.dispatchEvent(event)
-      }
-    }
-
-    function handleVideoLongPress () {
-      const video = document.querySelector('video') // 获取视频元素
-      let isLongPress = false // 长按标志
-      let timeoutId
-
-      video.addEventListener('touchstart', (event) => {
-        timeoutId = setTimeout(() => {
-          video.playbackRate = video.playbackRate * 2
-          isLongPress = true
-        }, 500)
-      })
-
-      video.addEventListener('touchmove', (event) => {
-        clearTimeout(timeoutId) // 触摸移动时取消长按
-      })
-
-      video.addEventListener('touchend', (event) => {
-        clearTimeout(timeoutId) // 触摸结束时清除定时器
-
-        if (isLongPress) {
-          video.playbackRate = video.playbackRate / 2
-          isLongPress = false
-        }
-      })
-    }
   }
 }())
