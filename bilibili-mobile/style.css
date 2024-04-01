@@ -168,7 +168,7 @@ body {
 }
 
 /* 顶栏点击遮罩层 */
-#overlay {
+#header-musk {
     position: fixed;
     top: 0;
     left: 0;

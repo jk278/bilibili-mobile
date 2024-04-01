@@ -10,7 +10,7 @@ export function hideHeader () {
     id: 'hidden-header',
     /* css */
     textContent: `
-      .bili-header__bar, #overlay {transform: translateY(-100%);}
+      .bili-header__bar, #header-musk {transform: translateY(-100%);}
       #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
       /* 父布局不要用 transform */
       .video-container-v1.video-container-v1 {top: 0 !important;}
@@ -170,10 +170,10 @@ export function handleSidebar () {
 
 // 接管顶部点击事件，父元素point-events:none，子元素point-events:auto对有的手机无效
 export function handleHeaderClick () {
-  const overlay = document.createElement('div')
-  overlay.id = 'overlay'
-  document.body.appendChild(overlay)
-  overlay.addEventListener('click', handleClick)
+  const musk = document.createElement('div')
+  musk.id = 'header-musk'
+  document.body.appendChild(musk)
+  musk.addEventListener('click', handleClick)
 
   let storedElement = null
   let isMouseEntered = false
@@ -205,20 +205,20 @@ export function handleHeaderClick () {
         simulateMouseLeave(storedElement)
         isMouseEntered = false
       } else {
-        overlay.style.display = 'none'
+        musk.style.display = 'none'
         const element = document.elementFromPoint(event.clientX, event.clientY)
         simulateMouseEnter(element)
-        overlay.style.display = 'block'
+        musk.style.display = 'block'
         isMouseEntered = true
         storedElement = element
       }
     }
 
     function twiceClick () {
-      overlay.style.display = 'none'
+      musk.style.display = 'none'
       const element = document.elementFromPoint(event.clientX, event.clientY)
       simulateClick(element)
-      overlay.style.display = 'block'
+      musk.style.display = 'block'
     }
   }
 

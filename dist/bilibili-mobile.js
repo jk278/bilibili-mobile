@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.9.3
+// @version            3.9.6
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -377,8 +377,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 #menu-fab {
     position: relative;
     background: inherit;
+    z-index: 2;
 }
 
+/* 设置 z-index 确保 layout 能完全覆盖 */
+
+#sidebar-fab {
+    z-index: 3;
+}
+
+/* 底部菜单内容 */
 #header-in-menu {
     position: absolute !important;
     bottom: var(--header-height);
@@ -402,6 +410,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     display: block;
 }
 
+/* 底部菜单、侧边栏: layout */
 #menu-overlay,
 #sidebar-overlay {
     position: fixed;
@@ -409,7 +418,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 1;
     pointer-events: none;
     transition: background-color .6s ease-in;
 }
@@ -489,7 +497,7 @@ body {
 }
 
 /* 顶栏点击遮罩层 */
-#overlay {
+#header-musk {
     position: fixed;
     top: 0;
     left: 0;
@@ -2053,7 +2061,7 @@ function headerInMenu () {
         })
 
         const menu = menuOverlay.querySelector('#header-in-menu')
-        menuFab.addEventListener('click', () => { menu.classList.add('show') })
+        menuFab.addEventListener('click', () => { menu?.classList.add('show') })
 
         menuOverlay.addEventListener('click', (event) => {
           event.stopPropagation()
@@ -2103,7 +2111,7 @@ function hideHeader () {
     id: 'hidden-header',
     /* css */
     textContent: `
-      .bili-header__bar, #overlay {transform: translateY(-100%);}
+      .bili-header__bar, #header-musk {transform: translateY(-100%);}
       #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
       /* 父布局不要用 transform */
       .video-container-v1.video-container-v1 {top: 0 !important;}
@@ -2263,10 +2271,10 @@ function handleSidebar () {
 
 // 接管顶部点击事件，父元素point-events:none，子元素point-events:auto对有的手机无效
 function handleHeaderClick () {
-  const overlay = document.createElement('div')
-  overlay.id = 'overlay'
-  document.body.appendChild(overlay)
-  overlay.addEventListener('click', handleClick)
+  const musk = document.createElement('div')
+  musk.id = 'header-musk'
+  document.body.appendChild(musk)
+  musk.addEventListener('click', handleClick)
 
   let storedElement = null
   let isMouseEntered = false
@@ -2298,20 +2306,20 @@ function handleHeaderClick () {
         simulateMouseLeave(storedElement)
         isMouseEntered = false
       } else {
-        overlay.style.display = 'none'
+        musk.style.display = 'none'
         const element = document.elementFromPoint(event.clientX, event.clientY)
         simulateMouseEnter(element)
-        overlay.style.display = 'block'
+        musk.style.display = 'block'
         isMouseEntered = true
         storedElement = element
       }
     }
 
     function twiceClick () {
-      overlay.style.display = 'none'
+      musk.style.display = 'none'
       const element = document.elementFromPoint(event.clientX, event.clientY)
       simulateClick(element)
-      overlay.style.display = 'block'
+      musk.style.display = 'block'
     }
   }
 
@@ -2504,7 +2512,7 @@ __webpack_require__.r(__webpack_exports__);
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.9.3
+// @version            3.9.6
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278

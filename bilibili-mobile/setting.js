@@ -254,7 +254,7 @@ export function headerInMenu () {
         })
 
         const menu = menuOverlay.querySelector('#header-in-menu')
-        menuFab.addEventListener('click', () => { menu.classList.add('show') })
+        menuFab.addEventListener('click', () => { menu?.classList.add('show') })
 
         menuOverlay.addEventListener('click', (event) => {
           event.stopPropagation()
