@@ -48,8 +48,16 @@
 #menu-fab {
     position: relative;
     background: inherit;
+    z-index: 2;
 }
 
+/* 设置 z-index 确保 layout 能完全覆盖 */
+
+#sidebar-fab {
+    z-index: 3;
+}
+
+/* 底部菜单内容 */
 #header-in-menu {
     position: absolute !important;
     bottom: var(--header-height);
@@ -73,18 +81,20 @@
     display: block;
 }
 
-#menu-overlay {
+/* 底部菜单、侧边栏: layout */
+#menu-overlay,
+#sidebar-overlay {
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 1;
     pointer-events: none;
     transition: background-color .6s ease-in;
 }
 
-#menu-overlay:has(>.show) {
+#menu-overlay:has(>.show),
+body[show-sidebar="true"] #sidebar-overlay {
     pointer-events: auto;
     background-color: rgba(0, 0, 0, .3);
 }
@@ -943,26 +953,6 @@ body[show-sidebar="true"] .right-container {
 
 .right-container-inner {
     padding: 0 !important;
-}
-
-/* 推荐块蒙版（加到左视频块才不会被冒泡事件影响） */
-.left-container:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 75;
-    background-color: rgb(0, 0, 0);
-    opacity: 0;
-    transition: opacity 0.6s ease-in;
-    pointer-events: none;
-}
-
-body[show-sidebar="true"] .left-container:after {
-    opacity: 0.5;
-    pointer-events: auto;
 }
 
 /* UP信息 */

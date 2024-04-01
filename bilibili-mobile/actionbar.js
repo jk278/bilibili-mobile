@@ -10,31 +10,13 @@ export function hideHeader () {
     id: 'hidden-header',
     /* css */
     textContent: `
-          .bili-header__bar, #overlay {transform: translateY(-100%);}
-          #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
-          /* 父布局不要用 transform */
-          .video-container-v1.video-container-v1 {top: 0 !important;}
-          .right-container.right-container {height: 100%;}
-          .center-search-container {margin-top: var(--header-height) !important;}
-          /* 隐藏时操作栏蒙版 */
-          #actionbar:after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgb(0, 0, 0);
-            opacity: 0;
-            transition: opacity 0.6s ease-in;
-            pointer-events: none;
-          }
-          
-          body[show-sidebar="true"] #actionbar:after {
-            opacity: 0.5;
-            pointer-events: auto;
-          }
-        `
+      .bili-header__bar, #overlay {transform: translateY(-100%);}
+      #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
+      /* 父布局不要用 transform */
+      .video-container-v1.video-container-v1 {top: 0 !important;}
+      .right-container.right-container {height: 100%;}
+      .center-search-container {margin-top: var(--header-height) !important;}
+    `
   })
   ensureHeadGetted(hiddenStyle)
 }
@@ -160,20 +142,22 @@ export function handleActionbar () {
 export function handleSidebar () {
   const sidebarBtn = document.getElementById('sidebar-fab')
 
-  sidebarBtn.addEventListener('click', (event) => {
+  const sidebarOverlay = document.createElement('div')
+  sidebarOverlay.id = 'sidebar-overlay'
+
+  sidebarBtn.appendChild(sidebarOverlay)
+
+  sidebarOverlay.addEventListener('click', (event) => {
     event.stopPropagation()
+    closeSidebar()
+  })
+
+  sidebarBtn.addEventListener('click', () => {
     const isShow = document.body.getAttribute('show-sidebar') === 'true'
     isShow ? closeSidebar() : document.body.setAttribute('show-sidebar', 'true')
   })
 
   function closeSidebar () { document.body.setAttribute('show-sidebar', '') }
-
-  document.getElementsByClassName('left-container')[0].addEventListener('click', closeSidebar)
-
-  document.getElementById('actionbar').addEventListener('click', () => {
-    // 子元素的监听器比 actionbar 先触发，所以这里的属性值始终为 'true'，阻止子元素的冒泡事件即可
-    localStorage.getItem('hidden-header') === '1' && document.body.getAttribute('show-sidebar') === 'true' && closeSidebar()
-  })
 
   // // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
   const recommendLiist = document.getElementById('reco_list')

@@ -35,6 +35,7 @@ export function handleScriptPreSetting () {
     })
   })
 
+  // 形参 diference 隐式声明成 let
   function readScriptSetting (diference) {
     diference = diference || false
 

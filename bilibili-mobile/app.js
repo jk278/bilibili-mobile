@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.9
+// @version            3.9.3
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -56,6 +56,8 @@ import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from '.
     handleHeaderImage()
   }
 
+  handleScriptPreSetting()
+
   waitDOMContentLoaded(() => {
     localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
     handleHeaderClick()
@@ -69,7 +71,6 @@ import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from '.
 
     // 待办：一个根据域名判断执行与否的框架
     // 待办：相关内容未加载时灰色显示的框架
-    handleScriptPreSetting()
     handleScriptSetting()
 
     if (window.location.pathname.startsWith('/video')) {

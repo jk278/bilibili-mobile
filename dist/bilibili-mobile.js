@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.9
+// @version            3.9.3
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -402,7 +402,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     display: block;
 }
 
-#menu-overlay {
+#menu-overlay,
+#sidebar-overlay {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -413,7 +414,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     transition: background-color .6s ease-in;
 }
 
-#menu-overlay:has(>.show) {
+#menu-overlay:has(>.show),
+body[show-sidebar="true"] #sidebar-overlay {
     pointer-events: auto;
     background-color: rgba(0, 0, 0, .3);
 }
@@ -1274,26 +1276,6 @@ body[show-sidebar="true"] .right-container {
     padding: 0 !important;
 }
 
-/* 推荐块蒙版（加到左视频块才不会被冒泡事件影响） */
-.left-container:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 75;
-    background-color: rgb(0, 0, 0);
-    opacity: 0;
-    transition: opacity 0.6s ease-in;
-    pointer-events: none;
-}
-
-body[show-sidebar="true"] .left-container:after {
-    opacity: 0.5;
-    pointer-events: auto;
-}
-
 /* UP信息 */
 .upinfo-btn-panel .default-btn {
     font-size: 12px !important;
@@ -1852,6 +1834,7 @@ function handleScriptPreSetting () {
     })
   })
 
+  // 形参 diference 隐式声明成 let
   function readScriptSetting (diference) {
     diference = diference || false
 
@@ -2120,31 +2103,13 @@ function hideHeader () {
     id: 'hidden-header',
     /* css */
     textContent: `
-          .bili-header__bar, #overlay {transform: translateY(-100%);}
-          #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
-          /* 父布局不要用 transform */
-          .video-container-v1.video-container-v1 {top: 0 !important;}
-          .right-container.right-container {height: 100%;}
-          .center-search-container {margin-top: var(--header-height) !important;}
-          /* 隐藏时操作栏蒙版 */
-          #actionbar:after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgb(0, 0, 0);
-            opacity: 0;
-            transition: opacity 0.6s ease-in;
-            pointer-events: none;
-          }
-          
-          body[show-sidebar="true"] #actionbar:after {
-            opacity: 0.5;
-            pointer-events: auto;
-          }
-        `
+      .bili-header__bar, #overlay {transform: translateY(-100%);}
+      #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
+      /* 父布局不要用 transform */
+      .video-container-v1.video-container-v1 {top: 0 !important;}
+      .right-container.right-container {height: 100%;}
+      .center-search-container {margin-top: var(--header-height) !important;}
+    `
   })
   ensureHeadGetted(hiddenStyle)
 }
@@ -2270,20 +2235,22 @@ function handleActionbar () {
 function handleSidebar () {
   const sidebarBtn = document.getElementById('sidebar-fab')
 
-  sidebarBtn.addEventListener('click', (event) => {
+  const sidebarOverlay = document.createElement('div')
+  sidebarOverlay.id = 'sidebar-overlay'
+
+  sidebarBtn.appendChild(sidebarOverlay)
+
+  sidebarOverlay.addEventListener('click', (event) => {
     event.stopPropagation()
+    closeSidebar()
+  })
+
+  sidebarBtn.addEventListener('click', () => {
     const isShow = document.body.getAttribute('show-sidebar') === 'true'
     isShow ? closeSidebar() : document.body.setAttribute('show-sidebar', 'true')
   })
 
   function closeSidebar () { document.body.setAttribute('show-sidebar', '') }
-
-  document.getElementsByClassName('left-container')[0].addEventListener('click', closeSidebar)
-
-  document.getElementById('actionbar').addEventListener('click', () => {
-    // 子元素的监听器比 actionbar 先触发，所以这里的属性值始终为 'true'，阻止子元素的冒泡事件即可
-    localStorage.getItem('hidden-header') === '1' && document.body.getAttribute('show-sidebar') === 'true' && closeSidebar()
-  })
 
   // // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
   const recommendLiist = document.getElementById('reco_list')
@@ -2537,7 +2504,7 @@ __webpack_require__.r(__webpack_exports__);
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.8
+// @version            3.9.3
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -2591,6 +2558,8 @@ __webpack_require__.r(__webpack_exports__);
     ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_4__.handleHeaderImage)()
   }
 
+  (0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptPreSetting)()
+
   waitDOMContentLoaded(() => {
     localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
     ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_5__.handleHeaderClick)()
@@ -2604,7 +2573,6 @@ __webpack_require__.r(__webpack_exports__);
 
     // 待办：一个根据域名判断执行与否的框架
     // 待办：相关内容未加载时灰色显示的框架
-    ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptPreSetting)()
     ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptSetting)()
 
     if (window.location.pathname.startsWith('/video')) {
