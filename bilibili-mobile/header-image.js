@@ -4,19 +4,17 @@ export function handleHeaderImage () {
   const url = 'https://source.unsplash.com/random/840x400'
   const elementSelector = '.bili-header__banner'
 
-  if (window.location.pathname === '/') {
-    loadImage(key, elementSelector)
+  loadImage(key, elementSelector)
 
-    setTimeout(async () => {
-      try {
-        const img = await getImage(url)
-        const base64Data = imageToBase64(img)
-        storeImage(key, base64Data)
-      } catch (error) {
-        console.error('Failed to get image:', error)
-      }
-    }, 5000)
-  }
+  setTimeout(async () => {
+    try {
+      const img = await getImage(url)
+      const base64Data = imageToBase64(img)
+      storeImage(key, base64Data)
+    } catch (error) {
+      console.error('Failed to get image:', error)
+    }
+  }, 5000)
 
   function getImage (url) {
     return new Promise((resolve, reject) => {

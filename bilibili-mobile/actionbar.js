@@ -55,9 +55,20 @@ export function handleActionbar () {
 
   if (window.location.pathname === '/') {
     actionbar.classList.add('home')
+
+    setTopBtn()
+    setRefreshBtn()
   }
 
   if (window.location.pathname.startsWith('/video')) {
+    setFullbtn()
+  }
+
+  setHomeBtn()
+  setSearchBtn()
+  setMenuBtn()
+
+  function setFullbtn () {
     const fullBtn = document.getElementById('full-now')
     fullBtn.addEventListener('click', () => {
       const video = document.getElementsByTagName('video')[0]
@@ -77,7 +88,7 @@ export function handleActionbar () {
     })
   }
 
-  if (window.location.pathname === '/') {
+  function setTopBtn () {
     const topBtn = document.getElementById('my-top')
     topBtn.addEventListener('click', () => {
       toTop()
@@ -88,45 +99,51 @@ export function handleActionbar () {
     })
   }
 
-  const home = document.getElementById('my-home')
-  home.addEventListener('click', () => { window.location.href = '/' })
+  function setHomeBtn () {
+    const home = document.getElementById('my-home')
+    home.addEventListener('click', () => { window.location.href = '/' })
+  }
 
-  const searchbarBtn = document.getElementById('search-fab')
-  searchbarBtn.addEventListener('click', (event) => {
+  function setSearchBtn () {
+    const searchbarBtn = document.getElementById('search-fab')
+    searchbarBtn.addEventListener('click', (event) => {
     // 事件完成后立即冒泡
-    event.stopPropagation()
-    const searchbarContainer = document.getElementsByClassName('center-search-container')[0]
-    searchbarContainer.classList.add('show')
-    const input = searchbarContainer.querySelector('input')
-    input.focus()
-
-    const searchbar = searchbarContainer.querySelector('.center-search__bar')
-    searchbar.addEventListener('click', (event) => {
       event.stopPropagation()
+      const searchbarContainer = document.getElementsByClassName('center-search-container')[0]
+      searchbarContainer.classList.add('show')
+      const input = searchbarContainer.querySelector('input')
+      input.focus()
+
+      const searchbar = searchbarContainer.querySelector('.center-search__bar')
+      searchbar.addEventListener('click', (event) => {
+        event.stopPropagation()
+      })
+      document.body.addEventListener('click', (event) => {
+        if (event.target !== searchbar) {
+          searchbarContainer.classList.remove('show')
+        }
+      }, { once: true })
     })
-    document.body.addEventListener('click', (event) => {
-      if (event.target !== searchbar) {
-        searchbarContainer.classList.remove('show')
-      }
-    }, { once: true })
-  })
+  }
 
-  const entryBtn = document.getElementById('menu-fab')
-  entryBtn.addEventListener('click', () => {
-    if ((localStorage.getItem('header-in-menu') || '0') === '1') {
-      document.getElementById('header-in-menu').classList.add('show')
-    } else {
-      if ((localStorage.getItem('hidden-header') || '0') === '1') {
-        document.getElementById('hidden-header')?.remove()
-        localStorage.setItem('hidden-header', '0')
+  function setMenuBtn () {
+    const menuBtn = document.getElementById('menu-fab')
+    menuBtn.addEventListener('click', () => {
+      if ((localStorage.getItem('header-in-menu') || '0') === '1') {
+        document.getElementById('header-in-menu').classList.add('show')
       } else {
-        hideHeader()
-        localStorage.setItem('hidden-header', '1')
+        if ((localStorage.getItem('hidden-header') || '0') === '1') {
+          document.getElementById('hidden-header')?.remove()
+          localStorage.setItem('hidden-header', '0')
+        } else {
+          hideHeader()
+          localStorage.setItem('hidden-header', '1')
+        }
       }
-    }
-  })
+    })
+  }
 
-  if (window.location.pathname === '/') {
+  function setRefreshBtn () {
     const refreshBtn = document.getElementById('refresh-fab')
     refreshBtn.addEventListener('click', () => {
       refresh()
