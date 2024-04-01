@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.5.4.2
+// @version            3.9
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -345,29 +345,77 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     transition: .5s transform ease-in;
 }
 
-[scroll-hidden=true] #actionbar,
-[scroll-hidden=true] .flexible-roll-btn-inner,
-[scroll-hidden=true] .top-btn {
+[scroll-hidden=true] #actionbar {
     transform: translateY(var(--header-height));
 }
 
 #actionbar>* {
+    padding: 8px;
     opacity: 0;
     animation: fadeIn 1s ease-in forwards;
 }
 
-#full-now,
-#my-home,
-#search-fab,
-#menu-fab,
-#sidebar-btn {
-    padding: 8px;
+#my-top,
+#refresh-fab {
+    display: none;
 }
 
-#actionbar.home #full-now,
-#actionbar.home #sidebar-btn {
-    visibility: hidden;
+#actionbar.home {
+
+    #full-now,
+    #sidebar-fab {
+        display: none;
+    }
+
+    #my-top,
+    #refresh-fab {
+        display: block;
+    }
+
+}
+
+#menu-fab {
+    position: relative;
+    background: inherit;
+}
+
+#header-in-menu {
+    position: absolute !important;
+    bottom: var(--header-height);
+    /* space-evenly : 20px 为底栏图标高度的一半*/
+    left: calc((200vw + 20px) / 3);
+    transform: translateX(-50%);
+    background-color: white;
+    padding: 3px 0;
+    white-space: nowrap;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    display: none;
+    border-radius: 5px;
+
+    li {
+        list-style-type: none;
+        padding: 3px 20px;
+    }
+}
+
+#header-in-menu.show {
+    display: block;
+}
+
+#menu-overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
     pointer-events: none;
+    transition: background-color .6s ease-in;
+}
+
+#menu-overlay:has(>.show) {
+    pointer-events: auto;
+    background-color: rgba(0, 0, 0, .3);
 }
 
 /* --------------------- 其它适配 --------------------- */
@@ -636,7 +684,8 @@ svg.mini-header__logo path {
 
 .v-popover {
     position: fixed !important;
-    top: var(--header-height) !important;
+    top: 50vh !important;
+    transform: translate(-50%, -50%) !important;
     margin: 0 !important;
     max-width: 100%;
     padding: 5px !important;
@@ -1072,12 +1121,7 @@ svg.mini-header__logo path {
     margin-bottom: 5px !important;
 }
 
-/* 播放器弹幕设置弹窗 */
-.bpx-player-dm-setting-wrap {
-    bottom: 20px !important;
-}
-
-/* 弹幕行弹幕设置弹窗 */
+/* 弹幕设置弹窗 */
 .bpx-player-dm-setting-wrap {
     bottom: unset !important;
     top: 0;
@@ -1543,61 +1587,20 @@ body[show-sidebar="true"] .left-container:after {
   * ---------------------------------------------------- *
    ----------------------------------------------------- */
 
-/* 按钮 */
-.primary-btn:hover {
-    background-color: unset !important;
+/* 原首页按钮(置顶、刷新按钮):底层隐藏 -10 (同原全屏、音量按钮)(顶栏视口外隐藏) */
+.palette-button-outer {
+    z-index: -10;
+    visibility: hidden;
 }
 
-.primary-btn {
-    background: none !important;
-}
-
-/* 刷新按钮 */
-.flexible-roll-btn-inner {
-    border: none !important;
-    color: inherit !important;
-    background: none !important;
-    padding: 7px 8px 7px 7px !important;
-    display: block !important;
-    position: fixed;
-    bottom: -17px;
-    right: 5vw;
-    width: 40px !important;
-    transition: .5s transform ease-in;
-}
-
-/* 首页置顶按钮 */
-.top-btn {
-    border: none !important;
-    position: fixed;
-    bottom: -17px;
-    right: 77vw;
-    width: 40px !important;
-    transition: .5s transform ease-in !important
-}
-
-.top-btn .primary-btn-text {
-    display: none;
-}
-
-/* svg 大小 */
-.flexible-roll-btn-inner svg {
-    width: 26px;
-    height: 26px;
-}
-
-.palette-button-wrap.translucent>.flexible-roll-btn.flexible-roll-btn,
-.palette-button-wrap.translucent>.top-btn-wrap.top-btn-wrap {
-    opacity: 1 !important;
-}
-
-/* 按钮组 */
+/* 首页按钮组 */
+.primary-btn,
 span.btn-text-inner,
 .storage-box {
     display: none !important;
 }
 
-/* 返回顶部按钮（添加渐变） */
+/* 视频页返回顶部按钮（添加渐变） */
 /* 权重：基本设置属性 < transition < animation */
 .back-to-top {
     border-radius: 0 25% 25% 0 !important;
@@ -1808,8 +1811,14 @@ function increaseVideoLoadSize () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   handleScriptPreSetting: () => (/* binding */ handleScriptPreSetting),
-/* harmony export */   handleScriptSetting: () => (/* binding */ handleScriptSetting)
+/* harmony export */   handleScriptSetting: () => (/* binding */ handleScriptSetting),
+/* harmony export */   headerInMenu: () => (/* binding */ headerInMenu)
 /* harmony export */ });
+/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(14);
+
+// eslint-disable-next-line no-undef
+const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
+
 function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
 function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
 
@@ -1930,12 +1939,12 @@ function handleScriptSetting () {
 
   const keyValue = {
     key1: 'full-unmuted',
-    key2: 'ban-action-hidden'
+    key2: 'ban-action-hidden',
+    key3: 'header-in-menu'
   }
 
-  if ((localStorage.getItem('ban-action-hidden') || '0') === '1') {
-    banActionHidden()
-  }
+  if ((localStorage.getItem('ban-action-hidden') || '0') === '1') { banActionHidden() }
+  if ((localStorage.getItem('header-in-menu') || '0') === '1') { headerInMenu() }
 
   function banActionHidden () {
     const style = Object.assign(document.createElement('style'), {
@@ -1969,6 +1978,7 @@ function handleScriptSetting () {
         <div class="setting-checkboxes">
           <label><input type="checkbox" value="1"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox" value="2"><span>禁止底栏滚动时隐藏</span></label>
+          <label><input type="checkbox" value="3"><span>以菜单形式打开原顶栏入口</span></label>
         </div>
         `
     })
@@ -1986,6 +1996,7 @@ function handleScriptSetting () {
 
     settingConform.addEventListener('click', () => {
       const isBanActionHidden = localStorage.getItem('ban-action-hidden') || '0'
+      const isHeaderInMenu = localStorage.getItem('header-in-menu') || '0'
 
       for (const [index, value] of values.entries()) {
         localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
@@ -2000,6 +2011,19 @@ function handleScriptSetting () {
           document.getElementById('ban-action-hidden').remove()
         }
       }
+
+      const newIsHeaderInMenu = localStorage.getItem('header-in-menu')
+      if (newIsHeaderInMenu !== isHeaderInMenu) {
+        if (newIsHeaderInMenu === '1') {
+          headerInMenu()
+          if ((localStorage.getItem('hidden-header') || '0') !== '1') {
+            (0,_actionbar_js__WEBPACK_IMPORTED_MODULE_0__.hideHeader)()
+            localStorage.setItem('hidden-header', '1')
+          }
+        } else {
+          document.getElementById('menu-overlay').remove()
+        }
+      }
     })
 
     settingPanel.appendChild(settingConform)
@@ -2007,9 +2031,342 @@ function handleScriptSetting () {
   }
 }
 
+function headerInMenu () {
+  const menuOverlay = Object.assign(document.createElement('div'), {
+    id: 'menu-overlay',
+    innerHTML: `
+    <div id="header-in-menu">
+      <ul>
+        <li refer=".right-entry--message">私信</li>
+        <li refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
+        <li refer=".header-favorite-container">收藏</li>
+        <li refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
+        <li refer=".header-avatar-wrap">主页</li>
+      </li>
+    </div>
+    `
+  })
+  waitDOMContentLoaded(() => {
+    addMenu()
+
+    function addMenu () {
+      if (document.getElementsByClassName('header-avatar-wrap')[0]) {
+        const menuFab = document.getElementById('menu-fab')
+        menuFab.appendChild(menuOverlay)
+
+        const items = menuOverlay.querySelectorAll('li')
+        const header = document.getElementsByClassName('bili-header__bar')[0]
+        items.forEach(item => {
+          item.addEventListener('click', (event) => {
+            event.stopPropagation()
+            const refer = item.getAttribute('refer')
+
+            const opennedDailog = sessionStorage.getItem('openned-dailog') || ''
+            if (opennedDailog) simulateMouseLeave(header.querySelector(opennedDailog))
+
+            simulateMouseEnter(header.querySelector(refer))
+            sessionStorage.setItem('openned-dailog', refer)
+          })
+        })
+
+        const menu = menuOverlay.querySelector('#header-in-menu')
+        menuFab.addEventListener('click', () => { menu.classList.add('show') })
+
+        menuOverlay.addEventListener('click', (event) => {
+          event.stopPropagation()
+          const opennedDailog = sessionStorage.getItem('openned-dailog') || ''
+          if (opennedDailog) simulateMouseLeave(header.querySelector(opennedDailog))
+
+          if (event.target !== menu) { menu.classList.remove('show') }
+        })
+      } else {
+        setTimeout(addMenu, 500)
+      }
+    }
+
+    function simulateMouseEnter (element) {
+      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+
+    function simulateMouseLeave (element) {
+      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+  })
+}
+
 
 /***/ }),
 /* 14 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   handleActionbar: () => (/* binding */ handleActionbar),
+/* harmony export */   handleHeaderClick: () => (/* binding */ handleHeaderClick),
+/* harmony export */   handleSidebar: () => (/* binding */ handleSidebar),
+/* harmony export */   hideHeader: () => (/* binding */ hideHeader)
+/* harmony export */ });
+// eslint-disable-next-line no-undef
+const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
+
+function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
+function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
+
+// 隐藏顶栏
+function hideHeader () {
+  const hiddenStyle = Object.assign(document.createElement('style'), {
+    id: 'hidden-header',
+    /* css */
+    textContent: `
+          .bili-header__bar, #overlay {transform: translateY(-100%);}
+          #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
+          /* 父布局不要用 transform */
+          .video-container-v1.video-container-v1 {top: 0 !important;}
+          .right-container.right-container {height: 100%;}
+          .center-search-container {margin-top: var(--header-height) !important;}
+          /* 隐藏时操作栏蒙版 */
+          #actionbar:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(0, 0, 0);
+            opacity: 0;
+            transition: opacity 0.6s ease-in;
+            pointer-events: none;
+          }
+          
+          body[show-sidebar="true"] #actionbar:after {
+            opacity: 0.5;
+            pointer-events: auto;
+          }
+        `
+  })
+  ensureHeadGetted(hiddenStyle)
+}
+
+// 操作栏
+function handleActionbar () {
+  const actionbar = Object.assign(document.createElement('div'), {
+    id: 'actionbar',
+    /* html */
+    innerHTML: `
+      <div id="full-now">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(3.6,4.2)" d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
+      </div>
+      <div id="my-top">
+        <svg width="24" height="24" viewBox="0 0 296 296" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(17,18)" stroke="currentColor" stroke-width="1" d="M110.69055,37.98071a20.00016,20.00016,0,0,1,34.6189,0l87.97632,151.99243a19.99992,19.99992,0,0,1-17.30957,30.019H40.0238a19.99992,19.99992,0,0,1-17.30957-30.019L110.69055,37.98071M128,36a11.879,11.879,0,0,0-10.38562,5.98853L29.63806,193.981A11.99988,11.99988,0,0,0,40.0238,211.99219H215.9762A11.99988,11.99988,0,0,0,226.36194,193.981L138.38562,41.98853A11.879,11.879,0,0,0,128,36Z"/></svg>
+      </div>
+      <div id="my-home">
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m12 4.44 7 6.09V20h-4v-6H9v6H5v-9.47l7-6.09m0-1.32-8 6.96V21h6v-6h4v6h6V10.08l-8-6.96z"></path></svg>
+      </div>
+      <div id="search-fab">
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m20.87 20.17-5.59-5.59C16.35 13.35 17 11.75 17 10c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path></svg>
+      </div>
+      <div id="menu-fab">
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path></svg>
+      </div>
+      <div id="sidebar-fab">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M21 6H3V5h18v1zm0 5H3v1h18v-1zm0 6H3v1h18v-1z"></path></svg>
+      </div>
+      <div id="refresh-fab">
+        <svg width="24" height="24" viewBox="0 0 29 29" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(2.3,2.8)" d="M21.3687 13.5827C21.4144 13.3104 21.2306 13.0526 20.9583 13.0069C20.686 12.9612 20.4281 13.1449 20.3825 13.4173L21.3687 13.5827ZM12 20.5C7.30558 20.5 3.5 16.6944 3.5 12H2.5C2.5 17.2467 6.75329 21.5 12 21.5V20.5ZM3.5 12C3.5 7.30558 7.30558 3.5 12 3.5V2.5C6.75329 2.5 2.5 6.75329 2.5 12H3.5ZM12 3.5C15.3367 3.5 18.2252 5.4225 19.6167 8.22252L20.5122 7.77748C18.9583 4.65062 15.7308 2.5 12 2.5V3.5ZM20.3825 13.4173C19.7081 17.437 16.2112 20.5 12 20.5V21.5C16.7077 21.5 20.6148 18.0762 21.3687 13.5827L20.3825 13.4173Z"/><path transform="translate(2.3,2.9)" d="M20.4716 2.42157V8.07843H14.8147"/></svg>
+      </div>
+      `
+  })
+
+  document.body.appendChild(actionbar)
+
+  if (window.location.pathname === '/') {
+    actionbar.classList.add('home')
+  }
+
+  if (window.location.pathname.startsWith('/video')) {
+    const fullBtn = document.getElementById('full-now')
+    fullBtn.addEventListener('click', () => {
+      const video = document.getElementsByTagName('video')[0]
+      // 等于符号优先级更高
+      if ((localStorage.getItem('full-unmuted') || '0') === '1') {
+        video.play()
+        video.muted = false
+        if (video.volume === 0) {
+          document.getElementsByClassName('bpx-player-ctrl-muted-icon')[0].click()
+        }
+      }
+      fullScreen()
+      function fullScreen () {
+        const rawFullBtn = document.getElementsByClassName('bpx-player-ctrl-full')[0]
+        rawFullBtn ? rawFullBtn.click() : setTimeout(fullScreen, 500)
+      }
+    })
+  }
+
+  if (window.location.pathname === '/') {
+    const topBtn = document.getElementById('my-top')
+    topBtn.addEventListener('click', () => {
+      toTop()
+      function toTop () {
+        const rawTopBtn = document.getElementsByClassName('top-btn')[0]
+        rawTopBtn ? rawTopBtn.click() : setTimeout(toTop, 500)
+      }
+    })
+  }
+
+  const home = document.getElementById('my-home')
+  home.addEventListener('click', () => { window.location.href = '/' })
+
+  const searchbarBtn = document.getElementById('search-fab')
+  searchbarBtn.addEventListener('click', (event) => {
+    // 事件完成后立即冒泡
+    event.stopPropagation()
+    const searchbarContainer = document.getElementsByClassName('center-search-container')[0]
+    searchbarContainer.classList.add('show')
+    const input = searchbarContainer.querySelector('input')
+    input.focus()
+
+    const searchbar = searchbarContainer.querySelector('.center-search__bar')
+    searchbar.addEventListener('click', (event) => {
+      event.stopPropagation()
+    })
+    document.body.addEventListener('click', (event) => {
+      if (event.target !== searchbar) {
+        searchbarContainer.classList.remove('show')
+      }
+    }, { once: true })
+  })
+
+  const entryBtn = document.getElementById('menu-fab')
+  entryBtn.addEventListener('click', () => {
+    if ((localStorage.getItem('header-in-menu') || '0') === '1') {
+      document.getElementById('header-in-menu').classList.add('show')
+    } else {
+      if ((localStorage.getItem('hidden-header') || '0') === '1') {
+        document.getElementById('hidden-header')?.remove()
+        localStorage.setItem('hidden-header', '0')
+      } else {
+        hideHeader()
+        localStorage.setItem('hidden-header', '1')
+      }
+    }
+  })
+
+  if (window.location.pathname === '/') {
+    const refreshBtn = document.getElementById('refresh-fab')
+    refreshBtn.addEventListener('click', () => {
+      refresh()
+      function refresh () {
+        const rawRefreshBtn = document.getElementsByClassName('flexible-roll-btn-inner')[0]
+        rawRefreshBtn ? rawRefreshBtn.click() : setTimeout(refresh, 500)
+      }
+    })
+  }
+}
+
+// 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
+function handleSidebar () {
+  const sidebarBtn = document.getElementById('sidebar-fab')
+
+  sidebarBtn.addEventListener('click', (event) => {
+    event.stopPropagation()
+    const isShow = document.body.getAttribute('show-sidebar') === 'true'
+    isShow ? closeSidebar() : document.body.setAttribute('show-sidebar', 'true')
+  })
+
+  function closeSidebar () { document.body.setAttribute('show-sidebar', '') }
+
+  document.getElementsByClassName('left-container')[0].addEventListener('click', closeSidebar)
+
+  document.getElementById('actionbar').addEventListener('click', () => {
+    // 子元素的监听器比 actionbar 先触发，所以这里的属性值始终为 'true'，阻止子元素的冒泡事件即可
+    localStorage.getItem('hidden-header') === '1' && document.body.getAttribute('show-sidebar') === 'true' && closeSidebar()
+  })
+
+  // // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
+  const recommendLiist = document.getElementById('reco_list')
+  recommendLiist.addEventListener('click', (event) => {
+    const nextPlay = document.getElementsByClassName('rec-title')[0]
+    const recommendFooter = document.getElementsByClassName('rec-footer')[0]
+    if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+  })
+}
+
+// 接管顶部点击事件，父元素point-events:none，子元素point-events:auto对有的手机无效
+function handleHeaderClick () {
+  const overlay = document.createElement('div')
+  overlay.id = 'overlay'
+  document.body.appendChild(overlay)
+  overlay.addEventListener('click', handleClick)
+
+  let storedElement = null
+  let isMouseEntered = false
+  let clickTimer = null
+  let clickCount = 0
+
+  function handleClick (event) {
+    clickCount++
+
+    if (clickTimer) {
+      clearTimeout(clickTimer)
+      clickTimer = null
+    }
+
+    if (clickCount === 1) {
+      clickTimer = setTimeout(() => {
+        // 如果 100ms 内没有第二次点击，则执行操作 A
+        onceClick()
+        clickCount = 0
+      }, 250)
+    } else {
+      // 如果 100ms 内有第二次点击，则执行操作 B
+      twiceClick()
+      clickCount = 0
+    }
+
+    function onceClick () {
+      if (isMouseEntered) {
+        simulateMouseLeave(storedElement)
+        isMouseEntered = false
+      } else {
+        overlay.style.display = 'none'
+        const element = document.elementFromPoint(event.clientX, event.clientY)
+        simulateMouseEnter(element)
+        overlay.style.display = 'block'
+        isMouseEntered = true
+        storedElement = element
+      }
+    }
+
+    function twiceClick () {
+      overlay.style.display = 'none'
+      const element = document.elementFromPoint(event.clientX, event.clientY)
+      simulateClick(element)
+      overlay.style.display = 'block'
+    }
+  }
+
+  function simulateMouseEnter (element) {
+    const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+    element.dispatchEvent(event)
+  }
+
+  function simulateMouseLeave (element) {
+    const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+    element.dispatchEvent(event)
+  }
+
+  function simulateClick (element) {
+    const event = new MouseEvent('click', { bubbles: true, view: _unsafeWindow })
+    element.dispatchEvent(event)
+  }
+}
+
+
+/***/ }),
+/* 15 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -2174,12 +2531,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
 /* harmony import */ var _override_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(12);
 /* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(13);
-/* harmony import */ var _header_image_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(14);
+/* harmony import */ var _header_image_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(15);
+/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(14);
 // ==UserScript==
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.5.4.2
+// @version            3.8
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -2209,6 +2567,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
 (function () {
   console.log('Bilibili mobile execute!')
   // setInterval(() => {
@@ -2223,7 +2583,7 @@ __webpack_require__.r(__webpack_exports__);
 
   ;(0,_override_js__WEBPACK_IMPORTED_MODULE_2__.preventBeforeUnload)()
 
-  if (localStorage.getItem('hidden-header') === '1') { addHiddenStyle() }
+  if (localStorage.getItem('hidden-header') === '1') { (0,_actionbar_js__WEBPACK_IMPORTED_MODULE_5__.hideHeader)() }
 
   if (window.location.pathname === '/') {
     // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
@@ -2231,256 +2591,36 @@ __webpack_require__.r(__webpack_exports__);
     ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_4__.handleHeaderImage)()
   }
 
-  if (window.location.pathname.startsWith('/video')) {
-    (0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptPreSetting)()
-  }
-
   waitDOMContentLoaded(() => {
     localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
-    controlHeaderClick()
+    ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_5__.handleHeaderClick)()
     if (window.location.pathname.startsWith('/video')) {
       addPlaysInline()
-      controlVideoClick()
     }
 
     scrollToHidden()
 
-    handleActionbar()
+    ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_5__.handleActionbar)()
+
+    // 待办：一个根据域名判断执行与否的框架
+    // 待办：相关内容未加载时灰色显示的框架
+    ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptPreSetting)()
+    ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptSetting)()
 
     if (window.location.pathname.startsWith('/video')) {
-      handleSidebar()
-      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptSetting)()
-      handleVideoLongPress()
+      (0,_actionbar_js__WEBPACK_IMPORTED_MODULE_5__.handleSidebar)()
+      handleVideoInteraction()
     }
   })
 
   // DOM 加载完后
   function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
   // head 获取到后
-  function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
 
   function addPlaysInline () {
     const videoElement = document.getElementsByClassName('bpx-player-video-wrap>video')[0]
     // 新添加了路径判断，此处预留
     if (videoElement) videoElement.playsInline = true
-  }
-
-  // 隐藏顶栏
-  function addHiddenStyle () {
-    const hiddenStyle = Object.assign(document.createElement('style'), {
-      id: 'hidden-header',
-      /* css */
-      textContent: `
-          .bili-header__bar, #overlay {transform: translateY(-100%);}
-          #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
-          /* 父布局不要用 transform */
-          .video-container-v1.video-container-v1 {top: 0 !important;}
-          .right-container.right-container {height: 100%;}
-          .center-search-container {margin-top: var(--header-height) !important;}
-          /* 隐藏时操作栏蒙版 */
-          #actionbar:after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgb(0, 0, 0);
-            opacity: 0;
-            transition: opacity 0.6s ease-in;
-            pointer-events: none;
-          }
-          
-          body[show-sidebar="true"] #actionbar:after {
-            opacity: 0.5;
-            pointer-events: auto;
-          }
-        `
-    })
-    ensureHeadGetted(hiddenStyle)
-  }
-
-  // 操作栏
-  function handleActionbar () {
-    const actionbar = Object.assign(document.createElement('div'), {
-      id: 'actionbar',
-      /* html */
-      innerHTML: `
-      <div id="full-now">
-        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path transform="translate(4,4)" d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
-      </div>
-      <div id="my-home">
-        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m12 4.44 7 6.09V20h-4v-6H9v6H5v-9.47l7-6.09m0-1.32-8 6.96V21h6v-6h4v6h6V10.08l-8-6.96z"></path></svg>
-      </div>
-      <div id="search-fab">
-        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m20.87 20.17-5.59-5.59C16.35 13.35 17 11.75 17 10c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path></svg>
-      </div>
-      <div id="menu-fab">
-        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path></svg>
-      </div>
-      <div id="sidebar-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M21 6H3V5h18v1zm0 5H3v1h18v-1zm0 6H3v1h18v-1z"></path></svg>
-      </div>
-      `
-    })
-
-    document.body.appendChild(actionbar)
-
-    if (window.location.pathname === '/') {
-      actionbar.classList.add('home')
-    }
-
-    if (window.location.pathname.startsWith('/video')) {
-      const fullBtn = document.getElementById('full-now')
-      fullBtn.addEventListener('click', () => {
-        const video = document.getElementsByTagName('video')[0]
-        // 等于符号优先级更高
-        if ((localStorage.getItem('full-unmuted') || '0') === '1') {
-          video.play()
-          video.muted = false
-          if (video.volume === 0) {
-            document.getElementsByClassName('bpx-player-ctrl-muted-icon')[0].click()
-          }
-        }
-        fullScreen()
-      })
-      function fullScreen () {
-        const fullBtn = document.getElementsByClassName('bpx-player-ctrl-full')[0]
-        fullBtn ? fullBtn.click() : setTimeout(fullScreen, 500)
-      }
-    }
-
-    const home = document.getElementById('my-home')
-    home.addEventListener('click', () => { window.location.href = '/' })
-
-    const searchbarBtn = document.getElementById('search-fab')
-    searchbarBtn.addEventListener('click', (event) => {
-      // 事件完成后立即冒泡
-      event.stopPropagation()
-      const searchbarContainer = document.getElementsByClassName('center-search-container')[0]
-      searchbarContainer.classList.add('show')
-      const input = searchbarContainer.querySelector('input')
-      input.focus()
-
-      const searchbar = searchbarContainer.querySelector('.center-search__bar')
-      searchbar.addEventListener('click', (event) => {
-        event.stopPropagation()
-      })
-      document.body.addEventListener('click', (event) => {
-        if (event.target !== searchbar) {
-          searchbarContainer.classList.remove('show')
-        }
-      }, { once: true })
-    })
-
-    const entryBtn = document.getElementById('menu-fab')
-    entryBtn.addEventListener('click', () => {
-      if (localStorage.getItem('hidden-header') === '1') {
-        document.getElementById('hidden-header')?.remove()
-        localStorage.setItem('hidden-header', '0')
-      } else {
-        addHiddenStyle()
-        localStorage.setItem('hidden-header', '1')
-      }
-    })
-  }
-
-  // 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
-  function handleSidebar () {
-    const sidebarBtn = document.getElementById('sidebar-btn')
-
-    sidebarBtn.addEventListener('click', (event) => {
-      event.stopPropagation()
-      const isShow = document.body.getAttribute('show-sidebar') === 'true'
-      isShow ? closeSidebar() : document.body.setAttribute('show-sidebar', 'true')
-    })
-
-    function closeSidebar () { document.body.setAttribute('show-sidebar', '') }
-
-    document.getElementsByClassName('left-container')[0].addEventListener('click', closeSidebar)
-
-    document.getElementById('actionbar').addEventListener('click', () => {
-      // 子元素的监听器比 actionbar 先触发，所以这里的属性值始终为 'true'，阻止子元素的冒泡事件即可
-      localStorage.getItem('hidden-header') === '1' && document.body.getAttribute('show-sidebar') === 'true' && closeSidebar()
-    })
-
-    // // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
-    const recommendLiist = document.getElementById('reco_list')
-    recommendLiist.addEventListener('click', (event) => {
-      const nextPlay = document.getElementsByClassName('rec-title')[0]
-      const recommendFooter = document.getElementsByClassName('rec-footer')[0]
-      if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
-    })
-  }
-
-  // 接管顶部点击事件，父元素point-events:none，子元素point-events:auto对有的手机无效
-  function controlHeaderClick () {
-    const overlay = document.createElement('div')
-    overlay.id = 'overlay'
-    document.body.appendChild(overlay)
-    overlay.addEventListener('click', handleClick)
-
-    let storedElement = null
-    let isMouseEntered = false
-    let clickTimer = null
-    let clickCount = 0
-
-    function handleClick (event) {
-      clickCount++
-
-      if (clickTimer) {
-        clearTimeout(clickTimer)
-        clickTimer = null
-      }
-
-      if (clickCount === 1) {
-        clickTimer = setTimeout(() => {
-          // 如果 100ms 内没有第二次点击，则执行操作 A
-          onceClick()
-          clickCount = 0
-        }, 250)
-      } else {
-        // 如果 100ms 内有第二次点击，则执行操作 B
-        twiceClick()
-        clickCount = 0
-      }
-
-      function onceClick () {
-        if (isMouseEntered) {
-          simulateMouseLeave(storedElement)
-          isMouseEntered = false
-        } else {
-          overlay.style.display = 'none'
-          const element = document.elementFromPoint(event.clientX, event.clientY)
-          simulateMouseEnter(element)
-          overlay.style.display = 'block'
-          isMouseEntered = true
-          storedElement = element
-        }
-      }
-
-      function twiceClick () {
-        overlay.style.display = 'none'
-        const element = document.elementFromPoint(event.clientX, event.clientY)
-        simulateClick(element)
-        overlay.style.display = 'block'
-      }
-    }
-
-    function simulateMouseEnter (element) {
-      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-
-    function simulateMouseLeave (element) {
-      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-
-    function simulateClick (element) {
-      const event = new MouseEvent('click', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
   }
 
   // 滚动隐藏函数(弹幕行、评论行)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
@@ -2501,61 +2641,66 @@ __webpack_require__.r(__webpack_exports__);
     })
   }
 
-  // 接管视频点击事件
-  function controlVideoClick () {
-    const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
-    playerContainer.addEventListener('click', handleClick)
-    const controlWrap = document.getElementsByClassName('bpx-player-control-wrap')[0]
+  function handleVideoInteraction () {
+    handlelVideoClick()
+    handleVideoLongPress()
 
-    let clickTimer = null
+    // 接管视频点击事件
+    function handlelVideoClick () {
+      const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
+      playerContainer.addEventListener('click', handleClick)
+      const controlWrap = document.getElementsByClassName('bpx-player-control-wrap')[0]
 
-    function handleClick () {
-      simulateMouseEnter(controlWrap)
+      let clickTimer = null
 
-      if (clickTimer) {
-        clearTimeout(clickTimer)
+      function handleClick () {
+        simulateMouseEnter(controlWrap)
+
+        if (clickTimer) {
+          clearTimeout(clickTimer)
+        }
+
+        clickTimer = setTimeout(() => {
+          simulateMouseLeave(controlWrap)
+        }, 5000)
       }
 
-      clickTimer = setTimeout(() => {
-        simulateMouseLeave(controlWrap)
-      }, 5000)
-    }
-
-    function simulateMouseEnter (element) {
-      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-
-    function simulateMouseLeave (element) {
-      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-  }
-
-  function handleVideoLongPress () {
-    const video = document.querySelector('video') // 获取视频元素
-    let isLongPress = false // 长按标志
-    let timeoutId
-
-    video.addEventListener('touchstart', (event) => {
-      timeoutId = setTimeout(() => {
-        video.playbackRate = video.playbackRate * 2
-        isLongPress = true
-      }, 500)
-    })
-
-    video.addEventListener('touchmove', (event) => {
-      clearTimeout(timeoutId) // 触摸移动时取消长按
-    })
-
-    video.addEventListener('touchend', (event) => {
-      clearTimeout(timeoutId) // 触摸结束时清除定时器
-
-      if (isLongPress) {
-        video.playbackRate = video.playbackRate / 2
-        isLongPress = false
+      function simulateMouseEnter (element) {
+        const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+        element.dispatchEvent(event)
       }
-    })
+
+      function simulateMouseLeave (element) {
+        const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+        element.dispatchEvent(event)
+      }
+    }
+
+    function handleVideoLongPress () {
+      const video = document.querySelector('video') // 获取视频元素
+      let isLongPress = false // 长按标志
+      let timeoutId
+
+      video.addEventListener('touchstart', (event) => {
+        timeoutId = setTimeout(() => {
+          video.playbackRate = video.playbackRate * 2
+          isLongPress = true
+        }, 500)
+      })
+
+      video.addEventListener('touchmove', (event) => {
+        clearTimeout(timeoutId) // 触摸移动时取消长按
+      })
+
+      video.addEventListener('touchend', (event) => {
+        clearTimeout(timeoutId) // 触摸结束时清除定时器
+
+        if (isLongPress) {
+          video.playbackRate = video.playbackRate / 2
+          isLongPress = false
+        }
+      })
+    }
   }
 }())
 

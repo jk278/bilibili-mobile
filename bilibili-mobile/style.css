@@ -16,29 +16,77 @@
     transition: .5s transform ease-in;
 }
 
-[scroll-hidden=true] #actionbar,
-[scroll-hidden=true] .flexible-roll-btn-inner,
-[scroll-hidden=true] .top-btn {
+[scroll-hidden=true] #actionbar {
     transform: translateY(var(--header-height));
 }
 
 #actionbar>* {
+    padding: 8px;
     opacity: 0;
     animation: fadeIn 1s ease-in forwards;
 }
 
-#full-now,
-#my-home,
-#search-fab,
-#menu-fab,
-#sidebar-btn {
-    padding: 8px;
+#my-top,
+#refresh-fab {
+    display: none;
 }
 
-#actionbar.home #full-now,
-#actionbar.home #sidebar-btn {
-    visibility: hidden;
+#actionbar.home {
+
+    #full-now,
+    #sidebar-fab {
+        display: none;
+    }
+
+    #my-top,
+    #refresh-fab {
+        display: block;
+    }
+
+}
+
+#menu-fab {
+    position: relative;
+    background: inherit;
+}
+
+#header-in-menu {
+    position: absolute !important;
+    bottom: var(--header-height);
+    /* space-evenly : 20px 为底栏图标高度的一半*/
+    left: calc((200vw + 20px) / 3);
+    transform: translateX(-50%);
+    background-color: white;
+    padding: 3px 0;
+    white-space: nowrap;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    display: none;
+    border-radius: 5px;
+
+    li {
+        list-style-type: none;
+        padding: 3px 20px;
+    }
+}
+
+#header-in-menu.show {
+    display: block;
+}
+
+#menu-overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
     pointer-events: none;
+    transition: background-color .6s ease-in;
+}
+
+#menu-overlay:has(>.show) {
+    pointer-events: auto;
+    background-color: rgba(0, 0, 0, .3);
 }
 
 /* --------------------- 其它适配 --------------------- */
@@ -307,7 +355,8 @@ svg.mini-header__logo path {
 
 .v-popover {
     position: fixed !important;
-    top: var(--header-height) !important;
+    top: 50vh !important;
+    transform: translate(-50%, -50%) !important;
     margin: 0 !important;
     max-width: 100%;
     padding: 5px !important;
@@ -1209,61 +1258,20 @@ body[show-sidebar="true"] .left-container:after {
   * ---------------------------------------------------- *
    ----------------------------------------------------- */
 
-/* 按钮 */
-.primary-btn:hover {
-    background-color: unset !important;
+/* 原首页按钮(置顶、刷新按钮):底层隐藏 -10 (同原全屏、音量按钮)(顶栏视口外隐藏) */
+.palette-button-outer {
+    z-index: -10;
+    visibility: hidden;
 }
 
-.primary-btn {
-    background: none !important;
-}
-
-/* 刷新按钮 */
-.flexible-roll-btn-inner {
-    border: none !important;
-    color: inherit !important;
-    background: none !important;
-    padding: 7px 8px 7px 7px !important;
-    display: block !important;
-    position: fixed;
-    bottom: -17px;
-    right: 5vw;
-    width: 40px !important;
-    transition: .5s transform ease-in;
-}
-
-/* 首页置顶按钮 */
-.top-btn {
-    border: none !important;
-    position: fixed;
-    bottom: -17px;
-    right: 77vw;
-    width: 40px !important;
-    transition: .5s transform ease-in !important
-}
-
-.top-btn .primary-btn-text {
-    display: none;
-}
-
-/* svg 大小 */
-.flexible-roll-btn-inner svg {
-    width: 26px;
-    height: 26px;
-}
-
-.palette-button-wrap.translucent>.flexible-roll-btn.flexible-roll-btn,
-.palette-button-wrap.translucent>.top-btn-wrap.top-btn-wrap {
-    opacity: 1 !important;
-}
-
-/* 按钮组 */
+/* 首页按钮组 */
+.primary-btn,
 span.btn-text-inner,
 .storage-box {
     display: none !important;
 }
 
-/* 返回顶部按钮（添加渐变） */
+/* 视频页返回顶部按钮（添加渐变） */
 /* 权重：基本设置属性 < transition < animation */
 .back-to-top {
     border-radius: 0 25% 25% 0 !important;

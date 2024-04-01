@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.5.4.2
+// @version            3.9
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
@@ -32,7 +32,7 @@ import { preventBeforeUnload, increaseVideoLoadSize } from './override.js'
 import { handleScriptPreSetting, handleScriptSetting } from './setting.js'
 import { handleHeaderImage } from './header-image.js'
 
-import { hiddenHeader, handleActionbar, handleSidebar, handleHeaderClick } from './actionbar.js'
+import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from './actionbar.js'
 
 (function () {
   console.log('Bilibili mobile execute!')
@@ -48,7 +48,7 @@ import { hiddenHeader, handleActionbar, handleSidebar, handleHeaderClick } from 
 
   preventBeforeUnload()
 
-  if (localStorage.getItem('hidden-header') === '1') { hiddenHeader() }
+  if (localStorage.getItem('hidden-header') === '1') { hideHeader() }
 
   if (window.location.pathname === '/') {
     // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
@@ -56,26 +56,25 @@ import { hiddenHeader, handleActionbar, handleSidebar, handleHeaderClick } from 
     handleHeaderImage()
   }
 
-  if (window.location.pathname.startsWith('/video')) {
-    handleScriptPreSetting()
-  }
-
   waitDOMContentLoaded(() => {
     localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
     handleHeaderClick()
     if (window.location.pathname.startsWith('/video')) {
       addPlaysInline()
-      controlVideoClick()
     }
 
     scrollToHidden()
 
     handleActionbar()
 
+    // 待办：一个根据域名判断执行与否的框架
+    // 待办：相关内容未加载时灰色显示的框架
+    handleScriptPreSetting()
+    handleScriptSetting()
+
     if (window.location.pathname.startsWith('/video')) {
       handleSidebar()
-      handleScriptSetting()
-      handleVideoLongPress()
+      handleVideoInteraction()
     }
   })
 
@@ -107,60 +106,65 @@ import { hiddenHeader, handleActionbar, handleSidebar, handleHeaderClick } from 
     })
   }
 
-  // 接管视频点击事件
-  function controlVideoClick () {
-    const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
-    playerContainer.addEventListener('click', handleClick)
-    const controlWrap = document.getElementsByClassName('bpx-player-control-wrap')[0]
+  function handleVideoInteraction () {
+    handlelVideoClick()
+    handleVideoLongPress()
 
-    let clickTimer = null
+    // 接管视频点击事件
+    function handlelVideoClick () {
+      const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
+      playerContainer.addEventListener('click', handleClick)
+      const controlWrap = document.getElementsByClassName('bpx-player-control-wrap')[0]
 
-    function handleClick () {
-      simulateMouseEnter(controlWrap)
+      let clickTimer = null
 
-      if (clickTimer) {
-        clearTimeout(clickTimer)
+      function handleClick () {
+        simulateMouseEnter(controlWrap)
+
+        if (clickTimer) {
+          clearTimeout(clickTimer)
+        }
+
+        clickTimer = setTimeout(() => {
+          simulateMouseLeave(controlWrap)
+        }, 5000)
       }
 
-      clickTimer = setTimeout(() => {
-        simulateMouseLeave(controlWrap)
-      }, 5000)
-    }
-
-    function simulateMouseEnter (element) {
-      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-
-    function simulateMouseLeave (element) {
-      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-  }
-
-  function handleVideoLongPress () {
-    const video = document.querySelector('video') // 获取视频元素
-    let isLongPress = false // 长按标志
-    let timeoutId
-
-    video.addEventListener('touchstart', (event) => {
-      timeoutId = setTimeout(() => {
-        video.playbackRate = video.playbackRate * 2
-        isLongPress = true
-      }, 500)
-    })
-
-    video.addEventListener('touchmove', (event) => {
-      clearTimeout(timeoutId) // 触摸移动时取消长按
-    })
-
-    video.addEventListener('touchend', (event) => {
-      clearTimeout(timeoutId) // 触摸结束时清除定时器
-
-      if (isLongPress) {
-        video.playbackRate = video.playbackRate / 2
-        isLongPress = false
+      function simulateMouseEnter (element) {
+        const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+        element.dispatchEvent(event)
       }
-    })
+
+      function simulateMouseLeave (element) {
+        const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+        element.dispatchEvent(event)
+      }
+    }
+
+    function handleVideoLongPress () {
+      const video = document.querySelector('video') // 获取视频元素
+      let isLongPress = false // 长按标志
+      let timeoutId
+
+      video.addEventListener('touchstart', (event) => {
+        timeoutId = setTimeout(() => {
+          video.playbackRate = video.playbackRate * 2
+          isLongPress = true
+        }, 500)
+      })
+
+      video.addEventListener('touchmove', (event) => {
+        clearTimeout(timeoutId) // 触摸移动时取消长按
+      })
+
+      video.addEventListener('touchend', (event) => {
+        clearTimeout(timeoutId) // 触摸结束时清除定时器
+
+        if (isLongPress) {
+          video.playbackRate = video.playbackRate / 2
+          isLongPress = false
+        }
+      })
+    }
   }
 }())

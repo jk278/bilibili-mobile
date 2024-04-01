@@ -1,3 +1,7 @@
+import { hideHeader } from './actionbar.js'
+// eslint-disable-next-line no-undef
+const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
+
 function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
 function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
 
@@ -118,12 +122,12 @@ export function handleScriptSetting () {
 
   const keyValue = {
     key1: 'full-unmuted',
-    key2: 'ban-action-hidden'
+    key2: 'ban-action-hidden',
+    key3: 'header-in-menu'
   }
 
-  if ((localStorage.getItem('ban-action-hidden') || '0') === '1') {
-    banActionHidden()
-  }
+  if ((localStorage.getItem('ban-action-hidden') || '0') === '1') { banActionHidden() }
+  if ((localStorage.getItem('header-in-menu') || '0') === '1') { headerInMenu() }
 
   function banActionHidden () {
     const style = Object.assign(document.createElement('style'), {
@@ -157,6 +161,7 @@ export function handleScriptSetting () {
         <div class="setting-checkboxes">
           <label><input type="checkbox" value="1"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox" value="2"><span>禁止底栏滚动时隐藏</span></label>
+          <label><input type="checkbox" value="3"><span>以菜单形式打开原顶栏入口</span></label>
         </div>
         `
     })
@@ -174,6 +179,7 @@ export function handleScriptSetting () {
 
     settingConform.addEventListener('click', () => {
       const isBanActionHidden = localStorage.getItem('ban-action-hidden') || '0'
+      const isHeaderInMenu = localStorage.getItem('header-in-menu') || '0'
 
       for (const [index, value] of values.entries()) {
         localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
@@ -188,9 +194,87 @@ export function handleScriptSetting () {
           document.getElementById('ban-action-hidden').remove()
         }
       }
+
+      const newIsHeaderInMenu = localStorage.getItem('header-in-menu')
+      if (newIsHeaderInMenu !== isHeaderInMenu) {
+        if (newIsHeaderInMenu === '1') {
+          headerInMenu()
+          if ((localStorage.getItem('hidden-header') || '0') !== '1') {
+            hideHeader()
+            localStorage.setItem('hidden-header', '1')
+          }
+        } else {
+          document.getElementById('menu-overlay').remove()
+        }
+      }
     })
 
     settingPanel.appendChild(settingConform)
     document.body.appendChild(settingPanel)
   }
+}
+
+export function headerInMenu () {
+  const menuOverlay = Object.assign(document.createElement('div'), {
+    id: 'menu-overlay',
+    innerHTML: `
+    <div id="header-in-menu">
+      <ul>
+        <li refer=".right-entry--message">私信</li>
+        <li refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
+        <li refer=".header-favorite-container">收藏</li>
+        <li refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
+        <li refer=".header-avatar-wrap">主页</li>
+      </li>
+    </div>
+    `
+  })
+  waitDOMContentLoaded(() => {
+    addMenu()
+
+    function addMenu () {
+      if (document.getElementsByClassName('header-avatar-wrap')[0]) {
+        const menuFab = document.getElementById('menu-fab')
+        menuFab.appendChild(menuOverlay)
+
+        const items = menuOverlay.querySelectorAll('li')
+        const header = document.getElementsByClassName('bili-header__bar')[0]
+        items.forEach(item => {
+          item.addEventListener('click', (event) => {
+            event.stopPropagation()
+            const refer = item.getAttribute('refer')
+
+            const opennedDailog = sessionStorage.getItem('openned-dailog') || ''
+            if (opennedDailog) simulateMouseLeave(header.querySelector(opennedDailog))
+
+            simulateMouseEnter(header.querySelector(refer))
+            sessionStorage.setItem('openned-dailog', refer)
+          })
+        })
+
+        const menu = menuOverlay.querySelector('#header-in-menu')
+        menuFab.addEventListener('click', () => { menu.classList.add('show') })
+
+        menuOverlay.addEventListener('click', (event) => {
+          event.stopPropagation()
+          const opennedDailog = sessionStorage.getItem('openned-dailog') || ''
+          if (opennedDailog) simulateMouseLeave(header.querySelector(opennedDailog))
+
+          if (event.target !== menu) { menu.classList.remove('show') }
+        })
+      } else {
+        setTimeout(addMenu, 500)
+      }
+    }
+
+    function simulateMouseEnter (element) {
+      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+
+    function simulateMouseLeave (element) {
+      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+  })
 }
