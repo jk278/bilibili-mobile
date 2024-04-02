@@ -30,7 +30,7 @@ import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from '.
   switch (part) {
     case 'www':
       if (url.pathname === '/') {
-        // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
+        // first
         increaseVideoLoadSize()
         handleHeaderImage()
       }
@@ -40,8 +40,6 @@ import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from '.
       waitDOMContentLoaded(() => {
         localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
         handleHeaderClick()
-
-        // 原内联播放位置，移至 video-interaction
 
         handleActionbar()
 

@@ -8,7 +8,8 @@ export function videoInteraction () {
 
 // 接管视频点击事件
 function handlelVideoClick () {
-  document.getElementsByClassName('bpx-player-video-wrap>video')[0].playsInline = true
+  const video = document.getElementsByClassName('bpx-player-video-wrap>video')[0]
+  if (video) video.playsInline = true
 
   const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
   playerContainer.addEventListener('click', handleClick)

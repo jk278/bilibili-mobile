@@ -398,25 +398,28 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 /* 底部菜单内容 */
 #header-in-menu {
     position: absolute !important;
-    bottom: var(--header-height);
+    bottom: calc(var(--header-height) + 5px);
     /* space-evenly : 20px 为底栏图标高度的一半*/
     left: calc((200vw + 20px) / 3);
-    transform: translateX(-50%);
     background-color: white;
-    padding: 3px 0;
+    padding: 5px 0;
     white-space: nowrap;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
     display: none;
     border-radius: 5px;
+    font-size: 16px;
+    transform: translate(-50%, calc(100% + 5px + var(--header-height)));
+    transition: transform .4s ease-in;
 
     li {
         list-style-type: none;
-        padding: 3px 20px;
+        padding: 5px 30px;
     }
 }
 
 #header-in-menu.show {
     display: block;
+    transform: translateX(-50%);
 }
 
 /* 底部菜单、侧边栏: layout */
@@ -429,6 +432,10 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     right: 0;
     pointer-events: none;
     transition: background-color .6s ease-in;
+}
+
+#menu-overlay#menu-overlay {
+    transition: background-color .4s ease-in;
 }
 
 #menu-overlay:has(>.show),
@@ -708,11 +715,16 @@ svg.mini-header__logo path {
     margin: 0 !important;
     max-width: 100%;
     padding: 5px !important;
+    left: 50% !important;
 }
 
-/* 分类(左侧入口)展开图 */
+/* 取消分类图在加载过程中类的变化导致的横向平移从0到-50%的不好看的动画 */
+.v-popover.is-bottom-start {
+    transform: translate(-50%, -50%) !important;
+}
+
+/* 分类(左侧入口)展开图: 一列 */
 .channel-panel__column {
-    width: 100% !important;
     flex: 1;
     padding: 0 !important;
 }
@@ -1352,6 +1364,22 @@ body[show-sidebar="true"] .right-container {
     margin: 10px 0 !important;
 }
 
+/* 热门排行标签 */
+.honor-rank {
+    position: absolute;
+    align-self: start !important;
+}
+
+.video-info-detail-list:has(.honor-rank) {
+    height: 48px;
+    align-items: end !important;
+    margin-right: 10px !important;
+}
+
+.pubdate-ip{
+    display: block !important;
+}
+
 /* 点赞投币行 */
 .video-toolbar-container {
     padding: 10px 0 8px !important;
@@ -1369,6 +1397,10 @@ body[show-sidebar="true"] .right-container {
 
 .video-toolbar-container * {
     margin: 0 !important;
+}
+
+.toolbar-left-item-wrap span {
+    padding-left: 2px;
 }
 
 .video-share-info {
@@ -1530,6 +1562,27 @@ body[show-sidebar="true"] .right-container {
 
 .sub-reply-item {
     padding: 4px 0 4px 37px !important;
+}
+
+/* 评论举报操作按钮 */
+.reply-operation-warp {
+    display: block !important;
+    right: 4px !important;
+}
+
+.sub-reply-operation-warp {
+    opacity: 1 !important;
+    right: 4px !important;
+}
+
+.reply-info,
+.sub-reply-info {
+    font-size: 12px !important;
+}
+
+.reply-info>*
+.sub-reply-info>* {
+    margin: 0 3px !important;
 }
 
 /* 评论图片 */
@@ -1783,12 +1836,20 @@ const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined
 function preventBeforeUnload () {
   const originalAddEventListener = window.addEventListener
 
-  // 重写 addEventListener 方法，禁止网站刷新时的弹窗
   window.addEventListener = function (type, listener, options) {
     if (type === 'beforeunload') {
-      return
+      const modifiedListener = function (event) {
+      // 在这里直接阻止显示alert弹窗
+        event.returnValue = null
+
+        // 调用原来的监听函数
+        listener(event)
+      }
+
+      return originalAddEventListener.call(this, type, modifiedListener, options)
     }
-    originalAddEventListener.call(this, type, listener, options)
+
+    return originalAddEventListener.call(this, type, listener, options)
   }
 }
 
@@ -2081,23 +2142,28 @@ function headerInMenu () {
             event.stopPropagation()
             const refer = item.getAttribute('refer')
 
-            const opennedDailog = sessionStorage.getItem('openned-dailog') || ''
-            if (opennedDailog) simulateMouseLeave(header.querySelector(opennedDailog))
+            const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+            if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
 
             simulateMouseEnter(header.querySelector(refer))
-            sessionStorage.setItem('openned-dailog', refer)
+            sessionStorage.setItem('opened-dailog', refer)
           })
         })
 
         const menu = menuOverlay.querySelector('#header-in-menu')
-        menuFab.addEventListener('click', () => { menu?.classList.add('show') })
 
         menuOverlay.addEventListener('click', (event) => {
           event.stopPropagation()
-          const opennedDailog = sessionStorage.getItem('openned-dailog') || ''
-          if (opennedDailog) simulateMouseLeave(header.querySelector(opennedDailog))
+          const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+          if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
 
-          if (event.target !== menu) { menu.classList.remove('show') }
+          if (event.target !== menu) {
+            menu.style.display = 'block'
+            menu.classList.remove('show')
+            setTimeout(() => {
+              menu.style.display = ''
+            }, 400)
+          }
         })
       } else {
         setTimeout(addMenu, 500)
@@ -2260,7 +2326,14 @@ function handleActionbar () {
     const menuBtn = document.getElementById('menu-fab')
     menuBtn.addEventListener('click', () => {
       if ((localStorage.getItem('header-in-menu') || '0') === '1') {
-        document.getElementById('header-in-menu').classList.add('show')
+        const menu = document.getElementById('header-in-menu')
+        if (menu) {
+          menu.style.display = 'block'
+          setTimeout(() => {
+            menu.classList.add('show')
+            menu.style.display = ''
+          }, 0)
+        }
       } else {
         if ((localStorage.getItem('hidden-header') || '0') === '1') {
           document.getElementById('hidden-header')?.remove()
@@ -2486,7 +2559,8 @@ function videoInteraction () {
 
 // 接管视频点击事件
 function handlelVideoClick () {
-  document.getElementsByClassName('bpx-player-video-wrap>video')[0].playsInline = true
+  const video = document.getElementsByClassName('bpx-player-video-wrap>video')[0]
+  if (video) video.playsInline = true
 
   const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
   playerContainer.addEventListener('click', handleClick)
@@ -2631,15 +2705,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(14);
 // @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
 
-/**
- * 先完成配置，再打开桌面版B站
- * Via 修改网站独立 UA 为 Windows 或 MacOS，但不要开电脑模式
- * Firefox 下载扩展 Header Editor 并添加两条规则：
-    ① 修改请求头 ------ 正则表达式 ------ << 匹配规则 >> ------ 名称: user-agent ------ 内容: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0
-    ② 其中，规则一:  ^https://www\.bilibili\.com/.*  规则二:  ^https://.*\.bilivideo\.com/.*
- * Safari 浏览器 直接打开电脑模式即可
- */
-
 
 
 
@@ -2670,7 +2735,7 @@ __webpack_require__.r(__webpack_exports__);
   switch (part) {
     case 'www':
       if (url.pathname === '/') {
-        // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
+        // first
         (0,_window_js__WEBPACK_IMPORTED_MODULE_2__.increaseVideoLoadSize)()
         ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_4__.handleHeaderImage)()
       }
@@ -2680,8 +2745,6 @@ __webpack_require__.r(__webpack_exports__);
       waitDOMContentLoaded(() => {
         localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
         ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleHeaderClick)()
-
-        // 原内联播放位置，移至 video-interaction
 
         ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleActionbar)()
 

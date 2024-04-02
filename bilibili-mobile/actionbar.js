@@ -130,7 +130,14 @@ export function handleActionbar () {
     const menuBtn = document.getElementById('menu-fab')
     menuBtn.addEventListener('click', () => {
       if ((localStorage.getItem('header-in-menu') || '0') === '1') {
-        document.getElementById('header-in-menu').classList.add('show')
+        const menu = document.getElementById('header-in-menu')
+        if (menu) {
+          menu.style.display = 'block'
+          setTimeout(() => {
+            menu.classList.add('show')
+            menu.style.display = ''
+          }, 0)
+        }
       } else {
         if ((localStorage.getItem('hidden-header') || '0') === '1') {
           document.getElementById('hidden-header')?.remove()

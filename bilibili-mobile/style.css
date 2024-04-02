@@ -60,25 +60,28 @@
 /* 底部菜单内容 */
 #header-in-menu {
     position: absolute !important;
-    bottom: var(--header-height);
+    bottom: calc(var(--header-height) + 5px);
     /* space-evenly : 20px 为底栏图标高度的一半*/
     left: calc((200vw + 20px) / 3);
-    transform: translateX(-50%);
     background-color: white;
-    padding: 3px 0;
+    padding: 5px 0;
     white-space: nowrap;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
     display: none;
     border-radius: 5px;
+    font-size: 16px;
+    transform: translate(-50%, calc(100% + 5px + var(--header-height)));
+    transition: transform .4s ease-in;
 
     li {
         list-style-type: none;
-        padding: 3px 20px;
+        padding: 5px 30px;
     }
 }
 
 #header-in-menu.show {
     display: block;
+    transform: translateX(-50%);
 }
 
 /* 底部菜单、侧边栏: layout */
@@ -91,6 +94,10 @@
     right: 0;
     pointer-events: none;
     transition: background-color .6s ease-in;
+}
+
+#menu-overlay#menu-overlay {
+    transition: background-color .4s ease-in;
 }
 
 #menu-overlay:has(>.show),
@@ -370,11 +377,16 @@ svg.mini-header__logo path {
     margin: 0 !important;
     max-width: 100%;
     padding: 5px !important;
+    left: 50% !important;
 }
 
-/* 分类(左侧入口)展开图 */
+/* 取消分类图在加载过程中类的变化导致的横向平移从0到-50%的不好看的动画 */
+.v-popover.is-bottom-start {
+    transform: translate(-50%, -50%) !important;
+}
+
+/* 分类(左侧入口)展开图: 一列 */
 .channel-panel__column {
-    width: 100% !important;
     flex: 1;
     padding: 0 !important;
 }
@@ -1014,6 +1026,26 @@ body[show-sidebar="true"] .right-container {
     margin: 10px 0 !important;
 }
 
+/* 热门排行标签 */
+.honor-rank {
+    position: absolute;
+    align-self: start !important;
+}
+
+.video-info-detail-list:has(.honor-rank) {
+    height: 48px !important;
+    align-items: end !important;
+    margin-right: 5px !important;
+}
+
+.pubdate-ip{
+    display: block !important;
+}
+
+.video-info-detail-list .item {
+    margin-right: 4px !important;
+}
+
 /* 点赞投币行 */
 .video-toolbar-container {
     padding: 10px 0 8px !important;
@@ -1031,6 +1063,10 @@ body[show-sidebar="true"] .right-container {
 
 .video-toolbar-container * {
     margin: 0 !important;
+}
+
+.toolbar-left-item-wrap span {
+    padding-left: 2px;
 }
 
 .video-share-info {
@@ -1060,6 +1096,10 @@ body[show-sidebar="true"] .right-container {
 .video-desc-container .toggle-btn {
     text-align: right;
     margin-right: 7px;
+}
+
+.basic-desc-info[style="height: 84px;"] {
+    height: 70px !important;
 }
 
 /* 标签 */
@@ -1192,6 +1232,27 @@ body[show-sidebar="true"] .right-container {
 
 .sub-reply-item {
     padding: 4px 0 4px 37px !important;
+}
+
+/* 评论举报操作按钮 */
+.reply-operation-warp {
+    display: block !important;
+    right: 4px !important;
+}
+
+.sub-reply-operation-warp {
+    opacity: 1 !important;
+    right: 4px !important;
+}
+
+.reply-info,
+.sub-reply-info {
+    font-size: 12px !important;
+}
+
+.reply-info>*
+.sub-reply-info>* {
+    margin: 0 3px !important;
 }
 
 /* 评论图片 */

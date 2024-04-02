@@ -245,23 +245,28 @@ export function headerInMenu () {
             event.stopPropagation()
             const refer = item.getAttribute('refer')
 
-            const opennedDailog = sessionStorage.getItem('openned-dailog') || ''
-            if (opennedDailog) simulateMouseLeave(header.querySelector(opennedDailog))
+            const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+            if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
 
             simulateMouseEnter(header.querySelector(refer))
-            sessionStorage.setItem('openned-dailog', refer)
+            sessionStorage.setItem('opened-dailog', refer)
           })
         })
 
         const menu = menuOverlay.querySelector('#header-in-menu')
-        menuFab.addEventListener('click', () => { menu?.classList.add('show') })
 
         menuOverlay.addEventListener('click', (event) => {
           event.stopPropagation()
-          const opennedDailog = sessionStorage.getItem('openned-dailog') || ''
-          if (opennedDailog) simulateMouseLeave(header.querySelector(opennedDailog))
+          const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+          if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
 
-          if (event.target !== menu) { menu.classList.remove('show') }
+          if (event.target !== menu) {
+            menu.style.display = 'block'
+            menu.classList.remove('show')
+            setTimeout(() => {
+              menu.style.display = ''
+            }, 400)
+          }
         })
       } else {
         setTimeout(addMenu, 500)
