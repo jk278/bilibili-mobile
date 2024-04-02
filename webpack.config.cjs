@@ -1,5 +1,5 @@
 const path = require('path')
-const BannerPlugin = require('banner-plugin')
+const webpack = require('webpack')
 
 module.exports = {
   mode: 'none',
@@ -20,8 +20,9 @@ module.exports = {
     ]
   },
   plugins: [
-    new BannerPlugin({
-      banner: `// ==UserScript==
+    new webpack.BannerPlugin({
+      banner:
+`// ==UserScript==
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
@@ -36,9 +37,7 @@ module.exports = {
 // @run-at             document-start
 // @icon               https://www.bilibili.com/favicon.ico
 // ==/UserScript==
-
 `,
       raw: true
-    })
-  ]
+    })]
 }

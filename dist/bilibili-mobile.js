@@ -1,3 +1,19 @@
+// ==UserScript==
+// @name               Bilibili Mobile
+// @name:zh-CN         bilibili 移动端
+// @namespace          https://github.com/jk278/bilibili-pc2mobile
+// @version            3.9.6
+// @description        view bilibili pc page on mobile phone
+// @description:zh-CN  只需一点配置，即可获得足够好的使用体验
+// @author             jk278
+// @license            MIT
+// @match              https://*.bilibili.com/*
+// @grant              unsafeWindow
+// @grant              GM_registerMenuCommand
+// @run-at             document-start
+// @icon               https://www.bilibili.com/favicon.ico
+// ==/UserScript==
+
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ([
