@@ -1,19 +1,3 @@
-// ==UserScript==
-// @name               Bilibili Mobile
-// @name:zh-CN         bilibili 移动端
-// @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.9.6
-// @description        view bilibili pc page on mobile phone
-// @description:zh-CN  只需一点配置，即可获得足够好的使用体验
-// @author             jk278
-// @license            MIT
-// @match              *://www.bilibili.com/*
-// @grant              unsafeWindow
-// @grant              GM_registerMenuCommand
-// @run-at             document-start
-// @icon               https://www.bilibili.com/favicon.ico
-// ==/UserScript==
-
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ([
@@ -1764,10 +1748,12 @@ function initViewport () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   increaseVideoLoadSize: () => (/* binding */ increaseVideoLoadSize),
-/* harmony export */   preventBeforeUnload: () => (/* binding */ preventBeforeUnload)
+/* harmony export */   preventBeforeUnload: () => (/* binding */ preventBeforeUnload),
+/* harmony export */   scrollToHidden: () => (/* binding */ scrollToHidden)
 /* harmony export */ });
 // eslint-disable-next-line no-undef
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
+// 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
 
 function preventBeforeUnload () {
   const originalAddEventListener = window.addEventListener
@@ -1791,6 +1777,24 @@ function increaseVideoLoadSize () {
     }
     return origFetch(input, init)
   }
+}
+
+// 滚动隐藏函数(弹幕行、评论行、操作栏)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
+function scrollToHidden () {
+  let lastScrollTop = 0
+  const scrollThreshold = 75 // 滚动距离阈值
+
+  _unsafeWindow.addEventListener('scroll', () => {
+    const currentScrollTop = window.scrollY
+    if ((currentScrollTop - lastScrollTop) > scrollThreshold) {
+      document.body.setAttribute('scroll-hidden', 'true')
+      lastScrollTop = currentScrollTop
+    } else if ((currentScrollTop - lastScrollTop) < -scrollThreshold ||
+       currentScrollTop < scrollThreshold) {
+      document.body.setAttribute('scroll-hidden', '')
+      lastScrollTop = currentScrollTop
+    }
+  })
 }
 
 
@@ -2156,9 +2160,20 @@ function handleActionbar () {
 
   if (window.location.pathname === '/') {
     actionbar.classList.add('home')
+
+    setTopBtn()
+    setRefreshBtn()
   }
 
   if (window.location.pathname.startsWith('/video')) {
+    setFullbtn()
+  }
+
+  setHomeBtn()
+  setSearchBtn()
+  setMenuBtn()
+
+  function setFullbtn () {
     const fullBtn = document.getElementById('full-now')
     fullBtn.addEventListener('click', () => {
       const video = document.getElementsByTagName('video')[0]
@@ -2178,7 +2193,7 @@ function handleActionbar () {
     })
   }
 
-  if (window.location.pathname === '/') {
+  function setTopBtn () {
     const topBtn = document.getElementById('my-top')
     topBtn.addEventListener('click', () => {
       toTop()
@@ -2189,45 +2204,51 @@ function handleActionbar () {
     })
   }
 
-  const home = document.getElementById('my-home')
-  home.addEventListener('click', () => { window.location.href = '/' })
+  function setHomeBtn () {
+    const home = document.getElementById('my-home')
+    home.addEventListener('click', () => { window.location.href = '/' })
+  }
 
-  const searchbarBtn = document.getElementById('search-fab')
-  searchbarBtn.addEventListener('click', (event) => {
+  function setSearchBtn () {
+    const searchbarBtn = document.getElementById('search-fab')
+    searchbarBtn.addEventListener('click', (event) => {
     // 事件完成后立即冒泡
-    event.stopPropagation()
-    const searchbarContainer = document.getElementsByClassName('center-search-container')[0]
-    searchbarContainer.classList.add('show')
-    const input = searchbarContainer.querySelector('input')
-    input.focus()
-
-    const searchbar = searchbarContainer.querySelector('.center-search__bar')
-    searchbar.addEventListener('click', (event) => {
       event.stopPropagation()
+      const searchbarContainer = document.getElementsByClassName('center-search-container')[0]
+      searchbarContainer.classList.add('show')
+      const input = searchbarContainer.querySelector('input')
+      input.focus()
+
+      const searchbar = searchbarContainer.querySelector('.center-search__bar')
+      searchbar.addEventListener('click', (event) => {
+        event.stopPropagation()
+      })
+      document.body.addEventListener('click', (event) => {
+        if (event.target !== searchbar) {
+          searchbarContainer.classList.remove('show')
+        }
+      }, { once: true })
     })
-    document.body.addEventListener('click', (event) => {
-      if (event.target !== searchbar) {
-        searchbarContainer.classList.remove('show')
-      }
-    }, { once: true })
-  })
+  }
 
-  const entryBtn = document.getElementById('menu-fab')
-  entryBtn.addEventListener('click', () => {
-    if ((localStorage.getItem('header-in-menu') || '0') === '1') {
-      document.getElementById('header-in-menu').classList.add('show')
-    } else {
-      if ((localStorage.getItem('hidden-header') || '0') === '1') {
-        document.getElementById('hidden-header')?.remove()
-        localStorage.setItem('hidden-header', '0')
+  function setMenuBtn () {
+    const menuBtn = document.getElementById('menu-fab')
+    menuBtn.addEventListener('click', () => {
+      if ((localStorage.getItem('header-in-menu') || '0') === '1') {
+        document.getElementById('header-in-menu').classList.add('show')
       } else {
-        hideHeader()
-        localStorage.setItem('hidden-header', '1')
+        if ((localStorage.getItem('hidden-header') || '0') === '1') {
+          document.getElementById('hidden-header')?.remove()
+          localStorage.setItem('hidden-header', '0')
+        } else {
+          hideHeader()
+          localStorage.setItem('hidden-header', '1')
+        }
       }
-    }
-  })
+    })
+  }
 
-  if (window.location.pathname === '/') {
+  function setRefreshBtn () {
     const refreshBtn = document.getElementById('refresh-fab')
     refreshBtn.addEventListener('click', () => {
       refresh()
@@ -2354,19 +2375,17 @@ function handleHeaderImage () {
   const url = 'https://source.unsplash.com/random/840x400'
   const elementSelector = '.bili-header__banner'
 
-  if (window.location.pathname === '/') {
-    loadImage(key, elementSelector)
+  loadImage(key, elementSelector)
 
-    setTimeout(async () => {
-      try {
-        const img = await getImage(url)
-        const base64Data = imageToBase64(img)
-        storeImage(key, base64Data)
-      } catch (error) {
-        console.error('Failed to get image:', error)
-      }
-    }, 5000)
-  }
+  setTimeout(async () => {
+    try {
+      const img = await getImage(url)
+      const base64Data = imageToBase64(img)
+      storeImage(key, base64Data)
+    } catch (error) {
+      console.error('Failed to get image:', error)
+    }
+  }, 5000)
 
   function getImage (url) {
     return new Promise((resolve, reject) => {
@@ -2421,6 +2440,82 @@ function handleHeaderImage () {
       })
     }
   }
+}
+
+
+/***/ }),
+/* 16 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   videoInteraction: () => (/* binding */ videoInteraction)
+/* harmony export */ });
+// eslint-disable-next-line no-undef
+const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
+
+function videoInteraction () {
+  handlelVideoClick()
+  handleVideoLongPress()
+}
+
+// 接管视频点击事件
+function handlelVideoClick () {
+  document.getElementsByClassName('bpx-player-video-wrap>video')[0].playsInline = true
+
+  const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
+  playerContainer.addEventListener('click', handleClick)
+  const controlWrap = document.getElementsByClassName('bpx-player-control-wrap')[0]
+
+  let clickTimer = null
+
+  function handleClick () {
+    simulateMouseEnter(controlWrap)
+
+    if (clickTimer) {
+      clearTimeout(clickTimer)
+    }
+
+    clickTimer = setTimeout(() => {
+      simulateMouseLeave(controlWrap)
+    }, 5000)
+  }
+
+  function simulateMouseEnter (element) {
+    const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+    element.dispatchEvent(event)
+  }
+
+  function simulateMouseLeave (element) {
+    const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+    element.dispatchEvent(event)
+  }
+}
+
+function handleVideoLongPress () {
+  const video = document.querySelector('video') // 获取视频元素
+  let isLongPress = false // 长按标志
+  let timeoutId
+
+  video.addEventListener('touchstart', (event) => {
+    timeoutId = setTimeout(() => {
+      video.playbackRate = video.playbackRate * 2
+      isLongPress = true
+    }, 500)
+  })
+
+  video.addEventListener('touchmove', (event) => {
+    clearTimeout(timeoutId) // 触摸移动时取消长按
+  })
+
+  video.addEventListener('touchend', (event) => {
+    clearTimeout(timeoutId) // 触摸结束时清除定时器
+
+    if (isLongPress) {
+      video.playbackRate = video.playbackRate / 2
+      isLongPress = false
+    }
+  })
 }
 
 
@@ -2504,10 +2599,11 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
-/* harmony import */ var _override_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(12);
+/* harmony import */ var _window_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(12);
 /* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(13);
 /* harmony import */ var _header_image_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(15);
-/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(14);
+/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(16);
+/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(14);
 // ==UserScript==
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
@@ -2517,7 +2613,7 @@ __webpack_require__.r(__webpack_exports__);
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
 // @license            MIT
-// @match              *://www.bilibili.com/*
+// @match              https://*.bilibili.com/*
 // @grant              unsafeWindow
 // @grant              GM_registerMenuCommand
 // @run-at             document-start
@@ -2544,141 +2640,65 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 (function () {
   console.log('Bilibili mobile execute!')
   // setInterval(() => {
   //   console.log(undefined)
   // }, 100)
 
-  // eslint-disable-next-line no-undef
-  const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
-  // 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
+  function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
+
+  const url = window.location
+  // 简单表达式: 常量折叠，解析引擎优化为只计算一次，然后缓存入临时变量。函数调用、对象属性访问等不适用。
+  const part = url.hostname.substring(0, url.hostname.indexOf('.'))
 
   ;(0,_init_js__WEBPACK_IMPORTED_MODULE_1__.initViewport)()
+  ;(0,_window_js__WEBPACK_IMPORTED_MODULE_2__.preventBeforeUnload)()
 
-  ;(0,_override_js__WEBPACK_IMPORTED_MODULE_2__.preventBeforeUnload)()
+  if (localStorage.getItem('hidden-header') === '1') { (0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.hideHeader)() }
 
-  if (localStorage.getItem('hidden-header') === '1') { (0,_actionbar_js__WEBPACK_IMPORTED_MODULE_5__.hideHeader)() }
-
-  if (window.location.pathname === '/') {
-    // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
-    (0,_override_js__WEBPACK_IMPORTED_MODULE_2__.increaseVideoLoadSize)()
-    ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_4__.handleHeaderImage)()
-  }
-
-  (0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptPreSetting)()
-
-  waitDOMContentLoaded(() => {
-    localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
-    ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_5__.handleHeaderClick)()
-    if (window.location.pathname.startsWith('/video')) {
-      addPlaysInline()
-    }
-
-    scrollToHidden()
-
-    ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_5__.handleActionbar)()
-
-    // 待办：一个根据域名判断执行与否的框架
-    // 待办：相关内容未加载时灰色显示的框架
-    ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptSetting)()
-
-    if (window.location.pathname.startsWith('/video')) {
-      (0,_actionbar_js__WEBPACK_IMPORTED_MODULE_5__.handleSidebar)()
-      handleVideoInteraction()
-    }
-  })
-
-  // DOM 加载完后
-  function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
-  // head 获取到后
-
-  function addPlaysInline () {
-    const videoElement = document.getElementsByClassName('bpx-player-video-wrap>video')[0]
-    // 新添加了路径判断，此处预留
-    if (videoElement) videoElement.playsInline = true
-  }
-
-  // 滚动隐藏函数(弹幕行、评论行)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
-  function scrollToHidden () {
-    let lastScrollTop = 0
-    const scrollThreshold = 75 // 滚动距离阈值
-
-    _unsafeWindow.addEventListener('scroll', () => {
-      const currentScrollTop = window.scrollY
-      if ((currentScrollTop - lastScrollTop) > scrollThreshold) {
-        document.body.setAttribute('scroll-hidden', 'true')
-        lastScrollTop = currentScrollTop
-      } else if ((currentScrollTop - lastScrollTop) < -scrollThreshold ||
-       currentScrollTop < scrollThreshold) {
-        document.body.setAttribute('scroll-hidden', '')
-        lastScrollTop = currentScrollTop
+  switch (part) {
+    case 'www':
+      if (url.pathname === '/') {
+        // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
+        (0,_window_js__WEBPACK_IMPORTED_MODULE_2__.increaseVideoLoadSize)()
+        ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_4__.handleHeaderImage)()
       }
-    })
-  }
 
-  function handleVideoInteraction () {
-    handlelVideoClick()
-    handleVideoLongPress()
+      (0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptPreSetting)()
 
-    // 接管视频点击事件
-    function handlelVideoClick () {
-      const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
-      playerContainer.addEventListener('click', handleClick)
-      const controlWrap = document.getElementsByClassName('bpx-player-control-wrap')[0]
+      waitDOMContentLoaded(() => {
+        localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleHeaderClick)()
 
-      let clickTimer = null
+        // 原内联播放位置，移至 video-interaction
 
-      function handleClick () {
-        simulateMouseEnter(controlWrap)
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleActionbar)()
 
-        if (clickTimer) {
-          clearTimeout(clickTimer)
+        // 待办：相关内容未加载时灰色显示的框架
+        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptSetting)()
+
+        if (url.pathname.startsWith('/video')) {
+          // Video Interaction
+          (0,_video_js__WEBPACK_IMPORTED_MODULE_5__.videoInteraction)()
+
+          ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleSidebar)()
         }
 
-        clickTimer = setTimeout(() => {
-          simulateMouseLeave(controlWrap)
-        }, 5000)
-      }
-
-      function simulateMouseEnter (element) {
-        const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-        element.dispatchEvent(event)
-      }
-
-      function simulateMouseLeave (element) {
-        const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-        element.dispatchEvent(event)
-      }
-    }
-
-    function handleVideoLongPress () {
-      const video = document.querySelector('video') // 获取视频元素
-      let isLongPress = false // 长按标志
-      let timeoutId
-
-      video.addEventListener('touchstart', (event) => {
-        timeoutId = setTimeout(() => {
-          video.playbackRate = video.playbackRate * 2
-          isLongPress = true
-        }, 500)
+        (0,_window_js__WEBPACK_IMPORTED_MODULE_2__.scrollToHidden)()
       })
-
-      video.addEventListener('touchmove', (event) => {
-        clearTimeout(timeoutId) // 触摸移动时取消长按
-      })
-
-      video.addEventListener('touchend', (event) => {
-        clearTimeout(timeoutId) // 触摸结束时清除定时器
-
-        if (isLongPress) {
-          video.playbackRate = video.playbackRate / 2
-          isLongPress = false
-        }
-      })
-    }
+      break
+    case 'space':
+      break
+    case 'search':
+      break
+    case 'm':
+      break
+    default:
+      break
   }
-}())
+})()
 
 })();
 

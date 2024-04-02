@@ -7,7 +7,7 @@
 // @description:zh-CN  只需一点配置，即可获得足够好的使用体验
 // @author             jk278
 // @license            MIT
-// @match              *://www.bilibili.com/*
+// @match              https://*.bilibili.com/*
 // @grant              unsafeWindow
 // @grant              GM_registerMenuCommand
 // @run-at             document-start
@@ -28,10 +28,10 @@
 import './style.css'
 
 import { initViewport } from './init.js'
-import { preventBeforeUnload, increaseVideoLoadSize } from './override.js'
+import { preventBeforeUnload, increaseVideoLoadSize, scrollToHidden } from './window.js'
 import { handleScriptPreSetting, handleScriptSetting } from './setting.js'
 import { handleHeaderImage } from './header-image.js'
-import { handlelVideoClick, handleVideoLongPress } from './video.js'
+import { videoInteraction } from './video.js'
 
 import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from './actionbar.js'
 
@@ -41,65 +41,55 @@ import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from '.
   //   console.log(undefined)
   // }, 100)
 
-  // eslint-disable-next-line no-undef
-  const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
-  // 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
+  function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
+
+  const url = window.location
+  // 简单表达式: 常量折叠，解析引擎优化为只计算一次，然后缓存入临时变量。函数调用、对象属性访问等不适用。
+  const part = url.hostname.substring(0, url.hostname.indexOf('.'))
 
   initViewport()
-
   preventBeforeUnload()
 
   if (localStorage.getItem('hidden-header') === '1') { hideHeader() }
 
-  if (window.location.pathname === '/') {
-    // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
-    increaseVideoLoadSize()
-    handleHeaderImage()
-  }
-
-  handleScriptPreSetting()
-
-  waitDOMContentLoaded(() => {
-    localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
-    handleHeaderClick()
-
-    // 原内联播放位置，移至 video-interaction
-
-    handleActionbar()
-
-    // 待办：一个根据域名判断执行与否的框架
-    // 待办：相关内容未加载时灰色显示的框架
-    handleScriptSetting()
-
-    if (window.location.pathname.startsWith('/video')) {
-      // Video Interaction
-      handlelVideoClick()
-      handleVideoLongPress()
-
-      handleSidebar()
-    }
-
-    scrollToHidden()
-  })
-
-  // DOM 加载完后
-  function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
-
-  // 滚动隐藏函数(弹幕行、评论行)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
-  function scrollToHidden () {
-    let lastScrollTop = 0
-    const scrollThreshold = 75 // 滚动距离阈值
-
-    _unsafeWindow.addEventListener('scroll', () => {
-      const currentScrollTop = window.scrollY
-      if ((currentScrollTop - lastScrollTop) > scrollThreshold) {
-        document.body.setAttribute('scroll-hidden', 'true')
-        lastScrollTop = currentScrollTop
-      } else if ((currentScrollTop - lastScrollTop) < -scrollThreshold ||
-       currentScrollTop < scrollThreshold) {
-        document.body.setAttribute('scroll-hidden', '')
-        lastScrollTop = currentScrollTop
+  switch (part) {
+    case 'www':
+      if (url.pathname === '/') {
+        // 重写原生的 fetch 函数，DOM 加载完后执行就错过关键请求了
+        increaseVideoLoadSize()
+        handleHeaderImage()
       }
-    })
+
+      handleScriptPreSetting()
+
+      waitDOMContentLoaded(() => {
+        localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
+        handleHeaderClick()
+
+        // 原内联播放位置，移至 video-interaction
+
+        handleActionbar()
+
+        // 待办：相关内容未加载时灰色显示的框架
+        handleScriptSetting()
+
+        if (url.pathname.startsWith('/video')) {
+          // Video Interaction
+          videoInteraction()
+
+          handleSidebar()
+        }
+
+        scrollToHidden()
+      })
+      break
+    case 'space':
+      break
+    case 'search':
+      break
+    case 'm':
+      break
+    default:
+      break
   }
-}())
+})()

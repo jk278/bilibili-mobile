@@ -1,8 +1,13 @@
 // eslint-disable-next-line no-undef
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
 
+export function videoInteraction () {
+  handlelVideoClick()
+  handleVideoLongPress()
+}
+
 // 接管视频点击事件
-export function handlelVideoClick () {
+function handlelVideoClick () {
   document.getElementsByClassName('bpx-player-video-wrap>video')[0].playsInline = true
 
   const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
@@ -34,7 +39,7 @@ export function handlelVideoClick () {
   }
 }
 
-export function handleVideoLongPress () {
+function handleVideoLongPress () {
   const video = document.querySelector('video') // 获取视频元素
   let isLongPress = false // 长按标志
   let timeoutId
