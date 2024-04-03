@@ -4,22 +4,9 @@ const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined
 
 export function preventBeforeUnload () {
   const originalAddEventListener = window.addEventListener
-
-  window.addEventListener = function (type, listener, options) {
-    if (type === 'beforeunload') {
-      const modifiedListener = function (event) {
-      // 在这里直接阻止显示alert弹窗
-        event.returnValue = null
-
-        // 调用原来的监听函数
-        listener(event)
-      }
-
-      return originalAddEventListener.call(this, type, modifiedListener, options)
-    }
-
-    return originalAddEventListener.call(this, type, listener, options)
-  }
+  // 重写 addEventListener 方法，禁止网站刷新时的弹窗
+  window.addEventListener = (type, listener, options) =>
+    type === 'beforeunload' ? undefined : originalAddEventListener.call(this, type, listener, options)
 }
 
 // 增加视频加载数量函数

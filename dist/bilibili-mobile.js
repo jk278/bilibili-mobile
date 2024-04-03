@@ -2,9 +2,9 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            3.9.6
+// @version            4.0
 // @description        view bilibili pc page on mobile phone
-// @description:zh-CN  只需一点配置，即可获得足够好的使用体验
+// @description:zh-CN  在 Via 与 Safari 打开电脑模式，获取舒适的移动端体验。
 // @author             jk278
 // @license            MIT
 // @match              https://*.bilibili.com/*
@@ -13,15 +13,6 @@
 // @run-at             document-start
 // @icon               https://www.bilibili.com/favicon.ico
 // ==/UserScript==
-
-/**
- * 先完成配置，再打开桌面版B站
- * Via 修改网站独立 UA 为 Windows 或 MacOS，但不要开电脑模式
- * Firefox 下载扩展 Header Editor 并添加两条规则：
-    ① 修改请求头 ------ 正则表达式 ------ << 匹配规则 >> ------ 名称: user-agent ------ 内容: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0
-    ② 其中，规则一:  ^https://www\.bilibili\.com/.*  规则二:  ^https://.*\.bilivideo\.com/.*
- * Safari 浏览器 直接打开电脑模式即可
- */
 
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
@@ -409,7 +400,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     border-radius: 5px;
     font-size: 16px;
     transform: translate(-50%, calc(100% + 5px + var(--header-height)));
-    transition: transform .4s ease-in;
+    opacity: 0;
+    transition: .4s ease-in;
 
     li {
         list-style-type: none;
@@ -420,6 +412,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 #header-in-menu.show {
     display: block;
     transform: translateX(-50%);
+    opacity: 1;
 }
 
 /* 底部菜单、侧边栏: layout */
@@ -462,8 +455,14 @@ body[show-sidebar="true"] #sidebar-overlay {
     border: 1px solid var(--line_regular);
     display: none;
     flex-direction: column;
-    padding: 5px;
-    border-radius: 5px;
+    padding: 10px 5px;
+    border-radius: 10px;
+    font-size: 16px;
+    width: 75%;
+    max-height: calc(100vh - var(--header-height)* 2 - 10px);
+    width: 260px;
+    max-width: calc(100% - 20px);
+    box-shadow: 0 0 3px rgba(0, 0, 0, .3);
 }
 
 .setting-panel.show {
@@ -474,16 +473,20 @@ body[show-sidebar="true"] #sidebar-overlay {
     padding-bottom: 5px;
     margin: 0 5px;
     border-bottom: 1px solid var(--line_regular);
+    text-align: center;
+    color: var(--Ga7);
 }
 
 .setting-checkboxes {
     display: flex;
     flex-direction: column;
+    overflow: auto;
 }
 
 .setting-checkboxes label {
     margin: 5px;
     display: flex;
+    align-items: center;
 }
 
 .setting-checkboxes span {
@@ -492,9 +495,28 @@ body[show-sidebar="true"] #sidebar-overlay {
     user-select: none;
 }
 
+.setting-checkboxes input[type="checkbox"] {
+    width: 16px;
+    height: 26px;
+}
+
+.setting-checkboxes input[type="number"] {
+    width: 40px;
+    appearance: textfield;
+    height: 22px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
 .setting-conform {
-    margin: 0 20px;
-    border-radius: 5px;
+    margin: 2px 5px;
+    border-radius: 15px;
+    border: 1px solid var(--line_regular);
+    padding: 2px;
+    background-color: var(--graph_bg_thin) !important;
 }
 
 /* ----------------------------------------------------
@@ -551,6 +573,249 @@ body,
 /* 主页视频流 */
 .bili-feed4-layout {
     width: 100% !important;
+}
+
+/* -------------- 搜索页 --------------- */
+
+#i_cecream {
+    min-width: 0 !important;
+}
+
+/* 分类和另几个包含块 */
+.i_wrapper {
+    padding: 0 5px !important;
+}
+
+/* 分类 */
+.vui_tabs--nav-link {
+    padding: 0 1px !important;
+    flex-wrap: wrap;
+}
+
+ul.vui_tabs--nav>* {
+    flex: auto;
+}
+
+/* 广告 */
+.activity-game-list {
+    display: none;
+}
+
+/* 排序筛选 */
+.search-conditions.i_wrapper {
+    margin-top: 8px !important;
+}
+
+.search-condition-row .vui_button--tab {
+    width: 33.3%;
+    margin: 0 !important;
+}
+
+.search-condition-row {
+    width: 100%;
+}
+
+.conditions-order {
+    position: relative;
+}
+
+.conditions-order .i_button_more {
+    position: absolute;
+    bottom: 0;
+    left: 66.6%;
+    padding-left: 23px !important;
+    border: 0;
+    width: 33.3%;
+}
+
+/* 搜索框 */
+body .search-layout .search-header .search-input.search-input {
+    margin: 0 0 5px !important;
+    padding: 0 5px;
+}
+
+/* 搜索框：顶部 fixed */
+.search-fixed-header {
+    min-width: 0 !important;
+    padding: 0 5px;
+    height: var(--header-height) !important;
+}
+
+.search-input-wrap {
+    height: 30px !important;
+    border-radius: 15px !important;
+}
+
+.search-button {
+    border-radius: 0 15px 15px 0 !important;
+    height: 30px !important;
+    width: 80px !important;
+    padding: 0 10px !important;
+}
+
+/* 视频结果 */
+.video-list>div {
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: 0 4px !important;
+    margin-bottom: 10px;
+}
+
+/* 结果块外 padding */
+.search-content {
+    padding: 0 5px !important;
+}
+
+/* 结果块内 */
+.search-page-wrapper .search-page {
+    margin-top: 8px !important;
+    padding-bottom: 0 !important;
+}
+
+/* 页数 */
+.search-page .flex_center {
+    margin: 5px 0 !important;
+}
+
+.vui_pagenation--btns {
+    flex-wrap: wrap;
+}
+
+.vui_pagenation--btns>*:not(last-child) {
+    margin: 0 5px 5px !important;
+}
+
+.vui_pagenation--btn-side {
+    padding: 0 5px;
+    flex: 1 0 20%;
+    margin-bottom: 5px;
+}
+
+.vui_pagenation--btn-num {
+    flex: 1 0 12% !important;
+}
+
+span.vui_pagenation--extend {
+    flex: 1 0 15% !important;
+}
+
+/* 搜索页底部 */
+.link-box {
+    flex-direction: column;
+    margin: 0 10px !important;
+}
+
+.bili-footer {
+    min-width: 0 !important;
+    padding: 5px 0 var(--header-height) !important;
+}
+
+.b-footer-wrap {
+    min-width: 0 !important;
+    margin: 0 5px !important;
+}
+
+.link-box {
+    flex-direction: column;
+}
+
+.link-box>* {
+    max-width: 100%;
+}
+
+.link-item__right,
+.other-link,
+.footer-icons {
+    display: none !important;
+}
+
+/* -------------- 个人主页 --------------- */
+
+.wrapper {
+    width: 100% !important;
+}
+
+.content {
+    max-width: 100%;
+}
+
+#page-index .col-1 {
+    max-width: 100%;
+    padding: 0 !important;
+}
+
+.channel-video {
+    white-space: wrap !important;
+}
+
+.small-item {
+    width: calc(50% - 10px);
+    padding: 0 5px !important;
+}
+
+.small-item .cover {
+    width: 100% !important;
+    height: auto !important;
+}
+
+#i-masterpiece {
+    margin-left: 0 !important;
+}
+
+#page-index .fav-item {
+    margin: 0 10px !important;
+}
+
+#page-fav .fav-main {
+    width: 100% !important;
+}
+
+.n .n-inner {
+    display: flex;
+    flex-wrap: wrap;
+    height: auto !important;
+    padding: 0 !important;
+}
+
+.n-tab-links>* {
+    margin: 0 !important;
+}
+
+.n-data {
+    padding: 0 5px !important;
+    height: auto !important;
+}
+
+.n-statistics {
+    height: auto !important;
+}
+
+.n .n-btn {
+    height: auto !important;
+    line-height: 30px !important;
+}
+
+.n-tab-links {
+    white-space: nowrap;
+    overflow: auto;
+}
+
+.favInfo-details {
+    max-width: 60%;
+    margin-left: 5px !important;
+}
+
+.fav-options>* {
+    margin: 0 !important;
+}
+
+.favList-info {
+    padding: 0 !important;
+    margin: 0 10px !important;
+}
+
+.n-cursor {
+    bottom: 35px !important;
 }
 
 /* -------------------------------------------------- 
@@ -1371,13 +1636,17 @@ body[show-sidebar="true"] .right-container {
 }
 
 .video-info-detail-list:has(.honor-rank) {
-    height: 48px;
+    height: 48px !important;
     align-items: end !important;
-    margin-right: 10px !important;
+    margin-right: 5px !important;
 }
 
-.pubdate-ip{
+.pubdate-ip {
     display: block !important;
+}
+
+.video-info-detail-list .item {
+    margin-right: 4px !important;
 }
 
 /* 点赞投币行 */
@@ -1430,6 +1699,10 @@ body[show-sidebar="true"] .right-container {
 .video-desc-container .toggle-btn {
     text-align: right;
     margin-right: 7px;
+}
+
+.basic-desc-info[style="height: 84px;"] {
+    height: 70px !important;
 }
 
 /* 标签 */
@@ -1580,8 +1853,7 @@ body[show-sidebar="true"] .right-container {
     font-size: 12px !important;
 }
 
-.reply-info>*
-.sub-reply-info>* {
+.reply-info>* .sub-reply-info>* {
     margin: 0 3px !important;
 }
 
@@ -1620,7 +1892,6 @@ body[show-sidebar="true"] .right-container {
     .next-image {
         right: 20vw !important;
     }
-
 }
 
 /* 块状广告（包括推荐列） */
@@ -1811,10 +2082,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 function initViewport () {
   if (document.head) {
-    const viewport = document.createElement('meta')
-    viewport.setAttribute('name', 'viewport')
-    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0')
-    document.head.appendChild(viewport)
+    function addViewportMeta () {
+      const viewport = document.createElement('meta')
+      viewport.setAttribute('name', 'viewport')
+      viewport.setAttribute('content', 'width=device-width, initial-scale=1.0')
+      document.head.appendChild(viewport)
+    }
+
+    addViewportMeta()
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.removedNodes.forEach((node) => {
+          if (node.nodeName === 'META' && node.getAttribute('name') === 'viewport') {
+            addViewportMeta()
+          }
+        })
+      })
+    })
+
+    observer.observe(document.head, {
+      childList: true
+    })
   }
 }
 
@@ -1835,22 +2124,9 @@ const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined
 
 function preventBeforeUnload () {
   const originalAddEventListener = window.addEventListener
-
-  window.addEventListener = function (type, listener, options) {
-    if (type === 'beforeunload') {
-      const modifiedListener = function (event) {
-      // 在这里直接阻止显示alert弹窗
-        event.returnValue = null
-
-        // 调用原来的监听函数
-        listener(event)
-      }
-
-      return originalAddEventListener.call(this, type, modifiedListener, options)
-    }
-
-    return originalAddEventListener.call(this, type, listener, options)
-  }
+  // 重写 addEventListener 方法，禁止网站刷新时的弹窗
+  window.addEventListener = (type, listener, options) =>
+    type === 'beforeunload' ? undefined : originalAddEventListener.call(this, type, listener, options)
 }
 
 // 增加视频加载数量函数
@@ -1973,21 +2249,21 @@ function handleScriptPreSetting () {
       id: 'setting-panel-style',
       className: 'setting-panel',
       innerHTML: `
-        <div class="setting-title">选择隐藏元素：</div>
+        <div class="setting-title">隐藏元素</div>
         <div class="setting-checkboxes">
-          <label><input type="checkbox" value="1"><span>弹幕行</span></label>
-          <label><input type="checkbox" value="2"><span>评论行</span></label>
-          <label><input type="checkbox" value="3"><span>标签块</span></label>
-          <label><input type="checkbox" value="4"><span>转载声明</span></label>
-          <label><input type="checkbox" value="5"><span>热搜榜</span></label>
-          <label><input type="checkbox" value="6"><span>播放器全屏音量键</span></label>
-          <label><input type="checkbox" value="7"><span>视频色彩音效调节</span></label>
+          <label><input type="checkbox"><span>弹幕行</span></label>
+          <label><input type="checkbox"><span>评论行</span></label>
+          <label><input type="checkbox"><span>标签块</span></label>
+          <label><input type="checkbox"><span>转载声明</span></label>
+          <label><input type="checkbox"><span>热搜榜</span></label>
+          <label><input type="checkbox"><span>播放器全屏音量键</span></label>
+          <label><input type="checkbox"><span>视频色彩音效调节</span></label>
         </div>
         `
     })
 
     const settingConform = Object.assign(document.createElement('button'), {
-      class: 'setting-conform',
+      className: 'setting-conform',
       textContent: '确认'
     })
 
@@ -2021,7 +2297,8 @@ function handleScriptSetting () {
   const keyValue = {
     key1: 'full-unmuted',
     key2: 'ban-action-hidden',
-    key3: 'header-in-menu'
+    key3: 'header-in-menu',
+    key4: 'custom-longpress-speed'
   }
 
   if ((localStorage.getItem('ban-action-hidden') || '0') === '1') { banActionHidden() }
@@ -2055,33 +2332,40 @@ function handleScriptSetting () {
       id: 'setting-panel-preference',
       className: 'setting-panel',
       innerHTML: `
-        <div class="setting-title">选择操作偏好：</div>
+        <div class="setting-title">操作偏好</div>
         <div class="setting-checkboxes">
-          <label><input type="checkbox" value="1"><span>用底部全屏键播放和打开声音</span></label>
-          <label><input type="checkbox" value="2"><span>禁止底栏滚动时隐藏</span></label>
-          <label><input type="checkbox" value="3"><span>以菜单形式打开原顶栏入口</span></label>
+          <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
+          <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
+          <label><input type="checkbox"><span>以菜单形式打开原顶栏入口</span></label>
+          <label><input type="number" value="2"><span>自定义视频长按倍速</span></label>
         </div>
         `
     })
 
     const settingConform = Object.assign(document.createElement('button'), {
-      class: 'setting-conform',
+      className: 'setting-conform',
       textContent: '确认'
     })
 
     const values = Object.values(keyValue)
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) {
-      checkboxElements[index].checked = (localStorage.getItem(value) || defaultValue) === '1'
+      if (index !== 3) {
+        checkboxElements[index].checked = (localStorage.getItem(value) || defaultValue) === '1'
+      }
     }
+    settingPanel.querySelector('input[type="number"]').value = Number(localStorage.getItem(values[3]) || '2')
 
     settingConform.addEventListener('click', () => {
       const isBanActionHidden = localStorage.getItem('ban-action-hidden') || '0'
       const isHeaderInMenu = localStorage.getItem('header-in-menu') || '0'
 
       for (const [index, value] of values.entries()) {
-        localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
+        if (index !== 3) {
+          localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
+        }
       }
+      localStorage.setItem(values[3], settingPanel.querySelector('input[type="number"]').value)
       settingPanel.classList.remove('show')
 
       const newIsBanActionHidden = localStorage.getItem('ban-action-hidden')
@@ -2595,23 +2879,25 @@ function handleVideoLongPress () {
   const video = document.querySelector('video') // 获取视频元素
   let isLongPress = false // 长按标志
   let timeoutId
+  let times
 
-  video.addEventListener('touchstart', (event) => {
+  video.addEventListener('touchstart', () => {
+    times = Number(localStorage.getItem('custom-longpress-speed') || '2')
     timeoutId = setTimeout(() => {
-      video.playbackRate = video.playbackRate * 2
+      video.playbackRate = video.playbackRate * times
       isLongPress = true
     }, 500)
   })
 
-  video.addEventListener('touchmove', (event) => {
+  video.addEventListener('touchmove', () => {
     clearTimeout(timeoutId) // 触摸移动时取消长按
   })
 
-  video.addEventListener('touchend', (event) => {
+  video.addEventListener('touchend', () => {
     clearTimeout(timeoutId) // 触摸结束时清除定时器
 
     if (isLongPress) {
-      video.playbackRate = video.playbackRate / 2
+      video.playbackRate = video.playbackRate / times
       isLongPress = false
     }
   })

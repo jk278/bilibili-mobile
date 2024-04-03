@@ -76,21 +76,21 @@ export function handleScriptPreSetting () {
       id: 'setting-panel-style',
       className: 'setting-panel',
       innerHTML: `
-        <div class="setting-title">选择隐藏元素：</div>
+        <div class="setting-title">隐藏元素</div>
         <div class="setting-checkboxes">
-          <label><input type="checkbox" value="1"><span>弹幕行</span></label>
-          <label><input type="checkbox" value="2"><span>评论行</span></label>
-          <label><input type="checkbox" value="3"><span>标签块</span></label>
-          <label><input type="checkbox" value="4"><span>转载声明</span></label>
-          <label><input type="checkbox" value="5"><span>热搜榜</span></label>
-          <label><input type="checkbox" value="6"><span>播放器全屏音量键</span></label>
-          <label><input type="checkbox" value="7"><span>视频色彩音效调节</span></label>
+          <label><input type="checkbox"><span>弹幕行</span></label>
+          <label><input type="checkbox"><span>评论行</span></label>
+          <label><input type="checkbox"><span>标签块</span></label>
+          <label><input type="checkbox"><span>转载声明</span></label>
+          <label><input type="checkbox"><span>热搜榜</span></label>
+          <label><input type="checkbox"><span>播放器全屏音量键</span></label>
+          <label><input type="checkbox"><span>视频色彩音效调节</span></label>
         </div>
         `
     })
 
     const settingConform = Object.assign(document.createElement('button'), {
-      class: 'setting-conform',
+      className: 'setting-conform',
       textContent: '确认'
     })
 
@@ -124,7 +124,8 @@ export function handleScriptSetting () {
   const keyValue = {
     key1: 'full-unmuted',
     key2: 'ban-action-hidden',
-    key3: 'header-in-menu'
+    key3: 'header-in-menu',
+    key4: 'custom-longpress-speed'
   }
 
   if ((localStorage.getItem('ban-action-hidden') || '0') === '1') { banActionHidden() }
@@ -158,33 +159,40 @@ export function handleScriptSetting () {
       id: 'setting-panel-preference',
       className: 'setting-panel',
       innerHTML: `
-        <div class="setting-title">选择操作偏好：</div>
+        <div class="setting-title">操作偏好</div>
         <div class="setting-checkboxes">
-          <label><input type="checkbox" value="1"><span>用底部全屏键播放和打开声音</span></label>
-          <label><input type="checkbox" value="2"><span>禁止底栏滚动时隐藏</span></label>
-          <label><input type="checkbox" value="3"><span>以菜单形式打开原顶栏入口</span></label>
+          <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
+          <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
+          <label><input type="checkbox"><span>以菜单形式打开原顶栏入口</span></label>
+          <label><input type="number" value="2"><span>自定义视频长按倍速</span></label>
         </div>
         `
     })
 
     const settingConform = Object.assign(document.createElement('button'), {
-      class: 'setting-conform',
+      className: 'setting-conform',
       textContent: '确认'
     })
 
     const values = Object.values(keyValue)
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) {
-      checkboxElements[index].checked = (localStorage.getItem(value) || defaultValue) === '1'
+      if (index !== 3) {
+        checkboxElements[index].checked = (localStorage.getItem(value) || defaultValue) === '1'
+      }
     }
+    settingPanel.querySelector('input[type="number"]').value = Number(localStorage.getItem(values[3]) || '2')
 
     settingConform.addEventListener('click', () => {
       const isBanActionHidden = localStorage.getItem('ban-action-hidden') || '0'
       const isHeaderInMenu = localStorage.getItem('header-in-menu') || '0'
 
       for (const [index, value] of values.entries()) {
-        localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
+        if (index !== 3) {
+          localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
+        }
       }
+      localStorage.setItem(values[3], settingPanel.querySelector('input[type="number"]').value)
       settingPanel.classList.remove('show')
 
       const newIsBanActionHidden = localStorage.getItem('ban-action-hidden')

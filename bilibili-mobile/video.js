@@ -44,23 +44,25 @@ function handleVideoLongPress () {
   const video = document.querySelector('video') // 获取视频元素
   let isLongPress = false // 长按标志
   let timeoutId
+  let times
 
-  video.addEventListener('touchstart', (event) => {
+  video.addEventListener('touchstart', () => {
+    times = Number(localStorage.getItem('custom-longpress-speed') || '2')
     timeoutId = setTimeout(() => {
-      video.playbackRate = video.playbackRate * 2
+      video.playbackRate = video.playbackRate * times
       isLongPress = true
     }, 500)
   })
 
-  video.addEventListener('touchmove', (event) => {
+  video.addEventListener('touchmove', () => {
     clearTimeout(timeoutId) // 触摸移动时取消长按
   })
 
-  video.addEventListener('touchend', (event) => {
+  video.addEventListener('touchend', () => {
     clearTimeout(timeoutId) // 触摸结束时清除定时器
 
     if (isLongPress) {
-      video.playbackRate = video.playbackRate / 2
+      video.playbackRate = video.playbackRate / times
       isLongPress = false
     }
   })
