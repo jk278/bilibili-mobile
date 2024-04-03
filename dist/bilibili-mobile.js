@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.0
+// @version            4.0-alpha
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在 Via 与 Safari 打开电脑模式，获取舒适的移动端体验。
 // @author             jk278
@@ -575,7 +575,9 @@ body,
     width: 100% !important;
 }
 
-/* -------------- 搜索页 --------------- */
+/* ----------------------------------------------------
+ ---------------------- 搜索页 ------------------------ 
+ ---------------------------------------------------- */
 
 #i_cecream {
     min-width: 0 !important;
@@ -590,10 +592,11 @@ body,
 .vui_tabs--nav-link {
     padding: 0 1px !important;
     flex-wrap: wrap;
+    justify-content: center !important;
 }
 
 ul.vui_tabs--nav>* {
-    flex: auto;
+    flex: 1;
 }
 
 /* 广告 */
@@ -729,7 +732,25 @@ span.vui_pagenation--extend {
     display: none !important;
 }
 
-/* -------------- 个人主页 --------------- */
+/* 影视 */
+.media-item-col,
+.media-list .col_6 {
+    max-width: 100% !important;
+    flex: none !important;
+    margin-bottom: 10px !important;
+}
+
+.show-more-text {
+    margin: 10px 0 20px !important;
+}
+
+.row.media-item {
+    padding: 0;
+}
+
+/* ----------------------------------------------------
+ --------------------- 个人主页 ----------------------- 
+ ----------------------------------------------------- */
 
 .wrapper {
     width: 100% !important;
@@ -818,6 +839,14 @@ span.vui_pagenation--extend {
     bottom: 35px !important;
 }
 
+.navigator-fixed {
+    display: none;
+}
+
+span.length {
+    z-index: 1 !important;
+}
+
 /* -------------------------------------------------- 
    ------------------------ 顶栏 ----------------------- 
    -------------------------------------------------- */
@@ -828,6 +857,8 @@ span.vui_pagenation--extend {
 #biliMainHeader {
     position: fixed;
     z-index: 2;
+    /* 影响个人顶栏宽度 */
+    width: 100%;
 }
 
 /* 顶栏边距（右边距减去头像右空隙） */
