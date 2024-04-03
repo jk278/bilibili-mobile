@@ -121,7 +121,7 @@ body[show-sidebar="true"] #sidebar-overlay {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: inherit;
+    background: white;
     z-index: 1;
     border: 1px solid var(--line_regular);
     display: none;
@@ -129,7 +129,6 @@ body[show-sidebar="true"] #sidebar-overlay {
     padding: 10px 5px;
     border-radius: 10px;
     font-size: 16px;
-    width: 75%;
     max-height: calc(100vh - var(--header-height)* 2 - 10px);
     width: 260px;
     max-width: calc(100% - 20px);
@@ -137,7 +136,7 @@ body[show-sidebar="true"] #sidebar-overlay {
 }
 
 .setting-panel.show {
-    display: flex;
+    display: flex !important;
 }
 
 .setting-title {
@@ -413,6 +412,7 @@ span.vui_pagenation--extend {
 
 .show-more-text {
     margin: 10px 0 20px !important;
+    z-index: 1 !important;
 }
 
 .media-item {

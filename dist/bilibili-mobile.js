@@ -450,7 +450,7 @@ body[show-sidebar="true"] #sidebar-overlay {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: inherit;
+    background: white;
     z-index: 1;
     border: 1px solid var(--line_regular);
     display: none;
@@ -458,7 +458,6 @@ body[show-sidebar="true"] #sidebar-overlay {
     padding: 10px 5px;
     border-radius: 10px;
     font-size: 16px;
-    width: 75%;
     max-height: calc(100vh - var(--header-height)* 2 - 10px);
     width: 260px;
     max-width: calc(100% - 20px);
@@ -466,7 +465,7 @@ body[show-sidebar="true"] #sidebar-overlay {
 }
 
 .setting-panel.show {
-    display: flex;
+    display: flex !important;
 }
 
 .setting-title {
@@ -744,8 +743,8 @@ span.vui_pagenation--extend {
     margin: 10px 0 20px !important;
 }
 
-.row.media-item {
-    padding: 0;
+.media-item {
+    padding: 0 !important;
 }
 
 /* ----------------------------------------------------
@@ -2164,7 +2163,6 @@ function preventBeforeUnload () {
 function increaseVideoLoadSize () {
   const origFetch = _unsafeWindow.fetch
   _unsafeWindow.fetch = function (input, init) {
-    // console.log(input)
     if (typeof input === 'string' && input.includes('api.bilibili.com') && input.includes('feed/rcmd') && init.method.toUpperCase() === 'GET') {
       input = input.replace('&ps=12&', '&ps=30&')
     }
@@ -2175,16 +2173,17 @@ function increaseVideoLoadSize () {
 // 滚动隐藏函数(弹幕行、评论行、操作栏)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
 function scrollToHidden () {
   let lastScrollTop = 0
-  const scrollThreshold = 75 // 滚动距离阈值
+  const scrollThreshold = 75
 
   _unsafeWindow.addEventListener('scroll', () => {
     const currentScrollTop = window.scrollY
-    if ((currentScrollTop - lastScrollTop) > scrollThreshold) {
-      document.body.setAttribute('scroll-hidden', 'true')
-      lastScrollTop = currentScrollTop
-    } else if ((currentScrollTop - lastScrollTop) < -scrollThreshold ||
-       currentScrollTop < scrollThreshold) {
-      document.body.setAttribute('scroll-hidden', '')
+
+    const offset = currentScrollTop - lastScrollTop
+    const scrollHidden = offset > scrollThreshold ? 'true' : ''
+    const shouldUpdate = Math.abs(offset) > scrollThreshold || currentScrollTop < scrollThreshold
+
+    if (shouldUpdate) {
+      document.body.setAttribute('scroll-hidden', scrollHidden)
       lastScrollTop = currentScrollTop
     }
   })
@@ -2433,29 +2432,30 @@ function headerInMenu () {
     innerHTML: `
     <div id="header-in-menu">
       <ul>
-        <li refer=".right-entry--message">私信</li>
-        <li refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
-        <li refer=".header-favorite-container">收藏</li>
-        <li refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
-        <li refer=".header-avatar-wrap">主页</li>
+        <li data-refer=".right-entry--message">私信</li>
+        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
+        <li data-refer=".header-favorite-container">收藏</li>
+        <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
+        <li data-refer=".header-avatar-wrap">主页</li>
       </li>
     </div>
     `
   })
+
   waitDOMContentLoaded(() => {
     addMenu()
 
     function addMenu () {
-      if (document.getElementsByClassName('header-avatar-wrap')[0]) {
+      if (document.querySelector('.header-avatar-wrap')) {
         const menuFab = document.getElementById('menu-fab')
         menuFab.appendChild(menuOverlay)
 
         const items = menuOverlay.querySelectorAll('li')
-        const header = document.getElementsByClassName('bili-header__bar')[0]
+        const header = document.querySelector('.bili-header__bar')[0]
         items.forEach(item => {
-          item.addEventListener('click', (event) => {
+          item.addEventListener('click', event => {
             event.stopPropagation()
-            const refer = item.getAttribute('refer')
+            const refer = item.dataset.refer
 
             const openedDailog = sessionStorage.getItem('opened-dailog') || ''
             if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
@@ -2467,7 +2467,7 @@ function headerInMenu () {
 
         const menu = menuOverlay.querySelector('#header-in-menu')
 
-        menuOverlay.addEventListener('click', (event) => {
+        menuOverlay.addEventListener('click', event => {
           event.stopPropagation()
           const openedDailog = sessionStorage.getItem('opened-dailog') || ''
           if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
@@ -3052,35 +3052,34 @@ __webpack_require__.r(__webpack_exports__);
   switch (part) {
     case 'www':
       if (url.pathname === '/') {
-        // first
         (0,_window_js__WEBPACK_IMPORTED_MODULE_2__.increaseVideoLoadSize)()
         ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_4__.handleHeaderImage)()
       }
-
       (0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptPreSetting)()
-
       waitDOMContentLoaded(() => {
         localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
         ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleHeaderClick)()
-
         ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleActionbar)()
-
         // 待办：相关内容未加载时灰色显示的框架
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptSetting)()
-
         if (url.pathname.startsWith('/video')) {
-          // Video Interaction
           (0,_video_js__WEBPACK_IMPORTED_MODULE_5__.videoInteraction)()
-
           ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleSidebar)()
         }
-
         (0,_window_js__WEBPACK_IMPORTED_MODULE_2__.scrollToHidden)()
       })
       break
     case 'space':
       break
     case 'search':
+      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptPreSetting)()
+      waitDOMContentLoaded(() => {
+        localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleHeaderClick)()
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleActionbar)()
+        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptSetting)()
+        ;(0,_window_js__WEBPACK_IMPORTED_MODULE_2__.scrollToHidden)()
+      })
       break
     case 'm':
       break

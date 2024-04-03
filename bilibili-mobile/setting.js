@@ -119,8 +119,6 @@ export function handleScriptPreSetting () {
 
 // 脚本设置
 export function handleScriptSetting () {
-  const defaultValue = '0'
-
   const keyValue = {
     key1: 'full-unmuted',
     key2: 'ban-action-hidden',
@@ -128,8 +126,12 @@ export function handleScriptSetting () {
     key4: 'custom-longpress-speed'
   }
 
-  if ((localStorage.getItem('ban-action-hidden') || '0') === '1') { banActionHidden() }
-  if ((localStorage.getItem('header-in-menu') || '0') === '1') { headerInMenu() }
+  if ((localStorage.getItem('ban-action-hidden') || '0') === '1') {
+    banActionHidden()
+  }
+  if ((localStorage.getItem('header-in-menu') || '0') === '1') {
+    headerInMenu()
+  }
 
   function banActionHidden () {
     const style = Object.assign(document.createElement('style'), {
@@ -178,7 +180,7 @@ export function handleScriptSetting () {
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) {
       if (index !== 3) {
-        checkboxElements[index].checked = (localStorage.getItem(value) || defaultValue) === '1'
+        checkboxElements[index].checked = localStorage.getItem(value) === '1'
       }
     }
     settingPanel.querySelector('input[type="number"]').value = Number(localStorage.getItem(values[3]) || '2')
@@ -229,29 +231,30 @@ export function headerInMenu () {
     innerHTML: `
     <div id="header-in-menu">
       <ul>
-        <li refer=".right-entry--message">私信</li>
-        <li refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
-        <li refer=".header-favorite-container">收藏</li>
-        <li refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
-        <li refer=".header-avatar-wrap">主页</li>
+        <li data-refer=".right-entry--message">私信</li>
+        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
+        <li data-refer=".header-favorite-container">收藏</li>
+        <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
+        <li data-refer=".header-avatar-wrap">主页</li>
       </li>
     </div>
     `
   })
+
   waitDOMContentLoaded(() => {
     addMenu()
 
     function addMenu () {
-      if (document.getElementsByClassName('header-avatar-wrap')[0]) {
+      if (document.querySelector('.header-avatar-wrap')) {
         const menuFab = document.getElementById('menu-fab')
         menuFab.appendChild(menuOverlay)
 
         const items = menuOverlay.querySelectorAll('li')
-        const header = document.getElementsByClassName('bili-header__bar')[0]
+        const header = document.querySelector('.bili-header__bar')[0]
         items.forEach(item => {
-          item.addEventListener('click', (event) => {
+          item.addEventListener('click', event => {
             event.stopPropagation()
-            const refer = item.getAttribute('refer')
+            const refer = item.dataset.refer
 
             const openedDailog = sessionStorage.getItem('opened-dailog') || ''
             if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
@@ -263,7 +266,7 @@ export function headerInMenu () {
 
         const menu = menuOverlay.querySelector('#header-in-menu')
 
-        menuOverlay.addEventListener('click', (event) => {
+        menuOverlay.addEventListener('click', event => {
           event.stopPropagation()
           const openedDailog = sessionStorage.getItem('opened-dailog') || ''
           if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))

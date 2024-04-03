@@ -30,35 +30,33 @@ import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from '.
   switch (part) {
     case 'www':
       if (url.pathname === '/') {
-        // first
         increaseVideoLoadSize()
         handleHeaderImage()
       }
-
       handleScriptPreSetting()
-
       waitDOMContentLoaded(() => {
         localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
         handleHeaderClick()
-
         handleActionbar()
-
-        // 待办：相关内容未加载时灰色显示的框架
         handleScriptSetting()
-
         if (url.pathname.startsWith('/video')) {
-          // Video Interaction
           videoInteraction()
-
           handleSidebar()
         }
-
+        scrollToHidden()
+      })
+      break
+    case 'search':
+      handleScriptPreSetting()
+      waitDOMContentLoaded(() => {
+        localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
+        handleHeaderClick()
+        handleActionbar()
+        handleScriptSetting()
         scrollToHidden()
       })
       break
     case 'space':
-      break
-    case 'search':
       break
     case 'm':
       break
