@@ -1,0 +1,162 @@
+/* ----------------------------------------------------
+ ------------------------ 首页 ------------------------
+ ----------------------------------------------------- */
+
+body {
+    /* 避免评论未加载时显示灰色 */
+    background: white !important;
+
+    /* 添加透明 animation 为 Via 预留加载 initViewport 的时间后，刷新加载出现白屏 */
+
+    --header-height: 46px;
+}
+
+/* 顶栏点击遮罩层 */
+#header-musk {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height);
+    background-color: transparent;
+    z-index: 1002;
+}
+
+/* 双列视频 */
+.recommended-container_floor-aside .container {
+    grid-template-columns: repeat(2, 1fr) !important;
+    padding: 5px;
+    grid-gap: 5px !important;
+    background: #f1f2f3;
+}
+
+/* 头图底色 */
+.bili-header__banner {
+    background-color: #f1f2f3 !important;
+}
+
+/* 显示根据屏宽隐藏的 feed */
+.container>.feed-card {
+    display: block !important;
+}
+
+/* 最小宽度（body、顶栏） */
+body,
+.bili-header,
+.bili-header__banner {
+    min-width: 0 !important;
+}
+
+/* 主页视频流 */
+.bili-feed4-layout {
+    width: 100% !important;
+}
+
+/* ----------------------------------------------------
+ --------------------- 主页视频卡片 --------------------
+ ----------------------------------------------------- */
+
+.container>* {
+    margin-top: 0 !important;
+}
+
+/* 卡片底板 */
+.bili-video-card__wrap {
+    border-radius: 5px;
+}
+
+/* 封面宽长比 */
+.bili-video-card.is-rcmd {
+    --cover-radio: 75% !important;
+}
+
+/* 封面圆角 */
+.v-img.bili-video-card__cover {
+    border-radius: 5px 5px 0 0;
+}
+
+/* 封面信息（阴影层圆角） */
+.bili-video-card__stats {
+    border-radius: 0 !important;
+    --icon-size: 16px;
+    --subtitle-font-size: 11px;
+    white-space: nowrap;
+}
+
+/* 卡片标题 - 字样 */
+.bili-video-card__info--tit {
+    --title-padding-right: 0;
+    --title-font-size: 14px;
+    --title-line-height: 20px;
+}
+
+/* 标题 - 上下距 */
+/* .bili-video-card__info  */
+
+/* 标题 - 左右距 */
+.bili-video-card__info--right {
+    padding: 0 5px;
+}
+
+/* 标题 - 字重 */
+/* .bili-video-card__info--tit > a */
+
+/* 小标 */
+.bili-video-card__info--bottom {
+    --subtitle-font-size: 12px;
+}
+
+.bili-video-card__info--icon-text {
+    padding: 0 5px !important;
+}
+
+/* 小标 - 日期 */
+.bili-video-card__info--owner {
+    flex: 1;
+}
+
+.bili-video-card__info--date {
+    margin-left: auto !important;
+}
+
+/* 小标 - 点赞数 */
+.bili-video-card__info--icon-text {
+    --follow-icon-font-size: 11px;
+    --follow-icon-line-height: 15px;
+}
+
+/* ----------------------------------------------------
+ ------------------------- 按钮 -----------------------
+ ----------------------------------------------------- */
+
+/* 原首页按钮(置顶、刷新按钮):底层隐藏 -10 (同原全屏、音量按钮)(顶栏视口外隐藏) */
+.palette-button-outer {
+    z-index: -10;
+    visibility: hidden;
+}
+
+/* 首页按钮组 */
+.primary-btn,
+span.btn-text-inner,
+.storage-box {
+    display: none !important;
+}
+
+/* ----------------------------------------------------
+ ------------------------- 窗口 -----------------------
+ ----------------------------------------------------- */
+
+/* 登录窗 */
+.login-scan-wp,
+.bili-mini-line {
+    display: none !important;
+}
+
+.bili-mini-content-wp {
+    padding: 52px 0 29px !important;
+}
+
+.bili-mini-login-right-wp,
+.bili-mini-login-right-wp * {
+    max-width: 80vw;
+}

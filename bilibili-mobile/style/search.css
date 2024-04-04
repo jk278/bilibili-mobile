@@ -1,0 +1,173 @@
+/* ----------------------------------------------------
+ ---------------------- 搜索页 ------------------------ 
+ ---------------------------------------------------- */
+
+#i_cecream {
+    min-width: 0 !important;
+}
+
+/* 分类和另几个包含块 */
+.i_wrapper {
+    padding: 0 5px !important;
+}
+
+/* 分类 */
+.vui_tabs--nav-link {
+    padding: 0 1px !important;
+    flex-wrap: wrap;
+    justify-content: center !important;
+}
+
+ul.vui_tabs--nav>* {
+    flex: 1;
+}
+
+/* 广告 */
+.activity-game-list {
+    display: none;
+}
+
+/* 排序筛选 */
+.search-conditions.i_wrapper {
+    margin-top: 8px !important;
+}
+
+.search-condition-row .vui_button--tab {
+    width: 33.3%;
+    margin: 0 !important;
+}
+
+.search-condition-row {
+    width: 100%;
+}
+
+.conditions-order {
+    position: relative;
+}
+
+.conditions-order .i_button_more {
+    position: absolute;
+    bottom: 0;
+    left: 66.6%;
+    padding-left: 23px !important;
+    border: 0;
+    width: 33.3%;
+}
+
+/* 搜索框 */
+body .search-layout .search-header .search-input.search-input {
+    margin: 0 0 5px !important;
+    padding: 0 5px;
+}
+
+/* 搜索框：顶部 fixed */
+.search-fixed-header {
+    min-width: 0 !important;
+    padding: 0 5px;
+    height: var(--header-height) !important;
+}
+
+.search-input-wrap {
+    height: 30px !important;
+    border-radius: 15px !important;
+}
+
+.search-button {
+    border-radius: 0 15px 15px 0 !important;
+    height: 30px !important;
+    width: 80px !important;
+    padding: 0 10px !important;
+}
+
+/* 视频结果 */
+.video-list>div {
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: 0 4px !important;
+    margin-bottom: 10px;
+}
+
+/* 结果块外 padding */
+.search-content {
+    padding: 0 5px !important;
+}
+
+/* 结果块内 */
+.search-page-wrapper .search-page {
+    margin-top: 8px !important;
+    padding-bottom: 0 !important;
+}
+
+/* 页数 */
+.search-page .flex_center {
+    margin: 5px 0 !important;
+}
+
+.vui_pagenation--btns {
+    flex-wrap: wrap;
+}
+
+.vui_pagenation--btns>*:not(last-child) {
+    margin: 0 5px 5px !important;
+}
+
+.vui_pagenation--btn-side {
+    padding: 0 5px;
+    flex: 1 0 20%;
+    margin-bottom: 5px;
+}
+
+.vui_pagenation--btn-num {
+    flex: 1 0 12% !important;
+}
+
+span.vui_pagenation--extend {
+    flex: 1 0 15% !important;
+}
+
+/* 搜索页底部 */
+.link-box {
+    flex-direction: column;
+    margin: 0 10px !important;
+}
+
+.bili-footer {
+    min-width: 0 !important;
+    padding: 5px 0 var(--header-height) !important;
+}
+
+.b-footer-wrap {
+    min-width: 0 !important;
+    margin: 0 5px !important;
+}
+
+.link-box {
+    flex-direction: column;
+}
+
+.link-box>* {
+    max-width: 100%;
+}
+
+.link-item__right,
+.other-link,
+.footer-icons {
+    display: none !important;
+}
+
+/* 影视 */
+.media-item-col,
+.media-list .col_6 {
+    max-width: 100% !important;
+    flex: none !important;
+    margin-bottom: 10px !important;
+}
+
+.show-more-text {
+    margin: 10px 0 20px !important;
+    z-index: 1 !important;
+}
+
+.media-item {
+    padding: 0 !important;
+}

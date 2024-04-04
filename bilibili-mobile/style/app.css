@@ -1,0 +1,189 @@
+/* ---------------------------------------------------- *
+* ----------------------- 操作栏 ----------------------- *
+* ---------------------------------------------------- */
+
+/* 操作栏 */
+#actionbar {
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    height: var(--header-height);
+    z-index: 1;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background: inherit;
+    transition: .5s transform ease-in;
+}
+
+[scroll-hidden=true] #actionbar {
+    transform: translateY(var(--header-height));
+}
+
+#actionbar>* {
+    padding: 8px;
+    opacity: 0;
+    animation: fadeIn 1s ease-in forwards;
+}
+
+#my-top,
+#refresh-fab {
+    display: none;
+}
+
+#actionbar.home {
+
+    #full-now,
+    #sidebar-fab {
+        display: none;
+    }
+
+    #my-top,
+    #refresh-fab {
+        display: block;
+    }
+}
+
+#menu-fab {
+    position: relative;
+    background: inherit;
+    z-index: 2;
+}
+
+/* 设置 z-index 确保 layout 能完全覆盖 */
+
+#sidebar-fab {
+    z-index: 3;
+}
+
+/* 底部菜单内容 */
+#header-in-menu {
+    position: absolute !important;
+    bottom: calc(var(--header-height) + 5px);
+    /* space-evenly : 20px 为底栏图标高度的一半*/
+    left: calc((200vw + 20px) / 3);
+    background-color: white;
+    padding: 5px 0;
+    white-space: nowrap;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    display: none;
+    border-radius: 5px;
+    font-size: 16px;
+    transform: translate(-50%, calc(100% + 5px + var(--header-height)));
+    opacity: 0;
+    transition: .4s ease-in;
+
+    li {
+        list-style-type: none;
+        padding: 5px 30px;
+    }
+}
+
+#header-in-menu.show {
+    display: block;
+    transform: translateX(-50%);
+    opacity: 1;
+}
+
+/* 底部菜单、侧边栏: layout */
+#menu-overlay,
+#sidebar-overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    transition: background-color .6s ease-in;
+}
+
+#menu-overlay#menu-overlay {
+    transition: background-color .4s ease-in;
+}
+
+#menu-overlay:has(>.show),
+body[show-sidebar="true"] #sidebar-overlay {
+    pointer-events: auto;
+    background-color: rgba(0, 0, 0, .3);
+}
+
+/* --------------------- 其它适配 --------------------- */
+
+/* 扩增载入后产生的骨架空位 */
+.floor-single-card:has(.skeleton, .skeleton-item) {
+    display: none;
+}
+
+/* 脚本设置窗口 */
+.setting-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    z-index: 1;
+    border: 1px solid var(--line_regular);
+    display: none;
+    flex-direction: column;
+    padding: 10px 5px;
+    border-radius: 10px;
+    font-size: 16px;
+    max-height: calc(100vh - var(--header-height)* 2 - 10px);
+    width: 260px;
+    max-width: calc(100% - 20px);
+    box-shadow: 0 0 3px rgba(0, 0, 0, .3);
+}
+
+.setting-panel.show {
+    display: flex !important;
+}
+
+.setting-title {
+    padding-bottom: 5px;
+    margin: 0 5px;
+    border-bottom: 1px solid var(--line_regular);
+    text-align: center;
+    color: var(--Ga7);
+}
+
+.setting-checkboxes {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.setting-checkboxes label {
+    margin: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.setting-checkboxes span {
+    flex-grow: 1;
+    text-align: center;
+    user-select: none;
+}
+
+.setting-checkboxes input[type="checkbox"] {
+    width: 16px;
+    height: 26px;
+}
+
+.setting-checkboxes input[type="number"] {
+    width: 40px;
+    appearance: textfield;
+    height: 22px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+.setting-conform {
+    margin: 2px 5px;
+    border-radius: 15px;
+    border: 1px solid var(--line_regular);
+    padding: 2px;
+    background-color: var(--graph_bg_thin) !important;
+}

@@ -1,0 +1,98 @@
+/* ----------------------------------------------------
+ --------------------- 个人主页 ----------------------- 
+ ----------------------------------------------------- */
+
+.wrapper {
+    width: 100% !important;
+}
+
+.content {
+    max-width: 100%;
+}
+
+#page-index .col-1 {
+    max-width: 100%;
+    padding: 0 !important;
+}
+
+.channel-video {
+    white-space: wrap !important;
+}
+
+.small-item {
+    width: calc(50% - 10px);
+    padding: 0 5px !important;
+}
+
+.small-item .cover {
+    width: 100% !important;
+    height: auto !important;
+}
+
+#i-masterpiece {
+    margin-left: 0 !important;
+}
+
+#page-index .fav-item {
+    margin: 0 10px !important;
+}
+
+#page-fav .fav-main {
+    width: 100% !important;
+}
+
+.n .n-inner {
+    display: flex;
+    flex-wrap: wrap;
+    height: auto !important;
+    padding: 0 !important;
+}
+
+.n-tab-links>* {
+    margin: 0 !important;
+}
+
+.n-data {
+    padding: 0 5px !important;
+    height: auto !important;
+}
+
+.n-statistics {
+    height: auto !important;
+}
+
+.n .n-btn {
+    height: auto !important;
+    line-height: 30px !important;
+}
+
+.n-tab-links {
+    white-space: nowrap;
+    overflow: auto;
+}
+
+.favInfo-details {
+    max-width: 60%;
+    margin-left: 5px !important;
+}
+
+.fav-options>* {
+    margin: 0 !important;
+}
+
+.favList-info {
+    padding: 0 !important;
+    margin: 0 10px !important;
+}
+
+.n-cursor {
+    bottom: 35px !important;
+}
+
+.navigator-fixed {
+    display: none;
+}
+
+span.length {
+    z-index: 1 !important;
+}

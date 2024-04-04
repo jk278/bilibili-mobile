@@ -1,0 +1,276 @@
+/* -------------------------------------------------- 
+   ------------------------ 顶栏 ----------------------- 
+   -------------------------------------------------- */
+
+/* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
+
+/* 避免初始内联高度影响计算 */
+#biliMainHeader {
+    position: fixed;
+    z-index: 2;
+    /* 影响个人顶栏宽度 */
+    width: 100%;
+}
+
+/* 顶栏边距（右边距减去头像右空隙） */
+.bili-header__bar {
+    padding: 0 10px 0 15px !important;
+    transition: transform 0.5s ease-in;
+}
+
+/* 顶栏高度 */
+.bili-header .bili-header__bar {
+    height: var(--header-height) !important;
+}
+
+/* 视频页顶栏高度 */
+.header-v3 #biliMainHeader .bili-header .bili-header__bar {
+    height: var(--header-height) !important;
+}
+
+/* 顶部按钮高度 */
+.entry-title,
+.right-entry,
+.mini-header__logo {
+    max-height: var(--header-height);
+}
+
+.left-entry__title {
+    height: var(--header-height) !important;
+}
+
+/* 头像高度 */
+.v-popover-wrap.header-avatar-wrap {
+    height: var(--header-height) !important;
+}
+
+/* 收藏按钮高度 */
+.header-favorite-container-box,
+.header-favorite-container {
+    max-height: var(--header-height) !important;
+}
+
+/* 顶栏高度：HTML 初始加载时，biliMainHeader 已有内联高度，
+     保留顶栏外框（biliMainHeader）高度，修改其它元素 */
+
+/* 不影响结果 */
+#biliMainHeader .bili-header {
+    min-height: var(--header-height);
+    height: var(--header-height);
+}
+
+/* 搜索框 */
+.center-search-container {
+    position: absolute !important;
+    width: 100%;
+    left: 0;
+    top: 0;
+    padding: 10px 20px 5px !important;
+    z-index: 3;
+    margin: 0 !important;
+    display: none;
+}
+
+.center-search-container.show {
+    display: block;
+}
+
+/* 顶栏右侧图标 */
+.right-entry {
+    flex: 1;
+    min-width: 0;
+    margin: 0 !important;
+    justify-content: space-evenly;
+}
+
+.right-entry>* {
+    animation: fadeIn 1s ease-in;
+}
+
+.left-entry {
+    min-width: 0;
+    margin: 0 !important;
+}
+
+/* 头像图表边距 */
+.header-avatar-wrap {
+    padding-right: 0 !important;
+}
+
+/* 禁止换行 */
+.left-entry__title,
+.dm.item {
+    white-space: nowrap;
+}
+
+/* 头像置右 */
+.v-popover-wrap.header-avatar-wrap {
+    order: 5;
+    margin-left: auto;
+}
+
+/* 剩余元素均分 */
+.v-popover-wrap:not(.header-avatar-wrap) {
+    flex: 1;
+}
+
+/* 肉眼个别微调 */
+.right-entry--message {
+    padding-left: 3px;
+}
+
+/* 顶栏元素间距 */
+.left-entry__title {
+    margin-right: 0px !important;
+}
+
+/* 与头像左空隙对齐 */
+.mini-header__logo {
+    margin-right: 7px !important;
+}
+
+/* 禁用主题色重载 */
+svg.mini-header__logo path {
+    fill: var(--brand_blue) !important;
+}
+
+/* 移除“首页”字样 */
+.mini-header__title {
+    display: none !important;
+}
+
+/* 移除顶部动图和临时静图 */
+.animated-banner,
+#bili-header-banner-img {
+    display: none !important;
+}
+
+/* 使用 controlHeaderImage 获取随机头图 */
+
+.biliheader__banner {
+    display: none !important;
+}
+
+/* -------------------------------------------------- 
+   ---------------------- 展开图类 --------------------- 
+   -------------------------------------------------- */
+
+.v-popover {
+    position: fixed !important;
+    top: 50vh !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+    max-width: 100%;
+    padding: 5px !important;
+    left: 50% !important;
+}
+
+/* 取消分类图在加载过程中类的变化导致的横向平移从0到-50%的不好看的动画 */
+.v-popover.is-bottom-start {
+    transform: translate(-50%, -50%) !important;
+}
+
+/* 分类(左侧入口)展开图: 一列 */
+.channel-panel__column {
+    flex: 1;
+    padding: 0 !important;
+}
+
+/* 右侧入口展开图 */
+.dynamic-panel-popover,
+.favorite-panel-popover,
+.history-panel-popover {
+    max-width: 100%;
+    padding: 0 5px !important;
+}
+
+/* 动态展开图 */
+.dynamic-video-item {
+    margin-right: 0 !important;
+}
+
+.header-dynamic-list-item {
+    padding: 0 !important;
+}
+
+.header-dynamic__box--center {
+    max-width: 60%;
+}
+
+.header-dynamic__box--right {
+    top: 0 !important;
+    margin-bottom: 0 !important;
+    width: unset !important;
+    flex: 1;
+
+    .cover {
+        width: unset !important;
+        height: unset !important;
+    }
+}
+
+/* 收藏展开图 */
+.favorite-panel-popover__nav {
+    max-width: 25%;
+}
+
+.header-fav-card__image {
+    max-width: 40%;
+
+    picture {
+        max-width: 100%;
+        height: 100% !important;
+    }
+}
+
+/* 间距（收藏展开图） */
+.favorite-panel-popover__nav .tab-item {
+    padding: 0 6px !important;
+}
+
+.header-fav-card {
+    padding: 6px !important;
+}
+
+.favorite-panel-popover__nav {
+    margin-top: 6px !important;
+}
+
+/* 历史展开图 */
+.header-history-video {
+    padding: 5px 10px !important;
+}
+
+/* 移除头像大图 */
+.header-entry-avatar {
+    display: none !important;
+}
+
+/* 关闭头像动画 */
+.header-entry-mini {
+    animation: unset !important;
+}
+
+/* 移除次要入口 */
+.left-entry>li:not(:nth-of-type(1)),
+.vip-wrap,
+.right-entry-item:has(>.vip-wrap),
+.right-entry-item:nth-of-type(6),
+.right-entry-item--upload,
+.header-channel,
+.bili-header__channel,
+.recommended-swipe,
+.feed-roll-btn {
+    display: none !important;
+}
+
+/* 广告、推广图块 */
+/* 底部登录弹窗类 .lt-row 可能包含其它元素 */
+/* 首页顶部动图上的大 Logo */
+.container>*:has(.bili-video-card__info--ad),
+.floor-single-card,
+.desktop-download-tip,
+.lt-row,
+.header-banner__inner {
+    display: none !important;
+}

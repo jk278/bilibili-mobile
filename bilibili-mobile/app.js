@@ -1,6 +1,11 @@
 // @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
 
-import './style.css'
+import './style/app.css'
+import './style/header.css'
+import './style/home.css'
+import './style/video.css'
+import './style/search.css'
+import './style/user.css'
 
 import { initViewport } from './init.js'
 import { preventBeforeUnload, increaseVideoLoadSize, scrollToHidden } from './window.js'
