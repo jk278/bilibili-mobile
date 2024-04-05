@@ -11,7 +11,6 @@ export function hideHeader () {
     /* css */
     textContent: `
       .bili-header__bar, #header-musk {transform: translateY(-100%);}
-      #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
       /* 父布局不要用 transform */
       .video-container-v1.video-container-v1 {top: 0 !important;}
       .right-container.right-container {height: 100%;}
@@ -20,6 +19,7 @@ export function hideHeader () {
   })
   ensureHeadGetted(hiddenStyle)
 }
+// #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
 
 // 操作栏
 export function handleActionbar () {
@@ -71,18 +71,20 @@ export function handleActionbar () {
   function setFullbtn () {
     const fullBtn = document.getElementById('full-now')
     fullBtn.addEventListener('click', () => {
-      const video = document.getElementsByTagName('video')[0]
+      const video = document.querySelector('video')
       // 等于符号优先级更高
       if ((localStorage.getItem('full-unmuted') || '0') === '1') {
         video.play()
         video.muted = false
         if (video.volume === 0) {
-          document.getElementsByClassName('bpx-player-ctrl-muted-icon')[0].click()
+          document.querySelector('.bpx-player-ctrl-muted-icon').click()
         }
       }
       fullScreen()
       function fullScreen () {
-        const rawFullBtn = document.getElementsByClassName('bpx-player-ctrl-full')[0]
+        const video = document.querySelector('video')
+        const btnSelector = video.videoWidth / video.videoHeight < 1 ? '.bpx-player-ctrl-web' : '.bpx-player-ctrl-full'
+        const rawFullBtn = document.querySelector(btnSelector)
         rawFullBtn ? rawFullBtn.click() : setTimeout(fullScreen, 500)
       }
     })
@@ -93,7 +95,7 @@ export function handleActionbar () {
     topBtn.addEventListener('click', () => {
       toTop()
       function toTop () {
-        const rawTopBtn = document.getElementsByClassName('top-btn')[0]
+        const rawTopBtn = document.querySelector('.top-btn')
         rawTopBtn ? rawTopBtn.click() : setTimeout(toTop, 500)
       }
     })
@@ -109,7 +111,7 @@ export function handleActionbar () {
     searchbarBtn.addEventListener('click', (event) => {
     // 事件完成后立即冒泡
       event.stopPropagation()
-      const searchbarContainer = document.getElementsByClassName('center-search-container')[0]
+      const searchbarContainer = document.querySelector('.center-search-container')
       searchbarContainer.classList.add('show')
       const input = searchbarContainer.querySelector('input')
       input.focus()
@@ -155,7 +157,7 @@ export function handleActionbar () {
     refreshBtn.addEventListener('click', () => {
       refresh()
       function refresh () {
-        const rawRefreshBtn = document.getElementsByClassName('flexible-roll-btn-inner')[0]
+        const rawRefreshBtn = document.querySelector('.flexible-roll-btn-inner')
         rawRefreshBtn ? rawRefreshBtn.click() : setTimeout(refresh, 500)
       }
     })
@@ -186,8 +188,8 @@ export function handleSidebar () {
   // // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
   const recommendLiist = document.getElementById('reco_list')
   recommendLiist.addEventListener('click', (event) => {
-    const nextPlay = document.getElementsByClassName('rec-title')[0]
-    const recommendFooter = document.getElementsByClassName('rec-footer')[0]
+    const nextPlay = document.querySelector('.rec-title')
+    const recommendFooter = document.querySelector('.rec-footer')
     if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
   })
 }

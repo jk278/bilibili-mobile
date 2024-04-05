@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.0-alpha
+// @version            4.0-alpha.5
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在 Via 与 Safari 打开电脑模式，获取舒适的移动端体验。
 // @author             jk278
@@ -10,6 +10,8 @@
 // @match              https://*.bilibili.com/*
 // @grant              unsafeWindow
 // @grant              GM_registerMenuCommand
+// @grant              GM_getValue
+// @grant              GM_setValue
 // @run-at             document-start
 // @icon               https://www.bilibili.com/favicon.ico
 // ==/UserScript==
@@ -37,7 +39,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(8);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_app_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(8);
 
       
       
@@ -59,12 +61,12 @@ options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWi
 options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
 options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
 
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_app_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
 
 
 
 
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_app_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_app_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_app_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
 
 
 /***/ }),
@@ -371,7 +373,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     #refresh-fab {
         display: block;
     }
-
 }
 
 #menu-fab {
@@ -516,337 +517,179 @@ input[type="number"]::-webkit-outer-spin-button {
     border: 1px solid var(--line_regular);
     padding: 2px;
     background-color: var(--graph_bg_thin) !important;
-}
-
-/* ----------------------------------------------------
-  * ---------------------------------------------------- *
-  * ----------------------- 首页 ----------------------- *
-  * ---------------------------------------------------- *
-   ----------------------------------------------------- */
-
-body {
-    /* 避免评论未加载时显示灰色 */
-    background: white !important;
-
-    /* 添加透明 animation 为 Via 预留加载 initViewport 的时间后，刷新加载出现白屏 */
-
-    --header-height: 46px;
-}
-
-/* 顶栏点击遮罩层 */
-#header-musk {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: var(--header-height);
-    background-color: transparent;
-    z-index: 1002;
-}
-
-/* 双列视频 */
-.recommended-container_floor-aside .container {
-    grid-template-columns: repeat(2, 1fr) !important;
-    padding: 5px;
-    grid-gap: 5px !important;
-    background: #f1f2f3;
-}
-
-/* 头图底色 */
-.bili-header__banner {
-    background-color: #f1f2f3 !important;
-}
-
-/* 显示根据屏宽隐藏的 feed */
-.container>.feed-card {
-    display: block !important;
-}
-
-/* 最小宽度（body、顶栏） */
-body,
-.bili-header,
-.bili-header__banner {
-    min-width: 0 !important;
-}
-
-/* 主页视频流 */
-.bili-feed4-layout {
-    width: 100% !important;
-}
-
-/* ----------------------------------------------------
- ---------------------- 搜索页 ------------------------ 
- ---------------------------------------------------- */
-
-#i_cecream {
-    min-width: 0 !important;
-}
-
-/* 分类和另几个包含块 */
-.i_wrapper {
-    padding: 0 5px !important;
-}
-
-/* 分类 */
-.vui_tabs--nav-link {
-    padding: 0 1px !important;
-    flex-wrap: wrap;
-    justify-content: center !important;
-}
-
-ul.vui_tabs--nav>* {
-    flex: 1;
-}
-
-/* 广告 */
-.activity-game-list {
-    display: none;
-}
-
-/* 排序筛选 */
-.search-conditions.i_wrapper {
-    margin-top: 8px !important;
-}
-
-.search-condition-row .vui_button--tab {
-    width: 33.3%;
-    margin: 0 !important;
-}
-
-.search-condition-row {
-    width: 100%;
-}
-
-.conditions-order {
-    position: relative;
-}
-
-.conditions-order .i_button_more {
-    position: absolute;
-    bottom: 0;
-    left: 66.6%;
-    padding-left: 23px !important;
-    border: 0;
-    width: 33.3%;
-}
-
-/* 搜索框 */
-body .search-layout .search-header .search-input.search-input {
-    margin: 0 0 5px !important;
-    padding: 0 5px;
-}
-
-/* 搜索框：顶部 fixed */
-.search-fixed-header {
-    min-width: 0 !important;
-    padding: 0 5px;
-    height: var(--header-height) !important;
-}
-
-.search-input-wrap {
-    height: 30px !important;
-    border-radius: 15px !important;
-}
-
-.search-button {
-    border-radius: 0 15px 15px 0 !important;
-    height: 30px !important;
-    width: 80px !important;
-    padding: 0 10px !important;
-}
-
-/* 视频结果 */
-.video-list>div {
-    flex: 0 0 50%;
-    max-width: 50%;
-    padding: 0 4px !important;
-    margin-bottom: 10px;
-}
-
-/* 结果块外 padding */
-.search-content {
-    padding: 0 5px !important;
-}
-
-/* 结果块内 */
-.search-page-wrapper .search-page {
-    margin-top: 8px !important;
-    padding-bottom: 0 !important;
-}
-
-/* 页数 */
-.search-page .flex_center {
-    margin: 5px 0 !important;
-}
-
-.vui_pagenation--btns {
-    flex-wrap: wrap;
-}
-
-.vui_pagenation--btns>*:not(last-child) {
-    margin: 0 5px 5px !important;
-}
-
-.vui_pagenation--btn-side {
-    padding: 0 5px;
-    flex: 1 0 20%;
-    margin-bottom: 5px;
-}
-
-.vui_pagenation--btn-num {
-    flex: 1 0 12% !important;
-}
-
-span.vui_pagenation--extend {
-    flex: 1 0 15% !important;
-}
-
-/* 搜索页底部 */
-.link-box {
-    flex-direction: column;
-    margin: 0 10px !important;
-}
-
-.bili-footer {
-    min-width: 0 !important;
-    padding: 5px 0 var(--header-height) !important;
-}
-
-.b-footer-wrap {
-    min-width: 0 !important;
-    margin: 0 5px !important;
-}
-
-.link-box {
-    flex-direction: column;
-}
-
-.link-box>* {
-    max-width: 100%;
-}
-
-.link-item__right,
-.other-link,
-.footer-icons {
-    display: none !important;
-}
-
-/* 影视 */
-.media-item-col,
-.media-list .col_6 {
-    max-width: 100% !important;
-    flex: none !important;
-    margin-bottom: 10px !important;
-}
-
-.show-more-text {
-    margin: 10px 0 20px !important;
-}
-
-.media-item {
-    padding: 0 !important;
-}
-
-/* ----------------------------------------------------
- --------------------- 个人主页 ----------------------- 
- ----------------------------------------------------- */
-
-.wrapper {
-    width: 100% !important;
-}
-
-.content {
-    max-width: 100%;
-}
-
-#page-index .col-1 {
-    max-width: 100%;
-    padding: 0 !important;
-}
-
-.channel-video {
-    white-space: wrap !important;
-}
-
-.small-item {
-    width: calc(50% - 10px);
-    padding: 0 5px !important;
-}
-
-.small-item .cover {
-    width: 100% !important;
-    height: auto !important;
-}
-
-#i-masterpiece {
-    margin-left: 0 !important;
-}
-
-#page-index .fav-item {
-    margin: 0 10px !important;
-}
-
-#page-fav .fav-main {
-    width: 100% !important;
-}
-
-.n .n-inner {
-    display: flex;
-    flex-wrap: wrap;
-    height: auto !important;
-    padding: 0 !important;
-}
-
-.n-tab-links>* {
-    margin: 0 !important;
-}
-
-.n-data {
-    padding: 0 5px !important;
-    height: auto !important;
-}
-
-.n-statistics {
-    height: auto !important;
-}
-
-.n .n-btn {
-    height: auto !important;
-    line-height: 30px !important;
-}
-
-.n-tab-links {
-    white-space: nowrap;
-    overflow: auto;
-}
-
-.favInfo-details {
-    max-width: 60%;
-    margin-left: 5px !important;
-}
-
-.fav-options>* {
-    margin: 0 !important;
-}
-
-.favList-info {
-    padding: 0 !important;
-    margin: 0 10px !important;
-}
-
-.n-cursor {
-    bottom: 35px !important;
-}
-
-.navigator-fixed {
-    display: none;
-}
-
-span.length {
-    z-index: 1 !important;
-}
-
-/* -------------------------------------------------- 
+}`, ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+/* 9 */
+/***/ ((module) => {
+
+
+
+module.exports = function (i) {
+  return i[1];
+};
+
+/***/ }),
+/* 10 */
+/***/ ((module) => {
+
+
+
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+*/
+module.exports = function (cssWithMappingToString) {
+  var list = [];
+
+  // return the list of modules as css string
+  list.toString = function toString() {
+    return this.map(function (item) {
+      var content = "";
+      var needLayer = typeof item[5] !== "undefined";
+      if (item[4]) {
+        content += "@supports (".concat(item[4], ") {");
+      }
+      if (item[2]) {
+        content += "@media ".concat(item[2], " {");
+      }
+      if (needLayer) {
+        content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {");
+      }
+      content += cssWithMappingToString(item);
+      if (needLayer) {
+        content += "}";
+      }
+      if (item[2]) {
+        content += "}";
+      }
+      if (item[4]) {
+        content += "}";
+      }
+      return content;
+    }).join("");
+  };
+
+  // import a list of modules into the list
+  list.i = function i(modules, media, dedupe, supports, layer) {
+    if (typeof modules === "string") {
+      modules = [[null, modules, undefined]];
+    }
+    var alreadyImportedModules = {};
+    if (dedupe) {
+      for (var k = 0; k < this.length; k++) {
+        var id = this[k][0];
+        if (id != null) {
+          alreadyImportedModules[id] = true;
+        }
+      }
+    }
+    for (var _k = 0; _k < modules.length; _k++) {
+      var item = [].concat(modules[_k]);
+      if (dedupe && alreadyImportedModules[item[0]]) {
+        continue;
+      }
+      if (typeof layer !== "undefined") {
+        if (typeof item[5] === "undefined") {
+          item[5] = layer;
+        } else {
+          item[1] = "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {").concat(item[1], "}");
+          item[5] = layer;
+        }
+      }
+      if (media) {
+        if (!item[2]) {
+          item[2] = media;
+        } else {
+          item[1] = "@media ".concat(item[2], " {").concat(item[1], "}");
+          item[2] = media;
+        }
+      }
+      if (supports) {
+        if (!item[4]) {
+          item[4] = "".concat(supports);
+        } else {
+          item[1] = "@supports (".concat(item[4], ") {").concat(item[1], "}");
+          item[4] = supports;
+        }
+      }
+      list.push(item);
+    }
+  };
+  return list;
+};
+
+/***/ }),
+/* 11 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_header_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(12);
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_header_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_header_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_header_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_header_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+/* 12 */
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/* -------------------------------------------------- 
    ------------------------ 顶栏 ----------------------- 
    -------------------------------------------------- */
 
@@ -1121,11 +964,135 @@ svg.mini-header__logo path {
 .lt-row,
 .header-banner__inner {
     display: none !important;
+}`, ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+/* 13 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_home_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(14);
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_home_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_home_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_home_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_home_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+/* 14 */
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/* ----------------------------------------------------
+ ------------------------ 首页 ------------------------
+ ----------------------------------------------------- */
+
+body {
+    /* 避免评论未加载时显示灰色 */
+    background: white !important;
+
+    /* 添加透明 animation 为 Via 预留加载 initViewport 的时间后，刷新加载出现白屏 */
+
+    --header-height: 46px;
+}
+
+/* 顶栏点击遮罩层 */
+#header-musk {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height);
+    background-color: transparent;
+    z-index: 1002;
+}
+
+/* 双列视频 */
+.recommended-container_floor-aside .container {
+    grid-template-columns: repeat(2, 1fr) !important;
+    padding: 5px;
+    grid-gap: 5px !important;
+    background: #f1f2f3;
+}
+
+/* 头图底色 */
+.bili-header__banner {
+    background-color: #f1f2f3 !important;
+}
+
+/* 显示根据屏宽隐藏的 feed */
+.container>.feed-card {
+    display: block !important;
+}
+
+/* 最小宽度（body、顶栏） */
+body,
+.bili-header,
+.bili-header__banner {
+    min-width: 0 !important;
+}
+
+/* 主页视频流 */
+.bili-feed4-layout {
+    width: 100% !important;
 }
 
 /* ----------------------------------------------------
-  * --------------------- 主页视频卡片 ------------------- *
-   ----------------------------------------------------- */
+ --------------------- 主页视频卡片 --------------------
+ ----------------------------------------------------- */
 
 .container>* {
     margin-top: 0 !important;
@@ -1197,6 +1164,113 @@ svg.mini-header__logo path {
 }
 
 /* ----------------------------------------------------
+ ------------------------- 按钮 -----------------------
+ ----------------------------------------------------- */
+
+/* 原首页按钮(置顶、刷新按钮):底层隐藏 -10 (同原全屏、音量按钮)(顶栏视口外隐藏) */
+.palette-button-outer {
+    z-index: -10;
+    visibility: hidden;
+}
+
+/* 首页按钮组 */
+.primary-btn,
+span.btn-text-inner,
+.storage-box {
+    display: none !important;
+}
+
+/* ----------------------------------------------------
+ ------------------------- 窗口 -----------------------
+ ----------------------------------------------------- */
+
+/* 登录窗 */
+.login-scan-wp,
+.bili-mini-line {
+    display: none !important;
+}
+
+.bili-mini-content-wp {
+    padding: 52px 0 29px !important;
+}
+
+.bili-mini-login-right-wp,
+.bili-mini-login-right-wp * {
+    max-width: 80vw;
+}
+`, ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+/* 15 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(16);
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+/* 16 */
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/* ----------------------------------------------------
   * ---------------------------------------------------- *
   * --------------------- 视频详情页 -------------------- *
   * ---------------------------------------------------- *
@@ -1241,13 +1315,13 @@ svg.mini-header__logo path {
    ----------------------------------------------------- */
 
 /* 修改播放器固定尺寸 */
-#bilibili-player {
+/* #bilibili-player {
     height: 100% !important;
     width: 100% !important;
-}
+} */
 
 /* 固定视频（外框尺寸） */
-#playerWrap {
+/* #playerWrap {
     position: fixed;
     left: 0;
     top: var(--header-height);
@@ -1255,7 +1329,7 @@ svg.mini-header__logo path {
     height: var(--video-height) !important;
     z-index: 75;
     transition: transform 0.5s ease-in;
-}
+} */
 
 /* 小窗时的隐藏 - 始终隐藏*/
 /* 顶部关注、音乐、反馈 */
@@ -1270,42 +1344,42 @@ svg.mini-header__logo path {
 /* 小窗时的隐藏 - 固定显示*/
 /* 视频控制栏 */
 /* 弹幕行 */
-.bpx-player-control-wrap,
+/* .bpx-player-control-wrap,
 .bpx-player-sending-area {
     display: block !important;
-}
+} */
 
 /* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
-/*.bpx-player-toast-wrap {
+.bpx-player-toast-wrap {
     bottom: unset !important;
     top: 50%;
     transform: translateY(-50%);
-  }*/
+  }
 
-.bpx-player-toast-item {
+/* .bpx-player-toast-item {
     margin: 0 !important;
-}
+} */
 
 /* 小窗时的暂停图标 */
-.bpx-player-mini-warp {
+/* .bpx-player-mini-warp {
     display: none !important;
-}
+} */
 
 /* 彻底移除小窗样式 */
-#playerWrap .bpx-player-container[data-screen=mini] {
+/* #playerWrap .bpx-player-container[data-screen=mini] {
     position: relative !important;
     width: 100% !important;
     height: 100% !important;
     right: 0 !important;
     bottom: 0 !important;
     transition: top 0.5s ease-in;
-}
+} */
 
 /* 移除小窗等按钮 */
-.fixed-sidenav-storage>*:nth-child(1),
+/* .fixed-sidenav-storage>*:nth-child(1),
 .fixed-sidenav-storage>*:nth-child(2) {
     display: none !important;
-}
+} */
 
 /* 窄屏不隐藏控制条和阴影 */
 .bpx-player-control-entity,
@@ -1313,10 +1387,9 @@ svg.mini-header__logo path {
     display: block !important;
 }
 
-/* 移除次要按钮：画中画、宽屏、页面全屏、时间、选集 */
+/* 移除次要按钮：画中画、宽屏、时间、选集 */
 .bpx-player-ctrl-pip,
 .bpx-player-ctrl-wide,
-.bpx-player-ctrl-web,
 .bpx-player-ctrl-time,
 .bpx-player-ctrl-eplist {
     display: none !important;
@@ -1324,7 +1397,7 @@ svg.mini-header__logo path {
 
 /* 横屏时恢复时间显示 */
 @media screen and (orientation: landscape) {
-    .bpx-player-ctrl-time {
+    .bpx-player-container[data-screen="full"]:not([data-portrait]) .bpx-player-ctrl-time {
         display: block !important;
     }
 }
@@ -1924,6 +1997,11 @@ body[show-sidebar="true"] .right-container {
     }
 }
 
+/* 评论投票 */
+.vote-dialog {
+    max-width: calc(100% - 10px);
+}
+
 /* 块状广告（包括推荐列） */
 #activity_vote,
 #bannerAd,
@@ -1935,23 +2013,8 @@ body[show-sidebar="true"] .right-container {
 }
 
 /* ----------------------------------------------------
-  * ---------------------------------------------------- *
-  * ------------------------ 按钮 ---------------------- *
-  * ---------------------------------------------------- *
-   ----------------------------------------------------- */
-
-/* 原首页按钮(置顶、刷新按钮):底层隐藏 -10 (同原全屏、音量按钮)(顶栏视口外隐藏) */
-.palette-button-outer {
-    z-index: -10;
-    visibility: hidden;
-}
-
-/* 首页按钮组 */
-.primary-btn,
-span.btn-text-inner,
-.storage-box {
-    display: none !important;
-}
+ ------------------------- 按钮 -----------------------
+ ----------------------------------------------------- */
 
 /* 视频页返回顶部按钮（添加渐变） */
 /* 权重：基本设置属性 < transition < animation */
@@ -1976,134 +2039,472 @@ span.btn-text-inner,
     right: unset !important;
     bottom: 78px !important;
     z-index: 1 !important;
-}
-
-/* ----------------------------------------------------
-  * ---------------------------------------------------- *
-  * ---------------------- 其它窗口 -------------------- *
-  * ---------------------------------------------------- *
-   ----------------------------------------------------- */
-
-/* 登录窗 */
-.login-scan-wp,
-.bili-mini-line {
-    display: none !important;
-}
-
-.bili-mini-content-wp {
-    padding: 52px 0 29px !important;
-}
-
-.bili-mini-login-right-wp,
-.bili-mini-login-right-wp * {
-    max-width: 80vw;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
 
 /***/ }),
-/* 9 */
-/***/ ((module) => {
+/* 17 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_search_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(18);
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_search_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
 
 
 
-module.exports = function (i) {
-  return i[1];
-};
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_search_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_search_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_search_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
 
 /***/ }),
-/* 10 */
-/***/ ((module) => {
+/* 18 */
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
 
 
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/* ----------------------------------------------------
+ ---------------------- 搜索页 ------------------------ 
+ ---------------------------------------------------- */
 
-/*
-  MIT License http://www.opensource.org/licenses/mit-license.php
-  Author Tobias Koppers @sokra
-*/
-module.exports = function (cssWithMappingToString) {
-  var list = [];
+#i_cecream {
+    min-width: 0 !important;
+}
 
-  // return the list of modules as css string
-  list.toString = function toString() {
-    return this.map(function (item) {
-      var content = "";
-      var needLayer = typeof item[5] !== "undefined";
-      if (item[4]) {
-        content += "@supports (".concat(item[4], ") {");
-      }
-      if (item[2]) {
-        content += "@media ".concat(item[2], " {");
-      }
-      if (needLayer) {
-        content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {");
-      }
-      content += cssWithMappingToString(item);
-      if (needLayer) {
-        content += "}";
-      }
-      if (item[2]) {
-        content += "}";
-      }
-      if (item[4]) {
-        content += "}";
-      }
-      return content;
-    }).join("");
-  };
+/* 分类和另几个包含块 */
+.i_wrapper {
+    padding: 0 5px !important;
+}
 
-  // import a list of modules into the list
-  list.i = function i(modules, media, dedupe, supports, layer) {
-    if (typeof modules === "string") {
-      modules = [[null, modules, undefined]];
-    }
-    var alreadyImportedModules = {};
-    if (dedupe) {
-      for (var k = 0; k < this.length; k++) {
-        var id = this[k][0];
-        if (id != null) {
-          alreadyImportedModules[id] = true;
-        }
-      }
-    }
-    for (var _k = 0; _k < modules.length; _k++) {
-      var item = [].concat(modules[_k]);
-      if (dedupe && alreadyImportedModules[item[0]]) {
-        continue;
-      }
-      if (typeof layer !== "undefined") {
-        if (typeof item[5] === "undefined") {
-          item[5] = layer;
-        } else {
-          item[1] = "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {").concat(item[1], "}");
-          item[5] = layer;
-        }
-      }
-      if (media) {
-        if (!item[2]) {
-          item[2] = media;
-        } else {
-          item[1] = "@media ".concat(item[2], " {").concat(item[1], "}");
-          item[2] = media;
-        }
-      }
-      if (supports) {
-        if (!item[4]) {
-          item[4] = "".concat(supports);
-        } else {
-          item[1] = "@supports (".concat(item[4], ") {").concat(item[1], "}");
-          item[4] = supports;
-        }
-      }
-      list.push(item);
-    }
-  };
-  return list;
-};
+/* 分类 */
+.vui_tabs--nav-link {
+    padding: 0 1px !important;
+    flex-wrap: wrap;
+    justify-content: center !important;
+}
+
+ul.vui_tabs--nav>* {
+    flex: 1;
+}
+
+/* 广告 */
+.activity-game-list {
+    display: none;
+}
+
+/* 排序筛选 */
+.search-conditions.i_wrapper {
+    margin-top: 8px !important;
+}
+
+.search-condition-row .vui_button--tab {
+    width: 33.3%;
+    margin: 0 !important;
+}
+
+.search-condition-row {
+    width: 100%;
+}
+
+.conditions-order {
+    position: relative;
+}
+
+.conditions-order .i_button_more {
+    position: absolute;
+    bottom: 0;
+    left: 66.6%;
+    padding-left: 23px !important;
+    border: 0;
+    width: 33.3%;
+}
+
+/* 搜索框 */
+body .search-layout .search-header .search-input.search-input {
+    margin: 0 0 5px !important;
+    padding: 0 5px;
+}
+
+/* 搜索框：顶部 fixed */
+.search-fixed-header {
+    min-width: 0 !important;
+    padding: 0 5px;
+    height: var(--header-height) !important;
+}
+
+.search-input-wrap {
+    height: 30px !important;
+    border-radius: 15px !important;
+}
+
+.search-button {
+    border-radius: 0 15px 15px 0 !important;
+    height: 30px !important;
+    width: 80px !important;
+    padding: 0 10px !important;
+}
+
+/* 视频结果 */
+.video-list>div {
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: 0 4px !important;
+    margin-bottom: 10px;
+}
+
+/* 结果块外 padding */
+.search-content {
+    padding: 0 5px !important;
+}
+
+/* 结果块内 */
+.search-page-wrapper .search-page {
+    margin-top: 8px !important;
+    padding-bottom: 0 !important;
+}
+
+/* 页数 */
+.search-page .flex_center {
+    margin: 5px 0 !important;
+}
+
+.vui_pagenation--btns {
+    flex-wrap: wrap;
+}
+
+.vui_pagenation--btns>*:not(last-child) {
+    margin: 0 5px 5px !important;
+}
+
+.vui_pagenation--btn-side {
+    padding: 0 5px;
+    flex: 1 0 20%;
+    margin-bottom: 5px;
+}
+
+.vui_pagenation--btn-num {
+    flex: 1 0 12% !important;
+}
+
+span.vui_pagenation--extend {
+    flex: 1 0 15% !important;
+}
+
+/* 搜索页底部 */
+.link-box {
+    flex-direction: column;
+    margin: 0 10px !important;
+}
+
+.bili-footer {
+    min-width: 0 !important;
+    padding: 5px 0 var(--header-height) !important;
+}
+
+.b-footer-wrap {
+    min-width: 0 !important;
+    margin: 0 5px !important;
+}
+
+.link-box {
+    flex-direction: column;
+}
+
+.link-box>* {
+    max-width: 100%;
+}
+
+.link-item__right,
+.other-link,
+.footer-icons {
+    display: none !important;
+}
+
+/* 影视 */
+.media-item-col,
+.media-list .col_6 {
+    max-width: 100% !important;
+    flex: none !important;
+    margin-bottom: 10px !important;
+    padding: 0 !important;
+}
+
+.show-more-text {
+    margin: 10px 0 20px !important;
+    z-index: 1 !important;
+}
+
+.media-item {
+    padding: 0 !important;
+}
+
+.media-card {
+    --image-width: 103px !important;
+    --image-height: 139px !important;
+    --image-mg-r: 10px !important;
+    margin-right: 10px !important;
+    --content-head-title-size: 14px !important;
+    --content-title-mg-b: 0 !important;
+    --content-text-mg-b: 0 !important;
+}
+
+.media-card-content-footer-btns {
+    --pgc_btn_size: 13px !important;
+    --pgc_btn_w: 70px !important;
+    --pgc_btn_h: 28px !important;
+}
+
+.media-card-content-head-text {
+    line-height: 15px !important;
+}
+
+/* 禁止搜索框 fixed */
+body .search-input .search-input-container .search-fixed-header {
+    position: unset !important;
+    width: 100% !important;
+}
+
+/* 修复顶栏 fixed */
+#bili-header-container {
+    position: fixed;
+    width: 100%;
+    z-index: 2;
+    background: unset !important;
+}
+
+/* 主内容下移 */
+.search-layout {
+    position: relative;
+    padding-top: calc(var(--header-height) + 10px);
+}
+
+/* 位置异常的 logo */
+.search-logo.p_center_y {
+    display: none;
+}`, ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
 
 /***/ }),
-/* 11 */
+/* 19 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_user_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(20);
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_user_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_user_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_user_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_user_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+/* 20 */
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/* ----------------------------------------------------
+ --------------------- 个人主页 ----------------------- 
+ ----------------------------------------------------- */
+
+.wrapper {
+    width: 100% !important;
+}
+
+.content {
+    max-width: 100%;
+}
+
+#page-index .col-1 {
+    max-width: 100%;
+    padding: 0 !important;
+}
+
+.channel-video {
+    white-space: wrap !important;
+}
+
+.small-item {
+    width: calc(50% - 10px);
+    padding: 0 5px !important;
+}
+
+.small-item .cover {
+    width: 100% !important;
+    height: auto !important;
+}
+
+#i-masterpiece {
+    margin-left: 0 !important;
+}
+
+#page-index .fav-item {
+    margin: 0 10px !important;
+}
+
+#page-fav .fav-main {
+    width: 100% !important;
+}
+
+.n .n-inner {
+    display: flex;
+    flex-wrap: wrap;
+    height: auto !important;
+    padding: 0 !important;
+}
+
+.n-tab-links>* {
+    margin: 0 !important;
+}
+
+.n-data {
+    padding: 0 5px !important;
+    height: auto !important;
+}
+
+.n-statistics {
+    height: auto !important;
+}
+
+.n .n-btn {
+    height: auto !important;
+    line-height: 30px !important;
+}
+
+.n-tab-links {
+    white-space: nowrap;
+    overflow: auto;
+}
+
+.favInfo-details {
+    max-width: 60%;
+    margin-left: 5px !important;
+}
+
+.fav-options>* {
+    margin: 0 !important;
+}
+
+.favList-info {
+    padding: 0 !important;
+    margin: 0 10px !important;
+}
+
+.n-cursor {
+    bottom: 35px !important;
+}
+
+.navigator-fixed {
+    display: none;
+}
+
+span.length {
+    z-index: 1 !important;
+}`, ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+/* 21 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -2139,7 +2540,7 @@ function initViewport () {
 
 
 /***/ }),
-/* 12 */
+/* 22 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -2191,7 +2592,7 @@ function scrollToHidden () {
 
 
 /***/ }),
-/* 13 */
+/* 23 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -2200,7 +2601,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   handleScriptSetting: () => (/* binding */ handleScriptSetting),
 /* harmony export */   headerInMenu: () => (/* binding */ headerInMenu)
 /* harmony export */ });
-/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(14);
+/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(24);
 
 // eslint-disable-next-line no-undef
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
@@ -2223,7 +2624,7 @@ function handleScriptPreSetting () {
       .copyright.item {display: none !important;}
       .show-more {display: none;}`,
     css5: '.trending {display: none;}',
-    css6: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full {position: fixed !important;z-index: -10;visibility: hidden;}',
+    css6: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {position: fixed !important;z-index: -10;visibility: hidden;}',
     css7: '.bpx-player-contextmenu {display: none;}'
   }
 
@@ -2240,8 +2641,6 @@ function handleScriptPreSetting () {
 
   // 形参 diference 隐式声明成 let
   function readScriptSetting (diference) {
-    diference = diference || false
-
     const settingShowHidden = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
     const values = Object.values(css)
 
@@ -2322,8 +2721,6 @@ function handleScriptPreSetting () {
 
 // 脚本设置
 function handleScriptSetting () {
-  const defaultValue = '0'
-
   const keyValue = {
     key1: 'full-unmuted',
     key2: 'ban-action-hidden',
@@ -2331,8 +2728,12 @@ function handleScriptSetting () {
     key4: 'custom-longpress-speed'
   }
 
-  if ((localStorage.getItem('ban-action-hidden') || '0') === '1') { banActionHidden() }
-  if ((localStorage.getItem('header-in-menu') || '0') === '1') { headerInMenu() }
+  if ((localStorage.getItem('ban-action-hidden') || '0') === '1') {
+    banActionHidden()
+  }
+  if ((localStorage.getItem('header-in-menu') || '0') === '1') {
+    headerInMenu()
+  }
 
   function banActionHidden () {
     const style = Object.assign(document.createElement('style'), {
@@ -2381,7 +2782,7 @@ function handleScriptSetting () {
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) {
       if (index !== 3) {
-        checkboxElements[index].checked = (localStorage.getItem(value) || defaultValue) === '1'
+        checkboxElements[index].checked = localStorage.getItem(value) === '1'
       }
     }
     settingPanel.querySelector('input[type="number"]').value = Number(localStorage.getItem(values[3]) || '2')
@@ -2499,7 +2900,7 @@ function headerInMenu () {
 
 
 /***/ }),
-/* 14 */
+/* 24 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -2522,7 +2923,6 @@ function hideHeader () {
     /* css */
     textContent: `
       .bili-header__bar, #header-musk {transform: translateY(-100%);}
-      #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
       /* 父布局不要用 transform */
       .video-container-v1.video-container-v1 {top: 0 !important;}
       .right-container.right-container {height: 100%;}
@@ -2531,6 +2931,7 @@ function hideHeader () {
   })
   ensureHeadGetted(hiddenStyle)
 }
+// #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
 
 // 操作栏
 function handleActionbar () {
@@ -2582,18 +2983,20 @@ function handleActionbar () {
   function setFullbtn () {
     const fullBtn = document.getElementById('full-now')
     fullBtn.addEventListener('click', () => {
-      const video = document.getElementsByTagName('video')[0]
+      const video = document.querySelector('video')
       // 等于符号优先级更高
       if ((localStorage.getItem('full-unmuted') || '0') === '1') {
         video.play()
         video.muted = false
         if (video.volume === 0) {
-          document.getElementsByClassName('bpx-player-ctrl-muted-icon')[0].click()
+          document.querySelector('.bpx-player-ctrl-muted-icon').click()
         }
       }
       fullScreen()
       function fullScreen () {
-        const rawFullBtn = document.getElementsByClassName('bpx-player-ctrl-full')[0]
+        const video = document.querySelector('video')
+        const btnSelector = video.videoWidth / video.videoHeight < 1 ? '.bpx-player-ctrl-web' : '.bpx-player-ctrl-full'
+        const rawFullBtn = document.querySelector(btnSelector)
         rawFullBtn ? rawFullBtn.click() : setTimeout(fullScreen, 500)
       }
     })
@@ -2604,7 +3007,7 @@ function handleActionbar () {
     topBtn.addEventListener('click', () => {
       toTop()
       function toTop () {
-        const rawTopBtn = document.getElementsByClassName('top-btn')[0]
+        const rawTopBtn = document.querySelector('.top-btn')
         rawTopBtn ? rawTopBtn.click() : setTimeout(toTop, 500)
       }
     })
@@ -2620,7 +3023,7 @@ function handleActionbar () {
     searchbarBtn.addEventListener('click', (event) => {
     // 事件完成后立即冒泡
       event.stopPropagation()
-      const searchbarContainer = document.getElementsByClassName('center-search-container')[0]
+      const searchbarContainer = document.querySelector('.center-search-container')
       searchbarContainer.classList.add('show')
       const input = searchbarContainer.querySelector('input')
       input.focus()
@@ -2666,7 +3069,7 @@ function handleActionbar () {
     refreshBtn.addEventListener('click', () => {
       refresh()
       function refresh () {
-        const rawRefreshBtn = document.getElementsByClassName('flexible-roll-btn-inner')[0]
+        const rawRefreshBtn = document.querySelector('.flexible-roll-btn-inner')
         rawRefreshBtn ? rawRefreshBtn.click() : setTimeout(refresh, 500)
       }
     })
@@ -2697,8 +3100,8 @@ function handleSidebar () {
   // // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
   const recommendLiist = document.getElementById('reco_list')
   recommendLiist.addEventListener('click', (event) => {
-    const nextPlay = document.getElementsByClassName('rec-title')[0]
-    const recommendFooter = document.getElementsByClassName('rec-footer')[0]
+    const nextPlay = document.querySelector('.rec-title')
+    const recommendFooter = document.querySelector('.rec-footer')
     if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
   })
 }
@@ -2775,7 +3178,7 @@ function handleHeaderClick () {
 
 
 /***/ }),
-/* 15 */
+/* 25 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -2857,7 +3260,7 @@ function handleHeaderImage () {
 
 
 /***/ }),
-/* 16 */
+/* 26 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -2870,6 +3273,7 @@ const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined
 function videoInteraction () {
   handlelVideoClick()
   handleVideoLongPress()
+  autoPortrait()
 }
 
 // 接管视频点击事件
@@ -2907,8 +3311,8 @@ function handlelVideoClick () {
 }
 
 function handleVideoLongPress () {
-  const video = document.querySelector('video') // 获取视频元素
-  let isLongPress = false // 长按标志
+  const video = document.querySelector('video')
+  let isLongPress = false
   let timeoutId
   let times
 
@@ -2921,17 +3325,24 @@ function handleVideoLongPress () {
   })
 
   video.addEventListener('touchmove', () => {
-    clearTimeout(timeoutId) // 触摸移动时取消长按
+    clearTimeout(timeoutId)
   })
 
   video.addEventListener('touchend', () => {
-    clearTimeout(timeoutId) // 触摸结束时清除定时器
+    clearTimeout(timeoutId)
 
     if (isLongPress) {
       video.playbackRate = video.playbackRate / times
       isLongPress = false
     }
   })
+}
+
+function autoPortrait () {
+  const video = document.querySelector('video')
+  if (video.videoWidth / video.videoHeight < 1) {
+    document.querySelector('.bpx-player-ctrl-web').style.cssText = 'display:block !important;'
+  }
 }
 
 
@@ -3013,14 +3424,24 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
-/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
-/* harmony import */ var _window_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(12);
-/* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(13);
-/* harmony import */ var _header_image_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(15);
-/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(16);
-/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(14);
+/* harmony import */ var _style_app_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _style_header_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
+/* harmony import */ var _style_home_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(13);
+/* harmony import */ var _style_video_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
+/* harmony import */ var _style_search_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(17);
+/* harmony import */ var _style_user_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(19);
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(21);
+/* harmony import */ var _window_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(22);
+/* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(23);
+/* harmony import */ var _header_image_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(25);
+/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(26);
+/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(24);
 // @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
+
+
+
+
+
 
 
 
@@ -3044,42 +3465,41 @@ __webpack_require__.r(__webpack_exports__);
   // 简单表达式: 常量折叠，解析引擎优化为只计算一次，然后缓存入临时变量。函数调用、对象属性访问等不适用。
   const part = url.hostname.substring(0, url.hostname.indexOf('.'))
 
-  ;(0,_init_js__WEBPACK_IMPORTED_MODULE_1__.initViewport)()
-  ;(0,_window_js__WEBPACK_IMPORTED_MODULE_2__.preventBeforeUnload)()
+  ;(0,_init_js__WEBPACK_IMPORTED_MODULE_6__.initViewport)()
+  ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.preventBeforeUnload)()
 
-  if (localStorage.getItem('hidden-header') === '1') { (0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.hideHeader)() }
+  if (localStorage.getItem('hidden-header') === '1') { (0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.hideHeader)() }
 
   switch (part) {
     case 'www':
       if (url.pathname === '/') {
-        (0,_window_js__WEBPACK_IMPORTED_MODULE_2__.increaseVideoLoadSize)()
-        ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_4__.handleHeaderImage)()
+        (0,_window_js__WEBPACK_IMPORTED_MODULE_7__.increaseVideoLoadSize)()
+        ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_9__.handleHeaderImage)()
       }
-      (0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptPreSetting)()
+      (0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
       waitDOMContentLoaded(() => {
         localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
-        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleHeaderClick)()
-        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleActionbar)()
-        // 待办：相关内容未加载时灰色显示的框架
-        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptSetting)()
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleHeaderClick)()
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleActionbar)()
+        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
         if (url.pathname.startsWith('/video')) {
-          (0,_video_js__WEBPACK_IMPORTED_MODULE_5__.videoInteraction)()
-          ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleSidebar)()
+          (0,_video_js__WEBPACK_IMPORTED_MODULE_10__.videoInteraction)()
+          ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleSidebar)()
         }
-        (0,_window_js__WEBPACK_IMPORTED_MODULE_2__.scrollToHidden)()
+        (0,_window_js__WEBPACK_IMPORTED_MODULE_7__.scrollToHidden)()
+      })
+      break
+    case 'search':
+      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
+      waitDOMContentLoaded(() => {
+        localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleHeaderClick)()
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleActionbar)()
+        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
+        ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.scrollToHidden)()
       })
       break
     case 'space':
-      break
-    case 'search':
-      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptPreSetting)()
-      waitDOMContentLoaded(() => {
-        localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
-        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleHeaderClick)()
-        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_6__.handleActionbar)()
-        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_3__.handleScriptSetting)()
-        ;(0,_window_js__WEBPACK_IMPORTED_MODULE_2__.scrollToHidden)()
-      })
       break
     case 'm':
       break

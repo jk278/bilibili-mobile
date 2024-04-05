@@ -161,6 +161,7 @@ span.vui_pagenation--extend {
     max-width: 100% !important;
     flex: none !important;
     margin-bottom: 10px !important;
+    padding: 0 !important;
 }
 
 .show-more-text {
@@ -170,4 +171,49 @@ span.vui_pagenation--extend {
 
 .media-item {
     padding: 0 !important;
+}
+
+.media-card {
+    --image-width: 103px !important;
+    --image-height: 139px !important;
+    --image-mg-r: 10px !important;
+    margin-right: 10px !important;
+    --content-head-title-size: 14px !important;
+    --content-title-mg-b: 0 !important;
+    --content-text-mg-b: 0 !important;
+}
+
+.media-card-content-footer-btns {
+    --pgc_btn_size: 13px !important;
+    --pgc_btn_w: 70px !important;
+    --pgc_btn_h: 28px !important;
+}
+
+.media-card-content-head-text {
+    line-height: 15px !important;
+}
+
+/* 禁止搜索框 fixed */
+body .search-input .search-input-container .search-fixed-header {
+    position: unset !important;
+    width: 100% !important;
+}
+
+/* 修复顶栏 fixed */
+#bili-header-container {
+    position: fixed;
+    width: 100%;
+    z-index: 2;
+    background: unset !important;
+}
+
+/* 主内容下移 */
+.search-layout {
+    position: relative;
+    padding-top: calc(var(--header-height) + 10px);
+}
+
+/* 位置异常的 logo */
+.search-logo.p_center_y {
+    display: none;
 }

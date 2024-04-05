@@ -20,7 +20,7 @@ export function handleScriptPreSetting () {
       .copyright.item {display: none !important;}
       .show-more {display: none;}`,
     css5: '.trending {display: none;}',
-    css6: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full {position: fixed !important;z-index: -10;visibility: hidden;}',
+    css6: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {position: fixed !important;z-index: -10;visibility: hidden;}',
     css7: '.bpx-player-contextmenu {display: none;}'
   }
 
@@ -37,8 +37,6 @@ export function handleScriptPreSetting () {
 
   // 形参 diference 隐式声明成 let
   function readScriptSetting (diference) {
-    diference = diference || false
-
     const settingShowHidden = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
     const values = Object.values(css)
 

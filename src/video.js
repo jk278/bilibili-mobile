@@ -4,6 +4,7 @@ const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined
 export function videoInteraction () {
   handlelVideoClick()
   handleVideoLongPress()
+  autoPortrait()
 }
 
 // 接管视频点击事件
@@ -41,8 +42,8 @@ function handlelVideoClick () {
 }
 
 function handleVideoLongPress () {
-  const video = document.querySelector('video') // 获取视频元素
-  let isLongPress = false // 长按标志
+  const video = document.querySelector('video')
+  let isLongPress = false
   let timeoutId
   let times
 
@@ -55,15 +56,22 @@ function handleVideoLongPress () {
   })
 
   video.addEventListener('touchmove', () => {
-    clearTimeout(timeoutId) // 触摸移动时取消长按
+    clearTimeout(timeoutId)
   })
 
   video.addEventListener('touchend', () => {
-    clearTimeout(timeoutId) // 触摸结束时清除定时器
+    clearTimeout(timeoutId)
 
     if (isLongPress) {
       video.playbackRate = video.playbackRate / times
       isLongPress = false
     }
   })
+}
+
+function autoPortrait () {
+  const video = document.querySelector('video')
+  if (video.videoWidth / video.videoHeight < 1) {
+    document.querySelector('.bpx-player-ctrl-web').style.cssText = 'display:block !important;'
+  }
 }
