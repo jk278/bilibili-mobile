@@ -43,6 +43,8 @@ export function handleActionbar () {
   }
 
   if (window.location.pathname.startsWith('/video')) {
+    actionbar.classList.add('video')
+
     setFullbtn()
   }
 
@@ -55,7 +57,8 @@ export function handleActionbar () {
     fullBtn.addEventListener('click', () => {
       const video = document.querySelector('video')
       // 等于符号优先级更高
-      if ((localStorage.getItem('full-unmuted') || '0') === '1') {
+      // eslint-disable-next-line no-undef
+      if ((GM_getValue('full-unmuted') || '0') === '1') {
         video.play()
         video.muted = false
         if (video.volume === 0) {
@@ -120,16 +123,6 @@ export function handleActionbar () {
         setTimeout(() => { searchFab.style.zIndex = '' }, 400)
       })
     })
-
-    // const searchbar = searchbarContainer.querySelector('.center-search__bar')
-    // searchbar.addEventListener('click', (event) => {
-    //   event.stopPropagation()
-    // })
-    // document.body.addEventListener('click', (event) => {
-    //   if (event.target !== searchbar) {
-    //     searchbarContainer.classList.remove('show')
-    //   }
-    // }, { once: true })
   }
 
   function setMenuBtn () {

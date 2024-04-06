@@ -26,6 +26,8 @@
     animation: fadeIn 1s ease-in forwards;
 }
 
+#full-now,
+#sidebar-fab,
 #my-top,
 #refresh-fab {
     display: none;
@@ -33,13 +35,16 @@
 
 #actionbar.home {
 
-    #full-now,
-    #sidebar-fab {
-        display: none;
-    }
-
     #my-top,
     #refresh-fab {
+        display: block;
+    }
+}
+
+#actionbar.video {
+
+    #full-now,
+    #sidebar-fab {
         display: block;
     }
 }

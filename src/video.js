@@ -78,7 +78,8 @@ function handleVideoLongPress () {
   let times
 
   video.addEventListener('touchstart', () => {
-    times = Number(localStorage.getItem('custom-longpress-speed') || '2')
+    // eslint-disable-next-line no-undef
+    times = Number(GM_getValue('custom-longpress-speed') || '2')
     timeoutId = setTimeout(() => {
       video.playbackRate = video.playbackRate * times
       isLongPress = true

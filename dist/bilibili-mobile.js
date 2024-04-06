@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.0-alpha.7
+// @version            4.0-beta
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在 Via 与 Safari 打开电脑模式，获取舒适的移动端体验。
 // @author             jk278
@@ -357,6 +357,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     animation: fadeIn 1s ease-in forwards;
 }
 
+#full-now,
+#sidebar-fab,
 #my-top,
 #refresh-fab {
     display: none;
@@ -364,13 +366,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 
 #actionbar.home {
 
-    #full-now,
-    #sidebar-fab {
-        display: none;
-    }
-
     #my-top,
     #refresh-fab {
+        display: block;
+    }
+}
+
+#actionbar.video {
+
+    #full-now,
+    #sidebar-fab {
         display: block;
     }
 }
@@ -2450,6 +2455,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   handleScriptPreSetting: () => (/* binding */ handleScriptPreSetting),
 /* harmony export */   handleScriptSetting: () => (/* binding */ handleScriptSetting)
 /* harmony export */ });
+/* global GM_getValue GM_setValue */
 function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
 function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
 
@@ -2485,7 +2491,7 @@ function handleScriptPreSetting () {
 
   // 形参 diference 隐式声明成 let
   function readScriptSetting (diference) {
-    const settingShowHidden = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
+    const settingShowHidden = JSON.parse(GM_getValue('settingShowHidden')) || defaultValue
     const values = Object.values(css) // 可枚举属性值，返回 [v1, v2]
 
     if (diference) {
@@ -2540,7 +2546,7 @@ function handleScriptPreSetting () {
     })
 
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
-    const oldValues = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
+    const oldValues = JSON.parse(GM_getValue('settingShowHidden')) || defaultValue
     for (const [index, element] of checkboxElements.entries()) {
       element.checked = oldValues[index]
     }
@@ -2549,10 +2555,10 @@ function handleScriptPreSetting () {
     // }
 
     settingConform.addEventListener('click', () => {
-      const oldValues = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
+      const oldValues = JSON.parse(GM_getValue('settingShowHidden')) || defaultValue
       const selectedValues = Array.from(checkboxElements).map((checkbox) => (checkbox.checked ? 1 : 0))
 
-      localStorage.setItem('settingShowHidden', JSON.stringify(selectedValues))
+      GM_setValue('settingShowHidden', JSON.stringify(selectedValues))
       const difference = selectedValues.map((value, index) => (value === oldValues[index] ? 0 : 1))
 
       readScriptSetting(difference)
@@ -2573,7 +2579,7 @@ function handleScriptSetting () {
     key3: 'custom-longpress-speed'
   }
 
-  if ((localStorage.getItem('ban-action-hidden') || '0') === '1') {
+  if ((GM_getValue('ban-action-hidden') || '0') === '1') {
     banActionHidden()
   }
 
@@ -2625,23 +2631,23 @@ function handleScriptSetting () {
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) { // 返回 [ [1,v1], [2,v2] ]
       if (index !== speedIndex) {
-        checkboxElements[index].checked = localStorage.getItem(value) === '1'
+        checkboxElements[index].checked = GM_getValue(value) === '1'
       }
     }
-    settingPanel.querySelector('input[type="number"]').value = Number(localStorage.getItem(values[speedIndex]) || '2')
+    settingPanel.querySelector('input[type="number"]').value = Number(GM_getValue(values[speedIndex]) || '2')
 
     settingConform.addEventListener('click', () => {
-      const isBanActionHidden = localStorage.getItem('ban-action-hidden') || '0'
+      const isBanActionHidden = GM_getValue('ban-action-hidden') || '0'
 
       for (const [index, value] of values.entries()) {
         if (index !== speedIndex) {
-          localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
+          GM_setValue(value, checkboxElements[index].checked ? '1' : '0')
         }
       }
-      localStorage.setItem(values[speedIndex], settingPanel.querySelector('input[type="number"]').value)
+      GM_setValue(values[speedIndex], settingPanel.querySelector('input[type="number"]').value)
       settingPanel.classList.remove('show')
 
-      const newIsBanActionHidden = localStorage.getItem('ban-action-hidden')
+      const newIsBanActionHidden = GM_getValue('ban-action-hidden')
       if (newIsBanActionHidden !== isBanActionHidden) {
         if (newIsBanActionHidden === '1') {
           banActionHidden()
@@ -2827,7 +2833,8 @@ function handleVideoLongPress () {
   let times
 
   video.addEventListener('touchstart', () => {
-    times = Number(localStorage.getItem('custom-longpress-speed') || '2')
+    // eslint-disable-next-line no-undef
+    times = Number(GM_getValue('custom-longpress-speed') || '2')
     timeoutId = setTimeout(() => {
       video.playbackRate = video.playbackRate * times
       isLongPress = true
@@ -2903,6 +2910,8 @@ function handleActionbar () {
   }
 
   if (window.location.pathname.startsWith('/video')) {
+    actionbar.classList.add('video')
+
     setFullbtn()
   }
 
@@ -2915,7 +2924,8 @@ function handleActionbar () {
     fullBtn.addEventListener('click', () => {
       const video = document.querySelector('video')
       // 等于符号优先级更高
-      if ((localStorage.getItem('full-unmuted') || '0') === '1') {
+      // eslint-disable-next-line no-undef
+      if ((GM_getValue('full-unmuted') || '0') === '1') {
         video.play()
         video.muted = false
         if (video.volume === 0) {
@@ -2980,16 +2990,6 @@ function handleActionbar () {
         setTimeout(() => { searchFab.style.zIndex = '' }, 400)
       })
     })
-
-    // const searchbar = searchbarContainer.querySelector('.center-search__bar')
-    // searchbar.addEventListener('click', (event) => {
-    //   event.stopPropagation()
-    // })
-    // document.body.addEventListener('click', (event) => {
-    //   if (event.target !== searchbar) {
-    //     searchbarContainer.classList.remove('show')
-    //   }
-    // }, { once: true })
   }
 
   function setMenuBtn () {
