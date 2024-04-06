@@ -2,9 +2,40 @@
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
 
 export function videoInteraction () {
+  dynamicHeight()
   handlelVideoClick()
   handleVideoLongPress()
-  autoPortrait()
+}
+
+function dynamicHeight () {
+  const player = document.querySelector('#bilibili-player')
+  const playerWrap = document.querySelector('#playerWrap')
+  const leftContainer = document.querySelector('.left-container')
+
+  const style = window.getComputedStyle(player)
+  const width = style.getPropertyValue('width')
+  const height = style.getPropertyValue('height')
+
+  const newHeight = parseInt(height) / parseInt(width) * 100
+  player.style.cssText = `width:100vw; height:${newHeight}vw;`
+  playerWrap.style.height = `${newHeight}vw`
+  playerWrap.style.display = 'block'
+
+  leftContainer.style.top = `${newHeight}vw`
+  leftContainer.style.display = 'block'
+
+  const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'class') {
+        if (miniPlayerBtn.classList.contains('on')) {
+          miniPlayerBtn.click()
+        }
+      }
+    })
+  })
+
+  observer.observe(miniPlayerBtn, { attributes: true })
 }
 
 // 接管视频点击事件
@@ -67,11 +98,4 @@ function handleVideoLongPress () {
       isLongPress = false
     }
   })
-}
-
-function autoPortrait () {
-  const video = document.querySelector('video')
-  if (video.videoWidth / video.videoHeight < 1) {
-    document.querySelector('.bpx-player-ctrl-web').style.cssText = 'display:block !important;'
-  }
 }

@@ -2,24 +2,6 @@
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
 
 function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
-function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
-
-// 隐藏顶栏
-export function hideHeader () {
-  const hiddenStyle = Object.assign(document.createElement('style'), {
-    id: 'hidden-header',
-    /* css */
-    textContent: `
-      .bili-header__bar, #header-musk {transform: translateY(-100%);}
-      /* 父布局不要用 transform */
-      .video-container-v1.video-container-v1 {top: 0 !important;}
-      .right-container.right-container {height: 100%;}
-      .center-search-container {margin-top: var(--header-height) !important;}
-    `
-  })
-  ensureHeadGetted(hiddenStyle)
-}
-// #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
 
 // 操作栏
 export function handleActionbar () {
@@ -68,6 +50,8 @@ export function handleActionbar () {
   setSearchBtn()
   setMenuBtn()
 
+  headerInMenu()
+
   function setFullbtn () {
     const fullBtn = document.getElementById('full-now')
     fullBtn.addEventListener('click', () => {
@@ -83,9 +67,18 @@ export function handleActionbar () {
       fullScreen()
       function fullScreen () {
         const video = document.querySelector('video')
-        const btnSelector = video.videoWidth / video.videoHeight < 1 ? '.bpx-player-ctrl-web' : '.bpx-player-ctrl-full'
+        const isPortrait = video.videoWidth / video.videoHeight < 1
+        const btnSelector = isPortrait ? '.bpx-player-ctrl-web' : '.bpx-player-ctrl-full'
         const rawFullBtn = document.querySelector(btnSelector)
-        rawFullBtn ? rawFullBtn.click() : setTimeout(fullScreen, 500)
+        if (rawFullBtn) {
+          rawFullBtn.click()
+          if (isPortrait) {
+            rawFullBtn.style.cssText = 'position:relative !important; visibility:visible;'
+            rawFullBtn.addEventListener('click', () => { rawFullBtn.style.cssText = '' })
+          }
+        } else {
+          setTimeout(fullScreen, 500)
+        }
       }
     })
   }
@@ -103,7 +96,7 @@ export function handleActionbar () {
 
   function setHomeBtn () {
     const home = document.getElementById('my-home')
-    home.addEventListener('click', () => { window.location.href = '/' })
+    home.addEventListener('click', () => { window.location.href = 'https://www.bilibili.com/' })
   }
 
   function setSearchBtn () {
@@ -131,23 +124,13 @@ export function handleActionbar () {
   function setMenuBtn () {
     const menuBtn = document.getElementById('menu-fab')
     menuBtn.addEventListener('click', () => {
-      if ((localStorage.getItem('header-in-menu') || '0') === '1') {
-        const menu = document.getElementById('header-in-menu')
-        if (menu) {
-          menu.style.display = 'block'
-          setTimeout(() => {
-            menu.classList.add('show')
-            menu.style.display = ''
-          }, 0)
-        }
-      } else {
-        if ((localStorage.getItem('hidden-header') || '0') === '1') {
-          document.getElementById('hidden-header')?.remove()
-          localStorage.setItem('hidden-header', '0')
-        } else {
-          hideHeader()
-          localStorage.setItem('hidden-header', '1')
-        }
+      const menu = document.getElementById('header-in-menu')
+      if (menu) {
+        menu.style.display = 'block'
+        setTimeout(() => {
+          menu.classList.add('show')
+          menu.style.display = ''
+        }, 0)
       }
     })
   }
@@ -194,72 +177,73 @@ export function handleSidebar () {
   })
 }
 
-// 接管顶部点击事件，父元素point-events:none，子元素point-events:auto对有的手机无效
-export function handleHeaderClick () {
-  const musk = document.createElement('div')
-  musk.id = 'header-musk'
-  document.body.appendChild(musk)
-  musk.addEventListener('click', handleClick)
+function headerInMenu () {
+  const menuOverlay = Object.assign(document.createElement('div'), {
+    id: 'menu-overlay',
+    innerHTML: `
+    <div id="header-in-menu">
+      <ul>
+        <li data-refer=".right-entry--message">私信</li>
+        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
+        <li data-refer=".header-favorite-container">收藏</li>
+        <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
+        <li data-refer=".header-avatar-wrap">主页</li>
+      </li>
+    </div>
+    `
+  })
 
-  let storedElement = null
-  let isMouseEntered = false
-  let clickTimer = null
-  let clickCount = 0
+  waitDOMContentLoaded(() => {
+    addMenu()
 
-  function handleClick (event) {
-    clickCount++
+    function addMenu () {
+      if (document.querySelector('.header-avatar-wrap')) {
+        const menuFab = document.getElementById('menu-fab')
+        menuFab.appendChild(menuOverlay)
 
-    if (clickTimer) {
-      clearTimeout(clickTimer)
-      clickTimer = null
-    }
+        const items = menuOverlay.querySelectorAll('li')
+        const header = document.querySelector('.bili-header__bar')
+        items.forEach(item => {
+          item.addEventListener('click', event => {
+            event.stopPropagation()
+            const refer = item.dataset.refer
 
-    if (clickCount === 1) {
-      clickTimer = setTimeout(() => {
-        // 如果 100ms 内没有第二次点击，则执行操作 A
-        onceClick()
-        clickCount = 0
-      }, 250)
-    } else {
-      // 如果 100ms 内有第二次点击，则执行操作 B
-      twiceClick()
-      clickCount = 0
-    }
+            const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+            if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
 
-    function onceClick () {
-      if (isMouseEntered) {
-        simulateMouseLeave(storedElement)
-        isMouseEntered = false
+            simulateMouseEnter(header.querySelector(refer))
+            sessionStorage.setItem('opened-dailog', refer)
+          })
+        })
+
+        const menu = menuOverlay.querySelector('#header-in-menu')
+
+        menuOverlay.addEventListener('click', event => {
+          event.stopPropagation()
+          const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+          if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
+
+          if (event.target !== menu) {
+            menu.style.display = 'block'
+            menu.classList.remove('show')
+            setTimeout(() => {
+              menu.style.display = ''
+            }, 400)
+          }
+        })
       } else {
-        musk.style.display = 'none'
-        const element = document.elementFromPoint(event.clientX, event.clientY)
-        simulateMouseEnter(element)
-        musk.style.display = 'block'
-        isMouseEntered = true
-        storedElement = element
+        setTimeout(addMenu, 500)
       }
     }
 
-    function twiceClick () {
-      musk.style.display = 'none'
-      const element = document.elementFromPoint(event.clientX, event.clientY)
-      simulateClick(element)
-      musk.style.display = 'block'
+    function simulateMouseEnter (element) {
+      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
     }
-  }
 
-  function simulateMouseEnter (element) {
-    const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-    element.dispatchEvent(event)
-  }
-
-  function simulateMouseLeave (element) {
-    const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-    element.dispatchEvent(event)
-  }
-
-  function simulateClick (element) {
-    const event = new MouseEvent('click', { bubbles: true, view: _unsafeWindow })
-    element.dispatchEvent(event)
-  }
+    function simulateMouseLeave (element) {
+      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+  })
 }

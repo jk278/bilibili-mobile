@@ -13,7 +13,7 @@
 .video-container-v1 {
     min-width: 0 !important;
     padding: 0 !important;
-    top: var(--header-height);
+    top: 0;
 }
 
 /* ----------------------------------------------------
@@ -22,7 +22,7 @@
 
 /* 主视频块 */
 .left-container {
-    --video-height: calc(100vw * 0.5625);
+    --video-min-height: calc(100vw * 0.5625);
     --dm-row-height: 44px;
 }
 
@@ -30,17 +30,104 @@
 /* 视频块（宽度） (#mainheight与header的高度差导致了64px-48px的可滚动区域) */
 .left-container {
     /* 移动 Safari 百分比宽高自动考虑边框和填充 */
-    padding: calc(var(--video-height) + var(--dm-row-height)) 10px 0;
     box-sizing: border-box;
     width: 100% !important;
 
     /* 填充评论未加载时的空白，video-container-v1 已考虑顶部留空，但 #app 的高度把顶部重叠的部分加上了 */
-    min-height: calc(100vh - var(--header-height));
+    min-height: calc(100vh - var(--video-min-height));
+    position: relative !important;
+    padding: calc(var(--dm-row-height) + 5px) 10px 0 0;
+    display: none;
 }
 
 /* ----------------------------------------------------
-  * ----------------------- 播放器 ---------------------- *
+  * ----------------------- 推荐块 ---------------------- *
    ----------------------------------------------------- */
+
+/* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
+.right-container {
+    position: fixed !important;
+    width: 85% !important;
+    left: 85%;
+    padding: 10px;
+    margin: 0 0 0 15% !important;
+
+    z-index: 76;
+    background: white;
+    transition: transform .6s ease-in;
+    height: 100%;
+    overflow-y: auto;
+    /* 避免到达边界后的滚动事件穿透 */
+    overscroll-behavior: contain;
+
+    box-sizing: border-box;
+    border-left: 1px solid var(--line_regular);
+}
+
+body[show-sidebar="true"] .right-container {
+    transform: translateX(-100%);
+}
+
+.right-container-inner {
+    padding: 0 !important;
+}
+
+/* UP信息 */
+.upinfo-btn-panel .default-btn {
+    font-size: 12px !important;
+}
+
+.new-charge-btn {
+    max-width: 35%;
+}
+
+.follow-btn {
+    max-width: 150px !important;
+}
+
+/* UP头像 */
+/*.up-avatar-wrap .bili-avatar,
+  .up-avatar-wrap {
+    width: 38px !important;
+    height: 38px !important;
+  }*/
+
+/* 推荐视频图块 */
+#reco_list .card-box .pic-box {
+    max-width: 50%;
+}
+
+/* --------------------------------------------------
+ ---------------- 块状广告（整个视频页）---------------
+ ---------------------------------------------------- */
+
+#activity_vote,
+#bannerAd,
+.reply-notice,
+.ad-report,
+.pop-live-small-mode,
+#slide_ad,
+.video-page-game-card-small {
+    display: none !important;
+}
+
+/* ---------------------------------------------------
+ ----------------------- 播放器 -----------------------
+ ----------------------------------------------------- */
+
+/* 视频置顶 */
+#playerWrap {
+    position: fixed;
+    z-index: 61;
+    top: 0;
+    left: 0;
+    display: none;
+}
+
+#bilibili-player.mode-webscreen {
+    width: 100% !important;
+    height: 100% !important;
+}
 
 /* 小窗时的隐藏 - 始终隐藏*/
 /* 顶部关注、音乐、反馈 */
@@ -67,11 +154,17 @@
     transform: translateY(-50%);
 }
 
-/* 移除小窗等按钮 */
-/* .fixed-sidenav-storage>*:nth-child(1),
-.fixed-sidenav-storage>*:nth-child(2) {
+/* 小窗按钮 */
+.mini-player-window {
+    position: fixed;
+    z-index: -10;
+    visibility: hidden;
+}
+
+/* 客服按钮 */
+.customer-service {
     display: none !important;
-} */
+}
 
 /* 窄屏不隐藏控制条和阴影 */
 .bpx-player-control-entity,
@@ -89,7 +182,7 @@
 
 /* 横屏时恢复时间显示 */
 @media screen and (orientation: landscape) {
-    .bpx-player-container[data-screen="full"]:not([data-portrait]) .bpx-player-ctrl-time {
+    .bpx-player-ctrl-time {
         display: block !important;
     }
 }
@@ -186,7 +279,7 @@
 /* 清晰度弹窗 */
 .bpx-player-ctrl-quality-menu-wrap {
     bottom: 0 !important;
-    max-height: var(--video-height) !important;
+    max-height: var(--video-min-height) !important;
 }
 
 /* 倍速弹窗 */
@@ -204,7 +297,7 @@
 /* 更多设置 */
 .bpx-player-ctrl-setting-menu-right {
     padding: 5px !important;
-    max-height: var(--video-height) !important;
+    max-height: var(--video-min-height) !important;
 }
 
 /* 更多设置 */
@@ -329,65 +422,6 @@
 .bpx-player-video-info-dm,
 .bpx-player-dm-hint {
     display: none !important;
-}
-
-/* 播放组件在下面 */
-
-/* ----------------------------------------------------
-  * ----------------------- 推荐块 ---------------------- *
-   ----------------------------------------------------- */
-
-/* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
-.right-container {
-    position: fixed !important;
-    width: 85% !important;
-    left: 85%;
-    padding: 10px;
-    margin: 0 0 0 15% !important;
-
-    z-index: 76;
-    background: white;
-    transition: transform .6s ease-in;
-    height: calc(100% - var(--header-height) * 2);
-    overflow-y: auto;
-    /* 避免到达边界后的滚动事件穿透 */
-    overscroll-behavior: contain;
-
-    box-sizing: border-box;
-    border-left: 1px solid var(--line_regular);
-}
-
-body[show-sidebar="true"] .right-container {
-    transform: translateX(-100%);
-}
-
-.right-container-inner {
-    padding: 0 !important;
-}
-
-/* UP信息 */
-.upinfo-btn-panel .default-btn {
-    font-size: 12px !important;
-}
-
-.new-charge-btn {
-    max-width: 35%;
-}
-
-.follow-btn {
-    max-width: 150px !important;
-}
-
-/* UP头像 */
-/*.up-avatar-wrap .bili-avatar,
-  .up-avatar-wrap {
-    width: 38px !important;
-    height: 38px !important;
-  }*/
-
-/* 推荐视频图块 */
-#reco_list .card-box .pic-box {
-    max-width: 50%;
 }
 
 /* ----------------------------------------------------
@@ -692,16 +726,6 @@ body[show-sidebar="true"] .right-container {
 /* 评论投票 */
 .vote-dialog {
     max-width: calc(100% - 10px);
-}
-
-/* 块状广告（包括推荐列） */
-#activity_vote,
-#bannerAd,
-.reply-notice,
-.ad-report,
-.pop-live-small-mode,
-#slide_ad {
-    display: none !important;
 }
 
 /* ----------------------------------------------------

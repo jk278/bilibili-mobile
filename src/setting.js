@@ -1,27 +1,23 @@
-import { hideHeader } from './actionbar.js'
-// eslint-disable-next-line no-undef
-const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
-
 function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
 function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
 
 // 脚本预加载设置
 export function handleScriptPreSetting () {
-  const defaultValue = [0, 0, 0, 0, 0]
+  const defaultValue = [0, 0, 0, 0, 0, 0]
 
   const css = {
     css1: `
-      .bpx-player-sending-area.bpx-player-sending-area {display: none !important;}
-      .left-container.left-container {padding: calc(var(--video-height) + 5px ) 10px 0;}
+      .bpx-player-sending-area.bpx-player-sending-area {display:none !important;}
+      .left-container.left-container {padding:5px 10px 0;}
+      .main-reply-box.main-reply-box {display:none !important;}
     `,
-    css2: '.main-reply-box.main-reply-box {display: none !important;}',
-    css3: '#v_tag {display: none !important;}',
-    css4: `
-      .copyright.item {display: none !important;}
-      .show-more {display: none;}`,
-    css5: '.trending {display: none;}',
-    css6: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {position: fixed !important;z-index: -10;visibility: hidden;}',
-    css7: '.bpx-player-contextmenu {display: none;}'
+    css2: '#v_tag {display:none !important;}',
+    css3: `
+      .copyright.item {display:none !important;}
+      .show-more {display:none;}`,
+    css4: '.trending {display:none;}',
+    css5: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {position:fixed !important; z-index:-10; visibility:hidden;}',
+    css6: '.bpx-player-contextmenu {display:none;}'
   }
 
   readScriptSetting()
@@ -76,8 +72,7 @@ export function handleScriptPreSetting () {
       innerHTML: `
         <div class="setting-title">隐藏元素</div>
         <div class="setting-checkboxes">
-          <label><input type="checkbox"><span>弹幕行</span></label>
-          <label><input type="checkbox"><span>评论行</span></label>
+          <label><input type="checkbox"><span>弹幕行与评论行</span></label>
           <label><input type="checkbox"><span>标签块</span></label>
           <label><input type="checkbox"><span>转载声明</span></label>
           <label><input type="checkbox"><span>热搜榜</span></label>
@@ -120,15 +115,11 @@ export function handleScriptSetting () {
   const keyValue = {
     key1: 'full-unmuted',
     key2: 'ban-action-hidden',
-    key3: 'header-in-menu',
-    key4: 'custom-longpress-speed'
+    key3: 'custom-longpress-speed'
   }
 
   if ((localStorage.getItem('ban-action-hidden') || '0') === '1') {
     banActionHidden()
-  }
-  if ((localStorage.getItem('header-in-menu') || '0') === '1') {
-    headerInMenu()
   }
 
   function banActionHidden () {
@@ -163,7 +154,6 @@ export function handleScriptSetting () {
         <div class="setting-checkboxes">
           <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
-          <label><input type="checkbox"><span>以菜单形式打开原顶栏入口</span></label>
           <label><input type="number" value="2"><span>自定义视频长按倍速</span></label>
         </div>
         `
@@ -174,25 +164,26 @@ export function handleScriptSetting () {
       textContent: '确认'
     })
 
+    const speedIndex = 2
+
     const values = Object.values(keyValue)
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) {
-      if (index !== 3) {
+      if (index !== speedIndex) {
         checkboxElements[index].checked = localStorage.getItem(value) === '1'
       }
     }
-    settingPanel.querySelector('input[type="number"]').value = Number(localStorage.getItem(values[3]) || '2')
+    settingPanel.querySelector('input[type="number"]').value = Number(localStorage.getItem(values[speedIndex]) || '2')
 
     settingConform.addEventListener('click', () => {
       const isBanActionHidden = localStorage.getItem('ban-action-hidden') || '0'
-      const isHeaderInMenu = localStorage.getItem('header-in-menu') || '0'
 
       for (const [index, value] of values.entries()) {
-        if (index !== 3) {
+        if (index !== speedIndex) {
           localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
         }
       }
-      localStorage.setItem(values[3], settingPanel.querySelector('input[type="number"]').value)
+      localStorage.setItem(values[speedIndex], settingPanel.querySelector('input[type="number"]').value)
       settingPanel.classList.remove('show')
 
       const newIsBanActionHidden = localStorage.getItem('ban-action-hidden')
@@ -203,93 +194,9 @@ export function handleScriptSetting () {
           document.getElementById('ban-action-hidden').remove()
         }
       }
-
-      const newIsHeaderInMenu = localStorage.getItem('header-in-menu')
-      if (newIsHeaderInMenu !== isHeaderInMenu) {
-        if (newIsHeaderInMenu === '1') {
-          headerInMenu()
-          if ((localStorage.getItem('hidden-header') || '0') !== '1') {
-            hideHeader()
-            localStorage.setItem('hidden-header', '1')
-          }
-        } else {
-          document.getElementById('menu-overlay').remove()
-        }
-      }
     })
 
     settingPanel.appendChild(settingConform)
     document.body.appendChild(settingPanel)
   }
-}
-
-export function headerInMenu () {
-  const menuOverlay = Object.assign(document.createElement('div'), {
-    id: 'menu-overlay',
-    innerHTML: `
-    <div id="header-in-menu">
-      <ul>
-        <li data-refer=".right-entry--message">私信</li>
-        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
-        <li data-refer=".header-favorite-container">收藏</li>
-        <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
-        <li data-refer=".header-avatar-wrap">主页</li>
-      </li>
-    </div>
-    `
-  })
-
-  waitDOMContentLoaded(() => {
-    addMenu()
-
-    function addMenu () {
-      if (document.querySelector('.header-avatar-wrap')) {
-        const menuFab = document.getElementById('menu-fab')
-        menuFab.appendChild(menuOverlay)
-
-        const items = menuOverlay.querySelectorAll('li')
-        const header = document.querySelector('.bili-header__bar')[0]
-        items.forEach(item => {
-          item.addEventListener('click', event => {
-            event.stopPropagation()
-            const refer = item.dataset.refer
-
-            const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-            if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
-
-            simulateMouseEnter(header.querySelector(refer))
-            sessionStorage.setItem('opened-dailog', refer)
-          })
-        })
-
-        const menu = menuOverlay.querySelector('#header-in-menu')
-
-        menuOverlay.addEventListener('click', event => {
-          event.stopPropagation()
-          const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-          if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
-
-          if (event.target !== menu) {
-            menu.style.display = 'block'
-            menu.classList.remove('show')
-            setTimeout(() => {
-              menu.style.display = ''
-            }, 400)
-          }
-        })
-      } else {
-        setTimeout(addMenu, 500)
-      }
-    }
-
-    function simulateMouseEnter (element) {
-      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-
-    function simulateMouseLeave (element) {
-      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-  })
 }

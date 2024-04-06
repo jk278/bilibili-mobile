@@ -13,7 +13,7 @@ import { handleScriptPreSetting, handleScriptSetting } from './setting.js'
 import { handleHeaderImage } from './header-image.js'
 import { videoInteraction } from './video.js'
 
-import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from './actionbar.js'
+import { handleActionbar, handleSidebar } from './actionbar.js'
 
 (function () {
   console.log('Bilibili mobile execute!')
@@ -30,8 +30,6 @@ import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from '.
   initViewport()
   preventBeforeUnload()
 
-  if (localStorage.getItem('hidden-header') === '1') { hideHeader() }
-
   switch (part) {
     case 'www':
       if (url.pathname === '/') {
@@ -40,8 +38,6 @@ import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from '.
       }
       handleScriptPreSetting()
       waitDOMContentLoaded(() => {
-        localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
-        handleHeaderClick()
         handleActionbar()
         handleScriptSetting()
         if (url.pathname.startsWith('/video')) {
@@ -54,8 +50,6 @@ import { hideHeader, handleActionbar, handleSidebar, handleHeaderClick } from '.
     case 'search':
       handleScriptPreSetting()
       waitDOMContentLoaded(() => {
-        localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
-        handleHeaderClick()
         handleActionbar()
         handleScriptSetting()
         scrollToHidden()

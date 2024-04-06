@@ -56,27 +56,30 @@ ul.vui_tabs--nav>* {
 
 /* 搜索框 */
 body .search-layout .search-header .search-input.search-input {
-    margin: 0 0 5px !important;
+    margin: 10px 0 0 !important;
     padding: 0 5px;
 }
 
-/* 搜索框：顶部 fixed */
-.search-fixed-header {
+/* 禁止搜索框 fixed */
+body .search-input .search-input-container .search-fixed-header {
     min-width: 0 !important;
-    padding: 0 5px;
-    height: var(--header-height) !important;
+    position: unset !important;
+    width: 100% !important;
+    margin: 0 !important;
+    height: 30px !important;
 }
 
 .search-input-wrap {
     height: 30px !important;
     border-radius: 15px !important;
+    padding: 0 !important;
 }
 
 .search-button {
-    border-radius: 0 15px 15px 0 !important;
     height: 30px !important;
-    width: 80px !important;
+    border-radius: 0 15px 15px 0 !important;
     padding: 0 10px !important;
+    width: 80px !important;
 }
 
 /* 视频结果 */
@@ -191,26 +194,6 @@ span.vui_pagenation--extend {
 
 .media-card-content-head-text {
     line-height: 15px !important;
-}
-
-/* 禁止搜索框 fixed */
-body .search-input .search-input-container .search-fixed-header {
-    position: unset !important;
-    width: 100% !important;
-}
-
-/* 修复顶栏 fixed */
-#bili-header-container {
-    position: fixed;
-    width: 100%;
-    z-index: 2;
-    background: unset !important;
-}
-
-/* 主内容下移 */
-.search-layout {
-    position: relative;
-    padding-top: calc(var(--header-height) + 10px);
 }
 
 /* 位置异常的 logo */

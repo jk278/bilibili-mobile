@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.0-alpha.5
+// @version            4.0-alpha.6
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在 Via 与 Safari 打开电脑模式，获取舒适的移动端体验。
 // @author             jk278
@@ -492,7 +492,6 @@ body[show-sidebar="true"] #sidebar-overlay {
 .setting-checkboxes span {
     flex-grow: 1;
     text-align: center;
-    user-select: none;
 }
 
 .setting-checkboxes input[type="checkbox"] {
@@ -695,59 +694,23 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 
 /* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
 
-/* 避免初始内联高度影响计算 */
-#biliMainHeader {
+/* 顶栏外框 */
+#biliMainHeader,
+#bili-header-container {
     position: fixed;
-    z-index: 2;
-    /* 影响个人顶栏宽度 */
     width: 100%;
+    z-index: 62;
+    transform: translateY(-100%);
 }
 
-/* 顶栏边距（右边距减去头像右空隙） */
-.bili-header__bar {
-    padding: 0 10px 0 15px !important;
-    transition: transform 0.5s ease-in;
+/* 搜索页顶栏外框 */
+#bili-header-container {
+    background: unset !important;
 }
 
-/* 顶栏高度 */
-.bili-header .bili-header__bar {
-    height: var(--header-height) !important;
-}
-
-/* 视频页顶栏高度 */
-.header-v3 #biliMainHeader .bili-header .bili-header__bar {
-    height: var(--header-height) !important;
-}
-
-/* 顶部按钮高度 */
-.entry-title,
-.right-entry,
-.mini-header__logo {
-    max-height: var(--header-height);
-}
-
-.left-entry__title {
-    height: var(--header-height) !important;
-}
-
-/* 头像高度 */
-.v-popover-wrap.header-avatar-wrap {
-    height: var(--header-height) !important;
-}
-
-/* 收藏按钮高度 */
-.header-favorite-container-box,
-.header-favorite-container {
-    max-height: var(--header-height) !important;
-}
-
-/* 顶栏高度：HTML 初始加载时，biliMainHeader 已有内联高度，
-     保留顶栏外框（biliMainHeader）高度，修改其它元素 */
-
-/* 不影响结果 */
-#biliMainHeader .bili-header {
-    min-height: var(--header-height);
-    height: var(--header-height);
+/* 首页顶栏 */
+.large-header .bili-header__bar {
+    transform: translateY(-100%);
 }
 
 /* 搜索框 */
@@ -755,7 +718,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     position: absolute !important;
     width: 100%;
     left: 0;
-    top: 0;
+    top: 64px;
     padding: 10px 20px 5px !important;
     z-index: 3;
     margin: 0 !important;
@@ -766,81 +729,14 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     display: block;
 }
 
-/* 顶栏右侧图标 */
-.right-entry {
-    flex: 1;
-    min-width: 0;
-    margin: 0 !important;
-    justify-content: space-evenly;
-}
-
-.right-entry>* {
-    animation: fadeIn 1s ease-in;
-}
-
-.left-entry {
-    min-width: 0;
-    margin: 0 !important;
-}
-
-/* 头像图表边距 */
-.header-avatar-wrap {
-    padding-right: 0 !important;
-}
-
-/* 禁止换行 */
-.left-entry__title,
-.dm.item {
-    white-space: nowrap;
-}
-
-/* 头像置右 */
-.v-popover-wrap.header-avatar-wrap {
-    order: 5;
-    margin-left: auto;
-}
-
-/* 剩余元素均分 */
-.v-popover-wrap:not(.header-avatar-wrap) {
-    flex: 1;
-}
-
-/* 肉眼个别微调 */
-.right-entry--message {
-    padding-left: 3px;
-}
-
-/* 顶栏元素间距 */
-.left-entry__title {
-    margin-right: 0px !important;
-}
-
-/* 与头像左空隙对齐 */
-.mini-header__logo {
-    margin-right: 7px !important;
-}
-
-/* 禁用主题色重载 */
-svg.mini-header__logo path {
-    fill: var(--brand_blue) !important;
-}
-
-/* 移除“首页”字样 */
-.mini-header__title {
-    display: none !important;
-}
-
 /* 移除顶部动图和临时静图 */
 .animated-banner,
-#bili-header-banner-img {
+#bili-header-banner-img,
+.biliheader__banner {
     display: none !important;
 }
 
 /* 使用 controlHeaderImage 获取随机头图 */
-
-.biliheader__banner {
-    display: none !important;
-}
 
 /* -------------------------------------------------- 
    ---------------------- 展开图类 --------------------- 
@@ -1049,17 +945,6 @@ body {
     --header-height: 46px;
 }
 
-/* 顶栏点击遮罩层 */
-#header-musk {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: var(--header-height);
-    background-color: transparent;
-    z-index: 1002;
-}
-
 /* 双列视频 */
 .recommended-container_floor-aside .container {
     grid-template-columns: repeat(2, 1fr) !important;
@@ -1197,8 +1082,7 @@ span.btn-text-inner,
 .bili-mini-login-right-wp,
 .bili-mini-login-right-wp * {
     max-width: 80vw;
-}
-`, ""]);
+}`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1285,7 +1169,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 .video-container-v1 {
     min-width: 0 !important;
     padding: 0 !important;
-    top: var(--header-height);
+    top: 0;
 }
 
 /* ----------------------------------------------------
@@ -1294,7 +1178,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 
 /* 主视频块 */
 .left-container {
-    --video-height: calc(100vw * 0.5625);
+    --video-min-height: calc(100vw * 0.5625);
     --dm-row-height: 44px;
 }
 
@@ -1302,34 +1186,104 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 /* 视频块（宽度） (#mainheight与header的高度差导致了64px-48px的可滚动区域) */
 .left-container {
     /* 移动 Safari 百分比宽高自动考虑边框和填充 */
-    padding: calc(var(--video-height) + var(--dm-row-height)) 10px 0;
     box-sizing: border-box;
     width: 100% !important;
 
     /* 填充评论未加载时的空白，video-container-v1 已考虑顶部留空，但 #app 的高度把顶部重叠的部分加上了 */
-    min-height: calc(100vh - var(--header-height));
+    min-height: calc(100vh - var(--video-min-height));
+    position: relative !important;
+    padding: calc(var(--dm-row-height) + 5px) 10px 0 0;
+    display: none;
 }
 
 /* ----------------------------------------------------
-  * ----------------------- 播放器 ---------------------- *
+  * ----------------------- 推荐块 ---------------------- *
    ----------------------------------------------------- */
 
-/* 修改播放器固定尺寸 */
-/* #bilibili-player {
-    height: 100% !important;
-    width: 100% !important;
-} */
+/* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
+.right-container {
+    position: fixed !important;
+    width: 85% !important;
+    left: 85%;
+    padding: 10px;
+    margin: 0 0 0 15% !important;
 
-/* 固定视频（外框尺寸） */
-/* #playerWrap {
+    z-index: 76;
+    background: white;
+    transition: transform .6s ease-in;
+    height: 100%;
+    overflow-y: auto;
+    /* 避免到达边界后的滚动事件穿透 */
+    overscroll-behavior: contain;
+
+    box-sizing: border-box;
+    border-left: 1px solid var(--line_regular);
+}
+
+body[show-sidebar="true"] .right-container {
+    transform: translateX(-100%);
+}
+
+.right-container-inner {
+    padding: 0 !important;
+}
+
+/* UP信息 */
+.upinfo-btn-panel .default-btn {
+    font-size: 12px !important;
+}
+
+.new-charge-btn {
+    max-width: 35%;
+}
+
+.follow-btn {
+    max-width: 150px !important;
+}
+
+/* UP头像 */
+/*.up-avatar-wrap .bili-avatar,
+  .up-avatar-wrap {
+    width: 38px !important;
+    height: 38px !important;
+  }*/
+
+/* 推荐视频图块 */
+#reco_list .card-box .pic-box {
+    max-width: 50%;
+}
+
+/* --------------------------------------------------
+ ---------------- 块状广告（整个视频页）---------------
+ ---------------------------------------------------- */
+
+#activity_vote,
+#bannerAd,
+.reply-notice,
+.ad-report,
+.pop-live-small-mode,
+#slide_ad,
+.video-page-game-card-small {
+    display: none !important;
+}
+
+/* ---------------------------------------------------
+ ----------------------- 播放器 -----------------------
+ ----------------------------------------------------- */
+
+/* 视频置顶 */
+#playerWrap {
     position: fixed;
+    z-index: 61;
+    top: 0;
     left: 0;
-    top: var(--header-height);
-    width: 100vw;
-    height: var(--video-height) !important;
-    z-index: 75;
-    transition: transform 0.5s ease-in;
-} */
+    display: none;
+}
+
+#bilibili-player.mode-webscreen {
+    width: 100% !important;
+    height: 100% !important;
+}
 
 /* 小窗时的隐藏 - 始终隐藏*/
 /* 顶部关注、音乐、反馈 */
@@ -1354,32 +1308,19 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     bottom: unset !important;
     top: 50%;
     transform: translateY(-50%);
-  }
+}
 
-/* .bpx-player-toast-item {
-    margin: 0 !important;
-} */
+/* 小窗按钮 */
+.mini-player-window {
+    position: fixed;
+    z-index: -10;
+    visibility: hidden;
+}
 
-/* 小窗时的暂停图标 */
-/* .bpx-player-mini-warp {
+/* 客服按钮 */
+.customer-service {
     display: none !important;
-} */
-
-/* 彻底移除小窗样式 */
-/* #playerWrap .bpx-player-container[data-screen=mini] {
-    position: relative !important;
-    width: 100% !important;
-    height: 100% !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    transition: top 0.5s ease-in;
-} */
-
-/* 移除小窗等按钮 */
-/* .fixed-sidenav-storage>*:nth-child(1),
-.fixed-sidenav-storage>*:nth-child(2) {
-    display: none !important;
-} */
+}
 
 /* 窄屏不隐藏控制条和阴影 */
 .bpx-player-control-entity,
@@ -1397,7 +1338,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 
 /* 横屏时恢复时间显示 */
 @media screen and (orientation: landscape) {
-    .bpx-player-container[data-screen="full"]:not([data-portrait]) .bpx-player-ctrl-time {
+    .bpx-player-ctrl-time {
         display: block !important;
     }
 }
@@ -1494,7 +1435,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 /* 清晰度弹窗 */
 .bpx-player-ctrl-quality-menu-wrap {
     bottom: 0 !important;
-    max-height: var(--video-height) !important;
+    max-height: var(--video-min-height) !important;
 }
 
 /* 倍速弹窗 */
@@ -1512,7 +1453,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 /* 更多设置 */
 .bpx-player-ctrl-setting-menu-right {
     padding: 5px !important;
-    max-height: var(--video-height) !important;
+    max-height: var(--video-min-height) !important;
 }
 
 /* 更多设置 */
@@ -1637,65 +1578,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 .bpx-player-video-info-dm,
 .bpx-player-dm-hint {
     display: none !important;
-}
-
-/* 播放组件在下面 */
-
-/* ----------------------------------------------------
-  * ----------------------- 推荐块 ---------------------- *
-   ----------------------------------------------------- */
-
-/* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
-.right-container {
-    position: fixed !important;
-    width: 85% !important;
-    left: 85%;
-    padding: 10px;
-    margin: 0 0 0 15% !important;
-
-    z-index: 76;
-    background: white;
-    transition: transform .6s ease-in;
-    height: calc(100% - var(--header-height) * 2);
-    overflow-y: auto;
-    /* 避免到达边界后的滚动事件穿透 */
-    overscroll-behavior: contain;
-
-    box-sizing: border-box;
-    border-left: 1px solid var(--line_regular);
-}
-
-body[show-sidebar="true"] .right-container {
-    transform: translateX(-100%);
-}
-
-.right-container-inner {
-    padding: 0 !important;
-}
-
-/* UP信息 */
-.upinfo-btn-panel .default-btn {
-    font-size: 12px !important;
-}
-
-.new-charge-btn {
-    max-width: 35%;
-}
-
-.follow-btn {
-    max-width: 150px !important;
-}
-
-/* UP头像 */
-/*.up-avatar-wrap .bili-avatar,
-  .up-avatar-wrap {
-    width: 38px !important;
-    height: 38px !important;
-  }*/
-
-/* 推荐视频图块 */
-#reco_list .card-box .pic-box {
-    max-width: 50%;
 }
 
 /* ----------------------------------------------------
@@ -2002,16 +1884,6 @@ body[show-sidebar="true"] .right-container {
     max-width: calc(100% - 10px);
 }
 
-/* 块状广告（包括推荐列） */
-#activity_vote,
-#bannerAd,
-.reply-notice,
-.ad-report,
-.pop-live-small-mode,
-#slide_ad {
-    display: none !important;
-}
-
 /* ----------------------------------------------------
  ------------------------- 按钮 -----------------------
  ----------------------------------------------------- */
@@ -2169,27 +2041,30 @@ ul.vui_tabs--nav>* {
 
 /* 搜索框 */
 body .search-layout .search-header .search-input.search-input {
-    margin: 0 0 5px !important;
+    margin: 10px 0 0 !important;
     padding: 0 5px;
 }
 
-/* 搜索框：顶部 fixed */
-.search-fixed-header {
+/* 禁止搜索框 fixed */
+body .search-input .search-input-container .search-fixed-header {
     min-width: 0 !important;
-    padding: 0 5px;
-    height: var(--header-height) !important;
+    position: unset !important;
+    width: 100% !important;
+    margin: 0 !important;
+    height: 30px !important;
 }
 
 .search-input-wrap {
     height: 30px !important;
     border-radius: 15px !important;
+    padding: 0 !important;
 }
 
 .search-button {
-    border-radius: 0 15px 15px 0 !important;
     height: 30px !important;
-    width: 80px !important;
+    border-radius: 0 15px 15px 0 !important;
     padding: 0 10px !important;
+    width: 80px !important;
 }
 
 /* 视频结果 */
@@ -2304,26 +2179,6 @@ span.vui_pagenation--extend {
 
 .media-card-content-head-text {
     line-height: 15px !important;
-}
-
-/* 禁止搜索框 fixed */
-body .search-input .search-input-container .search-fixed-header {
-    position: unset !important;
-    width: 100% !important;
-}
-
-/* 修复顶栏 fixed */
-#bili-header-container {
-    position: fixed;
-    width: 100%;
-    z-index: 2;
-    background: unset !important;
-}
-
-/* 主内容下移 */
-.search-layout {
-    position: relative;
-    padding-top: calc(var(--header-height) + 10px);
 }
 
 /* 位置异常的 logo */
@@ -2598,14 +2453,8 @@ function scrollToHidden () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   handleScriptPreSetting: () => (/* binding */ handleScriptPreSetting),
-/* harmony export */   handleScriptSetting: () => (/* binding */ handleScriptSetting),
-/* harmony export */   headerInMenu: () => (/* binding */ headerInMenu)
+/* harmony export */   handleScriptSetting: () => (/* binding */ handleScriptSetting)
 /* harmony export */ });
-/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(24);
-
-// eslint-disable-next-line no-undef
-const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
-
 function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
 function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
 
@@ -2616,7 +2465,7 @@ function handleScriptPreSetting () {
   const css = {
     css1: `
       .bpx-player-sending-area.bpx-player-sending-area {display: none !important;}
-      .left-container.left-container {padding: calc(var(--video-height) + 5px ) 10px 0;}
+      .left-container.left-container {padding: 5px 10px 0;}
     `,
     css2: '.main-reply-box.main-reply-box {display: none !important;}',
     css3: '#v_tag {display: none !important;}',
@@ -2724,15 +2573,11 @@ function handleScriptSetting () {
   const keyValue = {
     key1: 'full-unmuted',
     key2: 'ban-action-hidden',
-    key3: 'header-in-menu',
-    key4: 'custom-longpress-speed'
+    key3: 'custom-longpress-speed'
   }
 
   if ((localStorage.getItem('ban-action-hidden') || '0') === '1') {
     banActionHidden()
-  }
-  if ((localStorage.getItem('header-in-menu') || '0') === '1') {
-    headerInMenu()
   }
 
   function banActionHidden () {
@@ -2767,7 +2612,6 @@ function handleScriptSetting () {
         <div class="setting-checkboxes">
           <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
-          <label><input type="checkbox"><span>以菜单形式打开原顶栏入口</span></label>
           <label><input type="number" value="2"><span>自定义视频长按倍速</span></label>
         </div>
         `
@@ -2778,25 +2622,26 @@ function handleScriptSetting () {
       textContent: '确认'
     })
 
+    const speedIndex = 2
+
     const values = Object.values(keyValue)
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) {
-      if (index !== 3) {
+      if (index !== speedIndex) {
         checkboxElements[index].checked = localStorage.getItem(value) === '1'
       }
     }
-    settingPanel.querySelector('input[type="number"]').value = Number(localStorage.getItem(values[3]) || '2')
+    settingPanel.querySelector('input[type="number"]').value = Number(localStorage.getItem(values[speedIndex]) || '2')
 
     settingConform.addEventListener('click', () => {
       const isBanActionHidden = localStorage.getItem('ban-action-hidden') || '0'
-      const isHeaderInMenu = localStorage.getItem('header-in-menu') || '0'
 
       for (const [index, value] of values.entries()) {
-        if (index !== 3) {
+        if (index !== speedIndex) {
           localStorage.setItem(value, checkboxElements[index].checked ? '1' : '0')
         }
       }
-      localStorage.setItem(values[3], settingPanel.querySelector('input[type="number"]').value)
+      localStorage.setItem(values[speedIndex], settingPanel.querySelector('input[type="number"]').value)
       settingPanel.classList.remove('show')
 
       const newIsBanActionHidden = localStorage.getItem('ban-action-hidden')
@@ -2807,19 +2652,6 @@ function handleScriptSetting () {
           document.getElementById('ban-action-hidden').remove()
         }
       }
-
-      const newIsHeaderInMenu = localStorage.getItem('header-in-menu')
-      if (newIsHeaderInMenu !== isHeaderInMenu) {
-        if (newIsHeaderInMenu === '1') {
-          headerInMenu()
-          if ((localStorage.getItem('hidden-header') || '0') !== '1') {
-            (0,_actionbar_js__WEBPACK_IMPORTED_MODULE_0__.hideHeader)()
-            localStorage.setItem('hidden-header', '1')
-          }
-        } else {
-          document.getElementById('menu-overlay').remove()
-        }
-      }
     })
 
     settingPanel.appendChild(settingConform)
@@ -2827,358 +2659,9 @@ function handleScriptSetting () {
   }
 }
 
-function headerInMenu () {
-  const menuOverlay = Object.assign(document.createElement('div'), {
-    id: 'menu-overlay',
-    innerHTML: `
-    <div id="header-in-menu">
-      <ul>
-        <li data-refer=".right-entry--message">私信</li>
-        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
-        <li data-refer=".header-favorite-container">收藏</li>
-        <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
-        <li data-refer=".header-avatar-wrap">主页</li>
-      </li>
-    </div>
-    `
-  })
-
-  waitDOMContentLoaded(() => {
-    addMenu()
-
-    function addMenu () {
-      if (document.querySelector('.header-avatar-wrap')) {
-        const menuFab = document.getElementById('menu-fab')
-        menuFab.appendChild(menuOverlay)
-
-        const items = menuOverlay.querySelectorAll('li')
-        const header = document.querySelector('.bili-header__bar')[0]
-        items.forEach(item => {
-          item.addEventListener('click', event => {
-            event.stopPropagation()
-            const refer = item.dataset.refer
-
-            const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-            if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
-
-            simulateMouseEnter(header.querySelector(refer))
-            sessionStorage.setItem('opened-dailog', refer)
-          })
-        })
-
-        const menu = menuOverlay.querySelector('#header-in-menu')
-
-        menuOverlay.addEventListener('click', event => {
-          event.stopPropagation()
-          const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-          if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
-
-          if (event.target !== menu) {
-            menu.style.display = 'block'
-            menu.classList.remove('show')
-            setTimeout(() => {
-              menu.style.display = ''
-            }, 400)
-          }
-        })
-      } else {
-        setTimeout(addMenu, 500)
-      }
-    }
-
-    function simulateMouseEnter (element) {
-      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-
-    function simulateMouseLeave (element) {
-      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-  })
-}
-
 
 /***/ }),
 /* 24 */
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   handleActionbar: () => (/* binding */ handleActionbar),
-/* harmony export */   handleHeaderClick: () => (/* binding */ handleHeaderClick),
-/* harmony export */   handleSidebar: () => (/* binding */ handleSidebar),
-/* harmony export */   hideHeader: () => (/* binding */ hideHeader)
-/* harmony export */ });
-// eslint-disable-next-line no-undef
-const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
-
-function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
-function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
-
-// 隐藏顶栏
-function hideHeader () {
-  const hiddenStyle = Object.assign(document.createElement('style'), {
-    id: 'hidden-header',
-    /* css */
-    textContent: `
-      .bili-header__bar, #header-musk {transform: translateY(-100%);}
-      /* 父布局不要用 transform */
-      .video-container-v1.video-container-v1 {top: 0 !important;}
-      .right-container.right-container {height: 100%;}
-      .center-search-container {margin-top: var(--header-height) !important;}
-    `
-  })
-  ensureHeadGetted(hiddenStyle)
-}
-// #playerWrap {transform: translateY(calc(var(--header-height) * -1));}
-
-// 操作栏
-function handleActionbar () {
-  const actionbar = Object.assign(document.createElement('div'), {
-    id: 'actionbar',
-    /* html */
-    innerHTML: `
-      <div id="full-now">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(3.6,4.2)" d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
-      </div>
-      <div id="my-top">
-        <svg width="24" height="24" viewBox="0 0 296 296" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(17,18)" stroke="currentColor" stroke-width="1" d="M110.69055,37.98071a20.00016,20.00016,0,0,1,34.6189,0l87.97632,151.99243a19.99992,19.99992,0,0,1-17.30957,30.019H40.0238a19.99992,19.99992,0,0,1-17.30957-30.019L110.69055,37.98071M128,36a11.879,11.879,0,0,0-10.38562,5.98853L29.63806,193.981A11.99988,11.99988,0,0,0,40.0238,211.99219H215.9762A11.99988,11.99988,0,0,0,226.36194,193.981L138.38562,41.98853A11.879,11.879,0,0,0,128,36Z"/></svg>
-      </div>
-      <div id="my-home">
-        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m12 4.44 7 6.09V20h-4v-6H9v6H5v-9.47l7-6.09m0-1.32-8 6.96V21h6v-6h4v6h6V10.08l-8-6.96z"></path></svg>
-      </div>
-      <div id="search-fab">
-        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m20.87 20.17-5.59-5.59C16.35 13.35 17 11.75 17 10c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path></svg>
-      </div>
-      <div id="menu-fab">
-        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path></svg>
-      </div>
-      <div id="sidebar-fab">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M21 6H3V5h18v1zm0 5H3v1h18v-1zm0 6H3v1h18v-1z"></path></svg>
-      </div>
-      <div id="refresh-fab">
-        <svg width="24" height="24" viewBox="0 0 29 29" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(2.3,2.8)" d="M21.3687 13.5827C21.4144 13.3104 21.2306 13.0526 20.9583 13.0069C20.686 12.9612 20.4281 13.1449 20.3825 13.4173L21.3687 13.5827ZM12 20.5C7.30558 20.5 3.5 16.6944 3.5 12H2.5C2.5 17.2467 6.75329 21.5 12 21.5V20.5ZM3.5 12C3.5 7.30558 7.30558 3.5 12 3.5V2.5C6.75329 2.5 2.5 6.75329 2.5 12H3.5ZM12 3.5C15.3367 3.5 18.2252 5.4225 19.6167 8.22252L20.5122 7.77748C18.9583 4.65062 15.7308 2.5 12 2.5V3.5ZM20.3825 13.4173C19.7081 17.437 16.2112 20.5 12 20.5V21.5C16.7077 21.5 20.6148 18.0762 21.3687 13.5827L20.3825 13.4173Z"/><path transform="translate(2.3,2.9)" d="M20.4716 2.42157V8.07843H14.8147"/></svg>
-      </div>
-      `
-  })
-
-  document.body.appendChild(actionbar)
-
-  if (window.location.pathname === '/') {
-    actionbar.classList.add('home')
-
-    setTopBtn()
-    setRefreshBtn()
-  }
-
-  if (window.location.pathname.startsWith('/video')) {
-    setFullbtn()
-  }
-
-  setHomeBtn()
-  setSearchBtn()
-  setMenuBtn()
-
-  function setFullbtn () {
-    const fullBtn = document.getElementById('full-now')
-    fullBtn.addEventListener('click', () => {
-      const video = document.querySelector('video')
-      // 等于符号优先级更高
-      if ((localStorage.getItem('full-unmuted') || '0') === '1') {
-        video.play()
-        video.muted = false
-        if (video.volume === 0) {
-          document.querySelector('.bpx-player-ctrl-muted-icon').click()
-        }
-      }
-      fullScreen()
-      function fullScreen () {
-        const video = document.querySelector('video')
-        const btnSelector = video.videoWidth / video.videoHeight < 1 ? '.bpx-player-ctrl-web' : '.bpx-player-ctrl-full'
-        const rawFullBtn = document.querySelector(btnSelector)
-        rawFullBtn ? rawFullBtn.click() : setTimeout(fullScreen, 500)
-      }
-    })
-  }
-
-  function setTopBtn () {
-    const topBtn = document.getElementById('my-top')
-    topBtn.addEventListener('click', () => {
-      toTop()
-      function toTop () {
-        const rawTopBtn = document.querySelector('.top-btn')
-        rawTopBtn ? rawTopBtn.click() : setTimeout(toTop, 500)
-      }
-    })
-  }
-
-  function setHomeBtn () {
-    const home = document.getElementById('my-home')
-    home.addEventListener('click', () => { window.location.href = '/' })
-  }
-
-  function setSearchBtn () {
-    const searchbarBtn = document.getElementById('search-fab')
-    searchbarBtn.addEventListener('click', (event) => {
-    // 事件完成后立即冒泡
-      event.stopPropagation()
-      const searchbarContainer = document.querySelector('.center-search-container')
-      searchbarContainer.classList.add('show')
-      const input = searchbarContainer.querySelector('input')
-      input.focus()
-
-      const searchbar = searchbarContainer.querySelector('.center-search__bar')
-      searchbar.addEventListener('click', (event) => {
-        event.stopPropagation()
-      })
-      document.body.addEventListener('click', (event) => {
-        if (event.target !== searchbar) {
-          searchbarContainer.classList.remove('show')
-        }
-      }, { once: true })
-    })
-  }
-
-  function setMenuBtn () {
-    const menuBtn = document.getElementById('menu-fab')
-    menuBtn.addEventListener('click', () => {
-      if ((localStorage.getItem('header-in-menu') || '0') === '1') {
-        const menu = document.getElementById('header-in-menu')
-        if (menu) {
-          menu.style.display = 'block'
-          setTimeout(() => {
-            menu.classList.add('show')
-            menu.style.display = ''
-          }, 0)
-        }
-      } else {
-        if ((localStorage.getItem('hidden-header') || '0') === '1') {
-          document.getElementById('hidden-header')?.remove()
-          localStorage.setItem('hidden-header', '0')
-        } else {
-          hideHeader()
-          localStorage.setItem('hidden-header', '1')
-        }
-      }
-    })
-  }
-
-  function setRefreshBtn () {
-    const refreshBtn = document.getElementById('refresh-fab')
-    refreshBtn.addEventListener('click', () => {
-      refresh()
-      function refresh () {
-        const rawRefreshBtn = document.querySelector('.flexible-roll-btn-inner')
-        rawRefreshBtn ? rawRefreshBtn.click() : setTimeout(refresh, 500)
-      }
-    })
-  }
-}
-
-// 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
-function handleSidebar () {
-  const sidebarBtn = document.getElementById('sidebar-fab')
-
-  const sidebarOverlay = document.createElement('div')
-  sidebarOverlay.id = 'sidebar-overlay'
-
-  sidebarBtn.appendChild(sidebarOverlay)
-
-  sidebarOverlay.addEventListener('click', (event) => {
-    event.stopPropagation()
-    closeSidebar()
-  })
-
-  sidebarBtn.addEventListener('click', () => {
-    const isShow = document.body.getAttribute('show-sidebar') === 'true'
-    isShow ? closeSidebar() : document.body.setAttribute('show-sidebar', 'true')
-  })
-
-  function closeSidebar () { document.body.setAttribute('show-sidebar', '') }
-
-  // // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
-  const recommendLiist = document.getElementById('reco_list')
-  recommendLiist.addEventListener('click', (event) => {
-    const nextPlay = document.querySelector('.rec-title')
-    const recommendFooter = document.querySelector('.rec-footer')
-    if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
-  })
-}
-
-// 接管顶部点击事件，父元素point-events:none，子元素point-events:auto对有的手机无效
-function handleHeaderClick () {
-  const musk = document.createElement('div')
-  musk.id = 'header-musk'
-  document.body.appendChild(musk)
-  musk.addEventListener('click', handleClick)
-
-  let storedElement = null
-  let isMouseEntered = false
-  let clickTimer = null
-  let clickCount = 0
-
-  function handleClick (event) {
-    clickCount++
-
-    if (clickTimer) {
-      clearTimeout(clickTimer)
-      clickTimer = null
-    }
-
-    if (clickCount === 1) {
-      clickTimer = setTimeout(() => {
-        // 如果 100ms 内没有第二次点击，则执行操作 A
-        onceClick()
-        clickCount = 0
-      }, 250)
-    } else {
-      // 如果 100ms 内有第二次点击，则执行操作 B
-      twiceClick()
-      clickCount = 0
-    }
-
-    function onceClick () {
-      if (isMouseEntered) {
-        simulateMouseLeave(storedElement)
-        isMouseEntered = false
-      } else {
-        musk.style.display = 'none'
-        const element = document.elementFromPoint(event.clientX, event.clientY)
-        simulateMouseEnter(element)
-        musk.style.display = 'block'
-        isMouseEntered = true
-        storedElement = element
-      }
-    }
-
-    function twiceClick () {
-      musk.style.display = 'none'
-      const element = document.elementFromPoint(event.clientX, event.clientY)
-      simulateClick(element)
-      musk.style.display = 'block'
-    }
-  }
-
-  function simulateMouseEnter (element) {
-    const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-    element.dispatchEvent(event)
-  }
-
-  function simulateMouseLeave (element) {
-    const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-    element.dispatchEvent(event)
-  }
-
-  function simulateClick (element) {
-    const event = new MouseEvent('click', { bubbles: true, view: _unsafeWindow })
-    element.dispatchEvent(event)
-  }
-}
-
-
-/***/ }),
-/* 25 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -3260,7 +2743,7 @@ function handleHeaderImage () {
 
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -3271,9 +2754,39 @@ __webpack_require__.r(__webpack_exports__);
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
 
 function videoInteraction () {
+  dynamicHeight()
   handlelVideoClick()
   handleVideoLongPress()
-  autoPortrait()
+}
+
+function dynamicHeight () {
+  const player = document.querySelector('#bilibili-player')
+  const playerWrap = document.querySelector('#playerWrap')
+  const leftContainer = document.querySelector('.left-container')
+
+  const style = window.getComputedStyle(player)
+  const width = style.getPropertyValue('width')
+  const height = style.getPropertyValue('height')
+
+  const newHeight = parseInt(height) / parseInt(width) * 100
+  player.style.cssText = `width:100vw; height:${newHeight}vw;`
+  playerWrap.style.height = `${newHeight}vw`
+  playerWrap.style.display = 'block'
+  leftContainer.style.top = `${newHeight}vw`
+  leftContainer.style.display = 'block'
+
+  const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'class') {
+        if (miniPlayerBtn.classList.contains('on')) {
+          miniPlayerBtn.click()
+        }
+      }
+    })
+  })
+
+  observer.observe(miniPlayerBtn, { attributes: true })
 }
 
 // 接管视频点击事件
@@ -3338,11 +2851,264 @@ function handleVideoLongPress () {
   })
 }
 
-function autoPortrait () {
-  const video = document.querySelector('video')
-  if (video.videoWidth / video.videoHeight < 1) {
-    document.querySelector('.bpx-player-ctrl-web').style.cssText = 'display:block !important;'
+
+/***/ }),
+/* 26 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   handleActionbar: () => (/* binding */ handleActionbar),
+/* harmony export */   handleSidebar: () => (/* binding */ handleSidebar)
+/* harmony export */ });
+// eslint-disable-next-line no-undef
+const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
+
+function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
+
+// 操作栏
+function handleActionbar () {
+  const actionbar = Object.assign(document.createElement('div'), {
+    id: 'actionbar',
+    /* html */
+    innerHTML: `
+      <div id="full-now">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(3.6,4.2)" d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
+      </div>
+      <div id="my-top">
+        <svg width="24" height="24" viewBox="0 0 296 296" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(17,18)" stroke="currentColor" stroke-width="1" d="M110.69055,37.98071a20.00016,20.00016,0,0,1,34.6189,0l87.97632,151.99243a19.99992,19.99992,0,0,1-17.30957,30.019H40.0238a19.99992,19.99992,0,0,1-17.30957-30.019L110.69055,37.98071M128,36a11.879,11.879,0,0,0-10.38562,5.98853L29.63806,193.981A11.99988,11.99988,0,0,0,40.0238,211.99219H215.9762A11.99988,11.99988,0,0,0,226.36194,193.981L138.38562,41.98853A11.879,11.879,0,0,0,128,36Z"/></svg>
+      </div>
+      <div id="my-home">
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m12 4.44 7 6.09V20h-4v-6H9v6H5v-9.47l7-6.09m0-1.32-8 6.96V21h6v-6h4v6h6V10.08l-8-6.96z"></path></svg>
+      </div>
+      <div id="search-fab">
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="m20.87 20.17-5.59-5.59C16.35 13.35 17 11.75 17 10c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path></svg>
+      </div>
+      <div id="menu-fab">
+        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path></svg>
+      </div>
+      <div id="sidebar-fab">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;"><path d="M21 6H3V5h18v1zm0 5H3v1h18v-1zm0 6H3v1h18v-1z"></path></svg>
+      </div>
+      <div id="refresh-fab">
+        <svg width="24" height="24" viewBox="0 0 29 29" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(2.3,2.8)" d="M21.3687 13.5827C21.4144 13.3104 21.2306 13.0526 20.9583 13.0069C20.686 12.9612 20.4281 13.1449 20.3825 13.4173L21.3687 13.5827ZM12 20.5C7.30558 20.5 3.5 16.6944 3.5 12H2.5C2.5 17.2467 6.75329 21.5 12 21.5V20.5ZM3.5 12C3.5 7.30558 7.30558 3.5 12 3.5V2.5C6.75329 2.5 2.5 6.75329 2.5 12H3.5ZM12 3.5C15.3367 3.5 18.2252 5.4225 19.6167 8.22252L20.5122 7.77748C18.9583 4.65062 15.7308 2.5 12 2.5V3.5ZM20.3825 13.4173C19.7081 17.437 16.2112 20.5 12 20.5V21.5C16.7077 21.5 20.6148 18.0762 21.3687 13.5827L20.3825 13.4173Z"/><path transform="translate(2.3,2.9)" d="M20.4716 2.42157V8.07843H14.8147"/></svg>
+      </div>
+      `
+  })
+
+  document.body.appendChild(actionbar)
+
+  if (window.location.pathname === '/') {
+    actionbar.classList.add('home')
+
+    setTopBtn()
+    setRefreshBtn()
   }
+
+  if (window.location.pathname.startsWith('/video')) {
+    setFullbtn()
+  }
+
+  setHomeBtn()
+  setSearchBtn()
+  setMenuBtn()
+
+  headerInMenu()
+
+  function setFullbtn () {
+    const fullBtn = document.getElementById('full-now')
+    fullBtn.addEventListener('click', () => {
+      const video = document.querySelector('video')
+      // 等于符号优先级更高
+      if ((localStorage.getItem('full-unmuted') || '0') === '1') {
+        video.play()
+        video.muted = false
+        if (video.volume === 0) {
+          document.querySelector('.bpx-player-ctrl-muted-icon').click()
+        }
+      }
+      fullScreen()
+      function fullScreen () {
+        const video = document.querySelector('video')
+        const isPortrait = video.videoWidth / video.videoHeight < 1
+        const btnSelector = isPortrait ? '.bpx-player-ctrl-web' : '.bpx-player-ctrl-full'
+        const rawFullBtn = document.querySelector(btnSelector)
+        if (rawFullBtn) {
+          rawFullBtn.click()
+          if (isPortrait) {
+            rawFullBtn.style.cssText = 'position:relative !important; visibility:visible;'
+            rawFullBtn.addEventListener('click', () => { rawFullBtn.style.cssText = '' })
+          }
+        } else {
+          setTimeout(fullScreen, 500)
+        }
+      }
+    })
+  }
+
+  function setTopBtn () {
+    const topBtn = document.getElementById('my-top')
+    topBtn.addEventListener('click', () => {
+      toTop()
+      function toTop () {
+        const rawTopBtn = document.querySelector('.top-btn')
+        rawTopBtn ? rawTopBtn.click() : setTimeout(toTop, 500)
+      }
+    })
+  }
+
+  function setHomeBtn () {
+    const home = document.getElementById('my-home')
+    home.addEventListener('click', () => { window.location.href = 'https://www.bilibili.com/' })
+  }
+
+  function setSearchBtn () {
+    const searchbarBtn = document.getElementById('search-fab')
+    searchbarBtn.addEventListener('click', (event) => {
+    // 事件完成后立即冒泡
+      event.stopPropagation()
+      const searchbarContainer = document.querySelector('.center-search-container')
+      searchbarContainer.classList.add('show')
+      const input = searchbarContainer.querySelector('input')
+      input.focus()
+
+      const searchbar = searchbarContainer.querySelector('.center-search__bar')
+      searchbar.addEventListener('click', (event) => {
+        event.stopPropagation()
+      })
+      document.body.addEventListener('click', (event) => {
+        if (event.target !== searchbar) {
+          searchbarContainer.classList.remove('show')
+        }
+      }, { once: true })
+    })
+  }
+
+  function setMenuBtn () {
+    const menuBtn = document.getElementById('menu-fab')
+    menuBtn.addEventListener('click', () => {
+      const menu = document.getElementById('header-in-menu')
+      if (menu) {
+        menu.style.display = 'block'
+        setTimeout(() => {
+          menu.classList.add('show')
+          menu.style.display = ''
+        }, 0)
+      }
+    })
+  }
+
+  function setRefreshBtn () {
+    const refreshBtn = document.getElementById('refresh-fab')
+    refreshBtn.addEventListener('click', () => {
+      refresh()
+      function refresh () {
+        const rawRefreshBtn = document.querySelector('.flexible-roll-btn-inner')
+        rawRefreshBtn ? rawRefreshBtn.click() : setTimeout(refresh, 500)
+      }
+    })
+  }
+}
+
+// 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
+function handleSidebar () {
+  const sidebarBtn = document.getElementById('sidebar-fab')
+
+  const sidebarOverlay = document.createElement('div')
+  sidebarOverlay.id = 'sidebar-overlay'
+
+  sidebarBtn.appendChild(sidebarOverlay)
+
+  sidebarOverlay.addEventListener('click', (event) => {
+    event.stopPropagation()
+    closeSidebar()
+  })
+
+  sidebarBtn.addEventListener('click', () => {
+    const isShow = document.body.getAttribute('show-sidebar') === 'true'
+    isShow ? closeSidebar() : document.body.setAttribute('show-sidebar', 'true')
+  })
+
+  function closeSidebar () { document.body.setAttribute('show-sidebar', '') }
+
+  // // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
+  const recommendLiist = document.getElementById('reco_list')
+  recommendLiist.addEventListener('click', (event) => {
+    const nextPlay = document.querySelector('.rec-title')
+    const recommendFooter = document.querySelector('.rec-footer')
+    if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+  })
+}
+
+function headerInMenu () {
+  const menuOverlay = Object.assign(document.createElement('div'), {
+    id: 'menu-overlay',
+    innerHTML: `
+    <div id="header-in-menu">
+      <ul>
+        <li data-refer=".right-entry--message">私信</li>
+        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
+        <li data-refer=".header-favorite-container">收藏</li>
+        <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
+        <li data-refer=".header-avatar-wrap">主页</li>
+      </li>
+    </div>
+    `
+  })
+
+  waitDOMContentLoaded(() => {
+    addMenu()
+
+    function addMenu () {
+      if (document.querySelector('.header-avatar-wrap')) {
+        const menuFab = document.getElementById('menu-fab')
+        menuFab.appendChild(menuOverlay)
+
+        const items = menuOverlay.querySelectorAll('li')
+        const header = document.querySelector('.bili-header__bar')
+        items.forEach(item => {
+          item.addEventListener('click', event => {
+            event.stopPropagation()
+            const refer = item.dataset.refer
+
+            const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+            if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
+
+            simulateMouseEnter(header.querySelector(refer))
+            sessionStorage.setItem('opened-dailog', refer)
+          })
+        })
+
+        const menu = menuOverlay.querySelector('#header-in-menu')
+
+        menuOverlay.addEventListener('click', event => {
+          event.stopPropagation()
+          const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+          if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
+
+          if (event.target !== menu) {
+            menu.style.display = 'block'
+            menu.classList.remove('show')
+            setTimeout(() => {
+              menu.style.display = ''
+            }, 400)
+          }
+        })
+      } else {
+        setTimeout(addMenu, 500)
+      }
+    }
+
+    function simulateMouseEnter (element) {
+      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+
+    function simulateMouseLeave (element) {
+      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+  })
 }
 
 
@@ -3433,9 +3199,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(21);
 /* harmony import */ var _window_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(22);
 /* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(23);
-/* harmony import */ var _header_image_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(25);
-/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(26);
-/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(24);
+/* harmony import */ var _header_image_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(24);
+/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(25);
+/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(26);
 // @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
 
 
@@ -3468,8 +3234,6 @@ __webpack_require__.r(__webpack_exports__);
   ;(0,_init_js__WEBPACK_IMPORTED_MODULE_6__.initViewport)()
   ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.preventBeforeUnload)()
 
-  if (localStorage.getItem('hidden-header') === '1') { (0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.hideHeader)() }
-
   switch (part) {
     case 'www':
       if (url.pathname === '/') {
@@ -3478,8 +3242,6 @@ __webpack_require__.r(__webpack_exports__);
       }
       (0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
       waitDOMContentLoaded(() => {
-        localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
-        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleHeaderClick)()
         ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleActionbar)()
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
         if (url.pathname.startsWith('/video')) {
@@ -3492,8 +3254,6 @@ __webpack_require__.r(__webpack_exports__);
     case 'search':
       ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
       waitDOMContentLoaded(() => {
-        localStorage.getItem('hidden-header') === '1' && document.body.setAttribute('hidden-header', 'true')
-        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleHeaderClick)()
         ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleActionbar)()
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
         ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.scrollToHidden)()

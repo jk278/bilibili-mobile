@@ -161,7 +161,6 @@ body[show-sidebar="true"] #sidebar-overlay {
 .setting-checkboxes span {
     flex-grow: 1;
     text-align: center;
-    user-select: none;
 }
 
 .setting-checkboxes input[type="checkbox"] {

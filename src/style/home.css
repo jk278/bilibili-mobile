@@ -11,17 +11,6 @@ body {
     --header-height: 46px;
 }
 
-/* 顶栏点击遮罩层 */
-#header-musk {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: var(--header-height);
-    background-color: transparent;
-    z-index: 1002;
-}
-
 /* 双列视频 */
 .recommended-container_floor-aside .container {
     grid-template-columns: repeat(2, 1fr) !important;

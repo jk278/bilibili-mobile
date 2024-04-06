@@ -4,59 +4,23 @@
 
 /* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
 
-/* 避免初始内联高度影响计算 */
-#biliMainHeader {
+/* 顶栏外框 */
+#biliMainHeader,
+#bili-header-container {
     position: fixed;
-    z-index: 2;
-    /* 影响个人顶栏宽度 */
     width: 100%;
+    z-index: 62;
+    transform: translateY(-100%);
 }
 
-/* 顶栏边距（右边距减去头像右空隙） */
-.bili-header__bar {
-    padding: 0 10px 0 15px !important;
-    transition: transform 0.5s ease-in;
+/* 搜索页顶栏外框 */
+#bili-header-container {
+    background: unset !important;
 }
 
-/* 顶栏高度 */
-.bili-header .bili-header__bar {
-    height: var(--header-height) !important;
-}
-
-/* 视频页顶栏高度 */
-.header-v3 #biliMainHeader .bili-header .bili-header__bar {
-    height: var(--header-height) !important;
-}
-
-/* 顶部按钮高度 */
-.entry-title,
-.right-entry,
-.mini-header__logo {
-    max-height: var(--header-height);
-}
-
-.left-entry__title {
-    height: var(--header-height) !important;
-}
-
-/* 头像高度 */
-.v-popover-wrap.header-avatar-wrap {
-    height: var(--header-height) !important;
-}
-
-/* 收藏按钮高度 */
-.header-favorite-container-box,
-.header-favorite-container {
-    max-height: var(--header-height) !important;
-}
-
-/* 顶栏高度：HTML 初始加载时，biliMainHeader 已有内联高度，
-     保留顶栏外框（biliMainHeader）高度，修改其它元素 */
-
-/* 不影响结果 */
-#biliMainHeader .bili-header {
-    min-height: var(--header-height);
-    height: var(--header-height);
+/* 首页顶栏 */
+.large-header .bili-header__bar {
+    transform: translateY(-100%);
 }
 
 /* 搜索框 */
@@ -64,7 +28,7 @@
     position: absolute !important;
     width: 100%;
     left: 0;
-    top: 0;
+    top: 64px;
     padding: 10px 20px 5px !important;
     z-index: 3;
     margin: 0 !important;
@@ -75,81 +39,14 @@
     display: block;
 }
 
-/* 顶栏右侧图标 */
-.right-entry {
-    flex: 1;
-    min-width: 0;
-    margin: 0 !important;
-    justify-content: space-evenly;
-}
-
-.right-entry>* {
-    animation: fadeIn 1s ease-in;
-}
-
-.left-entry {
-    min-width: 0;
-    margin: 0 !important;
-}
-
-/* 头像图表边距 */
-.header-avatar-wrap {
-    padding-right: 0 !important;
-}
-
-/* 禁止换行 */
-.left-entry__title,
-.dm.item {
-    white-space: nowrap;
-}
-
-/* 头像置右 */
-.v-popover-wrap.header-avatar-wrap {
-    order: 5;
-    margin-left: auto;
-}
-
-/* 剩余元素均分 */
-.v-popover-wrap:not(.header-avatar-wrap) {
-    flex: 1;
-}
-
-/* 肉眼个别微调 */
-.right-entry--message {
-    padding-left: 3px;
-}
-
-/* 顶栏元素间距 */
-.left-entry__title {
-    margin-right: 0px !important;
-}
-
-/* 与头像左空隙对齐 */
-.mini-header__logo {
-    margin-right: 7px !important;
-}
-
-/* 禁用主题色重载 */
-svg.mini-header__logo path {
-    fill: var(--brand_blue) !important;
-}
-
-/* 移除“首页”字样 */
-.mini-header__title {
-    display: none !important;
-}
-
 /* 移除顶部动图和临时静图 */
 .animated-banner,
-#bili-header-banner-img {
+#bili-header-banner-img,
+.biliheader__banner {
     display: none !important;
 }
 
 /* 使用 controlHeaderImage 获取随机头图 */
-
-.biliheader__banner {
-    display: none !important;
-}
 
 /* -------------------------------------------------- 
    ---------------------- 展开图类 --------------------- 
