@@ -18,7 +18,7 @@ export function handleScriptPreSetting () {
     css4: '.trending {display:none;}',
     css5: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {position:fixed !important; z-index:-10; visibility:hidden;}',
     css6: '.bpx-player-contextmenu {display:none;}'
-  }
+  } // 对象的值可通过 object[key] 获取
 
   readScriptSetting()
 
@@ -34,21 +34,21 @@ export function handleScriptPreSetting () {
   // 形参 diference 隐式声明成 let
   function readScriptSetting (diference) {
     const settingShowHidden = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
-    const values = Object.values(css)
+    const values = Object.values(css) // 可枚举属性值，返回 [v1, v2]
 
     if (diference) {
-      for (const [index, value] of diference.entries()) {
+      for (const [index, value] of diference.entries()) { // 可枚举属性，对数组使用获得元素为索引加值的二维数组，返回 [ [1,v1], [2,v2] ]
         if (value) {
           if (settingShowHidden[index]) {
             const scriptPreStyle = Object.assign(document.createElement('style'), {
-              id: `script-pre-style-${index + 1}`,
-              textContent: css[`css${index + 1}`]
+              id: `script-pre-style-${index}`,
+              textContent: values[index]
             })
             ensureHeadGetted(scriptPreStyle)
           } else {
             document.head
-              ? document.getElementById(`script-pre-style-${index + 1}`)?.remove()
-              : waitDOMContentLoaded(document.getElementById(`script-pre-style-${index + 1}`))
+              ? document.getElementById(`script-pre-style-${index}`)?.remove()
+              : waitDOMContentLoaded(document.getElementById(`script-pre-style-${index}`))
           }
         }
       }
@@ -56,7 +56,7 @@ export function handleScriptPreSetting () {
       for (const [index, value] of values.entries()) {
         if (settingShowHidden[index]) {
           const scriptPreStyle = Object.assign(document.createElement('style'), {
-            id: `script-pre-style-${index + 1}`,
+            id: `script-pre-style-${index}`,
             textContent: value
           })
           ensureHeadGetted(scriptPreStyle)
@@ -89,9 +89,12 @@ export function handleScriptPreSetting () {
 
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     const oldValues = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
-    for (const [index, value] of oldValues.entries()) {
-      checkboxElements[index].checked = value
+    for (const [index, element] of checkboxElements.entries()) {
+      element.checked = oldValues[index]
     }
+    // for (const [index, value] of oldValueEntries) {
+    //   checkboxElements[index].checked = value
+    // }
 
     settingConform.addEventListener('click', () => {
       const oldValues = JSON.parse(localStorage.getItem('settingShowHidden')) || defaultValue
@@ -166,9 +169,9 @@ export function handleScriptSetting () {
 
     const speedIndex = 2
 
-    const values = Object.values(keyValue)
+    const values = Object.values(keyValue) // 返回 [v1, v2]
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
-    for (const [index, value] of values.entries()) {
+    for (const [index, value] of values.entries()) { // 返回 [ [1,v1], [2,v2] ]
       if (index !== speedIndex) {
         checkboxElements[index].checked = localStorage.getItem(value) === '1'
       }

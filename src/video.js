@@ -9,33 +9,32 @@ export function videoInteraction () {
 
 function dynamicHeight () {
   const player = document.querySelector('#bilibili-player')
-  const playerWrap = document.querySelector('#playerWrap')
-  const leftContainer = document.querySelector('.left-container')
-
   const style = window.getComputedStyle(player)
   const width = style.getPropertyValue('width')
   const height = style.getPropertyValue('height')
-
   const newHeight = parseInt(height) / parseInt(width) * 100
   player.style.cssText = `width:100vw; height:${newHeight}vw;`
-  playerWrap.style.height = `${newHeight}vw`
-  playerWrap.style.display = 'block'
 
-  leftContainer.style.top = `${newHeight}vw`
-  leftContainer.style.display = 'block'
+  const playerWrap = document.querySelector('#playerWrap')
+  playerWrap.style.cssText = `height:${newHeight}vw; display:block`
 
-  const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      if (mutation.attributeName === 'class') {
-        if (miniPlayerBtn.classList.contains('on')) {
-          miniPlayerBtn.click()
-        }
-      }
+  // querySelector 在元素加载后使用才能获取到
+  const leftContainer = document.querySelector('.left-container')
+  leftContainer.style.cssText = `top:${newHeight}vw; display:block`
+  // 顶部下滑，style 中的 top 会清空
+  new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.target.style.top === '' && (leftContainer.style.top = `${newHeight}vw`)
     })
-  })
+  }).observe(leftContainer, { attributes: true, attributeFilter: ['style'] })
 
-  observer.observe(miniPlayerBtn, { attributes: true })
+  // getElement 提前使用在元素加载后能获取到
+  const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
+  new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.target.classList.contains('on') && miniPlayerBtn.click()
+    })
+  }).observe(miniPlayerBtn, { attributes: true, attributeFilter: ['class'] })
 }
 
 // 接管视频点击事件

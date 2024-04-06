@@ -50,8 +50,6 @@ export function handleActionbar () {
   setSearchBtn()
   setMenuBtn()
 
-  headerInMenu()
-
   function setFullbtn () {
     const fullBtn = document.getElementById('full-now')
     fullBtn.addEventListener('click', () => {
@@ -122,8 +120,8 @@ export function handleActionbar () {
   }
 
   function setMenuBtn () {
-    const menuBtn = document.getElementById('menu-fab')
-    menuBtn.addEventListener('click', () => {
+    const menuFab = document.getElementById('menu-fab')
+    menuFab.addEventListener('click', () => {
       const menu = document.getElementById('header-in-menu')
       if (menu) {
         menu.style.display = 'block'
@@ -131,6 +129,78 @@ export function handleActionbar () {
           menu.classList.add('show')
           menu.style.display = ''
         }, 0)
+      }
+    })
+
+    // headerInMenu
+    const menuOverlay = Object.assign(document.createElement('div'), {
+      id: 'menu-overlay',
+      innerHTML: `
+    <div id="header-in-menu">
+      <ul>
+        <li data-refer=".right-entry--message">私信</li>
+        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
+        <li data-refer=".header-favorite-container">收藏</li>
+        <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
+        <li data-refer=".header-avatar-wrap">主页</li>
+      </li>
+    </div>
+    `
+    })
+
+    waitDOMContentLoaded(() => {
+      addMenu()
+      function addMenu () {
+        if (document.querySelector('.header-avatar-wrap')) {
+          handleMenuItem()
+        } else {
+          setTimeout(addMenu, 500)
+        }
+      }
+
+      function handleMenuItem () {
+        menuFab.appendChild(menuOverlay)
+
+        const items = menuOverlay.querySelectorAll('li')
+        const header = document.querySelector('.bili-header__bar')
+        items.forEach(item => {
+          item.addEventListener('click', event => {
+            event.stopPropagation()
+            const refer = item.dataset.refer
+
+            const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+            if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
+
+            simulateMouseEnter(header.querySelector(refer))
+            sessionStorage.setItem('opened-dailog', refer)
+          })
+        })
+
+        const menu = menuOverlay.querySelector('#header-in-menu')
+
+        menuOverlay.addEventListener('click', event => {
+          event.stopPropagation()
+          const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+          if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
+
+          if (event.target !== menu) {
+            menu.style.display = 'block'
+            menu.classList.remove('show')
+            setTimeout(() => {
+              menu.style.display = ''
+            }, 400)
+          }
+        })
+      }
+
+      function simulateMouseEnter (element) {
+        const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+        element.dispatchEvent(event)
+      }
+
+      function simulateMouseLeave (element) {
+        const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+        element.dispatchEvent(event)
       }
     })
   }
@@ -174,76 +244,5 @@ export function handleSidebar () {
     const nextPlay = document.querySelector('.rec-title')
     const recommendFooter = document.querySelector('.rec-footer')
     if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
-  })
-}
-
-function headerInMenu () {
-  const menuOverlay = Object.assign(document.createElement('div'), {
-    id: 'menu-overlay',
-    innerHTML: `
-    <div id="header-in-menu">
-      <ul>
-        <li data-refer=".right-entry--message">私信</li>
-        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
-        <li data-refer=".header-favorite-container">收藏</li>
-        <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
-        <li data-refer=".header-avatar-wrap">主页</li>
-      </li>
-    </div>
-    `
-  })
-
-  waitDOMContentLoaded(() => {
-    addMenu()
-
-    function addMenu () {
-      if (document.querySelector('.header-avatar-wrap')) {
-        const menuFab = document.getElementById('menu-fab')
-        menuFab.appendChild(menuOverlay)
-
-        const items = menuOverlay.querySelectorAll('li')
-        const header = document.querySelector('.bili-header__bar')
-        items.forEach(item => {
-          item.addEventListener('click', event => {
-            event.stopPropagation()
-            const refer = item.dataset.refer
-
-            const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-            if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
-
-            simulateMouseEnter(header.querySelector(refer))
-            sessionStorage.setItem('opened-dailog', refer)
-          })
-        })
-
-        const menu = menuOverlay.querySelector('#header-in-menu')
-
-        menuOverlay.addEventListener('click', event => {
-          event.stopPropagation()
-          const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-          if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
-
-          if (event.target !== menu) {
-            menu.style.display = 'block'
-            menu.classList.remove('show')
-            setTimeout(() => {
-              menu.style.display = ''
-            }, 400)
-          }
-        })
-      } else {
-        setTimeout(addMenu, 500)
-      }
-    }
-
-    function simulateMouseEnter (element) {
-      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-
-    function simulateMouseLeave (element) {
-      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
   })
 }
