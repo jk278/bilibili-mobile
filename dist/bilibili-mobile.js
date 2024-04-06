@@ -338,7 +338,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     position: fixed;
     bottom: 0;
     width: 100vw;
-    height: var(--header-height);
+    height: var(--actionbar-height);
     z-index: 1;
     display: flex;
     justify-content: space-evenly;
@@ -348,7 +348,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 }
 
 [scroll-hidden=true] #actionbar {
-    transform: translateY(var(--header-height));
+    transform: translateY(100%);
 }
 
 #actionbar>* {
@@ -388,7 +388,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 /* 底部菜单内容 */
 #header-in-menu {
     position: absolute !important;
-    bottom: calc(var(--header-height) + 5px);
+    bottom: calc(var(--actionbar-height) + 5px);
     /* space-evenly : 20px 为底栏图标高度的一半*/
     left: calc((200vw + 20px) / 3);
     background-color: white;
@@ -398,7 +398,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     display: none;
     border-radius: 5px;
     font-size: 16px;
-    transform: translate(-50%, calc(100% + 5px + var(--header-height)));
+    transform: translate(-50%, calc(100% + var(--actionbar-height) + 5px));
     opacity: 0;
     transition: .4s ease-in;
 
@@ -459,7 +459,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     padding: 10px 5px;
     border-radius: 10px;
     font-size: 16px;
-    max-height: calc(100vh - var(--header-height)* 2 - 10px);
+    max-height: calc(100vh - var(--actionbar-height) - 10px);
     width: 260px;
     max-width: calc(100% - 20px);
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
@@ -940,7 +940,7 @@ body {
 
     /* 添加透明 animation 为 Via 预留加载 initViewport 的时间后，刷新加载出现白屏 */
 
-    --header-height: 46px;
+    --actionbar-height: 46px;
 }
 
 /* 双列视频 */
@@ -1203,7 +1203,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     /* 填充评论未加载时的空白，video-container-v1 已考虑顶部留空，但 #app 的高度把顶部重叠的部分加上了 */
     min-height: calc(100vh - var(--video-min-height));
     position: relative !important;
-    padding: calc(var(--dm-row-height) + 5px) 10px 0 0;
+    padding: calc(var(--dm-row-height) + 5px) 10px 0;
     display: none;
 }
 
@@ -1737,7 +1737,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 .main-reply-box {
     position: fixed;
     left: 0;
-    bottom: var(--header-height);
+    bottom: var(--actionbar-height);
     z-index: 10;
     background: white;
     width: 100%;
@@ -1751,7 +1751,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 
 /* 评论行滚动隐藏 */
 [scroll-hidden=true] .main-reply-box {
-    transform: translateY(calc(100% + var(--header-height)))
+    transform: translateY(calc(100% + var(--actionbar-height)))
 }
 
 /* 移除原底部评论栏 */
@@ -2132,7 +2132,7 @@ span.vui_pagenation--extend {
 
 .bili-footer {
     min-width: 0 !important;
-    padding: 5px 0 var(--header-height) !important;
+    padding: 5px 0 var(--actionbar-height) !important;
 }
 
 .b-footer-wrap {
@@ -2466,13 +2466,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   handleScriptPreSetting: () => (/* binding */ handleScriptPreSetting),
 /* harmony export */   handleScriptSetting: () => (/* binding */ handleScriptSetting)
 /* harmony export */ });
-/* global GM_getValue GM_setValue */
+/* global GM_getValue GM_setValue GM_registerMenuCommand */
 function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
 function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
 
 // 脚本预加载设置
 function handleScriptPreSetting () {
-  const defaultValue = [0, 0, 0, 0, 0, 0]
+  const defaultValue = [false, false, false, false, false, false]
 
   const css = {
     css1: `
@@ -2494,7 +2494,6 @@ function handleScriptPreSetting () {
   waitDOMContentLoaded(() => {
     createSettingPanel()
 
-    // eslint-disable-next-line no-undef
     GM_registerMenuCommand('元素隐藏设置', () => {
       document.getElementById('setting-panel-style').classList.add('show')
     })
@@ -2502,7 +2501,8 @@ function handleScriptPreSetting () {
 
   // 形参 diference 隐式声明成 let
   function readScriptSetting (diference) {
-    const settingShowHidden = JSON.parse(GM_getValue('settingShowHidden')) || defaultValue
+    // 傻逼 GM_getValue 获取未设的值就报错加阻塞线程，值不自动转字符串
+    const settingShowHidden = GM_getValue('settingShowHidden', defaultValue)
     const values = Object.values(css) // 可枚举属性值，返回 [v1, v2]
 
     if (diference) {
@@ -2557,20 +2557,17 @@ function handleScriptPreSetting () {
     })
 
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
-    const oldValues = JSON.parse(GM_getValue('settingShowHidden')) || defaultValue
+    const oldValues = GM_getValue('settingShowHidden', defaultValue)
     for (const [index, element] of checkboxElements.entries()) {
       element.checked = oldValues[index]
     }
-    // for (const [index, value] of oldValueEntries) {
-    //   checkboxElements[index].checked = value
-    // }
 
     settingConform.addEventListener('click', () => {
-      const oldValues = JSON.parse(GM_getValue('settingShowHidden')) || defaultValue
-      const selectedValues = Array.from(checkboxElements).map((checkbox) => (checkbox.checked ? 1 : 0))
+      const oldValues = GM_getValue('settingShowHidden', defaultValue)
+      const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
 
-      GM_setValue('settingShowHidden', JSON.stringify(selectedValues))
-      const difference = selectedValues.map((value, index) => (value === oldValues[index] ? 0 : 1))
+      GM_setValue('settingShowHidden', selectedValues)
+      const difference = selectedValues.map((value, index) => value !== oldValues[index])
 
       readScriptSetting(difference)
 
@@ -2590,7 +2587,7 @@ function handleScriptSetting () {
     key3: 'custom-longpress-speed'
   }
 
-  if ((GM_getValue('ban-action-hidden') || '0') === '1') {
+  if (GM_getValue('ban-action-hidden', false) === true) {
     banActionHidden()
   }
 
@@ -2611,7 +2608,6 @@ function handleScriptSetting () {
   waitDOMContentLoaded(() => {
     createSettingPanel()
 
-    // eslint-disable-next-line no-undef
     GM_registerMenuCommand('操作偏好设置', () => {
       document.getElementById('setting-panel-preference').classList.add('show')
     })
@@ -2642,25 +2638,25 @@ function handleScriptSetting () {
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) { // 返回 [ [1,v1], [2,v2] ]
       if (index !== speedIndex) {
-        checkboxElements[index].checked = GM_getValue(value) === '1'
+        checkboxElements[index].checked = GM_getValue(value, false)
       }
     }
-    settingPanel.querySelector('input[type="number"]').value = Number(GM_getValue(values[speedIndex]) || '2')
+    settingPanel.querySelector('input[type="number"]').value = GM_getValue(values[speedIndex], 2)
 
     settingConform.addEventListener('click', () => {
-      const isBanActionHidden = GM_getValue('ban-action-hidden') || '0'
+      const isBanActionHidden = GM_getValue('ban-action-hidden', false)
 
       for (const [index, value] of values.entries()) {
         if (index !== speedIndex) {
-          GM_setValue(value, checkboxElements[index].checked ? '1' : '0')
+          GM_setValue(value, checkboxElements[index].checked)
         }
       }
-      GM_setValue(values[speedIndex], settingPanel.querySelector('input[type="number"]').value)
+      GM_setValue(values[speedIndex], Number(settingPanel.querySelector('input[type="number"]').value))
       settingPanel.classList.remove('show')
 
-      const newIsBanActionHidden = GM_getValue('ban-action-hidden')
+      const newIsBanActionHidden = GM_getValue('ban-action-hidden', false)
       if (newIsBanActionHidden !== isBanActionHidden) {
-        if (newIsBanActionHidden === '1') {
+        if (newIsBanActionHidden) {
           banActionHidden()
         } else {
           document.getElementById('ban-action-hidden').remove()
@@ -2845,7 +2841,7 @@ function handleVideoLongPress () {
 
   video.addEventListener('touchstart', () => {
     // eslint-disable-next-line no-undef
-    times = Number(GM_getValue('custom-longpress-speed') || '2')
+    times = GM_getValue('custom-longpress-speed', 2)
     timeoutId = setTimeout(() => {
       video.playbackRate = video.playbackRate * times
       isLongPress = true
@@ -2936,7 +2932,7 @@ function handleActionbar () {
       const video = document.querySelector('video')
       // 等于符号优先级更高
       // eslint-disable-next-line no-undef
-      if ((GM_getValue('full-unmuted') || '0') === '1') {
+      if (GM_getValue('full-unmuted', false) === true) {
         video.play()
         video.muted = false
         if (video.volume === 0) {

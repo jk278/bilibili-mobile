@@ -1,10 +1,10 @@
-/* global GM_getValue GM_setValue */
+/* global GM_getValue GM_setValue GM_registerMenuCommand */
 function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
 function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
 
 // 脚本预加载设置
 export function handleScriptPreSetting () {
-  const defaultValue = [0, 0, 0, 0, 0, 0]
+  const defaultValue = [false, false, false, false, false, false]
 
   const css = {
     css1: `
@@ -26,7 +26,6 @@ export function handleScriptPreSetting () {
   waitDOMContentLoaded(() => {
     createSettingPanel()
 
-    // eslint-disable-next-line no-undef
     GM_registerMenuCommand('元素隐藏设置', () => {
       document.getElementById('setting-panel-style').classList.add('show')
     })
@@ -34,7 +33,8 @@ export function handleScriptPreSetting () {
 
   // 形参 diference 隐式声明成 let
   function readScriptSetting (diference) {
-    const settingShowHidden = JSON.parse(GM_getValue('settingShowHidden')) || defaultValue
+    // 傻逼 GM_getValue 获取未设的值就报错加阻塞线程，值不自动转字符串
+    const settingShowHidden = GM_getValue('settingShowHidden', defaultValue)
     const values = Object.values(css) // 可枚举属性值，返回 [v1, v2]
 
     if (diference) {
@@ -89,20 +89,17 @@ export function handleScriptPreSetting () {
     })
 
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
-    const oldValues = JSON.parse(GM_getValue('settingShowHidden')) || defaultValue
+    const oldValues = GM_getValue('settingShowHidden', defaultValue)
     for (const [index, element] of checkboxElements.entries()) {
       element.checked = oldValues[index]
     }
-    // for (const [index, value] of oldValueEntries) {
-    //   checkboxElements[index].checked = value
-    // }
 
     settingConform.addEventListener('click', () => {
-      const oldValues = JSON.parse(GM_getValue('settingShowHidden')) || defaultValue
-      const selectedValues = Array.from(checkboxElements).map((checkbox) => (checkbox.checked ? 1 : 0))
+      const oldValues = GM_getValue('settingShowHidden', defaultValue)
+      const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
 
-      GM_setValue('settingShowHidden', JSON.stringify(selectedValues))
-      const difference = selectedValues.map((value, index) => (value === oldValues[index] ? 0 : 1))
+      GM_setValue('settingShowHidden', selectedValues)
+      const difference = selectedValues.map((value, index) => value !== oldValues[index])
 
       readScriptSetting(difference)
 
@@ -122,7 +119,7 @@ export function handleScriptSetting () {
     key3: 'custom-longpress-speed'
   }
 
-  if ((GM_getValue('ban-action-hidden') || '0') === '1') {
+  if (GM_getValue('ban-action-hidden', false) === true) {
     banActionHidden()
   }
 
@@ -143,7 +140,6 @@ export function handleScriptSetting () {
   waitDOMContentLoaded(() => {
     createSettingPanel()
 
-    // eslint-disable-next-line no-undef
     GM_registerMenuCommand('操作偏好设置', () => {
       document.getElementById('setting-panel-preference').classList.add('show')
     })
@@ -174,25 +170,25 @@ export function handleScriptSetting () {
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) { // 返回 [ [1,v1], [2,v2] ]
       if (index !== speedIndex) {
-        checkboxElements[index].checked = GM_getValue(value) === '1'
+        checkboxElements[index].checked = GM_getValue(value, false)
       }
     }
-    settingPanel.querySelector('input[type="number"]').value = Number(GM_getValue(values[speedIndex]) || '2')
+    settingPanel.querySelector('input[type="number"]').value = GM_getValue(values[speedIndex], 2)
 
     settingConform.addEventListener('click', () => {
-      const isBanActionHidden = GM_getValue('ban-action-hidden') || '0'
+      const isBanActionHidden = GM_getValue('ban-action-hidden', false)
 
       for (const [index, value] of values.entries()) {
         if (index !== speedIndex) {
-          GM_setValue(value, checkboxElements[index].checked ? '1' : '0')
+          GM_setValue(value, checkboxElements[index].checked)
         }
       }
-      GM_setValue(values[speedIndex], settingPanel.querySelector('input[type="number"]').value)
+      GM_setValue(values[speedIndex], Number(settingPanel.querySelector('input[type="number"]').value))
       settingPanel.classList.remove('show')
 
-      const newIsBanActionHidden = GM_getValue('ban-action-hidden')
+      const newIsBanActionHidden = GM_getValue('ban-action-hidden', false)
       if (newIsBanActionHidden !== isBanActionHidden) {
-        if (newIsBanActionHidden === '1') {
+        if (newIsBanActionHidden) {
           banActionHidden()
         } else {
           document.getElementById('ban-action-hidden').remove()

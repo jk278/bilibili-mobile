@@ -136,7 +136,7 @@ span.vui_pagenation--extend {
 
 .bili-footer {
     min-width: 0 !important;
-    padding: 5px 0 var(--header-height) !important;
+    padding: 5px 0 var(--actionbar-height) !important;
 }
 
 .b-footer-wrap {

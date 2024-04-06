@@ -58,7 +58,7 @@ export function handleActionbar () {
       const video = document.querySelector('video')
       // 等于符号优先级更高
       // eslint-disable-next-line no-undef
-      if ((GM_getValue('full-unmuted') || '0') === '1') {
+      if (GM_getValue('full-unmuted', false) === true) {
         video.play()
         video.muted = false
         if (video.volume === 0) {

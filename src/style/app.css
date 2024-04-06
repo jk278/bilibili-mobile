@@ -7,7 +7,7 @@
     position: fixed;
     bottom: 0;
     width: 100vw;
-    height: var(--header-height);
+    height: var(--actionbar-height);
     z-index: 1;
     display: flex;
     justify-content: space-evenly;
@@ -17,7 +17,7 @@
 }
 
 [scroll-hidden=true] #actionbar {
-    transform: translateY(var(--header-height));
+    transform: translateY(100%);
 }
 
 #actionbar>* {
@@ -57,7 +57,7 @@
 /* 底部菜单内容 */
 #header-in-menu {
     position: absolute !important;
-    bottom: calc(var(--header-height) + 5px);
+    bottom: calc(var(--actionbar-height) + 5px);
     /* space-evenly : 20px 为底栏图标高度的一半*/
     left: calc((200vw + 20px) / 3);
     background-color: white;
@@ -67,7 +67,7 @@
     display: none;
     border-radius: 5px;
     font-size: 16px;
-    transform: translate(-50%, calc(100% + 5px + var(--header-height)));
+    transform: translate(-50%, calc(100% + var(--actionbar-height) + 5px));
     opacity: 0;
     transition: .4s ease-in;
 
@@ -128,7 +128,7 @@
     padding: 10px 5px;
     border-radius: 10px;
     font-size: 16px;
-    max-height: calc(100vh - var(--header-height)* 2 - 10px);
+    max-height: calc(100vh - var(--actionbar-height) - 10px);
     width: 260px;
     max-width: calc(100% - 20px);
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
