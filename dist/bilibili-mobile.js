@@ -378,13 +378,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 #menu-fab {
     position: relative;
     background: inherit;
-    z-index: 2;
-}
-
-/* 设置 z-index 确保 layout 能完全覆盖 */
-
-#sidebar-fab {
-    z-index: 3;
 }
 
 /* 底部菜单内容 */
@@ -418,22 +411,24 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 
 /* 底部菜单、侧边栏: layout */
 #menu-overlay,
-#sidebar-overlay {
+#sidebar-overlay,
+#search-overlay {
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     pointer-events: none;
-    transition: background-color .6s ease-in;
-}
-
-#menu-overlay#menu-overlay {
     transition: background-color .4s ease-in;
 }
 
+#sidebar-overlay#sidebar-overlay {
+    transition: background-color .6s ease-in;
+}
+
 #menu-overlay:has(>.show),
-body[show-sidebar="true"] #sidebar-overlay {
+#sidebar-overlay.show,
+#search-overlay.show {
     pointer-events: auto;
     background-color: rgba(0, 0, 0, .3);
 }
@@ -1220,7 +1215,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     border-left: 1px solid var(--line_regular);
 }
 
-body[show-sidebar="true"] .right-container {
+.right-container.show {
     transform: translateX(-100%);
 }
 
@@ -2963,25 +2958,38 @@ function handleActionbar () {
   }
 
   function setSearchBtn () {
-    const searchbarBtn = document.getElementById('search-fab')
-    searchbarBtn.addEventListener('click', (event) => {
-    // 事件完成后立即冒泡
-      event.stopPropagation()
-      const searchbarContainer = document.querySelector('.center-search-container')
-      searchbarContainer.classList.add('show')
-      const input = searchbarContainer.querySelector('input')
-      input.focus()
+    const searchFab = document.getElementById('search-fab')
 
-      const searchbar = searchbarContainer.querySelector('.center-search__bar')
-      searchbar.addEventListener('click', (event) => {
+    const searchOverlay = document.createElement('div')
+    searchOverlay.id = 'search-overlay'
+    searchFab.appendChild(searchOverlay)
+
+    searchFab.addEventListener('click', () => {
+      const searchbarContainer = document.querySelector('.center-search-container')
+
+      searchbarContainer.classList.add('show')
+      searchbarContainer.querySelector('input').focus()
+      searchOverlay.classList.add('show')
+      searchFab.style.zIndex = '1'
+
+      searchOverlay.addEventListener('click', event => {
+        // 事件完成后立即冒泡
         event.stopPropagation()
+        searchbarContainer.classList.remove('show')
+        searchOverlay.classList.remove('show')
+        setTimeout(() => { searchFab.style.zIndex = '' }, 400)
       })
-      document.body.addEventListener('click', (event) => {
-        if (event.target !== searchbar) {
-          searchbarContainer.classList.remove('show')
-        }
-      }, { once: true })
     })
+
+    // const searchbar = searchbarContainer.querySelector('.center-search__bar')
+    // searchbar.addEventListener('click', (event) => {
+    //   event.stopPropagation()
+    // })
+    // document.body.addEventListener('click', (event) => {
+    //   if (event.target !== searchbar) {
+    //     searchbarContainer.classList.remove('show')
+    //   }
+    // }, { once: true })
   }
 
   function setMenuBtn () {
@@ -2994,6 +3002,7 @@ function handleActionbar () {
           menu.classList.add('show')
           menu.style.display = ''
         }, 0)
+        menuFab.style.zIndex = '1'
       }
     })
 
@@ -3042,7 +3051,6 @@ function handleActionbar () {
         })
 
         const menu = menuOverlay.querySelector('#header-in-menu')
-
         menuOverlay.addEventListener('click', event => {
           event.stopPropagation()
           const openedDailog = sessionStorage.getItem('opened-dailog') || ''
@@ -3053,6 +3061,7 @@ function handleActionbar () {
             menu.classList.remove('show')
             setTimeout(() => {
               menu.style.display = ''
+              menuFab.style.zIndex = ''
             }, 400)
           }
         })
@@ -3085,10 +3094,10 @@ function handleActionbar () {
 // 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
 function handleSidebar () {
   const sidebarBtn = document.getElementById('sidebar-fab')
+  const rightContainer = document.querySelector('.right-container')
 
   const sidebarOverlay = document.createElement('div')
   sidebarOverlay.id = 'sidebar-overlay'
-
   sidebarBtn.appendChild(sidebarOverlay)
 
   sidebarOverlay.addEventListener('click', (event) => {
@@ -3097,13 +3106,15 @@ function handleSidebar () {
   })
 
   sidebarBtn.addEventListener('click', () => {
-    const isShow = document.body.getAttribute('show-sidebar') === 'true'
-    isShow ? closeSidebar() : document.body.setAttribute('show-sidebar', 'true')
+    rightContainer.classList.add('show')
+    sidebarOverlay.classList.add('show')
   })
 
-  function closeSidebar () { document.body.setAttribute('show-sidebar', '') }
+  function closeSidebar () {
+    rightContainer.classList.remove('show')
+    sidebarOverlay.classList.remove('show')
+  }
 
-  // // popstate（历史记录），hashchange（改 URL 非历史记录）监听不到
   const recommendLiist = document.getElementById('reco_list')
   recommendLiist.addEventListener('click', (event) => {
     const nextPlay = document.querySelector('.rec-title')

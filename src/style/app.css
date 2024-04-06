@@ -47,13 +47,6 @@
 #menu-fab {
     position: relative;
     background: inherit;
-    z-index: 2;
-}
-
-/* 设置 z-index 确保 layout 能完全覆盖 */
-
-#sidebar-fab {
-    z-index: 3;
 }
 
 /* 底部菜单内容 */
@@ -87,22 +80,24 @@
 
 /* 底部菜单、侧边栏: layout */
 #menu-overlay,
-#sidebar-overlay {
+#sidebar-overlay,
+#search-overlay {
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     pointer-events: none;
-    transition: background-color .6s ease-in;
-}
-
-#menu-overlay#menu-overlay {
     transition: background-color .4s ease-in;
 }
 
+#sidebar-overlay#sidebar-overlay {
+    transition: background-color .6s ease-in;
+}
+
 #menu-overlay:has(>.show),
-body[show-sidebar="true"] #sidebar-overlay {
+#sidebar-overlay.show,
+#search-overlay.show {
     pointer-events: auto;
     background-color: rgba(0, 0, 0, .3);
 }

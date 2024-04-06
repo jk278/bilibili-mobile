@@ -64,7 +64,7 @@
     border-left: 1px solid var(--line_regular);
 }
 
-body[show-sidebar="true"] .right-container {
+.right-container.show {
     transform: translateX(-100%);
 }
 
