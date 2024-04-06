@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.0-beta.1
+// @version            4.0-beta.2
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在 Via 与 Safari 打开电脑模式，获取舒适的移动端体验。
 // @author             jk278
@@ -851,11 +851,9 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     display: none !important;
 }
 
-/* 广告、推广图块 */
+/* 客户端广告 */
 /* 底部登录弹窗类 .lt-row 可能包含其它元素 */
 /* 首页顶部动图上的大 Logo */
-.container>*:has(.bili-video-card__info--ad),
-.floor-single-card,
 .desktop-download-tip,
 .lt-row,
 .header-banner__inner {
@@ -975,9 +973,9 @@ body,
     width: 100% !important;
 }
 
-/* 视频流广告 */
-.feed-card:has(.bili-video-card__info--ad),
-.bili-video-card:has(.bili-video-card__info--ad) {
+/* 视频流广告、影视 */
+.container>*:has(.bili-video-card__info--ad),
+.floor-single-card {
     display: none !important;
 }
 

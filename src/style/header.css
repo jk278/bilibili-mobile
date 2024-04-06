@@ -161,11 +161,9 @@
     display: none !important;
 }
 
-/* 广告、推广图块 */
+/* 客户端广告 */
 /* 底部登录弹窗类 .lt-row 可能包含其它元素 */
 /* 首页顶部动图上的大 Logo */
-.container>*:has(.bili-video-card__info--ad),
-.floor-single-card,
 .desktop-download-tip,
 .lt-row,
 .header-banner__inner {

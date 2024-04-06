@@ -41,9 +41,9 @@ body,
     width: 100% !important;
 }
 
-/* 视频流广告 */
-.feed-card:has(.bili-video-card__info--ad),
-.bili-video-card:has(.bili-video-card__info--ad) {
+/* 视频流广告、影视 */
+.container>*:has(.bili-video-card__info--ad),
+.floor-single-card {
     display: none !important;
 }
 
