@@ -4,13 +4,13 @@
 
 /* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
 
-/* 顶栏外框 */
+/* 顶栏外框: translate 会生成新的堆叠上下文，导致 position:fixed 的消息数不可显示 */
 #biliMainHeader,
 #bili-header-container {
     position: fixed;
     width: 100%;
     z-index: 62;
-    transform: translateY(-100%);
+    top: -64px !important;
 }
 
 /* 搜索页顶栏外框 */
@@ -20,7 +20,7 @@
 
 /* 首页顶栏 */
 .large-header .bili-header__bar {
-    transform: translateY(-100%);
+    top: -64px !important;
 }
 
 /* 搜索框 */
@@ -49,8 +49,28 @@
 /* 使用 controlHeaderImage 获取随机头图 */
 
 /* -------------------------------------------------- 
-   ---------------------- 展开图类 --------------------- 
-   -------------------------------------------------- */
+ --------------------- 菜单消息数 --------------------
+ --------------------------------------------------- */
+
+.red-num--message {
+    position: fixed !important;
+    bottom: calc(var(--actionbar-height) + 138px);
+    left: calc((200vw + 70px) / 3) !important;
+    top: unset !important;
+    display: none;
+}
+
+.red-num--dynamic {
+    position: fixed !important;
+    bottom: calc(var(--actionbar-height) + 108px);
+    left: calc((200vw + 70px) / 3) !important;
+    top: unset !important;
+    display: none;
+}
+
+/* -------------------------------------------------- 
+ ---------------------- 展开图类 --------------------- 
+ --------------------------------------------------- */
 
 .v-popover {
     position: fixed !important;

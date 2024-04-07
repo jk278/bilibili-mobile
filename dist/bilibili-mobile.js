@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.0-beta.4
+// @version            4.0-beta.5
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在 Via 与 Safari 打开电脑模式，获取舒适的移动端体验。
 // @author             jk278
@@ -694,13 +694,13 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 
 /* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
 
-/* 顶栏外框 */
+/* 顶栏外框: translate 会生成新的堆叠上下文，导致 position:fixed 的消息数不可显示 */
 #biliMainHeader,
 #bili-header-container {
     position: fixed;
     width: 100%;
     z-index: 62;
-    transform: translateY(-100%);
+    top: -64px !important;
 }
 
 /* 搜索页顶栏外框 */
@@ -710,7 +710,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 
 /* 首页顶栏 */
 .large-header .bili-header__bar {
-    transform: translateY(-100%);
+    top: -64px !important;
 }
 
 /* 搜索框 */
@@ -739,8 +739,28 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 /* 使用 controlHeaderImage 获取随机头图 */
 
 /* -------------------------------------------------- 
-   ---------------------- 展开图类 --------------------- 
-   -------------------------------------------------- */
+ --------------------- 菜单消息数 --------------------
+ --------------------------------------------------- */
+
+.red-num--message {
+    position: fixed !important;
+    bottom: calc(var(--actionbar-height) + 138px);
+    left: calc((200vw + 70px) / 3) !important;
+    top: unset !important;
+    display: none;
+}
+
+.red-num--dynamic {
+    position: fixed !important;
+    bottom: calc(var(--actionbar-height) + 108px);
+    left: calc((200vw + 70px) / 3) !important;
+    top: unset !important;
+    display: none;
+}
+
+/* -------------------------------------------------- 
+ ---------------------- 展开图类 --------------------- 
+ --------------------------------------------------- */
 
 .v-popover {
     position: fixed !important;
@@ -2867,9 +2887,7 @@ __webpack_require__.r(__webpack_exports__);
 // eslint-disable-next-line no-undef
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
 
-function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
-
-// 操作栏
+// 操作栏: DOMContentLoaded 之后
 function handleActionbar () {
   const actionbar = Object.assign(document.createElement('div'), {
     id: 'actionbar',
@@ -3002,8 +3020,18 @@ function handleActionbar () {
           menu.style.display = ''
         }, 0)
         menuFab.style.zIndex = '1'
+        setTimeout(showRedNum, 400)
       }
     })
+
+    function showRedNum () {
+    // 显示消息数
+      const redNumStyle = Object.assign(document.createElement('style'), {
+        id: 'red-num-style',
+        textContent: '.red-num--message, .red-num--dynamic {display: block !important;}'
+      })
+      document.head.appendChild(redNumStyle)
+    }
 
     // headerInMenu
     const menuOverlay = Object.assign(document.createElement('div'), {
@@ -3021,61 +3049,60 @@ function handleActionbar () {
     `
     })
 
-    waitDOMContentLoaded(() => {
-      addMenu()
-      function addMenu () {
-        if (document.querySelector('.header-avatar-wrap')) {
-          handleMenuItem()
-        } else {
-          setTimeout(addMenu, 500)
-        }
+    addMenu()
+    function addMenu () {
+      if (document.querySelector('.header-avatar-wrap')) {
+        handleMenuItem()
+      } else {
+        setTimeout(addMenu, 500)
       }
+    }
 
-      function handleMenuItem () {
-        menuFab.appendChild(menuOverlay)
+    function handleMenuItem () {
+      menuFab.appendChild(menuOverlay)
 
-        const items = menuOverlay.querySelectorAll('li')
-        const header = document.querySelector('.bili-header__bar')
-        items.forEach(item => {
-          item.addEventListener('click', event => {
-            event.stopPropagation()
-            const refer = item.dataset.refer
-
-            const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-            if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
-
-            simulateMouseEnter(header.querySelector(refer))
-            sessionStorage.setItem('opened-dailog', refer)
-          })
-        })
-
-        const menu = menuOverlay.querySelector('#header-in-menu')
-        menuOverlay.addEventListener('click', event => {
+      const items = menuOverlay.querySelectorAll('li')
+      const header = document.querySelector('.bili-header__bar')
+      items.forEach(item => {
+        item.addEventListener('click', event => {
           event.stopPropagation()
+          const refer = item.dataset.refer
+
           const openedDailog = sessionStorage.getItem('opened-dailog') || ''
           if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
 
-          if (event.target !== menu) {
-            menu.style.display = 'block'
-            menu.classList.remove('show')
-            setTimeout(() => {
-              menu.style.display = ''
-              menuFab.style.zIndex = ''
-            }, 400)
-          }
+          simulateMouseEnter(header.querySelector(refer))
+          sessionStorage.setItem('opened-dailog', refer)
         })
-      }
+      })
 
-      function simulateMouseEnter (element) {
-        const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-        element.dispatchEvent(event)
-      }
+      const menu = menuOverlay.querySelector('#header-in-menu')
+      menuOverlay.addEventListener('click', event => {
+        event.stopPropagation()
+        const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+        if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
 
-      function simulateMouseLeave (element) {
-        const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-        element.dispatchEvent(event)
-      }
-    })
+        if (event.target !== menu) {
+          menu.style.display = 'block'
+          menu.classList.remove('show')
+          document.head.querySelector('#red-num-style').remove()
+          setTimeout(() => {
+            menu.style.display = ''
+            menuFab.style.zIndex = ''
+          }, 400)
+        }
+      })
+    }
+
+    function simulateMouseEnter (element) {
+      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
+
+    function simulateMouseLeave (element) {
+      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+      element.dispatchEvent(event)
+    }
   }
 
   function setRefreshBtn () {
