@@ -74,7 +74,7 @@ export function handleActionbar () {
         if (rawFullBtn) {
           rawFullBtn.click()
           if (isPortrait) {
-            rawFullBtn.style.cssText = 'position:relative !important; visibility:visible;'
+            rawFullBtn.style.cssText = 'position:relative !important; visibility:visible; z-index:unset;'
             rawFullBtn.addEventListener('click', () => { rawFullBtn.style.cssText = '' })
           }
         } else {

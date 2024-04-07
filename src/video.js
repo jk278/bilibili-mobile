@@ -20,13 +20,8 @@ function dynamicHeight () {
 
   // querySelector 在元素加载后使用才能获取到
   const leftContainer = document.querySelector('.left-container')
-  leftContainer.style.cssText = `top:${newHeight}vw; display:block`
-  // 顶部下滑，style 中的 top 会清空
-  new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-      mutation.target.style.top === '' && (leftContainer.style.top = `${newHeight}vw`)
-    })
-  }).observe(leftContainer, { attributes: true, attributeFilter: ['style'] })
+  // 相对布局加top会导致底部显示不全，从顶部下滑时top还会清零一次
+  leftContainer.style.cssText = `margin-top:${newHeight}vw; display:block`
 
   // getElement 提前使用在元素加载后能获取到
   const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]

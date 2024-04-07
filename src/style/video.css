@@ -33,9 +33,6 @@
     box-sizing: border-box;
     width: 100% !important;
 
-    /* 填充评论未加载时的空白，video-container-v1 已考虑顶部留空，但 #app 的高度把顶部重叠的部分加上了 */
-    min-height: calc(100vh - var(--video-min-height));
-    position: relative !important;
     padding: calc(var(--dm-row-height) + 5px) 10px 0;
     display: none;
 }

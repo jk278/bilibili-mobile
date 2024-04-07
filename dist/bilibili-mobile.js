@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.0-beta.2
+// @version            4.0-beta.4
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在 Via 与 Safari 打开电脑模式，获取舒适的移动端体验。
 // @author             jk278
@@ -1200,9 +1200,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     box-sizing: border-box;
     width: 100% !important;
 
-    /* 填充评论未加载时的空白，video-container-v1 已考虑顶部留空，但 #app 的高度把顶部重叠的部分加上了 */
-    min-height: calc(100vh - var(--video-min-height));
-    position: relative !important;
     padding: calc(var(--dm-row-height) + 5px) 10px 0;
     display: none;
 }
@@ -2782,13 +2779,8 @@ function dynamicHeight () {
 
   // querySelector 在元素加载后使用才能获取到
   const leftContainer = document.querySelector('.left-container')
-  leftContainer.style.cssText = `top:${newHeight}vw; display:block`
-  // 顶部下滑，style 中的 top 会清空
-  new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-      mutation.target.style.top === '' && (leftContainer.style.top = `${newHeight}vw`)
-    })
-  }).observe(leftContainer, { attributes: true, attributeFilter: ['style'] })
+  // 相对布局加top会导致底部显示不全，从顶部下滑时top还会清零一次
+  leftContainer.style.cssText = `margin-top:${newHeight}vw; display:block`
 
   // getElement 提前使用在元素加载后能获取到
   const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
@@ -2948,7 +2940,7 @@ function handleActionbar () {
         if (rawFullBtn) {
           rawFullBtn.click()
           if (isPortrait) {
-            rawFullBtn.style.cssText = 'position:relative !important; visibility:visible;'
+            rawFullBtn.style.cssText = 'position:relative !important; visibility:visible; z-index:unset;'
             rawFullBtn.addEventListener('click', () => { rawFullBtn.style.cssText = '' })
           }
         } else {
