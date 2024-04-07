@@ -543,10 +543,26 @@
     animation: fadeIn 1s ease-in 2s forwards;
 }
 
-/* 投票卡片 */
-.top-vote-card-left {
-    width: unset !important;
-    max-width: unset !important;
+/* ------ 顶部投票卡片 ------ */
+
+/* 两个选项 */
+.left-vote-option,
+.right-vote-option {
+    min-width: 0 !important;
+}
+
+/* 投票: 选题 */
+.top-vote-card {
+    padding-top: 27px !important;
+}
+
+.top-vote-card-left__title {
+    transform: translateY(-23px);
+}
+
+.vui_ellipsis.multi-mode {
+    overflow: visible !important;
+    white-space: nowrap;
 }
 
 /* ----------------------------------------------------

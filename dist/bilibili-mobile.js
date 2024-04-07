@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.0-beta.5
+// @version            4.0-beta.6
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  在 Via 与 Safari 打开电脑模式，获取舒适的移动端体验。
 // @author             jk278
@@ -405,6 +405,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     li {
         list-style-type: none;
         padding: 5px 30px;
+        /* 视频页默认行高不同 */
         line-height: 20px !important;
     }
 }
@@ -1027,7 +1028,7 @@ body,
 /* 封面圆角 */
 .v-img.bili-video-card__cover,
 .v-img.bili-live-card__cover {
-    border-radius: 5px 5px 0 0;
+    border-radius: 5px 5px 0 0 !important;
 }
 
 /* 封面信息（阴影层圆角） */
@@ -1731,10 +1732,26 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     animation: fadeIn 1s ease-in 2s forwards;
 }
 
-/* 投票卡片 */
-.top-vote-card-left {
-    width: unset !important;
-    max-width: unset !important;
+/* ------ 顶部投票卡片 ------ */
+
+/* 两个选项 */
+.left-vote-option,
+.right-vote-option {
+    min-width: 0 !important;
+}
+
+/* 投票: 选题 */
+.top-vote-card {
+    padding-top: 27px !important;
+}
+
+.top-vote-card-left__title {
+    transform: translateY(-23px);
+}
+
+.vui_ellipsis.multi-mode {
+    overflow: visible !important;
+    white-space: nowrap;
 }
 
 /* ----------------------------------------------------
@@ -2306,14 +2323,83 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     white-space: wrap !important;
 }
 
+/* 关注按钮 */
+.h .h-action {
+    bottom: 84px !important;
+    left: 20px;
+}
+
+/* 置顶内容 */
+.content.i-pin-has-content {
+    display: flex;
+    flex-direction: column;
+    margin: 0 5px;
+}
+
+.i-pin-c.cover-big {
+    padding-bottom: 5px;
+}
+
+.i-pin-c .i-pin-cover {
+    width: 100% !important;
+    height: fit-content !important;
+}
+
+.i-pin-title {
+    white-space: wrap !important;
+}
+
+.i-pin-info {
+    margin-left: 0 !important;
+    height: auto !important;
+}
+
+/* TA的视频: 外框 */
+.section-title {
+    padding: 0 5px 33px !important;
+}
+
+/* TA: 主页视频排序 */
+#page-index .video .be-tab {
+    position: absolute;
+    left: 0;
+    transform: translateX(calc(50vw - 50%));
+    margin: 33px 0 0 !important;
+}
+
+.be-tab-item {
+    margin: 0 5px !important;
+}
+
+/* 主页视频 */
+#page-index .video .content {
+    max-height: unset !important;
+}
+
 .small-item {
-    width: calc(50% - 10px);
-    padding: 0 5px !important;
+    width: calc(50% - 10px) !important;
+    padding: 0 5px 5px !important;
 }
 
 .small-item .cover {
     width: 100% !important;
     height: auto !important;
+}
+
+/* 频道: 更多 */
+#page-index .channel .channel-item .channel-title {
+    padding: 0 5px 34px;
+}
+
+#page-index .channel .section-right-options {
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+}
+
+/* 空番剧文本 */
+#page-index .col-1 .section.empty:after {
+    left: 100px !important;
 }
 
 #i-masterpiece {
