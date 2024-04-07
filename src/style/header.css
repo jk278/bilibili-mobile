@@ -18,8 +18,8 @@
     background: unset !important;
 }
 
-/* 首页顶栏 */
-.large-header .bili-header__bar {
+/* 顶栏内容 */
+.bili-header__bar {
     top: -64px !important;
 }
 

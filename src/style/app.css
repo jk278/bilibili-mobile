@@ -74,6 +74,8 @@
     li {
         list-style-type: none;
         padding: 5px 30px;
+        /* 视频页默认行高不同 */
+        line-height: 20px !important;
     }
 }
 

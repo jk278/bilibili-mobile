@@ -405,6 +405,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     li {
         list-style-type: none;
         padding: 5px 30px;
+        line-height: 20px !important;
     }
 }
 
@@ -708,8 +709,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     background: unset !important;
 }
 
-/* 首页顶栏 */
-.large-header .bili-header__bar {
+/* 顶栏内容 */
+.bili-header__bar {
     top: -64px !important;
 }
 
