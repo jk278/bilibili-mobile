@@ -392,7 +392,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     /* space-evenly : 20px 为底栏图标高度的一半*/
     left: calc((200vw + 20px) / 3);
     background-color: white;
-    padding: 5px 0;
+    padding: 5px 0 !important;
     white-space: nowrap;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
     display: none;
@@ -404,7 +404,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 
     li {
         list-style-type: none;
-        padding: 5px 30px;
+        padding: 5px 30px !important;
         /* 视频页默认行高不同 */
         line-height: 20px !important;
     }
