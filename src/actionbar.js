@@ -118,20 +118,14 @@ export function handleActionbar () {
     searchFab.appendChild(searchOverlay)
 
     searchFab.addEventListener('click', () => {
-      const searchbarContainer = document.querySelector('.center-search-container')
+      const input = document.querySelector('.center-search-container input')
 
-      searchbarContainer.classList.add('show')
-      searchbarContainer.querySelector('input').focus()
-      searchOverlay.classList.add('show')
-      searchFab.style.zIndex = '1'
-
-      searchOverlay.addEventListener('click', event => {
-        // 事件完成后立即冒泡
-        event.stopPropagation()
-        searchbarContainer.classList.remove('show')
-        searchOverlay.classList.remove('show')
-        setTimeout(() => { searchFab.style.zIndex = '' }, 400)
-      })
+      if (input) {
+        document.querySelector('.center-search-container').classList.toggle('show')
+        input.focus()
+        searchOverlay.classList.toggle('show')
+        searchFab.classList.toggle('active')
+      }
     })
   }
 
@@ -157,50 +151,34 @@ export function handleActionbar () {
     const menu = menuOverlay.querySelector('#header-in-menu')
 
     menuFab.addEventListener('click', () => {
-      menu.style.display = 'block'
-      setTimeout(() => {
-        menu.classList.add('show')
-        menu.style.display = ''
-      }, 0)
-      menuFab.style.zIndex = '1'
-      setTimeout(() => { // 显示消息数
-        const redNumStyle = Object.assign(document.createElement('style'), {
-          id: 'red-num-style',
-          textContent: '.red-num--message, .red-num--dynamic {display: block !important;}'
-        })
-        document.head.appendChild(redNumStyle)
-      }, 400)
+      menu.classList.add('show')
+      document.body.setAttribute('menu', '')
+      menuOverlay.classList.add('show')
+      menuFab.classList.add('active')
     })
 
     const items = menuOverlay.querySelectorAll('li')
-    const header = document.querySelector('.bili-header__bar')
     items.forEach(item => {
       item.addEventListener('click', event => {
         event.stopPropagation()
+        menu.classList.remove('show')
+        document.body.removeAttribute('menu')
+
         const refer = item.dataset.refer
-
-        const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-        if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
-
-        simulateMouseEnter(header.querySelector(refer))
         sessionStorage.setItem('opened-dailog', refer)
+        simulateMouseEnter(document.querySelector(`.bili-header__bar ${refer}`))
       })
     })
 
     menuOverlay.addEventListener('click', event => {
       event.stopPropagation()
-      const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-      if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
+      menu.classList.remove('show')
+      document.body.removeAttribute('menu')
+      menuOverlay.classList.remove('show')
+      menuFab.classList.remove('active')
 
-      if (event.target !== menu) {
-        menu.style.display = 'block'
-        menu.classList.remove('show')
-        document.head.querySelector('#red-num-style').remove()
-        setTimeout(() => {
-          menu.style.display = ''
-          menuFab.style.zIndex = ''
-        }, 400)
-      }
+      const refer = sessionStorage.getItem('opened-dailog') || ''
+      simulateMouseLeave(document.querySelector(`.bili-header__bar ${refer}`))
     })
 
     function simulateMouseEnter (element) {
@@ -229,25 +207,14 @@ export function handleActionbar () {
 // 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
 export function handleSidebar () {
   const sidebarBtn = document.getElementById('sidebar-fab')
-  const rightContainer = document.querySelector('.right-container')
-
-  const sidebarOverlay = document.createElement('div')
-  sidebarOverlay.id = 'sidebar-overlay'
-  sidebarBtn.appendChild(sidebarOverlay)
-
-  sidebarOverlay.addEventListener('click', (event) => {
-    event.stopPropagation()
-    closeSidebar()
-  })
+  const videoContainer = document.querySelector('#mirror-vdcon')
 
   sidebarBtn.addEventListener('click', () => {
-    rightContainer.classList.add('show')
-    sidebarOverlay.classList.add('show')
+    videoContainer.toggleAttribute('sidebar')
   })
 
   function closeSidebar () {
-    rightContainer.classList.remove('show')
-    sidebarOverlay.classList.remove('show')
+    videoContainer.removeAttribute('sidebar')
   }
 
   const recommendLiist = document.getElementById('reco_list')

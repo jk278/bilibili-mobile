@@ -9,11 +9,16 @@
     overflow: hidden;
 }
 
+#mirror-vdcon {
+    --sidebar-time: .6s;
+}
+
 /* 主体内容块 */
-.video-container-v1 {
+#app #mirror-vdcon {
     min-width: 0 !important;
-    padding: 0 !important;
+    padding: 0;
     top: 0;
+    display: none;
 }
 
 /* ----------------------------------------------------
@@ -32,9 +37,29 @@
     /* 移动 Safari 百分比宽高自动考虑边框和填充 */
     box-sizing: border-box;
     width: 100% !important;
-
     padding: calc(var(--dm-row-height) + 5px) 10px 0;
-    display: none;
+}
+
+.left-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity var(--sidebar-time) ease-in;
+}
+
+#mirror-vdcon[sidebar] .left-container::after {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+#mirror-vdcon[sidebar] .fixed-sidenav-storage {
+    opacity: 0;
 }
 
 /* ----------------------------------------------------
@@ -44,14 +69,14 @@
 /* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
 .right-container {
     position: fixed !important;
-    width: 85% !important;
-    left: 85%;
+    width: 100% !important;
+    left: 100%;
     padding: 10px;
-    margin: 0 0 0 15% !important;
+    margin: 0 !important;
 
-    z-index: 76;
+    z-index: 1;
     background: white;
-    transition: transform .6s ease-in;
+    transition: transform var(--sidebar-time) ease-in;
     height: 100%;
     overflow-y: auto;
     /* 避免到达边界后的滚动事件穿透 */
@@ -61,7 +86,7 @@
     border-left: 1px solid var(--line_regular);
 }
 
-.right-container.show {
+#mirror-vdcon[sidebar] .right-container {
     transform: translateX(-100%);
 }
 
@@ -348,7 +373,7 @@
     z-index: 0;
 }
 
-[scroll-hidden=true] .bpx-player-sending-area {
+[scroll-hidden] .bpx-player-sending-area {
     transform: none;
 }
 
@@ -522,7 +547,15 @@
 }
 
 /* 简介 */
-.video-desc-container .toggle-btn {
+#v_desc {
+    visibility: hidden;
+}
+
+#v_desc:has(.toggle-btn) {
+    visibility: visible;
+}
+
+#v_desc .toggle-btn {
     text-align: right;
     margin-right: 7px;
 }
@@ -596,7 +629,7 @@
 }
 
 /* 评论行滚动隐藏 */
-[scroll-hidden=true] .main-reply-box {
+[scroll-hidden] .main-reply-box {
     transform: translateY(calc(100% + var(--actionbar-height)))
 }
 
@@ -768,4 +801,6 @@
     right: unset !important;
     bottom: 78px !important;
     z-index: 1 !important;
+    opacity: 1;
+    transition: opacity var(--sidebar-time) ease-in;
 }

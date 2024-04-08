@@ -127,9 +127,9 @@ export function handleScriptSetting () {
     const style = Object.assign(document.createElement('style'), {
       id: 'ban-action-hidden',
       textContent: `
-        [scroll-hidden=true] #actionbar,
-        [scroll-hidden=true] .flexible-roll-btn-inner,
-        [scroll-hidden=true] .top-btn {
+        [scroll-hidden] #actionbar,
+        [scroll-hidden] .flexible-roll-btn-inner,
+        [scroll-hidden] .top-btn {
           transform: none !important;
         }
       `

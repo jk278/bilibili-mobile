@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.0-beta.8
+// @version            4.0.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -333,6 +333,10 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 * ----------------------- 操作栏 ----------------------- *
 * ---------------------------------------------------- */
 
+body {
+    --overlay-time: .4s;
+}
+
 /* 操作栏 */
 #actionbar {
     position: fixed;
@@ -347,7 +351,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     transition: .5s transform ease-in;
 }
 
-[scroll-hidden=true] #actionbar {
+[scroll-hidden] #actionbar {
     transform: translateY(100%);
 }
 
@@ -385,22 +389,31 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     background: inherit;
 }
 
+#search-fab,
+#menu-fab {
+    z-index: 0;
+    transition: z-index var(--overlay-time) ease-in;
+}
+
+#search-fab.active,
+#menu-fab.active {
+    z-index: 10;
+}
+
 /* 底部菜单内容 */
 #header-in-menu {
     position: absolute !important;
-    bottom: calc(var(--actionbar-height) + 5px);
+    top: 100vh;
     /* space-evenly : 20px 为底栏图标高度的一半*/
     left: calc((200vw + 20px) / 3);
     background-color: white;
     padding: 5px 0;
     white-space: nowrap;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-    display: none;
     border-radius: 5px;
     font-size: 16px;
-    transform: translate(-50%, calc(100% + var(--actionbar-height) + 5px));
-    opacity: 0;
-    transition: .4s ease-in;
+    transform: translateX(-50%);
+    transition: transform var(--overlay-time) ease-in;
 
     li {
         list-style-type: none;
@@ -410,15 +423,17 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     }
 }
 
+/* 有的用户 padding 不生效 */
+body #header-in-menu li {
+    padding: 5px 30px !important;
+}
+
 #header-in-menu.show {
-    display: block;
-    transform: translateX(-50%);
-    opacity: 1;
+    transform: translate(-50%, calc(-100% - var(--actionbar-height) - 5px));
 }
 
 /* 底部菜单、侧边栏: layout */
 #menu-overlay,
-#sidebar-overlay,
 #search-overlay {
     position: fixed;
     top: 0;
@@ -426,18 +441,15 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     left: 0;
     right: 0;
     pointer-events: none;
-    transition: background-color .4s ease-in;
+    background-color: rgba(0, 0, 0, .3);
+    opacity: 0;
+    transition: opacity var(--overlay-time) ease-in;
 }
 
-#sidebar-overlay#sidebar-overlay {
-    transition: background-color .6s ease-in;
-}
-
-#menu-overlay:has(>.show),
-#sidebar-overlay.show,
+#menu-overlay.show,
 #search-overlay.show {
     pointer-events: auto;
-    background-color: rgba(0, 0, 0, .3);
+    opacity: 1;
 }
 
 /* --------------------- 其它适配 --------------------- */
@@ -744,20 +756,27 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
  --------------------- 菜单消息数 --------------------
  --------------------------------------------------- */
 
-.red-num--message {
+.red-num--message,
+.red-num--dynamic {
     position: fixed !important;
     bottom: calc(var(--actionbar-height) + 138px);
     left: calc((200vw + 70px) / 3) !important;
     top: unset !important;
-    display: none;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(calc(160px + var(--actionbar-height) + 5px));
+    transition: var(--overlay-time) ease-in;
 }
 
-.red-num--dynamic {
-    position: fixed !important;
+.red-num--dynamic.red-num--dynamic {
     bottom: calc(var(--actionbar-height) + 108px);
-    left: calc((200vw + 70px) / 3) !important;
-    top: unset !important;
-    display: none;
+}
+
+[menu] .red-num--message,
+[menu] .red-num--dynamic {
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
 }
 
 /* -------------------------------------------------- 
@@ -1197,11 +1216,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     overflow: hidden;
 }
 
+#mirror-vdcon {
+    --sidebar-time: .6s;
+}
+
 /* 主体内容块 */
-.video-container-v1 {
+#app #mirror-vdcon {
     min-width: 0 !important;
-    padding: 0 !important;
+    padding: 0;
     top: 0;
+    display: none;
 }
 
 /* ----------------------------------------------------
@@ -1220,9 +1244,29 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     /* 移动 Safari 百分比宽高自动考虑边框和填充 */
     box-sizing: border-box;
     width: 100% !important;
-
     padding: calc(var(--dm-row-height) + 5px) 10px 0;
-    display: none;
+}
+
+.left-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity var(--sidebar-time) ease-in;
+}
+
+#mirror-vdcon[sidebar] .left-container::after {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+#mirror-vdcon[sidebar] .fixed-sidenav-storage {
+    opacity: 0;
 }
 
 /* ----------------------------------------------------
@@ -1232,14 +1276,14 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 /* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
 .right-container {
     position: fixed !important;
-    width: 85% !important;
-    left: 85%;
+    width: 100% !important;
+    left: 100%;
     padding: 10px;
-    margin: 0 0 0 15% !important;
+    margin: 0 !important;
 
-    z-index: 76;
+    z-index: 1;
     background: white;
-    transition: transform .6s ease-in;
+    transition: transform var(--sidebar-time) ease-in;
     height: 100%;
     overflow-y: auto;
     /* 避免到达边界后的滚动事件穿透 */
@@ -1249,7 +1293,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     border-left: 1px solid var(--line_regular);
 }
 
-.right-container.show {
+#mirror-vdcon[sidebar] .right-container {
     transform: translateX(-100%);
 }
 
@@ -1536,7 +1580,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     z-index: 0;
 }
 
-[scroll-hidden=true] .bpx-player-sending-area {
+[scroll-hidden] .bpx-player-sending-area {
     transform: none;
 }
 
@@ -1710,7 +1754,15 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 }
 
 /* 简介 */
-.video-desc-container .toggle-btn {
+#v_desc {
+    visibility: hidden;
+}
+
+#v_desc:has(.toggle-btn) {
+    visibility: visible;
+}
+
+#v_desc .toggle-btn {
     text-align: right;
     margin-right: 7px;
 }
@@ -1784,7 +1836,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 }
 
 /* 评论行滚动隐藏 */
-[scroll-hidden=true] .main-reply-box {
+[scroll-hidden] .main-reply-box {
     transform: translateY(calc(100% + var(--actionbar-height)))
 }
 
@@ -1956,6 +2008,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     right: unset !important;
     bottom: 78px !important;
     z-index: 1 !important;
+    opacity: 1;
+    transition: opacity var(--sidebar-time) ease-in;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
@@ -2540,7 +2594,7 @@ function scrollToHidden () {
     const shouldUpdate = Math.abs(offset) > scrollThreshold || currentScrollTop < scrollThreshold
 
     if (shouldUpdate) {
-      document.body.setAttribute('scroll-hidden', scrollHidden)
+      scrollHidden ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
       lastScrollTop = currentScrollTop
     }
   })
@@ -2685,9 +2739,9 @@ function handleScriptSetting () {
     const style = Object.assign(document.createElement('style'), {
       id: 'ban-action-hidden',
       textContent: `
-        [scroll-hidden=true] #actionbar,
-        [scroll-hidden=true] .flexible-roll-btn-inner,
-        [scroll-hidden=true] .top-btn {
+        [scroll-hidden] #actionbar,
+        [scroll-hidden] .flexible-roll-btn-inner,
+        [scroll-hidden] .top-btn {
           transform: none !important;
         }
       `
@@ -2871,9 +2925,9 @@ function dynamicHeight () {
   playerWrap.style.cssText = `height:${newHeight}vw; display:block`
 
   // querySelector 在元素加载后使用才能获取到
-  const leftContainer = document.querySelector('.left-container')
+  const leftContainer = document.querySelector('#mirror-vdcon')
   // 相对布局加top会导致底部显示不全，从顶部下滑时top还会清零一次
-  leftContainer.style.cssText = `margin-top:${newHeight}vw; display:block`
+  leftContainer.style.cssText = `margin-top:${newHeight}vw; display:flex`
 
   // getElement 提前使用在元素加载后能获取到
   const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
@@ -3077,20 +3131,14 @@ function handleActionbar () {
     searchFab.appendChild(searchOverlay)
 
     searchFab.addEventListener('click', () => {
-      const searchbarContainer = document.querySelector('.center-search-container')
+      const input = document.querySelector('.center-search-container input')
 
-      searchbarContainer.classList.add('show')
-      searchbarContainer.querySelector('input').focus()
-      searchOverlay.classList.add('show')
-      searchFab.style.zIndex = '1'
-
-      searchOverlay.addEventListener('click', event => {
-        // 事件完成后立即冒泡
-        event.stopPropagation()
-        searchbarContainer.classList.remove('show')
-        searchOverlay.classList.remove('show')
-        setTimeout(() => { searchFab.style.zIndex = '' }, 400)
-      })
+      if (input) {
+        document.querySelector('.center-search-container').classList.toggle('show')
+        input.focus()
+        searchOverlay.classList.toggle('show')
+        searchFab.classList.toggle('active')
+      }
     })
   }
 
@@ -3116,50 +3164,34 @@ function handleActionbar () {
     const menu = menuOverlay.querySelector('#header-in-menu')
 
     menuFab.addEventListener('click', () => {
-      menu.style.display = 'block'
-      setTimeout(() => {
-        menu.classList.add('show')
-        menu.style.display = ''
-      }, 0)
-      menuFab.style.zIndex = '1'
-      setTimeout(() => { // 显示消息数
-        const redNumStyle = Object.assign(document.createElement('style'), {
-          id: 'red-num-style',
-          textContent: '.red-num--message, .red-num--dynamic {display: block !important;}'
-        })
-        document.head.appendChild(redNumStyle)
-      }, 400)
+      menu.classList.add('show')
+      document.body.setAttribute('menu', '')
+      menuOverlay.classList.add('show')
+      menuFab.classList.add('active')
     })
 
     const items = menuOverlay.querySelectorAll('li')
-    const header = document.querySelector('.bili-header__bar')
     items.forEach(item => {
       item.addEventListener('click', event => {
         event.stopPropagation()
+        menu.classList.remove('show')
+        document.body.removeAttribute('menu')
+
         const refer = item.dataset.refer
-
-        const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-        if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
-
-        simulateMouseEnter(header.querySelector(refer))
         sessionStorage.setItem('opened-dailog', refer)
+        simulateMouseEnter(document.querySelector(`.bili-header__bar ${refer}`))
       })
     })
 
     menuOverlay.addEventListener('click', event => {
       event.stopPropagation()
-      const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-      if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
+      menu.classList.remove('show')
+      document.body.removeAttribute('menu')
+      menuOverlay.classList.remove('show')
+      menuFab.classList.remove('active')
 
-      if (event.target !== menu) {
-        menu.style.display = 'block'
-        menu.classList.remove('show')
-        document.head.querySelector('#red-num-style').remove()
-        setTimeout(() => {
-          menu.style.display = ''
-          menuFab.style.zIndex = ''
-        }, 400)
-      }
+      const refer = sessionStorage.getItem('opened-dailog') || ''
+      simulateMouseLeave(document.querySelector(`.bili-header__bar ${refer}`))
     })
 
     function simulateMouseEnter (element) {
@@ -3188,25 +3220,14 @@ function handleActionbar () {
 // 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
 function handleSidebar () {
   const sidebarBtn = document.getElementById('sidebar-fab')
-  const rightContainer = document.querySelector('.right-container')
-
-  const sidebarOverlay = document.createElement('div')
-  sidebarOverlay.id = 'sidebar-overlay'
-  sidebarBtn.appendChild(sidebarOverlay)
-
-  sidebarOverlay.addEventListener('click', (event) => {
-    event.stopPropagation()
-    closeSidebar()
-  })
+  const videoContainer = document.querySelector('#mirror-vdcon')
 
   sidebarBtn.addEventListener('click', () => {
-    rightContainer.classList.add('show')
-    sidebarOverlay.classList.add('show')
+    videoContainer.toggleAttribute('sidebar')
   })
 
   function closeSidebar () {
-    rightContainer.classList.remove('show')
-    sidebarOverlay.classList.remove('show')
+    videoContainer.removeAttribute('sidebar')
   }
 
   const recommendLiist = document.getElementById('reco_list')

@@ -19,9 +19,9 @@ function dynamicHeight () {
   playerWrap.style.cssText = `height:${newHeight}vw; display:block`
 
   // querySelector 在元素加载后使用才能获取到
-  const leftContainer = document.querySelector('.left-container')
+  const leftContainer = document.querySelector('#mirror-vdcon')
   // 相对布局加top会导致底部显示不全，从顶部下滑时top还会清零一次
-  leftContainer.style.cssText = `margin-top:${newHeight}vw; display:block`
+  leftContainer.style.cssText = `margin-top:${newHeight}vw; display:flex`
 
   // getElement 提前使用在元素加载后能获取到
   const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]

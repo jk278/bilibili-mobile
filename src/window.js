@@ -33,7 +33,7 @@ export function scrollToHidden () {
     const shouldUpdate = Math.abs(offset) > scrollThreshold || currentScrollTop < scrollThreshold
 
     if (shouldUpdate) {
-      document.body.setAttribute('scroll-hidden', scrollHidden)
+      scrollHidden ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
       lastScrollTop = currentScrollTop
     }
   })

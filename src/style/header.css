@@ -52,20 +52,27 @@
  --------------------- 菜单消息数 --------------------
  --------------------------------------------------- */
 
-.red-num--message {
+.red-num--message,
+.red-num--dynamic {
     position: fixed !important;
     bottom: calc(var(--actionbar-height) + 138px);
     left: calc((200vw + 70px) / 3) !important;
     top: unset !important;
-    display: none;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(calc(160px + var(--actionbar-height) + 5px));
+    transition: var(--overlay-time) ease-in;
 }
 
-.red-num--dynamic {
-    position: fixed !important;
+.red-num--dynamic.red-num--dynamic {
     bottom: calc(var(--actionbar-height) + 108px);
-    left: calc((200vw + 70px) / 3) !important;
-    top: unset !important;
-    display: none;
+}
+
+[menu] .red-num--message,
+[menu] .red-num--dynamic {
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
 }
 
 /* -------------------------------------------------- 
