@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.0-beta.7
+// @version            4.0-beta.8
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -2487,6 +2487,7 @@ function initViewport () {
   })
   document.head.appendChild(viewport)
 
+  // body、video、leftContainer 皆为样式修改后再显示
   const style = Object.assign(document.createElement('style'), {
     textContent: 'body {display:block !important;}'
   })
@@ -2956,6 +2957,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   handleActionbar: () => (/* binding */ handleActionbar),
 /* harmony export */   handleSidebar: () => (/* binding */ handleSidebar)
 /* harmony export */ });
+/* global GM_getValue */
 // eslint-disable-next-line no-undef
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
 
@@ -3009,21 +3011,23 @@ function handleActionbar () {
   setMenuBtn()
 
   function setFullbtn () {
+    let clickTimer = null
+
     const fullBtn = document.getElementById('full-now')
     fullBtn.addEventListener('click', () => {
-      const video = document.querySelector('video')
-      // 等于符号优先级更高
-      // eslint-disable-next-line no-undef
-      if (GM_getValue('full-unmuted', false) === true) {
-        video.play()
-        video.muted = false
-        if (video.volume === 0) {
-          document.querySelector('.bpx-player-ctrl-muted-icon').click()
-        }
-      }
-      fullScreen()
-      function fullScreen () {
+      clearTimeout(clickTimer)
+
+      clickTimer = setTimeout(function () {
         const video = document.querySelector('video')
+        // 等于符号优先级更高
+        if (GM_getValue('full-unmuted', false) === true) {
+          video.play()
+          video.muted = false
+          if (video.volume === 0) {
+            document.querySelector('.bpx-player-ctrl-muted-icon').click()
+          }
+        }
+
         const isPortrait = video.videoWidth / video.videoHeight < 1
         const btnSelector = isPortrait ? '.bpx-player-ctrl-web' : '.bpx-player-ctrl-full'
         const rawFullBtn = document.querySelector(btnSelector)
@@ -3033,9 +3037,18 @@ function handleActionbar () {
             rawFullBtn.style.cssText = 'position:relative !important; visibility:visible; z-index:unset;'
             rawFullBtn.addEventListener('click', () => { rawFullBtn.style.cssText = '' })
           }
-        } else {
-          setTimeout(fullScreen, 500)
         }
+      }, 300)
+    })
+
+    fullBtn.addEventListener('dblclick', () => {
+      clearTimeout(clickTimer)
+
+      const video = document.querySelector('video')
+      video.play()
+      video.muted = false
+      if (video.volume === 0) {
+        document.querySelector('.bpx-player-ctrl-muted-icon').click()
       }
     })
   }

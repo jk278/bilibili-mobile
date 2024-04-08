@@ -5,6 +5,7 @@ export function initViewport () {
   })
   document.head.appendChild(viewport)
 
+  // body、video、leftContainer 皆为样式修改后再显示
   const style = Object.assign(document.createElement('style'), {
     textContent: 'body {display:block !important;}'
   })
