@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.2
+// @version            4.3
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -348,6 +348,7 @@ body {
     justify-content: space-evenly;
     align-items: center;
     background: inherit;
+    box-shadow: 0 0 3px rgba(0, 0, 0, .5);
     transition: .5s transform ease-in;
 }
 
@@ -2205,11 +2206,13 @@ ul.vui_tabs--nav>* {
     background: white;
     padding: 5px !important;
     transform: translateY(100%);
-    transition: transform .4s ease-in;
+    opacity: 0;
+    transition: .4s ease-in;
 }
 
 .search-conditions.show {
     transform: none;
+    opacity: 1;
 }
 
 /* 排序按钮 */
@@ -2796,10 +2799,15 @@ function handleScriptPreSetting () {
     css2: '#v_tag {display:none !important;}',
     css3: `
       .copyright.item {display:none !important;}
-      .show-more {display:none;}`,
+      .show-more {display:none;}
+    `,
     css4: '.trending {display:none;}',
     css5: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {position:fixed !important; z-index:-10; visibility:hidden;}',
-    css6: '.bpx-player-contextmenu {display:none;}'
+    css6: '.bpx-player-contextmenu {display:none;}',
+    css7: `
+      .bili-footer {display: none;}
+      .vui_pagenation {padding-bottom: var(--actionbar-height);}
+    `
   } // 对象的值可通过 object[key] 获取
 
   readScriptSetting()
@@ -2860,6 +2868,7 @@ function handleScriptPreSetting () {
           <label><input type="checkbox"><span>热搜榜</span></label>
           <label><input type="checkbox"><span>播放器全屏音量键</span></label>
           <label><input type="checkbox"><span>视频色彩音效调节</span></label>
+          <label><input type="checkbox"><span>页脚导航链接</span></label>
         </div>
         `
     })
@@ -3077,12 +3086,14 @@ __webpack_require__.r(__webpack_exports__);
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
 
 function videoInteraction () {
-  dynamicHeight()
+  handlePortrait()
+  closeMiniPlayer()
   handlelVideoClick()
   handleVideoLongPress()
 }
 
-function dynamicHeight () {
+function handlePortrait () {
+  // dynamic height
   const player = document.querySelector('#bilibili-player')
   const style = window.getComputedStyle(player)
   const width = style.getPropertyValue('width')
@@ -3108,6 +3119,30 @@ function dynamicHeight () {
     videoContainer.style.display = 'flex'
   }
 
+  // video dblclick
+  const videoArea = document.querySelector('.bpx-player-video-area')
+  const videoPerch = document.querySelector('.bpx-player-video-perch')
+  const videoWrap = document.querySelector('.bpx-player-video-wrap')
+  const video = videoWrap.querySelector('video')
+
+  videoArea.insertBefore(videoWrap, videoPerch)
+  videoPerch.remove()
+
+  let clickTimer = null
+  videoWrap.addEventListener('click', () => {
+    clearTimeout(clickTimer)
+    clickTimer = setTimeout(() => {
+      video.paused ? video.play() : video.pause()
+    }, 300)
+  })
+
+  videoWrap.addEventListener('dblclick', () => {
+    clearTimeout(clickTimer)
+    document.querySelector('.bpx-player-ctrl-web').click()
+  })
+}
+
+function closeMiniPlayer () {
   // 关闭小窗: getElement 提前使用在元素加载后能获取到, querySelector 在元素加载后使用才能获取到
   const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
   new MutationObserver(mutations => {
@@ -3119,12 +3154,13 @@ function dynamicHeight () {
 
 // 接管视频点击事件
 function handlelVideoClick () {
-  const video = document.getElementsByClassName('bpx-player-video-wrap>video')[0]
+  const video = document.querySelector('.bpx-player-video-wrap>video')
+  // safari 内联播放
   if (video) video.playsInline = true
 
-  const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
+  const playerContainer = document.querySelector('.bpx-player-container')
   playerContainer.addEventListener('click', handleClick)
-  const controlWrap = document.getElementsByClassName('bpx-player-control-wrap')[0]
+  const controlWrap = playerContainer.querySelector('.bpx-player-control-wrap')
 
   let clickTimer = null
 
@@ -3149,6 +3185,14 @@ function handlelVideoClick () {
     const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
     element.dispatchEvent(event)
   }
+
+  // 双击打开声音
+  playerContainer.addEventListener('dblclick', () => {
+    video.muted = false
+    if (video.volume === 0) {
+      document.querySelector('.bpx-player-ctrl-muted-icon').click()
+    }
+  })
 }
 
 function handleVideoLongPress () {
@@ -3274,13 +3318,7 @@ function handleActionbar () {
         const isPortrait = video.videoWidth / video.videoHeight < 1
         const btnSelector = isPortrait ? '.bpx-player-ctrl-web' : '.bpx-player-ctrl-full'
         const rawFullBtn = document.querySelector(btnSelector)
-        if (rawFullBtn) {
-          rawFullBtn.click()
-          if (isPortrait) {
-            rawFullBtn.style.cssText = 'position:relative !important; visibility:visible; z-index:unset;'
-            rawFullBtn.addEventListener('click', () => { rawFullBtn.style.cssText = '' })
-          }
-        }
+        rawFullBtn?.click()
       }, 300)
     })
 
@@ -3374,6 +3412,9 @@ function handleActionbar () {
           input.focus()
           searchOverlay.classList.toggle('show')
           searchFab.classList.toggle('active')
+
+          input.value = ''
+          input.dispatchEvent(new Event('input', { bubbles: true }))
         }
       })
     }

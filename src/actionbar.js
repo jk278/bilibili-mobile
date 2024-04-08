@@ -82,13 +82,7 @@ export function handleActionbar () {
         const isPortrait = video.videoWidth / video.videoHeight < 1
         const btnSelector = isPortrait ? '.bpx-player-ctrl-web' : '.bpx-player-ctrl-full'
         const rawFullBtn = document.querySelector(btnSelector)
-        if (rawFullBtn) {
-          rawFullBtn.click()
-          if (isPortrait) {
-            rawFullBtn.style.cssText = 'position:relative !important; visibility:visible; z-index:unset;'
-            rawFullBtn.addEventListener('click', () => { rawFullBtn.style.cssText = '' })
-          }
-        }
+        rawFullBtn?.click()
       }, 300)
     })
 
@@ -182,6 +176,9 @@ export function handleActionbar () {
           input.focus()
           searchOverlay.classList.toggle('show')
           searchFab.classList.toggle('active')
+
+          input.value = ''
+          input.dispatchEvent(new Event('input', { bubbles: true }))
         }
       })
     }

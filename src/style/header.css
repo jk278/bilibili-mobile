@@ -2,7 +2,7 @@
    ------------------------ 顶栏 ----------------------- 
    -------------------------------------------------- */
 
-/* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
+/* #i_cecream 属首页和搜索页，#app #biliMainHeader 属视频页 */
 
 /* 顶栏外框: translate 会生成新的堆叠上下文，导致 position:fixed 的消息数不可显示 */
 #biliMainHeader,

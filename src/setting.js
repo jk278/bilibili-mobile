@@ -15,10 +15,15 @@ export function handleScriptPreSetting () {
     css2: '#v_tag {display:none !important;}',
     css3: `
       .copyright.item {display:none !important;}
-      .show-more {display:none;}`,
+      .show-more {display:none;}
+    `,
     css4: '.trending {display:none;}',
     css5: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {position:fixed !important; z-index:-10; visibility:hidden;}',
-    css6: '.bpx-player-contextmenu {display:none;}'
+    css6: '.bpx-player-contextmenu {display:none;}',
+    css7: `
+      .bili-footer {display: none;}
+      .vui_pagenation {padding-bottom: var(--actionbar-height);}
+    `
   } // 对象的值可通过 object[key] 获取
 
   readScriptSetting()
@@ -79,6 +84,7 @@ export function handleScriptPreSetting () {
           <label><input type="checkbox"><span>热搜榜</span></label>
           <label><input type="checkbox"><span>播放器全屏音量键</span></label>
           <label><input type="checkbox"><span>视频色彩音效调节</span></label>
+          <label><input type="checkbox"><span>页脚导航链接</span></label>
         </div>
         `
     })

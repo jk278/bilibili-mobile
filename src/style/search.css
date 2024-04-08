@@ -74,11 +74,13 @@ ul.vui_tabs--nav>* {
     background: white;
     padding: 5px !important;
     transform: translateY(100%);
-    transition: transform .4s ease-in;
+    opacity: 0;
+    transition: .4s ease-in;
 }
 
 .search-conditions.show {
     transform: none;
+    opacity: 1;
 }
 
 /* 排序按钮 */

@@ -2,12 +2,14 @@
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
 
 export function videoInteraction () {
-  dynamicHeight()
+  handlePortrait()
+  closeMiniPlayer()
   handlelVideoClick()
   handleVideoLongPress()
 }
 
-function dynamicHeight () {
+function handlePortrait () {
+  // dynamic height
   const player = document.querySelector('#bilibili-player')
   const style = window.getComputedStyle(player)
   const width = style.getPropertyValue('width')
@@ -33,6 +35,30 @@ function dynamicHeight () {
     videoContainer.style.display = 'flex'
   }
 
+  // video dblclick
+  const videoArea = document.querySelector('.bpx-player-video-area')
+  const videoPerch = document.querySelector('.bpx-player-video-perch')
+  const videoWrap = document.querySelector('.bpx-player-video-wrap')
+  const video = videoWrap.querySelector('video')
+
+  videoArea.insertBefore(videoWrap, videoPerch)
+  videoPerch.remove()
+
+  let clickTimer = null
+  videoWrap.addEventListener('click', () => {
+    clearTimeout(clickTimer)
+    clickTimer = setTimeout(() => {
+      video.paused ? video.play() : video.pause()
+    }, 300)
+  })
+
+  videoWrap.addEventListener('dblclick', () => {
+    clearTimeout(clickTimer)
+    document.querySelector('.bpx-player-ctrl-web').click()
+  })
+}
+
+function closeMiniPlayer () {
   // 关闭小窗: getElement 提前使用在元素加载后能获取到, querySelector 在元素加载后使用才能获取到
   const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
   new MutationObserver(mutations => {
@@ -44,12 +70,13 @@ function dynamicHeight () {
 
 // 接管视频点击事件
 function handlelVideoClick () {
-  const video = document.getElementsByClassName('bpx-player-video-wrap>video')[0]
+  const video = document.querySelector('.bpx-player-video-wrap>video')
+  // safari 内联播放
   if (video) video.playsInline = true
 
-  const playerContainer = document.getElementsByClassName('bpx-player-container')[0]
+  const playerContainer = document.querySelector('.bpx-player-container')
   playerContainer.addEventListener('click', handleClick)
-  const controlWrap = document.getElementsByClassName('bpx-player-control-wrap')[0]
+  const controlWrap = playerContainer.querySelector('.bpx-player-control-wrap')
 
   let clickTimer = null
 
@@ -74,6 +101,14 @@ function handlelVideoClick () {
     const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
     element.dispatchEvent(event)
   }
+
+  // 双击打开声音
+  playerContainer.addEventListener('dblclick', () => {
+    video.muted = false
+    if (video.volume === 0) {
+      document.querySelector('.bpx-player-ctrl-muted-icon').click()
+    }
+  })
 }
 
 function handleVideoLongPress () {

@@ -17,6 +17,7 @@ body {
     justify-content: space-evenly;
     align-items: center;
     background: inherit;
+    box-shadow: 0 0 3px rgba(0, 0, 0, .5);
     transition: .5s transform ease-in;
 }
 
