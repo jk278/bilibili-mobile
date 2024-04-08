@@ -1279,7 +1279,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     position: fixed !important;
     width: 100% !important;
     left: 100%;
-    padding: 10px;
+    padding: 10px 10px calc(var(--actionbar-height) + 10px);
     margin: 0 !important;
 
     z-index: 1;
@@ -1291,7 +1291,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     overscroll-behavior: contain;
 
     box-sizing: border-box;
-    border-left: 1px solid var(--line_regular);
 }
 
 #mirror-vdcon[sidebar] .right-container {
@@ -2918,9 +2917,12 @@ function dynamicHeight () {
   playerWrap.style.cssText = `height:${newHeight}vw; display:block`
 
   // querySelector 在元素加载后使用才能获取到
-  const leftContainer = document.querySelector('#mirror-vdcon')
+  const videoContainer = document.querySelector('#mirror-vdcon')
   // 相对布局加top会导致底部显示不全，从顶部下滑时top还会清零一次
-  leftContainer.style.cssText = `margin-top:${newHeight}vw; display:flex`
+  videoContainer.style.cssText = `margin-top:${newHeight}vw; display:flex`
+
+  const rightContainer = document.querySelector('.right-container')
+  rightContainer.style.height = `calc(100% - ${newHeight}vw)`
 
   // getElement 提前使用在元素加载后能获取到
   const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
