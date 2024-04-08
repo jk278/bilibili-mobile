@@ -2910,7 +2910,8 @@ function dynamicHeight () {
   const style = window.getComputedStyle(player)
   const width = style.getPropertyValue('width')
   const height = style.getPropertyValue('height')
-  const newHeight = parseInt(height) / parseInt(width) * 100
+  // 减去弹幕行初始高度
+  const newHeight = (parseInt(height) - 46) / parseInt(width) * 100
   player.style.cssText = `width:100vw; height:${newHeight}vw;`
 
   const playerWrap = document.querySelector('#playerWrap')
