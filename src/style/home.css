@@ -5,8 +5,7 @@
 body {
     /* 避免评论未加载时显示灰色 */
     background: white !important;
-
-    /* 添加透明 animation 为 Via 预留加载 initViewport 的时间后，刷新加载出现白屏 */
+    display: none;
 
     --actionbar-height: 46px;
 }

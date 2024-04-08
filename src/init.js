@@ -4,4 +4,9 @@ export function initViewport () {
     content: 'width=device-width, initial-scale=1.0'
   })
   document.head.appendChild(viewport)
+
+  const style = Object.assign(document.createElement('style'), {
+    textContent: 'body {display:block !important;}'
+  })
+  document.head.appendChild(style)
 }

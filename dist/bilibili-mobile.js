@@ -959,8 +959,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 body {
     /* 避免评论未加载时显示灰色 */
     background: white !important;
-
-    /* 添加透明 animation 为 Via 预留加载 initViewport 的时间后，刷新加载出现白屏 */
+    display: none;
 
     --actionbar-height: 46px;
 }
@@ -2487,6 +2486,11 @@ function initViewport () {
     content: 'width=device-width, initial-scale=1.0'
   })
   document.head.appendChild(viewport)
+
+  const style = Object.assign(document.createElement('style'), {
+    textContent: 'body {display:block !important;}'
+  })
+  document.head.appendChild(style)
 }
 
 
