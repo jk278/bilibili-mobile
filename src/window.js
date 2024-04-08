@@ -20,8 +20,24 @@ export function increaseVideoLoadSize () {
   }
 }
 
+/**
+ * 管理滚动和滑动事件的函数
+ * @param {string} page - 简短描述页面的字符串: search, video
+ */
+export function handleScroll (page) {
+  scrollToHidden()
+
+  if (page === 'search') {
+    scrollToClick()
+  }
+
+  if (page === 'video') {
+    scrollToToggleSidebar()
+  }
+}
+
 // 滚动隐藏函数(弹幕行、评论行、操作栏)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
-export function scrollToHidden () {
+function scrollToHidden () {
   let lastScrollTop = 0
   const scrollThreshold = 75
 
@@ -37,4 +53,60 @@ export function scrollToHidden () {
       lastScrollTop = currentScrollTop
     }
   })
+}
+
+function scrollToClick () {
+  let startX = 0
+  let endX = 0
+  let clickIndex = 3
+  const touchXThreshold = 50
+
+  const handleTouchStart = event => {
+    startX = event.changedTouches[0].clientX
+  }
+
+  const handleTouchEnd = event => {
+    endX = event.changedTouches[0].clientX
+
+    const distanceX = endX - startX
+
+    const navItems = [4, 3, 2, 1, 7, 6, 5]
+    if (Math.abs(distanceX) > touchXThreshold) {
+      distanceX > touchXThreshold ? clickIndex-- : clickIndex++
+      document.querySelector(`.vui_tabs--nav-item:nth-child(${navItems[clickIndex]})`).click()
+    }
+  }
+
+  const searchContent = document.querySelector('.search-content')
+  searchContent.addEventListener('touchstart', handleTouchStart)
+  searchContent.addEventListener('touchend', handleTouchEnd)
+}
+
+function scrollToToggleSidebar () {
+  let startX = 0
+  let endX = 0
+  const touchXThreshold = 50
+
+  const handleTouchStart = event => {
+    startX = event.changedTouches[0].clientX
+  }
+
+  const handleTouchEnd = event => {
+    endX = event.changedTouches[0].clientX
+
+    const distanceX = endX - startX
+
+    if (Math.abs(distanceX) > touchXThreshold) {
+      const videoContainer = document.querySelector('#mirror-vdcon')
+      if (distanceX > touchXThreshold && videoContainer.hasAttribute('sidebar')) {
+        videoContainer.removeAttribute('sidebar')
+      } else if (!videoContainer.hasAttribute('sidebar')) {
+        videoContainer.setAttribute('sidebar', '')
+      }
+    }
+  }
+
+  const videoContainer = document.querySelector('#mirror-vdcon')
+  videoContainer.addEventListener('touchstart', handleTouchStart)
+  videoContainer.addEventListener('touchend', handleTouchEnd)
 }

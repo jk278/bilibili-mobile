@@ -6,7 +6,8 @@ const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined
 export function handleActionbar () {
   const actionbar = Object.assign(document.createElement('div'), {
     id: 'actionbar',
-    /* html */
+    // <div style="display:flex; transform:scale(4)">
+    // <style>svg {background-color:yellow; border:1px solid;}</style>
     innerHTML: `
       <div id="full-now">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(3.6,4.2)" d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/></svg>
@@ -29,6 +30,9 @@ export function handleActionbar () {
       <div id="refresh-fab">
         <svg width="24" height="24" viewBox="0 0 29 29" fill="currentColor" style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(2.3,2.8)" d="M21.3687 13.5827C21.4144 13.3104 21.2306 13.0526 20.9583 13.0069C20.686 12.9612 20.4281 13.1449 20.3825 13.4173L21.3687 13.5827ZM12 20.5C7.30558 20.5 3.5 16.6944 3.5 12H2.5C2.5 17.2467 6.75329 21.5 12 21.5V20.5ZM3.5 12C3.5 7.30558 7.30558 3.5 12 3.5V2.5C6.75329 2.5 2.5 6.75329 2.5 12H3.5ZM12 3.5C15.3367 3.5 18.2252 5.4225 19.6167 8.22252L20.5122 7.77748C18.9583 4.65062 15.7308 2.5 12 2.5V3.5ZM20.3825 13.4173C19.7081 17.437 16.2112 20.5 12 20.5V21.5C16.7077 21.5 20.6148 18.0762 21.3687 13.5827L20.3825 13.4173Z"/><path transform="translate(2.3,2.9)" d="M20.4716 2.42157V8.07843H14.8147"/></svg>
       </div>
+      <div id="show-more-fab">
+        <svg width="24" height="24" viewBox="0 0 40 40" fill="currentColor"  style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(4,4)" d="M0.256 23.481c0 0.269 0.106 0.544 0.313 0.75 0.412 0.413 1.087 0.413 1.5 0l14.119-14.119 13.913 13.912c0.413 0.413 1.087 0.413 1.5 0s0.413-1.087 0-1.5l-14.663-14.669c-0.413-0.412-1.088-0.412-1.5 0l-14.869 14.869c-0.213 0.212-0.313 0.481-0.313 0.756z"></path></svg>
+      </div>
       `
   })
 
@@ -36,19 +40,25 @@ export function handleActionbar () {
 
   if (window.location.pathname === '/') {
     actionbar.classList.add('home')
-
-    setTopBtn()
     setRefreshBtn()
   }
 
   if (window.location.pathname.startsWith('/video')) {
     actionbar.classList.add('video')
-
     setFullbtn()
+  } else {
+    setTopBtn()
+  }
+
+  if (window.location.hostname === 'search.bilibili.com') {
+    actionbar.classList.add('search')
+    setSearchBtn(true)
+    setShowMoreBtn()
+  } else {
+    setSearchBtn()
   }
 
   setHomeBtn()
-  setSearchBtn()
   setMenuBtn()
 
   function setFullbtn () {
@@ -97,11 +107,7 @@ export function handleActionbar () {
   function setTopBtn () {
     const topBtn = document.getElementById('my-top')
     topBtn.addEventListener('click', () => {
-      toTop()
-      function toTop () {
-        const rawTopBtn = document.querySelector('.top-btn')
-        rawTopBtn ? rawTopBtn.click() : setTimeout(toTop, 500)
-      }
+      window.scrollTo({ top: 0 })
     })
   }
 
@@ -110,23 +116,75 @@ export function handleActionbar () {
     home.addEventListener('click', () => { window.location.href = 'https://www.bilibili.com/' })
   }
 
-  function setSearchBtn () {
+  function setSearchBtn (isSearchPage) {
     const searchFab = document.getElementById('search-fab')
 
     const searchOverlay = document.createElement('div')
     searchOverlay.id = 'search-overlay'
     searchFab.appendChild(searchOverlay)
 
-    searchFab.addEventListener('click', () => {
-      const input = document.querySelector('.center-search-container input')
+    let searchFabText
+    if (isSearchPage) {
+      // 底部显示搜索文本
+      const pageInput = document.querySelector('.search-input input')
+      searchFabText = Object.assign(document.createElement('div'), {
+        id: 'search-fab-text',
+        textContent: pageInput.value
+      })
+      searchFab.appendChild(searchFabText)
+      searchFab.style.cssText = `
+        background-color: var(--graph_bg_thick);
+        border-radius: 20px;
+      `
+    }
 
-      if (input) {
-        document.querySelector('.center-search-container').classList.toggle('show')
-        input.focus()
-        searchOverlay.classList.toggle('show')
-        searchFab.classList.toggle('active')
-      }
+    let clickTimer = null
+
+    let handleInput = null
+    searchFab.addEventListener('click', () => {
+      clearTimeout(clickTimer)
+
+      clickTimer = setTimeout(() => {
+        const input = document.querySelector('.center-search-container input')
+
+        if (input) {
+          document.querySelector('.center-search-container').classList.toggle('show')
+          input.focus()
+          searchOverlay.classList.toggle('show')
+          searchFab.classList.toggle('active')
+
+          if (isSearchPage) {
+            // 移除之前添加的 input 事件监听器
+            input.removeEventListener('input', handleInput)
+
+            // 模拟输入: 将文本填入底部搜索
+            input.value = searchFabText.textContent
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+
+            // 文本更新到搜索页搜索
+            handleInput = () => {
+              searchFabText.textContent = input.value
+            }
+            input.addEventListener('input', handleInput)
+          }
+        }
+      }, 300)
     })
+
+    if (isSearchPage) {
+      searchFab.addEventListener('dblclick', () => {
+        clearTimeout(clickTimer)
+
+        const input = document.querySelector('.center-search-container input')
+
+        if (input) {
+          document.querySelector('.center-search-container').classList.toggle('show')
+          input.focus()
+          searchOverlay.classList.toggle('show')
+          searchFab.classList.toggle('active')
+        }
+      })
+    }
   }
 
   function setMenuBtn () {
@@ -193,14 +251,34 @@ export function handleActionbar () {
   }
 
   function setRefreshBtn () {
-    const refreshBtn = document.getElementById('refresh-fab')
-    refreshBtn.addEventListener('click', () => {
+    const refreshFab = document.getElementById('refresh-fab')
+    refreshFab.addEventListener('click', () => {
       refresh()
       function refresh () {
         const rawRefreshBtn = document.querySelector('.flexible-roll-btn-inner')
         rawRefreshBtn ? rawRefreshBtn.click() : setTimeout(refresh, 500)
       }
     })
+  }
+
+  function setShowMoreBtn () {
+    const showMoreFab = document.getElementById('show-more-fab')
+
+    const handleClick = () => {
+      const searchConditions = document.querySelector('.search-conditions')
+      if (searchConditions) {
+        if (sessionStorage.getItem('show-conditions') !== 'true') {
+          searchConditions.classList.add('show')
+          showMoreFab.classList.add('reverse')
+          sessionStorage.setItem('show-conditions', 'true')
+        } else {
+          searchConditions.classList.remove('show')
+          showMoreFab.classList.remove('reverse')
+          sessionStorage.setItem('show-conditions', '')
+        }
+      }
+    }
+    showMoreFab.addEventListener('click', handleClick)
   }
 }
 

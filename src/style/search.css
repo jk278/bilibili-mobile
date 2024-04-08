@@ -12,14 +12,53 @@
 }
 
 /* 分类 */
+.search-tabs.i_wrapper {
+    padding-top: 10px !important;
+}
+
 .vui_tabs--nav-link {
     padding: 0 1px !important;
-    flex-wrap: wrap;
-    justify-content: center !important;
+    flex-direction: column;
 }
 
 ul.vui_tabs--nav>* {
     flex: 1;
+}
+
+/* 分类: 排序 */
+/* 综合 */
+.vui_tabs--nav-item:nth-child(1) .vui_tabs--nav-text {
+    padding-bottom: 17px;
+}
+
+/* 视频 */
+.vui_tabs--nav-item:nth-child(2) {
+    order: -1;
+}
+
+/* 番剧 */
+.vui_tabs--nav-item:nth-child(3) {
+    order: -2;
+}
+
+/* 影视 */
+.vui_tabs--nav-item:nth-child(4) {
+    order: -3;
+}
+
+/* 直播 */
+.vui_tabs--nav-item:nth-child(5) {
+    order: 3;
+}
+
+/* 专栏 */
+.vui_tabs--nav-item:nth-child(6) {
+    order: 2;
+}
+
+/* 用户 */
+.vui_tabs--nav-item:nth-child(7) {
+    order: 1;
 }
 
 /* 广告 */
@@ -28,11 +67,22 @@ ul.vui_tabs--nav>* {
 }
 
 /* 排序筛选 */
-.search-conditions.i_wrapper {
-    margin-top: 8px !important;
+.search-conditions {
+    position: fixed;
+    bottom: var(--actionbar-height);
+    z-index: 2;
+    background: white;
+    padding: 5px !important;
+    transform: translateY(100%);
+    transition: transform .4s ease-in;
 }
 
-.search-condition-row .vui_button--tab {
+.search-conditions.show {
+    transform: none;
+}
+
+/* 排序按钮 */
+.conditions-order .vui_button--tab {
     width: 33.3%;
     margin: 0 !important;
 }
@@ -55,31 +105,8 @@ ul.vui_tabs--nav>* {
 }
 
 /* 搜索框 */
-body .search-layout .search-header .search-input.search-input {
-    margin: 10px 0 0 !important;
-    padding: 0 5px;
-}
-
-/* 禁止搜索框 fixed */
-body .search-input .search-input-container .search-fixed-header {
-    min-width: 0 !important;
-    position: unset !important;
-    width: 100% !important;
-    margin: 0 !important;
-    height: 30px !important;
-}
-
-.search-input-wrap {
-    height: 30px !important;
-    border-radius: 15px !important;
-    padding: 0 !important;
-}
-
-.search-button {
-    height: 30px !important;
-    border-radius: 0 15px 15px 0 !important;
-    padding: 0 10px !important;
-    width: 80px !important;
+.search-input {
+    display: none;
 }
 
 /* 视频结果 */
@@ -159,12 +186,35 @@ span.vui_pagenation--extend {
 }
 
 /* 影视 */
-.media-item-col,
-.media-list .col_6 {
+.media-item-col {
     max-width: 100% !important;
     flex: none !important;
     margin-bottom: 10px !important;
     padding: 0 !important;
+}
+
+/* 用户 */
+.media-list .col_6 {
+    max-width: 100% !important;
+    flex: none !important;
+    margin-bottom: 10px !important;
+}
+
+/* 直播 */
+.live-user-cards .col_6 {
+    max-width: 100%;
+
+    .live-user-card {
+        margin-bottom: 10px !important;
+    }
+}
+
+/* 用户头像(用户, 直播) */
+.col_6 .bili-avatar {
+    height: 66px !important;
+    width: 66px !important;
+    margin-left: 10px;
+    margin-top: 10px;
 }
 
 .show-more-text {

@@ -12,7 +12,7 @@ body {
     bottom: 0;
     width: 100vw;
     height: var(--actionbar-height);
-    z-index: 1;
+    z-index: 2;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -32,14 +32,13 @@ body {
 
 #full-now,
 #sidebar-fab,
-#my-top,
-#refresh-fab {
+#refresh-fab,
+#show-more-fab {
     display: none;
 }
 
 #actionbar.home {
 
-    #my-top,
     #refresh-fab {
         display: block;
     }
@@ -51,6 +50,18 @@ body {
     #sidebar-fab {
         display: block;
     }
+
+    #my-top {
+        display: none;
+    }
+}
+
+#actionbar.search {
+
+    #show-more-fab {
+        display: block;
+    }
+    
 }
 
 #menu-fab {
@@ -67,6 +78,31 @@ body {
 #search-fab.active,
 #menu-fab.active {
     z-index: 10;
+}
+
+#show-more-fab {
+    transition: transform .4s ease-in;
+}
+
+#show-more-fab.reverse {
+    transform: rotate(180deg);
+}
+
+/*显示搜索文本 */
+#search-fab {
+    display: flex;
+    padding: 4px 8px;
+    max-width: 40%;
+}
+
+#search-fab svg {
+    flex: 0 0 24px;
+}
+
+#search-fab-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* 底部菜单内容 */

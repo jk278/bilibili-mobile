@@ -18,9 +18,13 @@
     background: unset !important;
 }
 
-/* 顶栏内容 */
-.bili-header__bar {
+/* 首页顶栏偏移 */
+.large-header .bili-header__bar {
     top: -64px !important;
+}
+
+.fixed-header .bili-header__bar {
+    position: absolute !important;
 }
 
 /* 搜索框 */
@@ -37,6 +41,11 @@
 
 .center-search-container.show {
     display: block;
+}
+
+/* 修复历史项点击时意外移除的问题 */
+.history-item .close {
+    display: none;
 }
 
 /* 移除顶部动图和临时静图 */

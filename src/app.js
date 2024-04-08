@@ -8,7 +8,7 @@ import './style/search.css'
 import './style/user.css'
 
 import { initViewport } from './init.js'
-import { preventBeforeUnload, increaseVideoLoadSize, scrollToHidden } from './window.js'
+import { preventBeforeUnload, increaseVideoLoadSize, handleScroll } from './window.js'
 import { handleScriptPreSetting, handleScriptSetting } from './setting.js'
 import { handleHeaderImage } from './header-image.js'
 import { videoInteraction } from './video.js'
@@ -43,8 +43,10 @@ import { handleActionbar, handleSidebar } from './actionbar.js'
         if (url.pathname.startsWith('/video')) {
           videoInteraction()
           handleSidebar()
+          handleScroll('video')
+        } else {
+          handleScroll()
         }
-        scrollToHidden()
       })
       break
     case 'search':
@@ -52,7 +54,7 @@ import { handleActionbar, handleSidebar } from './actionbar.js'
       waitDOMContentLoaded(() => {
         handleActionbar()
         handleScriptSetting()
-        scrollToHidden()
+        handleScroll('search')
       })
       break
     case 'space':
