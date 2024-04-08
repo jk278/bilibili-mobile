@@ -61,7 +61,7 @@
     /* space-evenly : 20px 为底栏图标高度的一半*/
     left: calc((200vw + 20px) / 3);
     background-color: white;
-    padding: 5px 0 !important;
+    padding: 5px 0;
     white-space: nowrap;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
     display: none;
@@ -73,7 +73,7 @@
 
     li {
         list-style-type: none;
-        padding: 5px 30px !important;
+        padding: 5px 30px;
         /* 视频页默认行高不同 */
         line-height: 20px !important;
     }

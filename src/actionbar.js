@@ -125,27 +125,6 @@ export function handleActionbar () {
 
   function setMenuBtn () {
     const menuFab = document.getElementById('menu-fab')
-    menuFab.addEventListener('click', () => {
-      const menu = document.getElementById('header-in-menu')
-      if (menu) {
-        menu.style.display = 'block'
-        setTimeout(() => {
-          menu.classList.add('show')
-          menu.style.display = ''
-        }, 0)
-        menuFab.style.zIndex = '1'
-        setTimeout(showRedNum, 400)
-      }
-    })
-
-    function showRedNum () {
-    // 显示消息数
-      const redNumStyle = Object.assign(document.createElement('style'), {
-        id: 'red-num-style',
-        textContent: '.red-num--message, .red-num--dynamic {display: block !important;}'
-      })
-      document.head.appendChild(redNumStyle)
-    }
 
     // headerInMenu
     const menuOverlay = Object.assign(document.createElement('div'), {
@@ -162,51 +141,55 @@ export function handleActionbar () {
     </div>
     `
     })
+    menuFab.appendChild(menuOverlay)
+    const menu = menuOverlay.querySelector('#header-in-menu')
 
-    addMenu()
-    function addMenu () {
-      if (document.querySelector('.header-avatar-wrap')) {
-        handleMenuItem()
-      } else {
-        setTimeout(addMenu, 500)
-      }
-    }
-
-    function handleMenuItem () {
-      menuFab.appendChild(menuOverlay)
-
-      const items = menuOverlay.querySelectorAll('li')
-      const header = document.querySelector('.bili-header__bar')
-      items.forEach(item => {
-        item.addEventListener('click', event => {
-          event.stopPropagation()
-          const refer = item.dataset.refer
-
-          const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-          if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
-
-          simulateMouseEnter(header.querySelector(refer))
-          sessionStorage.setItem('opened-dailog', refer)
+    menuFab.addEventListener('click', () => {
+      menu.style.display = 'block'
+      setTimeout(() => {
+        menu.classList.add('show')
+        menu.style.display = ''
+      }, 0)
+      menuFab.style.zIndex = '1'
+      setTimeout(() => { // 显示消息数
+        const redNumStyle = Object.assign(document.createElement('style'), {
+          id: 'red-num-style',
+          textContent: '.red-num--message, .red-num--dynamic {display: block !important;}'
         })
-      })
+        document.head.appendChild(redNumStyle)
+      }, 400)
+    })
 
-      const menu = menuOverlay.querySelector('#header-in-menu')
-      menuOverlay.addEventListener('click', event => {
+    const items = menuOverlay.querySelectorAll('li')
+    const header = document.querySelector('.bili-header__bar')
+    items.forEach(item => {
+      item.addEventListener('click', event => {
         event.stopPropagation()
+        const refer = item.dataset.refer
+
         const openedDailog = sessionStorage.getItem('opened-dailog') || ''
         if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
 
-        if (event.target !== menu) {
-          menu.style.display = 'block'
-          menu.classList.remove('show')
-          document.head.querySelector('#red-num-style').remove()
-          setTimeout(() => {
-            menu.style.display = ''
-            menuFab.style.zIndex = ''
-          }, 400)
-        }
+        simulateMouseEnter(header.querySelector(refer))
+        sessionStorage.setItem('opened-dailog', refer)
       })
-    }
+    })
+
+    menuOverlay.addEventListener('click', event => {
+      event.stopPropagation()
+      const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+      if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
+
+      if (event.target !== menu) {
+        menu.style.display = 'block'
+        menu.classList.remove('show')
+        document.head.querySelector('#red-num-style').remove()
+        setTimeout(() => {
+          menu.style.display = ''
+          menuFab.style.zIndex = ''
+        }, 400)
+      }
+    })
 
     function simulateMouseEnter (element) {
       const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })

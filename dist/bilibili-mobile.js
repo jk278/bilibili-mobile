@@ -2,9 +2,9 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.0-beta.6
+// @version            4.0-beta.7
 // @description        view bilibili pc page on mobile phone
-// @description:zh-CN  在 Via 与 Safari 打开电脑模式，获取舒适的移动端体验。
+// @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
 // @license            MIT
 // @match              https://*.bilibili.com/*
@@ -392,7 +392,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     /* space-evenly : 20px 为底栏图标高度的一半*/
     left: calc((200vw + 20px) / 3);
     background-color: white;
-    padding: 5px 0 !important;
+    padding: 5px 0;
     white-space: nowrap;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
     display: none;
@@ -404,7 +404,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 
     li {
         list-style-type: none;
-        padding: 5px 30px !important;
+        padding: 5px 30px;
         /* 视频页默认行高不同 */
         line-height: 20px !important;
     }
@@ -2482,30 +2482,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   initViewport: () => (/* binding */ initViewport)
 /* harmony export */ });
 function initViewport () {
-  if (document.head) {
-    function addViewportMeta () {
-      const viewport = document.createElement('meta')
-      viewport.setAttribute('name', 'viewport')
-      viewport.setAttribute('content', 'width=device-width, initial-scale=1.0')
-      document.head.appendChild(viewport)
-    }
-
-    addViewportMeta()
-
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.removedNodes.forEach((node) => {
-          if (node.nodeName === 'META' && node.getAttribute('name') === 'viewport') {
-            addViewportMeta()
-          }
-        })
-      })
-    })
-
-    observer.observe(document.head, {
-      childList: true
-    })
-  }
+  const viewport = Object.assign(document.createElement('meta'), {
+    name: 'viewport',
+    content: 'width=device-width, initial-scale=1.0'
+  })
+  document.head.appendChild(viewport)
 }
 
 
@@ -3098,27 +3079,6 @@ function handleActionbar () {
 
   function setMenuBtn () {
     const menuFab = document.getElementById('menu-fab')
-    menuFab.addEventListener('click', () => {
-      const menu = document.getElementById('header-in-menu')
-      if (menu) {
-        menu.style.display = 'block'
-        setTimeout(() => {
-          menu.classList.add('show')
-          menu.style.display = ''
-        }, 0)
-        menuFab.style.zIndex = '1'
-        setTimeout(showRedNum, 400)
-      }
-    })
-
-    function showRedNum () {
-    // 显示消息数
-      const redNumStyle = Object.assign(document.createElement('style'), {
-        id: 'red-num-style',
-        textContent: '.red-num--message, .red-num--dynamic {display: block !important;}'
-      })
-      document.head.appendChild(redNumStyle)
-    }
 
     // headerInMenu
     const menuOverlay = Object.assign(document.createElement('div'), {
@@ -3135,51 +3095,55 @@ function handleActionbar () {
     </div>
     `
     })
+    menuFab.appendChild(menuOverlay)
+    const menu = menuOverlay.querySelector('#header-in-menu')
 
-    addMenu()
-    function addMenu () {
-      if (document.querySelector('.header-avatar-wrap')) {
-        handleMenuItem()
-      } else {
-        setTimeout(addMenu, 500)
-      }
-    }
-
-    function handleMenuItem () {
-      menuFab.appendChild(menuOverlay)
-
-      const items = menuOverlay.querySelectorAll('li')
-      const header = document.querySelector('.bili-header__bar')
-      items.forEach(item => {
-        item.addEventListener('click', event => {
-          event.stopPropagation()
-          const refer = item.dataset.refer
-
-          const openedDailog = sessionStorage.getItem('opened-dailog') || ''
-          if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
-
-          simulateMouseEnter(header.querySelector(refer))
-          sessionStorage.setItem('opened-dailog', refer)
+    menuFab.addEventListener('click', () => {
+      menu.style.display = 'block'
+      setTimeout(() => {
+        menu.classList.add('show')
+        menu.style.display = ''
+      }, 0)
+      menuFab.style.zIndex = '1'
+      setTimeout(() => { // 显示消息数
+        const redNumStyle = Object.assign(document.createElement('style'), {
+          id: 'red-num-style',
+          textContent: '.red-num--message, .red-num--dynamic {display: block !important;}'
         })
-      })
+        document.head.appendChild(redNumStyle)
+      }, 400)
+    })
 
-      const menu = menuOverlay.querySelector('#header-in-menu')
-      menuOverlay.addEventListener('click', event => {
+    const items = menuOverlay.querySelectorAll('li')
+    const header = document.querySelector('.bili-header__bar')
+    items.forEach(item => {
+      item.addEventListener('click', event => {
         event.stopPropagation()
+        const refer = item.dataset.refer
+
         const openedDailog = sessionStorage.getItem('opened-dailog') || ''
         if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
 
-        if (event.target !== menu) {
-          menu.style.display = 'block'
-          menu.classList.remove('show')
-          document.head.querySelector('#red-num-style').remove()
-          setTimeout(() => {
-            menu.style.display = ''
-            menuFab.style.zIndex = ''
-          }, 400)
-        }
+        simulateMouseEnter(header.querySelector(refer))
+        sessionStorage.setItem('opened-dailog', refer)
       })
-    }
+    })
+
+    menuOverlay.addEventListener('click', event => {
+      event.stopPropagation()
+      const openedDailog = sessionStorage.getItem('opened-dailog') || ''
+      if (openedDailog) simulateMouseLeave(header.querySelector(openedDailog))
+
+      if (event.target !== menu) {
+        menu.style.display = 'block'
+        menu.classList.remove('show')
+        document.head.querySelector('#red-num-style').remove()
+        setTimeout(() => {
+          menu.style.display = ''
+          menuFab.style.zIndex = ''
+        }, 400)
+      }
+    })
 
     function simulateMouseEnter (element) {
       const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
