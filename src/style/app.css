@@ -92,9 +92,10 @@ body {
     }
 }
 
-/* 有的用户 padding 不生效 */
+/* 有的用户这俩不生效 */
 body #header-in-menu li {
     padding: 5px 30px !important;
+    line-height: 20px !important;
 }
 
 #header-in-menu.show {

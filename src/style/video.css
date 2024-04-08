@@ -547,14 +547,6 @@
 }
 
 /* 简介 */
-#v_desc {
-    visibility: hidden;
-}
-
-#v_desc:has(.toggle-btn) {
-    visibility: visible;
-}
-
 #v_desc .toggle-btn {
     text-align: right;
     margin-right: 7px;

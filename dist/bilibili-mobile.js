@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.0.1
+// @version            4.0.2
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -423,9 +423,10 @@ body {
     }
 }
 
-/* 有的用户 padding 不生效 */
+/* 有的用户这俩不生效 */
 body #header-in-menu li {
     padding: 5px 30px !important;
+    line-height: 20px !important;
 }
 
 #header-in-menu.show {
@@ -1754,14 +1755,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 }
 
 /* 简介 */
-#v_desc {
-    visibility: hidden;
-}
-
-#v_desc:has(.toggle-btn) {
-    visibility: visible;
-}
-
 #v_desc .toggle-btn {
     text-align: right;
     margin-right: 7px;
