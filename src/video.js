@@ -30,32 +30,36 @@ function handlePortrait () {
 
     const rightContainer = document.querySelector('.right-container')
     rightContainer.style.height = `calc(100% - ${newHeight}vw)`
+
+    portraitVideoDblclick()
   } else {
     playerWrap.style.display = 'block'
     videoContainer.style.display = 'flex'
   }
 
   // video dblclick
-  const videoArea = document.querySelector('.bpx-player-video-area')
-  const videoPerch = document.querySelector('.bpx-player-video-perch')
-  const videoWrap = document.querySelector('.bpx-player-video-wrap')
-  const video = videoWrap.querySelector('video')
+  function portraitVideoDblclick () {
+    const videoArea = document.querySelector('.bpx-player-video-area')
+    const videoPerch = document.querySelector('.bpx-player-video-perch')
+    const videoWrap = document.querySelector('.bpx-player-video-wrap')
+    const video = videoWrap.querySelector('video')
 
-  videoArea.insertBefore(videoWrap, videoPerch)
-  videoPerch.remove()
+    videoArea.insertBefore(videoWrap, videoPerch)
+    videoPerch.remove()
 
-  let clickTimer = null
-  videoWrap.addEventListener('click', () => {
-    clearTimeout(clickTimer)
-    clickTimer = setTimeout(() => {
-      video.paused ? video.play() : video.pause()
-    }, 300)
-  })
+    let clickTimer = null
+    videoWrap.addEventListener('click', () => {
+      clearTimeout(clickTimer)
+      clickTimer = setTimeout(() => {
+        video.paused ? video.play() : video.pause()
+      }, 300)
+    })
 
-  videoWrap.addEventListener('dblclick', () => {
-    clearTimeout(clickTimer)
-    document.querySelector('.bpx-player-ctrl-web').click()
-  })
+    videoWrap.addEventListener('dblclick', () => {
+      clearTimeout(clickTimer)
+      document.querySelector('.bpx-player-ctrl-web').click()
+    })
+  }
 }
 
 function closeMiniPlayer () {

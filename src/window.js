@@ -98,10 +98,11 @@ function scrollToToggleSidebar () {
 
     if (Math.abs(distanceX) > touchXThreshold) {
       const videoContainer = document.querySelector('#mirror-vdcon')
-      if (distanceX > touchXThreshold && videoContainer.hasAttribute('sidebar')) {
-        videoContainer.removeAttribute('sidebar')
-      } else if (!videoContainer.hasAttribute('sidebar')) {
-        videoContainer.setAttribute('sidebar', '')
+      const isSidebarShown = videoContainer.hasAttribute('sidebar')
+      if (distanceX > 0) {
+        isSidebarShown && videoContainer.removeAttribute('sidebar')
+      } else {
+        !isSidebarShown && videoContainer.setAttribute('sidebar', '')
       }
     }
   }

@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.3
+// @version            4.3.3
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -744,7 +744,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
    ------------------------ 顶栏 ----------------------- 
    -------------------------------------------------- */
 
-/* #i_cecream 属首页，#app #biliMainHeader 属视频页 */
+/* #i_cecream 属首页和搜索页，#app #biliMainHeader 属视频页 */
 
 /* 顶栏外框: translate 会生成新的堆叠上下文，导致 position:fixed 的消息数不可显示 */
 #biliMainHeader,
@@ -2645,7 +2645,7 @@ function initViewport () {
   const style = Object.assign(document.createElement('style'), {
     textContent: 'body {display:block !important;}'
   })
-  document.head.appendChild(style)
+  setTimeout(() => { document.head.appendChild(style) }, 10)
 }
 
 
@@ -2759,10 +2759,11 @@ function scrollToToggleSidebar () {
 
     if (Math.abs(distanceX) > touchXThreshold) {
       const videoContainer = document.querySelector('#mirror-vdcon')
-      if (distanceX > touchXThreshold && videoContainer.hasAttribute('sidebar')) {
-        videoContainer.removeAttribute('sidebar')
-      } else if (!videoContainer.hasAttribute('sidebar')) {
-        videoContainer.setAttribute('sidebar', '')
+      const isSidebarShown = videoContainer.hasAttribute('sidebar')
+      if (distanceX > 0) {
+        isSidebarShown && videoContainer.removeAttribute('sidebar')
+      } else {
+        !isSidebarShown && videoContainer.setAttribute('sidebar', '')
       }
     }
   }
@@ -3114,32 +3115,36 @@ function handlePortrait () {
 
     const rightContainer = document.querySelector('.right-container')
     rightContainer.style.height = `calc(100% - ${newHeight}vw)`
+
+    portraitVideoDblclick()
   } else {
     playerWrap.style.display = 'block'
     videoContainer.style.display = 'flex'
   }
 
   // video dblclick
-  const videoArea = document.querySelector('.bpx-player-video-area')
-  const videoPerch = document.querySelector('.bpx-player-video-perch')
-  const videoWrap = document.querySelector('.bpx-player-video-wrap')
-  const video = videoWrap.querySelector('video')
+  function portraitVideoDblclick () {
+    const videoArea = document.querySelector('.bpx-player-video-area')
+    const videoPerch = document.querySelector('.bpx-player-video-perch')
+    const videoWrap = document.querySelector('.bpx-player-video-wrap')
+    const video = videoWrap.querySelector('video')
 
-  videoArea.insertBefore(videoWrap, videoPerch)
-  videoPerch.remove()
+    videoArea.insertBefore(videoWrap, videoPerch)
+    videoPerch.remove()
 
-  let clickTimer = null
-  videoWrap.addEventListener('click', () => {
-    clearTimeout(clickTimer)
-    clickTimer = setTimeout(() => {
-      video.paused ? video.play() : video.pause()
-    }, 300)
-  })
+    let clickTimer = null
+    videoWrap.addEventListener('click', () => {
+      clearTimeout(clickTimer)
+      clickTimer = setTimeout(() => {
+        video.paused ? video.play() : video.pause()
+      }, 300)
+    })
 
-  videoWrap.addEventListener('dblclick', () => {
-    clearTimeout(clickTimer)
-    document.querySelector('.bpx-player-ctrl-web').click()
-  })
+    videoWrap.addEventListener('dblclick', () => {
+      clearTimeout(clickTimer)
+      document.querySelector('.bpx-player-ctrl-web').click()
+    })
+  }
 }
 
 function closeMiniPlayer () {
