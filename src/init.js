@@ -9,5 +9,5 @@ export function initViewport () {
   const style = Object.assign(document.createElement('style'), {
     textContent: 'body {display:block !important;}'
   })
-  document.head.appendChild(style)
+  setTimeout(() => { document.head.appendChild(style) }, 10)
 }
