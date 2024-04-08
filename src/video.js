@@ -12,22 +12,28 @@ function dynamicHeight () {
   const style = window.getComputedStyle(player)
   const width = style.getPropertyValue('width')
   const height = style.getPropertyValue('height')
-  // 减去弹幕行初始高度
-  const newHeight = (parseInt(height) - 46) / parseInt(width) * 100
-  player.style.cssText = `width:100vw; height:${newHeight}vw;`
+  const aspectRatio = (parseInt(height) - 46) / parseInt(width)
 
   const playerWrap = document.querySelector('#playerWrap')
-  playerWrap.style.cssText = `height:${newHeight}vw; display:block`
-
-  // querySelector 在元素加载后使用才能获取到
   const videoContainer = document.querySelector('#mirror-vdcon')
-  // 相对布局加top会导致底部显示不全，从顶部下滑时top还会清零一次
-  videoContainer.style.cssText = `margin-top:${newHeight}vw; display:flex`
+  if (aspectRatio > 1) {
+    // 减去弹幕行初始高度
+    const newHeight = aspectRatio * 100
+    player.style.height = `${newHeight}vw !important`
 
-  const rightContainer = document.querySelector('.right-container')
-  rightContainer.style.height = `calc(100% - ${newHeight}vw)`
+    playerWrap.style.cssText = `height:${newHeight}vw !important; display:block;`
 
-  // getElement 提前使用在元素加载后能获取到
+    // 相对布局加top会导致底部显示不全，从顶部下滑时top还会清零一次
+    videoContainer.style.cssText = `margin-top:${newHeight}vw; display:flex`
+
+    const rightContainer = document.querySelector('.right-container')
+    rightContainer.style.height = `calc(100% - ${newHeight}vw)`
+  } else {
+    playerWrap.style.display = 'block'
+    videoContainer.style.display = 'flex'
+  }
+
+  // 关闭小窗: getElement 提前使用在元素加载后能获取到, querySelector 在元素加载后使用才能获取到
   const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
   new MutationObserver(mutations => {
     mutations.forEach(mutation => {
