@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.3.5
+// @version            4.3.7
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -348,7 +348,7 @@ body {
     justify-content: space-evenly;
     align-items: center;
     background: inherit;
-    box-shadow: 0 0 2px rgba(0, 0, 0, .3);
+    box-shadow: 0 0 3px rgba(0, 0, 0, .3);
     transition: .5s transform ease-in;
 }
 
@@ -522,8 +522,8 @@ body #header-in-menu li {
 }
 
 .setting-title {
+    margin: 0 5px 5px;
     padding-bottom: 5px;
-    margin: 0 5px;
     border-bottom: 1px solid var(--line_regular);
     text-align: center;
     color: var(--Ga7);
@@ -563,10 +563,10 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .setting-conform {
-    margin: 2px 5px;
-    border-radius: 15px;
+    margin: 8px 5px 3px;
+    height: 28px;
+    border-radius: 14px;
     border: 1px solid var(--line_regular);
-    padding: 2px;
     background-color: var(--graph_bg_thin) !important;
 }`, ""]);
 // Exports
@@ -1025,7 +1025,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 body {
     /* 避免评论未加载时显示灰色 */
     background: white !important;
-    display: none;
 
     --actionbar-height: 46px;
 }
@@ -1410,6 +1409,10 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 #bilibili-player.mode-webscreen {
     width: 100% !important;
     height: 100% !important;
+}
+
+.bpx-player-container {
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* 小窗时的隐藏 - 始终隐藏*/
@@ -2637,15 +2640,9 @@ __webpack_require__.r(__webpack_exports__);
 function initViewport () {
   const viewport = Object.assign(document.createElement('meta'), {
     name: 'viewport',
-    content: 'width=device-width, initial-scale=1.0'
+    content: 'width=device-width, initial-scale=1'
   })
   document.head.appendChild(viewport)
-
-  // body、video、leftContainer 皆为样式修改后再显示
-  const style = Object.assign(document.createElement('style'), {
-    textContent: 'body {display:block !important;}'
-  })
-  setTimeout(() => { document.head.appendChild(style) }, 10)
 }
 
 
@@ -2883,13 +2880,10 @@ function handleScriptPreSetting () {
           <label><input type="checkbox"><span>视频色彩音效调节</span></label>
           <label><input type="checkbox"><span>页脚导航链接</span></label>
         </div>
+        <button id="setting-conform-1" class="setting-conform">确认</button>
         `
     })
-
-    const settingConform = Object.assign(document.createElement('button'), {
-      className: 'setting-conform',
-      textContent: '确认'
-    })
+    document.body.appendChild(settingPanel)
 
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     const oldValues = GM_getValue('settingShowHidden', defaultValue)
@@ -2897,7 +2891,7 @@ function handleScriptPreSetting () {
       element.checked = oldValues[index]
     }
 
-    settingConform.addEventListener('click', () => {
+    settingPanel.querySelector('#setting-conform-1').addEventListener('click', () => {
       const oldValues = GM_getValue('settingShowHidden', defaultValue)
       const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
 
@@ -2908,9 +2902,6 @@ function handleScriptPreSetting () {
 
       settingPanel.classList.remove('show')
     })
-
-    settingPanel.appendChild(settingConform)
-    document.body.appendChild(settingPanel)
   }
 }
 
@@ -2921,6 +2912,8 @@ function handleScriptSetting () {
     key2: 'ban-action-hidden',
     key3: 'custom-longpress-speed'
   }
+
+  const speedIndex = 2
 
   if (GM_getValue('ban-action-hidden', false) === true) {
     banActionHidden()
@@ -2937,15 +2930,13 @@ function handleScriptSetting () {
         }
       `
     })
-    ensureHeadGetted(style)
+    document.head.appendChild(style)
   }
 
-  waitDOMContentLoaded(() => {
-    createSettingPanel()
+  createSettingPanel()
 
-    GM_registerMenuCommand('操作偏好设置', () => {
-      document.getElementById('setting-panel-preference').classList.add('show')
-    })
+  GM_registerMenuCommand('操作偏好设置', () => {
+    document.getElementById('setting-panel-preference').classList.add('show')
   })
 
   function createSettingPanel () {
@@ -2959,15 +2950,10 @@ function handleScriptSetting () {
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
           <label><input type="number" value="2"><span>自定义视频长按倍速</span></label>
         </div>
+        <button id="setting-conform-2" class="setting-conform">确认</button>
         `
     })
-
-    const settingConform = Object.assign(document.createElement('button'), {
-      className: 'setting-conform',
-      textContent: '确认'
-    })
-
-    const speedIndex = 2
+    document.body.appendChild(settingPanel)
 
     const values = Object.values(keyValue) // 返回 [v1, v2]
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
@@ -2978,7 +2964,7 @@ function handleScriptSetting () {
     }
     settingPanel.querySelector('input[type="number"]').value = GM_getValue(values[speedIndex], 2)
 
-    settingConform.addEventListener('click', () => {
+    settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
       const isBanActionHidden = GM_getValue('ban-action-hidden', false)
 
       for (const [index, value] of values.entries()) {
@@ -2987,20 +2973,13 @@ function handleScriptSetting () {
         }
       }
       GM_setValue(values[speedIndex], Number(settingPanel.querySelector('input[type="number"]').value))
+
       settingPanel.classList.remove('show')
 
-      const newIsBanActionHidden = GM_getValue('ban-action-hidden', false)
-      if (newIsBanActionHidden !== isBanActionHidden) {
-        if (newIsBanActionHidden) {
-          banActionHidden()
-        } else {
-          document.getElementById('ban-action-hidden').remove()
-        }
+      if (GM_getValue('ban-action-hidden', false) !== isBanActionHidden) {
+        isBanActionHidden ? document.getElementById('ban-action-hidden').remove() : banActionHidden()
       }
     })
-
-    settingPanel.appendChild(settingConform)
-    document.body.appendChild(settingPanel)
   }
 }
 
@@ -3204,7 +3183,9 @@ function handleVideoLongPress () {
   let timeoutId
   let times
 
-  video.addEventListener('touchstart', () => {
+  video.addEventListener('touchstart', event => {
+    // 阻止冒泡只对当前监听器生效，禁止全屏滑动触发侧边栏
+    event.stopPropagation()
     // eslint-disable-next-line no-undef
     times = GM_getValue('custom-longpress-speed', 2)
     timeoutId = setTimeout(() => {
@@ -3217,7 +3198,8 @@ function handleVideoLongPress () {
     clearTimeout(timeoutId)
   })
 
-  video.addEventListener('touchend', () => {
+  video.addEventListener('touchend', event => {
+    event.stopPropagation()
     clearTimeout(timeoutId)
 
     if (isLongPress) {
@@ -3648,19 +3630,18 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (function () {
-  console.log('Bilibili mobile execute!')
-  // setInterval(() => {
-  //   console.log(undefined)
-  // }, 100)
+  // setInterval(() => { debugger }, 100)
 
   function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
+
+  (0,_init_js__WEBPACK_IMPORTED_MODULE_6__.initViewport)()
+  ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.preventBeforeUnload)()
+
+  console.log('Bilibili mobile execute!')
 
   const url = window.location
   // 简单表达式: 常量折叠，解析引擎优化为只计算一次，然后缓存入临时变量。函数调用、对象属性访问等不适用。
   const part = url.hostname.substring(0, url.hostname.indexOf('.'))
-
-  ;(0,_init_js__WEBPACK_IMPORTED_MODULE_6__.initViewport)()
-  ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.preventBeforeUnload)()
 
   switch (part) {
     case 'www':

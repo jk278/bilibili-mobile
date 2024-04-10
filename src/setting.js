@@ -86,13 +86,10 @@ export function handleScriptPreSetting () {
           <label><input type="checkbox"><span>视频色彩音效调节</span></label>
           <label><input type="checkbox"><span>页脚导航链接</span></label>
         </div>
+        <button id="setting-conform-1" class="setting-conform">确认</button>
         `
     })
-
-    const settingConform = Object.assign(document.createElement('button'), {
-      className: 'setting-conform',
-      textContent: '确认'
-    })
+    document.body.appendChild(settingPanel)
 
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     const oldValues = GM_getValue('settingShowHidden', defaultValue)
@@ -100,7 +97,7 @@ export function handleScriptPreSetting () {
       element.checked = oldValues[index]
     }
 
-    settingConform.addEventListener('click', () => {
+    settingPanel.querySelector('#setting-conform-1').addEventListener('click', () => {
       const oldValues = GM_getValue('settingShowHidden', defaultValue)
       const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
 
@@ -111,9 +108,6 @@ export function handleScriptPreSetting () {
 
       settingPanel.classList.remove('show')
     })
-
-    settingPanel.appendChild(settingConform)
-    document.body.appendChild(settingPanel)
   }
 }
 
@@ -124,6 +118,8 @@ export function handleScriptSetting () {
     key2: 'ban-action-hidden',
     key3: 'custom-longpress-speed'
   }
+
+  const speedIndex = 2
 
   if (GM_getValue('ban-action-hidden', false) === true) {
     banActionHidden()
@@ -140,15 +136,13 @@ export function handleScriptSetting () {
         }
       `
     })
-    ensureHeadGetted(style)
+    document.head.appendChild(style)
   }
 
-  waitDOMContentLoaded(() => {
-    createSettingPanel()
+  createSettingPanel()
 
-    GM_registerMenuCommand('操作偏好设置', () => {
-      document.getElementById('setting-panel-preference').classList.add('show')
-    })
+  GM_registerMenuCommand('操作偏好设置', () => {
+    document.getElementById('setting-panel-preference').classList.add('show')
   })
 
   function createSettingPanel () {
@@ -162,15 +156,10 @@ export function handleScriptSetting () {
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
           <label><input type="number" value="2"><span>自定义视频长按倍速</span></label>
         </div>
+        <button id="setting-conform-2" class="setting-conform">确认</button>
         `
     })
-
-    const settingConform = Object.assign(document.createElement('button'), {
-      className: 'setting-conform',
-      textContent: '确认'
-    })
-
-    const speedIndex = 2
+    document.body.appendChild(settingPanel)
 
     const values = Object.values(keyValue) // 返回 [v1, v2]
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
@@ -181,7 +170,7 @@ export function handleScriptSetting () {
     }
     settingPanel.querySelector('input[type="number"]').value = GM_getValue(values[speedIndex], 2)
 
-    settingConform.addEventListener('click', () => {
+    settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
       const isBanActionHidden = GM_getValue('ban-action-hidden', false)
 
       for (const [index, value] of values.entries()) {
@@ -190,19 +179,12 @@ export function handleScriptSetting () {
         }
       }
       GM_setValue(values[speedIndex], Number(settingPanel.querySelector('input[type="number"]').value))
+
       settingPanel.classList.remove('show')
 
-      const newIsBanActionHidden = GM_getValue('ban-action-hidden', false)
-      if (newIsBanActionHidden !== isBanActionHidden) {
-        if (newIsBanActionHidden) {
-          banActionHidden()
-        } else {
-          document.getElementById('ban-action-hidden').remove()
-        }
+      if (GM_getValue('ban-action-hidden', false) !== isBanActionHidden) {
+        isBanActionHidden ? document.getElementById('ban-action-hidden').remove() : banActionHidden()
       }
     })
-
-    settingPanel.appendChild(settingConform)
-    document.body.appendChild(settingPanel)
   }
 }

@@ -16,19 +16,18 @@ import { videoInteraction } from './video.js'
 import { handleActionbar, handleSidebar } from './actionbar.js'
 
 (function () {
-  console.log('Bilibili mobile execute!')
-  // setInterval(() => {
-  //   console.log(undefined)
-  // }, 100)
+  // setInterval(() => { debugger }, 100)
 
   function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
+
+  initViewport()
+  preventBeforeUnload()
+
+  console.log('Bilibili mobile execute!')
 
   const url = window.location
   // 简单表达式: 常量折叠，解析引擎优化为只计算一次，然后缓存入临时变量。函数调用、对象属性访问等不适用。
   const part = url.hostname.substring(0, url.hostname.indexOf('.'))
-
-  initViewport()
-  preventBeforeUnload()
 
   switch (part) {
     case 'www':

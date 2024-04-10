@@ -17,7 +17,7 @@ body {
     justify-content: space-evenly;
     align-items: center;
     background: inherit;
-    box-shadow: 0 0 2px rgba(0, 0, 0, .3);
+    box-shadow: 0 0 3px rgba(0, 0, 0, .3);
     transition: .5s transform ease-in;
 }
 
@@ -191,8 +191,8 @@ body #header-in-menu li {
 }
 
 .setting-title {
+    margin: 0 5px 5px;
     padding-bottom: 5px;
-    margin: 0 5px;
     border-bottom: 1px solid var(--line_regular);
     text-align: center;
     color: var(--Ga7);
@@ -232,9 +232,9 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .setting-conform {
-    margin: 2px 5px;
-    border-radius: 15px;
+    margin: 8px 5px 3px;
+    height: 28px;
+    border-radius: 14px;
     border: 1px solid var(--line_regular);
-    padding: 2px;
     background-color: var(--graph_bg_thin) !important;
 }

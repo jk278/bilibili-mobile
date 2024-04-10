@@ -5,7 +5,6 @@
 body {
     /* 避免评论未加载时显示灰色 */
     background: white !important;
-    display: none;
 
     --actionbar-height: 46px;
 }

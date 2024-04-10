@@ -107,7 +107,9 @@ function handleVideoLongPress () {
   let timeoutId
   let times
 
-  video.addEventListener('touchstart', () => {
+  video.addEventListener('touchstart', event => {
+    // 阻止冒泡只对当前监听器生效，禁止全屏滑动触发侧边栏
+    event.stopPropagation()
     // eslint-disable-next-line no-undef
     times = GM_getValue('custom-longpress-speed', 2)
     timeoutId = setTimeout(() => {
@@ -120,7 +122,8 @@ function handleVideoLongPress () {
     clearTimeout(timeoutId)
   })
 
-  video.addEventListener('touchend', () => {
+  video.addEventListener('touchend', event => {
+    event.stopPropagation()
     clearTimeout(timeoutId)
 
     if (isLongPress) {
