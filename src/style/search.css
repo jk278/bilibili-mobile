@@ -4,6 +4,8 @@
 
 #i_cecream {
     min-width: 0 !important;
+    /* 空内容填充高度 */
+    min-height: calc(100vh - var(--actionbar-height)) !important;
 }
 
 /* 分类和另几个包含块 */

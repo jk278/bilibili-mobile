@@ -9,33 +9,19 @@ export function videoInteraction () {
 }
 
 function handlePortrait () {
-  // dynamic height
-  const player = document.querySelector('#bilibili-player')
-  const style = window.getComputedStyle(player)
-  const width = style.getPropertyValue('width')
-  const height = style.getPropertyValue('height')
-  const aspectRatio = (parseInt(height) - 46) / parseInt(width)
+  const video = document.querySelector('#bilibili-player video')
 
-  const playerWrap = document.querySelector('#playerWrap')
-  const videoContainer = document.querySelector('#mirror-vdcon')
-  if (aspectRatio > 1) {
-    // 减去弹幕行初始高度
-    const newHeight = aspectRatio * 100
-    player.style.height = `${newHeight}vw !important`
-
-    playerWrap.style.cssText = `height:${newHeight}vw !important; display:block;`
-
-    // 相对布局加top会导致底部显示不全，从顶部下滑时top还会清零一次
-    videoContainer.style.cssText = `margin-top:${newHeight}vw; display:flex`
-
-    const rightContainer = document.querySelector('.right-container')
-    rightContainer.style.height = `calc(100% - ${newHeight}vw)`
-
-    portraitVideoDblclick()
-  } else {
-    playerWrap.style.display = 'block'
-    videoContainer.style.display = 'flex'
+  function handleResize () {
+    const height = video.videoHeight
+    if (height !== 0) {
+      const width = video.videoWidth
+      const aspectRatio = height / width
+      if (aspectRatio > 1) {
+        portraitVideoDblclick()
+      }
+    }
   }
+  video.addEventListener('resize', handleResize)
 
   // video dblclick
   function portraitVideoDblclick () {

@@ -25,7 +25,10 @@ export function increaseVideoLoadSize () {
  * @param {string} page - 简短描述页面的字符串: search, video
  */
 export function handleScroll (page) {
-  scrollToHidden()
+  // eslint-disable-next-line no-undef
+  if (GM_getValue('settingShowHidden', [])[0] === false || GM_getValue('ban-action-hidden', false) === false) {
+    scrollToHidden()
+  }
 
   if (page === 'search') {
     scrollToClick()
@@ -58,46 +61,56 @@ function scrollToHidden () {
 function scrollToClick () {
   let startX = 0
   let endX = 0
+  let startY = 0
+  let endY = 0
   let clickIndex = 3
-  const touchXThreshold = 50
+  const touchXThreshold = 55
 
   const handleTouchStart = event => {
     startX = event.changedTouches[0].clientX
+    startY = event.changedTouches[0].clientY
   }
 
   const handleTouchEnd = event => {
     endX = event.changedTouches[0].clientX
+    endY = event.changedTouches[0].clientY
 
     const distanceX = endX - startX
+    const distanceY = endY - startY
 
     const navItems = [4, 3, 2, 1, 7, 6, 5]
-    if (Math.abs(distanceX) > touchXThreshold) {
-      distanceX > touchXThreshold ? clickIndex-- : clickIndex++
+    if (Math.abs(distanceX) > touchXThreshold && Math.abs(distanceY) < 1 / 2 * Math.abs(distanceX)) {
+      distanceX > 0 ? clickIndex-- : clickIndex++
       document.querySelector(`.vui_tabs--nav-item:nth-child(${navItems[clickIndex]})`).click()
     }
   }
 
-  const searchContent = document.querySelector('.search-content')
-  searchContent.addEventListener('touchstart', handleTouchStart)
-  searchContent.addEventListener('touchend', handleTouchEnd)
+  const container = document.querySelector('#i_cecream')
+  container.addEventListener('touchstart', handleTouchStart)
+  container.addEventListener('touchend', handleTouchEnd)
 }
 
 function scrollToToggleSidebar () {
   let startX = 0
   let endX = 0
-  const touchXThreshold = 50
+  let startY = 0
+  let endY = 0
+  const touchXThreshold = 55
+  const videoContainer = document.querySelector('#mirror-vdcon')
 
   const handleTouchStart = event => {
     startX = event.changedTouches[0].clientX
+    startY = event.changedTouches[0].clientY
   }
 
   const handleTouchEnd = event => {
     endX = event.changedTouches[0].clientX
+    endY = event.changedTouches[0].clientY
 
     const distanceX = endX - startX
+    const distanceY = endY - startY
 
-    if (Math.abs(distanceX) > touchXThreshold) {
-      const videoContainer = document.querySelector('#mirror-vdcon')
+    if (Math.abs(distanceX) > touchXThreshold && Math.abs(distanceY) < 1 / 2 * Math.abs(distanceX)) {
       const isSidebarShown = videoContainer.hasAttribute('sidebar')
       if (distanceX > 0) {
         isSidebarShown && videoContainer.removeAttribute('sidebar')
@@ -107,7 +120,6 @@ function scrollToToggleSidebar () {
     }
   }
 
-  const videoContainer = document.querySelector('#mirror-vdcon')
   videoContainer.addEventListener('touchstart', handleTouchStart)
   videoContainer.addEventListener('touchend', handleTouchEnd)
 }

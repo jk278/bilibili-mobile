@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.3.3
+// @version            4.3.5
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -348,7 +348,7 @@ body {
     justify-content: space-evenly;
     align-items: center;
     background: inherit;
-    box-shadow: 0 0 3px rgba(0, 0, 0, .5);
+    box-shadow: 0 0 2px rgba(0, 0, 0, .3);
     transition: .5s transform ease-in;
 }
 
@@ -1272,7 +1272,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     min-width: 0 !important;
     padding: 0;
     top: 0;
-    display: none;
 
     margin-top: 56.25vw;
 }
@@ -1398,7 +1397,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     z-index: 61;
     top: 0;
     left: 0;
-    display: none;
 
     height: 56.25vw !important;
 }
@@ -2136,6 +2134,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 
 #i_cecream {
     min-width: 0 !important;
+    /* 空内容填充高度 */
+    min-height: calc(100vh - var(--actionbar-height)) !important;
 }
 
 /* 分类和另几个包含块 */
@@ -2686,7 +2686,10 @@ function increaseVideoLoadSize () {
  * @param {string} page - 简短描述页面的字符串: search, video
  */
 function handleScroll (page) {
-  scrollToHidden()
+  // eslint-disable-next-line no-undef
+  if (GM_getValue('settingShowHidden', [])[0] === false || GM_getValue('ban-action-hidden', false) === false) {
+    scrollToHidden()
+  }
 
   if (page === 'search') {
     scrollToClick()
@@ -2719,46 +2722,56 @@ function scrollToHidden () {
 function scrollToClick () {
   let startX = 0
   let endX = 0
+  let startY = 0
+  let endY = 0
   let clickIndex = 3
-  const touchXThreshold = 50
+  const touchXThreshold = 55
 
   const handleTouchStart = event => {
     startX = event.changedTouches[0].clientX
+    startY = event.changedTouches[0].clientY
   }
 
   const handleTouchEnd = event => {
     endX = event.changedTouches[0].clientX
+    endY = event.changedTouches[0].clientY
 
     const distanceX = endX - startX
+    const distanceY = endY - startY
 
     const navItems = [4, 3, 2, 1, 7, 6, 5]
-    if (Math.abs(distanceX) > touchXThreshold) {
-      distanceX > touchXThreshold ? clickIndex-- : clickIndex++
+    if (Math.abs(distanceX) > touchXThreshold && Math.abs(distanceY) < 1 / 2 * Math.abs(distanceX)) {
+      distanceX > 0 ? clickIndex-- : clickIndex++
       document.querySelector(`.vui_tabs--nav-item:nth-child(${navItems[clickIndex]})`).click()
     }
   }
 
-  const searchContent = document.querySelector('.search-content')
-  searchContent.addEventListener('touchstart', handleTouchStart)
-  searchContent.addEventListener('touchend', handleTouchEnd)
+  const container = document.querySelector('#i_cecream')
+  container.addEventListener('touchstart', handleTouchStart)
+  container.addEventListener('touchend', handleTouchEnd)
 }
 
 function scrollToToggleSidebar () {
   let startX = 0
   let endX = 0
-  const touchXThreshold = 50
+  let startY = 0
+  let endY = 0
+  const touchXThreshold = 55
+  const videoContainer = document.querySelector('#mirror-vdcon')
 
   const handleTouchStart = event => {
     startX = event.changedTouches[0].clientX
+    startY = event.changedTouches[0].clientY
   }
 
   const handleTouchEnd = event => {
     endX = event.changedTouches[0].clientX
+    endY = event.changedTouches[0].clientY
 
     const distanceX = endX - startX
+    const distanceY = endY - startY
 
-    if (Math.abs(distanceX) > touchXThreshold) {
-      const videoContainer = document.querySelector('#mirror-vdcon')
+    if (Math.abs(distanceX) > touchXThreshold && Math.abs(distanceY) < 1 / 2 * Math.abs(distanceX)) {
       const isSidebarShown = videoContainer.hasAttribute('sidebar')
       if (distanceX > 0) {
         isSidebarShown && videoContainer.removeAttribute('sidebar')
@@ -2768,7 +2781,6 @@ function scrollToToggleSidebar () {
     }
   }
 
-  const videoContainer = document.querySelector('#mirror-vdcon')
   videoContainer.addEventListener('touchstart', handleTouchStart)
   videoContainer.addEventListener('touchend', handleTouchEnd)
 }
@@ -3094,33 +3106,19 @@ function videoInteraction () {
 }
 
 function handlePortrait () {
-  // dynamic height
-  const player = document.querySelector('#bilibili-player')
-  const style = window.getComputedStyle(player)
-  const width = style.getPropertyValue('width')
-  const height = style.getPropertyValue('height')
-  const aspectRatio = (parseInt(height) - 46) / parseInt(width)
+  const video = document.querySelector('#bilibili-player video')
 
-  const playerWrap = document.querySelector('#playerWrap')
-  const videoContainer = document.querySelector('#mirror-vdcon')
-  if (aspectRatio > 1) {
-    // 减去弹幕行初始高度
-    const newHeight = aspectRatio * 100
-    player.style.height = `${newHeight}vw !important`
-
-    playerWrap.style.cssText = `height:${newHeight}vw !important; display:block;`
-
-    // 相对布局加top会导致底部显示不全，从顶部下滑时top还会清零一次
-    videoContainer.style.cssText = `margin-top:${newHeight}vw; display:flex`
-
-    const rightContainer = document.querySelector('.right-container')
-    rightContainer.style.height = `calc(100% - ${newHeight}vw)`
-
-    portraitVideoDblclick()
-  } else {
-    playerWrap.style.display = 'block'
-    videoContainer.style.display = 'flex'
+  function handleResize () {
+    const height = video.videoHeight
+    if (height !== 0) {
+      const width = video.videoWidth
+      const aspectRatio = height / width
+      if (aspectRatio > 1) {
+        portraitVideoDblclick()
+      }
+    }
   }
+  video.addEventListener('resize', handleResize)
 
   // video dblclick
   function portraitVideoDblclick () {
