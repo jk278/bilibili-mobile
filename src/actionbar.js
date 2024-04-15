@@ -192,6 +192,27 @@ export function handleActionbar () {
 
           input.value = ''
           input.dispatchEvent(new Event('input', { bubbles: true }))
+
+          searchFabText.textContent = input.value
+          searchFab.style.cssText = ''
+          svg.style.flex = ''
+
+          input.removeEventListener('input', handleInput)
+          // 文本更新到搜索页搜索
+          handleInput = () => {
+            searchFabText.textContent = input.value
+            if (input.value === '') {
+              searchFab.style.cssText = ''
+              svg.style.flex = ''
+            } else {
+              searchFab.style.cssText = `
+                background-color: var(--graph_bg_thick);
+                border-radius: 16px;
+              `
+              svg.style.flex = '0 0 20px'
+            }
+          }
+          input.addEventListener('input', handleInput)
         }
       })
     }
