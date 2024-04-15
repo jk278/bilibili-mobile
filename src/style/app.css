@@ -16,7 +16,7 @@ body {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    background: inherit;
+    background-color: white;
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
     transition: .5s transform ease-in;
 }
