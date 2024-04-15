@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.3.7
+// @version            4.4
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -1104,18 +1104,40 @@ body,
     white-space: nowrap;
 }
 
-/* 卡片标题 - 字样 */
-.bili-video-card__info--tit,
-.bili-live-card__info--tit {
-    --title-padding-right: 0;
-    --title-font-size: 14px;
+/* 标题 */
+.bili-video-card__info {
+    --title-padding-right: 13px;
     --title-line-height: 20px;
+    --title-font-size: 14px;
+
+    text-align: justify;
 }
 
 /* 标题 - 左右距 */
 .bili-video-card__info--right,
 .bili-live-card__info--text {
     padding: 0 5px;
+}
+
+/* 不喜欢按钮 */
+.bili-video-card__info--no-interest {
+    display: flex !important;
+
+}
+
+/* 撤销不喜欢 */
+.bili-video-card__no-interest {
+    --no-interest-module-gap: 5px;
+    --no-interest-btn-horizontal-padding: var(--no-interest-btn-vertical-padding);
+
+    .revert-btn {
+        flex-direction: column;
+    }
+}
+
+/* 不喜欢: 面板 */
+.bili-video-card__info--no-interest-panel {
+    width: unset !important;
 }
 
 /* 小标 */
