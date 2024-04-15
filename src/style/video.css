@@ -158,8 +158,9 @@
     height: 100% !important;
 }
 
-.bpx-player-container {
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3) !important;
+.bpx-player-container,
+#bilibili-player-placeholder {
+    box-shadow: none !important;
 }
 
 /* 小窗时的隐藏 - 始终隐藏*/
