@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.4
+// @version            4.4.2
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -425,6 +425,7 @@ body {
     display: flex;
     padding: 4px 8px;
     max-width: 40%;
+    align-items: center;
 }
 
 #search-fab svg {
@@ -3355,6 +3356,7 @@ function handleActionbar () {
 
   function setSearchBtn (isSearchPage) {
     const searchFab = document.getElementById('search-fab')
+    const svg = searchFab.querySelector('svg')
 
     const searchOverlay = document.createElement('div')
     searchOverlay.id = 'search-overlay'
@@ -3369,10 +3371,12 @@ function handleActionbar () {
         textContent: pageInput.value
       })
       searchFab.appendChild(searchFabText)
+
       searchFab.style.cssText = `
         background-color: var(--graph_bg_thick);
-        border-radius: 20px;
+        border-radius: 16px;
       `
+      svg.style.flex = '0 0 20px'
     }
 
     let clickTimer = null
@@ -3401,6 +3405,16 @@ function handleActionbar () {
             // 文本更新到搜索页搜索
             handleInput = () => {
               searchFabText.textContent = input.value
+              if (input.value === '') {
+                searchFab.style.cssText = ''
+                svg.style.flex = ''
+              } else {
+                searchFab.style.cssText = `
+                  background-color: var(--graph_bg_thick);
+                  border-radius: 16px;
+                `
+                svg.style.flex = '0 0 20px'
+              }
             }
             input.addEventListener('input', handleInput)
           }

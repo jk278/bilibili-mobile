@@ -94,6 +94,7 @@ body {
     display: flex;
     padding: 4px 8px;
     max-width: 40%;
+    align-items: center;
 }
 
 #search-fab svg {

@@ -112,6 +112,7 @@ export function handleActionbar () {
 
   function setSearchBtn (isSearchPage) {
     const searchFab = document.getElementById('search-fab')
+    const svg = searchFab.querySelector('svg')
 
     const searchOverlay = document.createElement('div')
     searchOverlay.id = 'search-overlay'
@@ -126,10 +127,12 @@ export function handleActionbar () {
         textContent: pageInput.value
       })
       searchFab.appendChild(searchFabText)
+
       searchFab.style.cssText = `
         background-color: var(--graph_bg_thick);
-        border-radius: 20px;
+        border-radius: 16px;
       `
+      svg.style.flex = '0 0 20px'
     }
 
     let clickTimer = null
@@ -158,6 +161,16 @@ export function handleActionbar () {
             // 文本更新到搜索页搜索
             handleInput = () => {
               searchFabText.textContent = input.value
+              if (input.value === '') {
+                searchFab.style.cssText = ''
+                svg.style.flex = ''
+              } else {
+                searchFab.style.cssText = `
+                  background-color: var(--graph_bg_thick);
+                  border-radius: 16px;
+                `
+                svg.style.flex = '0 0 20px'
+              }
             }
             input.addEventListener('input', handleInput)
           }
