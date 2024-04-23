@@ -19,6 +19,9 @@ body {
     background-color: white;
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
     transition: .5s transform ease-in;
+
+    opacity: 0;
+    animation: fadeIn .4s ease-in forwards;
 }
 
 [scroll-hidden] #actionbar {
@@ -27,8 +30,6 @@ body {
 
 #actionbar>* {
     padding: 8px;
-    opacity: 0;
-    animation: fadeIn 1s ease-in forwards;
 }
 
 #full-now,
