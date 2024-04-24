@@ -55,6 +55,11 @@
     display: none !important;
 }
 
+/* 插件白名单提示导致首页顶栏异常 */
+.adblock-tips {
+    display: none !important;
+}
+
 /* 使用 controlHeaderImage 获取随机头图 */
 
 /* -------------------------------------------------- 
