@@ -799,6 +799,11 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     display: none !important;
 }
 
+/* 修复插件白名单提示导致首页顶栏异常 */
+.adblock-tips {
+    display: none !important;
+}
+
 /* 使用 controlHeaderImage 获取随机头图 */
 
 /* -------------------------------------------------- 
@@ -2805,6 +2810,12 @@ function scrollToToggleSidebar () {
 
   videoContainer.addEventListener('touchstart', handleTouchStart)
   videoContainer.addEventListener('touchend', handleTouchEnd)
+
+  const videoArea = document.querySelector('.bpx-player-video-area')
+  videoArea.addEventListener('touchstart', event => {
+    // 阻止冒泡只对当前监听器生效，禁止全屏滑动触发侧边栏
+    event.stopPropagation()
+  })
 }
 
 
@@ -3208,9 +3219,7 @@ function handleVideoLongPress () {
   let timeoutId
   let times
 
-  video.addEventListener('touchstart', event => {
-    // 阻止冒泡只对当前监听器生效，禁止全屏滑动触发侧边栏
-    event.stopPropagation()
+  video.addEventListener('touchstart', () => {
     // eslint-disable-next-line no-undef
     times = GM_getValue('custom-longpress-speed', 2)
     timeoutId = setTimeout(() => {

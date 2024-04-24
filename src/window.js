@@ -122,4 +122,10 @@ function scrollToToggleSidebar () {
 
   videoContainer.addEventListener('touchstart', handleTouchStart)
   videoContainer.addEventListener('touchend', handleTouchEnd)
+
+  const videoArea = document.querySelector('.bpx-player-video-area')
+  videoArea.addEventListener('touchstart', event => {
+    // 阻止冒泡只对当前监听器生效，禁止全屏滑动和拖动进度条触发侧边栏
+    event.stopPropagation()
+  })
 }
