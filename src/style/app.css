@@ -21,7 +21,13 @@ body {
     transition: .5s transform ease-in;
 
     opacity: 0;
-    animation: fadeIn .4s ease-in forwards;
+    animation: actionbarFadeIn .4s ease-in forwards;
+}
+
+@keyframes actionbarFadeIn {
+    to {
+        opacity: 0.85;
+    }
 }
 
 [scroll-hidden] #actionbar {

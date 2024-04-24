@@ -352,7 +352,13 @@ body {
     transition: .5s transform ease-in;
 
     opacity: 0;
-    animation: fadeIn .4s ease-in forwards;
+    animation: actionbarFadeIn .4s ease-in forwards;
+}
+
+@keyframes actionbarFadeIn {
+    to {
+        opacity: 0.85;
+    }
 }
 
 [scroll-hidden] #actionbar {
@@ -1858,8 +1864,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 
 .tag-panel .tag {
     margin-bottom: 6px !important;
-    opacity: 0;
-    animation: fadeIn 1s ease-in 2s forwards;
 }
 
 /* ------ 顶部投票卡片 ------ */
@@ -1887,16 +1891,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 /* ----------------------------------------------------
   * ----------------- 播放组件（评论以下） -------------- *
    ----------------------------------------------------- */
-
-@keyframes fadeIn {
-    form {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
 
 /* 固定评论栏 */
 .main-reply-box {
@@ -2813,7 +2807,7 @@ function scrollToToggleSidebar () {
 
   const videoArea = document.querySelector('.bpx-player-video-area')
   videoArea.addEventListener('touchstart', event => {
-    // 阻止冒泡只对当前监听器生效，禁止全屏滑动触发侧边栏
+    // 阻止冒泡只对当前监听器生效，禁止全屏滑动和拖动进度条触发侧边栏
     event.stopPropagation()
   })
 }

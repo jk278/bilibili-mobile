@@ -576,8 +576,6 @@
 
 .tag-panel .tag {
     margin-bottom: 6px !important;
-    opacity: 0;
-    animation: fadeIn 1s ease-in 2s forwards;
 }
 
 /* ------ 顶部投票卡片 ------ */
@@ -605,16 +603,6 @@
 /* ----------------------------------------------------
   * ----------------- 播放组件（评论以下） -------------- *
    ----------------------------------------------------- */
-
-@keyframes fadeIn {
-    form {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
 
 /* 固定评论栏 */
 .main-reply-box {
