@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.4.3.2
+// @version            4.4.4
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -3222,19 +3222,17 @@ function handleVideoLongPress () {
     }, 500)
   })
 
-  video.addEventListener('touchmove', () => {
-    clearTimeout(timeoutId)
-  })
+  video.addEventListener('touchmove', cancelLongPress)
+  video.addEventListener('touchend', cancelLongPress)
 
-  video.addEventListener('touchend', event => {
-    event.stopPropagation()
+  function cancelLongPress () {
     clearTimeout(timeoutId)
 
     if (isLongPress) {
       video.playbackRate = video.playbackRate / times
       isLongPress = false
     }
-  })
+  }
 }
 
 

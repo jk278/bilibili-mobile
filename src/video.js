@@ -116,17 +116,15 @@ function handleVideoLongPress () {
     }, 500)
   })
 
-  video.addEventListener('touchmove', () => {
-    clearTimeout(timeoutId)
-  })
+  video.addEventListener('touchmove', cancelLongPress)
+  video.addEventListener('touchend', cancelLongPress)
 
-  video.addEventListener('touchend', event => {
-    event.stopPropagation()
+  function cancelLongPress () {
     clearTimeout(timeoutId)
 
     if (isLongPress) {
       video.playbackRate = video.playbackRate / times
       isLongPress = false
     }
-  })
+  }
 }
