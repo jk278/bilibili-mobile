@@ -45,7 +45,7 @@
     display: none;
 }
 
-.center-search-container.show {
+.center-search-container[show] {
     display: block;
 }
 
@@ -110,15 +110,15 @@
 }
 
 /* 取消分类图在加载过程中类的变化导致的横向平移从0到-50%的不好看的动画 */
-.v-popover.is-bottom-start {
+/* .v-popover.is-bottom-start {
     transform: translate(-50%, -50%) !important;
-}
+} */
 
 /* 分类(左侧入口)展开图: 一列 */
-.channel-panel__column {
+/* .channel-panel__column {
     flex: 1;
     padding: 0 !important;
-}
+} */
 
 /* 右侧入口展开图 */
 .dynamic-panel-popover,
@@ -126,6 +126,11 @@
 .history-panel-popover {
     max-width: 100%;
     padding: 0 5px !important;
+}
+
+/* 消息展开图 */
+.bili-header .message-entry-popover .message-inner-list__item {
+    padding-left: 43px;
 }
 
 /* 动态展开图 */
@@ -208,11 +213,7 @@
     display: none !important;
 }
 
-/* 客户端广告 */
-/* 底部登录弹窗类 .lt-row 可能包含其它元素 */
 /* 首页顶部动图上的大 Logo */
-.desktop-download-tip,
-.lt-row,
 .header-banner__inner {
     display: none !important;
 }

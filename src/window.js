@@ -161,7 +161,7 @@ function scrollToToggleMessageSidebar () {
 
     if (Math.abs(distanceX) > touchXThreshold && Math.abs(distanceY) < 1 / 2 * Math.abs(distanceX)) {
       const isSidebarShown = messageContainer.hasAttribute('sidebar')
-      if (GM_getValue('message-right-sidebar', false) ? (distanceX < 0) : (distanceX > 0)) {
+      if (GM_getValue('message-sidebar-right', false) ? (distanceX < 0) : (distanceX > 0)) {
         if (!isSidebarShown) {
           messageContainer.setAttribute('sidebar', '')
           sidebarOverlay.classList.add('show')
@@ -179,4 +179,6 @@ function scrollToToggleMessageSidebar () {
 
   messageContainer.addEventListener('touchstart', handleTouchStart)
   messageContainer.addEventListener('touchend', handleTouchEnd)
+  sidebarOverlay.addEventListener('touchstart', handleTouchStart)
+  sidebarOverlay.addEventListener('touchend', handleTouchEnd)
 }

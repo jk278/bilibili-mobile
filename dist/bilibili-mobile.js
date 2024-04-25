@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.5.1
+// @version            4.5.2
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -805,7 +805,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     display: none;
 }
 
-.center-search-container.show {
+.center-search-container[show] {
     display: block;
 }
 
@@ -870,15 +870,15 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 }
 
 /* 取消分类图在加载过程中类的变化导致的横向平移从0到-50%的不好看的动画 */
-.v-popover.is-bottom-start {
+/* .v-popover.is-bottom-start {
     transform: translate(-50%, -50%) !important;
-}
+} */
 
 /* 分类(左侧入口)展开图: 一列 */
-.channel-panel__column {
+/* .channel-panel__column {
     flex: 1;
     padding: 0 !important;
-}
+} */
 
 /* 右侧入口展开图 */
 .dynamic-panel-popover,
@@ -886,6 +886,11 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
 .history-panel-popover {
     max-width: 100%;
     padding: 0 5px !important;
+}
+
+/* 消息展开图 */
+.bili-header .message-entry-popover .message-inner-list__item {
+    padding-left: 43px;
 }
 
 /* 动态展开图 */
@@ -968,11 +973,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     display: none !important;
 }
 
-/* 客户端广告 */
-/* 底部登录弹窗类 .lt-row 可能包含其它元素 */
 /* 首页顶部动图上的大 Logo */
-.desktop-download-tip,
-.lt-row,
 .header-banner__inner {
     display: none !important;
 }`, ""]);
@@ -1091,6 +1092,15 @@ body,
 /* 视频流广告、影视 */
 .container>*:has(.bili-video-card__info--ad),
 .floor-single-card {
+    display: none !important;
+}
+
+/* 客户端广告 */
+/* 底部登录弹窗类 .lt-row 可能包含其它元素 */
+/* 菜单-个人: 会员广告 */
+.desktop-download-tip,
+.lt-row,
+.vip-entry-containter {
     display: none !important;
 }
 
@@ -3067,7 +3077,7 @@ function scrollToToggleMessageSidebar () {
 
     if (Math.abs(distanceX) > touchXThreshold && Math.abs(distanceY) < 1 / 2 * Math.abs(distanceX)) {
       const isSidebarShown = messageContainer.hasAttribute('sidebar')
-      if (GM_getValue('message-right-sidebar', false) ? (distanceX < 0) : (distanceX > 0)) {
+      if (GM_getValue('message-sidebar-right', false) ? (distanceX < 0) : (distanceX > 0)) {
         if (!isSidebarShown) {
           messageContainer.setAttribute('sidebar', '')
           sidebarOverlay.classList.add('show')
@@ -3085,6 +3095,8 @@ function scrollToToggleMessageSidebar () {
 
   messageContainer.addEventListener('touchstart', handleTouchStart)
   messageContainer.addEventListener('touchend', handleTouchEnd)
+  sidebarOverlay.addEventListener('touchstart', handleTouchStart)
+  sidebarOverlay.addEventListener('touchend', handleTouchEnd)
 }
 
 
@@ -3215,11 +3227,12 @@ function handleScriptSetting () {
   const keyValue = {
     key1: 'full-unmuted',
     key2: 'ban-action-hidden',
-    key3: 'message-right-sidebar',
-    key4: 'custom-longpress-speed'
+    key3: 'message-sidebar-right',
+    key4: 'menu-dialog-bottom',
+    key5: 'custom-longpress-speed'
   }
 
-  const speedIndex = 3
+  const speedIndex = 4
 
   if (GM_getValue('ban-action-hidden', false)) {
     banActionHidden()
@@ -3239,17 +3252,35 @@ function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('message-right-sidebar', false)) {
-    messageRightSidebar()
+  if (GM_getValue('message-sidebar-right', false)) {
+    messageSidebarRight()
   }
 
-  function messageRightSidebar () {
+  function messageSidebarRight () {
     const style = Object.assign(document.createElement('style'), {
-      id: 'message-right-sidebar',
+      id: 'message-sidebar-right',
       textContent: `
         .space-left.space-left { left: 100%; }      
         body>.container[sidebar] .space-left.space-left { transform: translateX(-100%); }
 
+      `
+    })
+    document.head.appendChild(style)
+  }
+
+  if (GM_getValue('message-sidebar-right', false)) {
+    menuDialogBottom()
+  }
+
+  function menuDialogBottom () {
+    const style = Object.assign(document.createElement('style'), {
+      id: 'menu-dialog-bottom',
+      textContent: `
+        .v-popover.v-popover {
+          top: unset !important;
+          bottom: var(--actionbar-height);
+          transform: translate(-50%, -20px) !important;
+        }
       `
     })
     document.head.appendChild(style)
@@ -3271,6 +3302,7 @@ function handleScriptSetting () {
           <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
           <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
+          <label><input type="checkbox"><span>菜单弹窗(收藏、历史等)靠下</span></label>
           <label><input type="number" value="2"><span>自定义视频长按倍速</span></label>
         </div>
         <button id="setting-conform-2" class="setting-conform">确认</button>
@@ -3289,7 +3321,8 @@ function handleScriptSetting () {
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
       const isBanActionHidden = GM_getValue('ban-action-hidden', false)
-      const isMessageRightSidebar = GM_getValue('message-right-sidebar', false)
+      const ismessageSidebarRight = GM_getValue('message-sidebar-right', false)
+      const isMenuDialogBottom = GM_getValue('menu-dialog-bottom', false)
 
       for (const [index, value] of values.entries()) {
         if (index !== speedIndex) {
@@ -3303,8 +3336,11 @@ function handleScriptSetting () {
       if (GM_getValue('ban-action-hidden', false) !== isBanActionHidden) {
         isBanActionHidden ? document.getElementById('ban-action-hidden').remove() : banActionHidden()
       }
-      if (GM_getValue('message-right-sidebar', false) !== isMessageRightSidebar) {
-        isMessageRightSidebar ? document.getElementById('message-right-sidebar').remove() : messageRightSidebar()
+      if (GM_getValue('message-sidebar-right', false) !== ismessageSidebarRight) {
+        ismessageSidebarRight ? document.getElementById('message-sidebar-right').remove() : messageSidebarRight()
+      }
+      if (GM_getValue('menu-dialog-bottom', false) !== isMenuDialogBottom) {
+        isMenuDialogBottom ? document.getElementById('menu-dialog-bottom').remove() : menuDialogBottom()
       }
     })
   }
@@ -3662,6 +3698,7 @@ function handleActionbar () {
     let clickTimer = null
 
     const fullBtn = document.getElementById('full-now')
+
     fullBtn.addEventListener('click', () => {
       clearTimeout(clickTimer)
 
@@ -3741,6 +3778,7 @@ function handleActionbar () {
     let clickTimer = null
 
     let handleInput = null
+
     searchFab.addEventListener('click', () => {
       clearTimeout(clickTimer)
 
@@ -3748,7 +3786,8 @@ function handleActionbar () {
         const input = document.querySelector(`${containerSelector} input`)
 
         if (input) {
-          document.querySelector(`${containerSelector}`).classList.toggle('show')
+          // 滑动时 .center-search-container 的 class 会刷新
+          document.querySelector(`${containerSelector}`).toggleAttribute('show')
           input.focus()
           searchOverlay.classList.toggle('show')
           searchFab.classList.toggle('active')
@@ -3779,6 +3818,25 @@ function handleActionbar () {
           }
         }
       }, 300)
+    })
+
+    // 避免点击阴影时 input 先失焦,导致分两次隐藏
+    searchOverlay.addEventListener('click', () => {
+      const input = document.querySelector(`${containerSelector} input`)
+      input?.focus()
+    }
+    )
+
+    // 移动端 click 会先触发 touchstart 和 touchend
+    function handleTouchMove () {
+      searchFab.click()
+      searchOverlay.removeEventListener('touchmove', handleTouchMove)
+    }
+    searchOverlay.addEventListener('touchstart', () => {
+      searchOverlay.addEventListener('touchmove', handleTouchMove)
+    })
+    searchOverlay.addEventListener('touchend', () => {
+      searchOverlay.removeEventListener('touchmove', handleTouchMove)
     })
 
     if (page === 'search') {
@@ -3876,6 +3934,17 @@ function handleActionbar () {
 
       const mouseEvent = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
       document.querySelector(`.bili-header__bar ${refer}`).dispatchEvent(mouseEvent)
+    })
+
+    function handleTouchMove () {
+      menuOverlay.click()
+      menuOverlay.removeEventListener('touchmove', handleTouchMove)
+    }
+    menuOverlay.addEventListener('touchstart', () => {
+      menuOverlay.addEventListener('touchmove', handleTouchMove)
+    })
+    menuOverlay.addEventListener('touchend', () => {
+      menuOverlay.removeEventListener('touchmove', handleTouchMove)
     })
   }
 

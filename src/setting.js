@@ -116,11 +116,12 @@ export function handleScriptSetting () {
   const keyValue = {
     key1: 'full-unmuted',
     key2: 'ban-action-hidden',
-    key3: 'message-right-sidebar',
-    key4: 'custom-longpress-speed'
+    key3: 'message-sidebar-right',
+    key4: 'menu-dialog-bottom',
+    key5: 'custom-longpress-speed'
   }
 
-  const speedIndex = 3
+  const speedIndex = 4
 
   if (GM_getValue('ban-action-hidden', false)) {
     banActionHidden()
@@ -140,17 +141,35 @@ export function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('message-right-sidebar', false)) {
-    messageRightSidebar()
+  if (GM_getValue('message-sidebar-right', false)) {
+    messageSidebarRight()
   }
 
-  function messageRightSidebar () {
+  function messageSidebarRight () {
     const style = Object.assign(document.createElement('style'), {
-      id: 'message-right-sidebar',
+      id: 'message-sidebar-right',
       textContent: `
         .space-left.space-left { left: 100%; }      
         body>.container[sidebar] .space-left.space-left { transform: translateX(-100%); }
 
+      `
+    })
+    document.head.appendChild(style)
+  }
+
+  if (GM_getValue('message-sidebar-right', false)) {
+    menuDialogBottom()
+  }
+
+  function menuDialogBottom () {
+    const style = Object.assign(document.createElement('style'), {
+      id: 'menu-dialog-bottom',
+      textContent: `
+        .v-popover.v-popover {
+          top: unset !important;
+          bottom: var(--actionbar-height);
+          transform: translate(-50%, -20px) !important;
+        }
       `
     })
     document.head.appendChild(style)
@@ -172,6 +191,7 @@ export function handleScriptSetting () {
           <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
           <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
+          <label><input type="checkbox"><span>菜单弹窗(收藏、历史等)靠下</span></label>
           <label><input type="number" value="2"><span>自定义视频长按倍速</span></label>
         </div>
         <button id="setting-conform-2" class="setting-conform">确认</button>
@@ -190,7 +210,8 @@ export function handleScriptSetting () {
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
       const isBanActionHidden = GM_getValue('ban-action-hidden', false)
-      const isMessageRightSidebar = GM_getValue('message-right-sidebar', false)
+      const ismessageSidebarRight = GM_getValue('message-sidebar-right', false)
+      const isMenuDialogBottom = GM_getValue('menu-dialog-bottom', false)
 
       for (const [index, value] of values.entries()) {
         if (index !== speedIndex) {
@@ -204,8 +225,11 @@ export function handleScriptSetting () {
       if (GM_getValue('ban-action-hidden', false) !== isBanActionHidden) {
         isBanActionHidden ? document.getElementById('ban-action-hidden').remove() : banActionHidden()
       }
-      if (GM_getValue('message-right-sidebar', false) !== isMessageRightSidebar) {
-        isMessageRightSidebar ? document.getElementById('message-right-sidebar').remove() : messageRightSidebar()
+      if (GM_getValue('message-sidebar-right', false) !== ismessageSidebarRight) {
+        ismessageSidebarRight ? document.getElementById('message-sidebar-right').remove() : messageSidebarRight()
+      }
+      if (GM_getValue('menu-dialog-bottom', false) !== isMenuDialogBottom) {
+        isMenuDialogBottom ? document.getElementById('menu-dialog-bottom').remove() : menuDialogBottom()
       }
     })
   }

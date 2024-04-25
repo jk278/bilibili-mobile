@@ -73,6 +73,7 @@ export function handleActionbar () {
     let clickTimer = null
 
     const fullBtn = document.getElementById('full-now')
+
     fullBtn.addEventListener('click', () => {
       clearTimeout(clickTimer)
 
@@ -152,6 +153,7 @@ export function handleActionbar () {
     let clickTimer = null
 
     let handleInput = null
+
     searchFab.addEventListener('click', () => {
       clearTimeout(clickTimer)
 
@@ -159,7 +161,8 @@ export function handleActionbar () {
         const input = document.querySelector(`${containerSelector} input`)
 
         if (input) {
-          document.querySelector(`${containerSelector}`).classList.toggle('show')
+          // 滑动时 .center-search-container 的 class 会刷新
+          document.querySelector(`${containerSelector}`).toggleAttribute('show')
           input.focus()
           searchOverlay.classList.toggle('show')
           searchFab.classList.toggle('active')
@@ -190,6 +193,25 @@ export function handleActionbar () {
           }
         }
       }, 300)
+    })
+
+    // 避免点击阴影时 input 先失焦,导致分两次隐藏
+    searchOverlay.addEventListener('click', () => {
+      const input = document.querySelector(`${containerSelector} input`)
+      input?.focus()
+    }
+    )
+
+    // 移动端 click 会先触发 touchstart 和 touchend
+    function handleTouchMove () {
+      searchFab.click()
+      searchOverlay.removeEventListener('touchmove', handleTouchMove)
+    }
+    searchOverlay.addEventListener('touchstart', () => {
+      searchOverlay.addEventListener('touchmove', handleTouchMove)
+    })
+    searchOverlay.addEventListener('touchend', () => {
+      searchOverlay.removeEventListener('touchmove', handleTouchMove)
     })
 
     if (page === 'search') {
@@ -287,6 +309,17 @@ export function handleActionbar () {
 
       const mouseEvent = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
       document.querySelector(`.bili-header__bar ${refer}`).dispatchEvent(mouseEvent)
+    })
+
+    function handleTouchMove () {
+      menuOverlay.click()
+      menuOverlay.removeEventListener('touchmove', handleTouchMove)
+    }
+    menuOverlay.addEventListener('touchstart', () => {
+      menuOverlay.addEventListener('touchmove', handleTouchMove)
+    })
+    menuOverlay.addEventListener('touchend', () => {
+      menuOverlay.removeEventListener('touchmove', handleTouchMove)
     })
   }
 
