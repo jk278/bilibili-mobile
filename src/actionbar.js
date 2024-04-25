@@ -79,7 +79,7 @@ export function handleActionbar () {
       clickTimer = setTimeout(function () {
         const video = document.querySelector('video')
         // 等于符号优先级更高
-        if (GM_getValue('full-unmuted', false) === true) {
+        if (GM_getValue('full-unmuted', false)) {
           video.play()
           video.muted = false
           if (video.volume === 0) {

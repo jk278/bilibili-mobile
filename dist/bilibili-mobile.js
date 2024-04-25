@@ -2,12 +2,13 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.5
+// @version            4.5.1
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
 // @license            MIT
 // @match              https://*.bilibili.com/*
+// @exclude            https://message.bilibili.com/pages/nav/*
 // @grant              unsafeWindow
 // @grant              GM_registerMenuCommand
 // @grant              GM_getValue
@@ -2795,12 +2796,12 @@ body>.container {
     position: fixed;
     height: 100%;
     z-index: 3;
-    transform: translateX(-100%);
+    left: -140px;
     transition: transform .4s ease-in;
 }
 
 body>.container[sidebar] .space-left {
-    transform: none;
+    transform: translateX(100%);
 }
 
 /* 侧边栏内容居中 */
@@ -2903,6 +2904,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   increaseVideoLoadSize: () => (/* binding */ increaseVideoLoadSize),
 /* harmony export */   preventBeforeUnload: () => (/* binding */ preventBeforeUnload)
 /* harmony export */ });
+/* global GM_getValue */
 // eslint-disable-next-line no-undef
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
 // 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
@@ -2930,17 +2932,22 @@ function increaseVideoLoadSize () {
  * @param {string} page - 简短描述页面的字符串: search, video
  */
 function handleScroll (page) {
-  // eslint-disable-next-line no-undef
   if (GM_getValue('settingShowHidden', [])[0] === false || GM_getValue('ban-action-hidden', false) === false) {
     scrollToHidden()
   }
 
-  if (page === 'search') {
-    scrollToClick()
-  }
-
-  if (page === 'video') {
-    scrollToToggleSidebar()
+  switch (page) {
+    case 'search':
+      scrollToClick()
+      break
+    case 'video':
+      scrollToToggleSidebar()
+      break
+    case 'message':
+      scrollToToggleMessageSidebar()
+      break
+    default:
+      break
   }
 }
 
@@ -3033,6 +3040,51 @@ function scrollToToggleSidebar () {
     // 阻止冒泡只对当前监听器生效，禁止全屏滑动和拖动进度条触发侧边栏
     event.stopPropagation()
   })
+}
+
+function scrollToToggleMessageSidebar () {
+  let startX = 0
+  let endX = 0
+  let startY = 0
+  let endY = 0
+  const touchXThreshold = 55
+  const messageContainer = document.querySelector('body>.container')
+
+  const sidebarOverlay = document.querySelector('#sidebar-overlay')
+  const sidebarFab = document.querySelector('#sidebar-fab')
+
+  const handleTouchStart = event => {
+    startX = event.changedTouches[0].clientX
+    startY = event.changedTouches[0].clientY
+  }
+
+  const handleTouchEnd = event => {
+    endX = event.changedTouches[0].clientX
+    endY = event.changedTouches[0].clientY
+
+    const distanceX = endX - startX
+    const distanceY = endY - startY
+
+    if (Math.abs(distanceX) > touchXThreshold && Math.abs(distanceY) < 1 / 2 * Math.abs(distanceX)) {
+      const isSidebarShown = messageContainer.hasAttribute('sidebar')
+      if (GM_getValue('message-right-sidebar', false) ? (distanceX < 0) : (distanceX > 0)) {
+        if (!isSidebarShown) {
+          messageContainer.setAttribute('sidebar', '')
+          sidebarOverlay.classList.add('show')
+          sidebarFab.classList.add('active')
+        }
+      } else {
+        if (isSidebarShown) {
+          messageContainer.removeAttribute('sidebar')
+          sidebarOverlay.classList.remove('show')
+          sidebarFab.classList.remove('active')
+        }
+      }
+    }
+  }
+
+  messageContainer.addEventListener('touchstart', handleTouchStart)
+  messageContainer.addEventListener('touchend', handleTouchEnd)
 }
 
 
@@ -3163,12 +3215,13 @@ function handleScriptSetting () {
   const keyValue = {
     key1: 'full-unmuted',
     key2: 'ban-action-hidden',
-    key3: 'custom-longpress-speed'
+    key3: 'message-right-sidebar',
+    key4: 'custom-longpress-speed'
   }
 
-  const speedIndex = 2
+  const speedIndex = 3
 
-  if (GM_getValue('ban-action-hidden', false) === true) {
+  if (GM_getValue('ban-action-hidden', false)) {
     banActionHidden()
   }
 
@@ -3181,6 +3234,22 @@ function handleScriptSetting () {
         [scroll-hidden] .top-btn {
           transform: none !important;
         }
+      `
+    })
+    document.head.appendChild(style)
+  }
+
+  if (GM_getValue('message-right-sidebar', false)) {
+    messageRightSidebar()
+  }
+
+  function messageRightSidebar () {
+    const style = Object.assign(document.createElement('style'), {
+      id: 'message-right-sidebar',
+      textContent: `
+        .space-left.space-left { left: 100%; }      
+        body>.container[sidebar] .space-left.space-left { transform: translateX(-100%); }
+
       `
     })
     document.head.appendChild(style)
@@ -3201,6 +3270,7 @@ function handleScriptSetting () {
         <div class="setting-checkboxes">
           <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
+          <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
           <label><input type="number" value="2"><span>自定义视频长按倍速</span></label>
         </div>
         <button id="setting-conform-2" class="setting-conform">确认</button>
@@ -3219,6 +3289,7 @@ function handleScriptSetting () {
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
       const isBanActionHidden = GM_getValue('ban-action-hidden', false)
+      const isMessageRightSidebar = GM_getValue('message-right-sidebar', false)
 
       for (const [index, value] of values.entries()) {
         if (index !== speedIndex) {
@@ -3231,6 +3302,9 @@ function handleScriptSetting () {
 
       if (GM_getValue('ban-action-hidden', false) !== isBanActionHidden) {
         isBanActionHidden ? document.getElementById('ban-action-hidden').remove() : banActionHidden()
+      }
+      if (GM_getValue('message-right-sidebar', false) !== isMessageRightSidebar) {
+        isMessageRightSidebar ? document.getElementById('message-right-sidebar').remove() : messageRightSidebar()
       }
     })
   }
@@ -3594,7 +3668,7 @@ function handleActionbar () {
       clickTimer = setTimeout(function () {
         const video = document.querySelector('video')
         // 等于符号优先级更高
-        if (GM_getValue('full-unmuted', false) === true) {
+        if (GM_getValue('full-unmuted', false)) {
           video.play()
           video.muted = false
           if (video.volume === 0) {
@@ -4001,6 +4075,8 @@ __webpack_require__.r(__webpack_exports__);
 (function () {
   // setInterval(() => { debugger }, 100)
 
+  if (window.top !== window.self) { return } // 检查当前执行环境是否为顶级窗口
+
   function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
 
   (0,_init_js__WEBPACK_IMPORTED_MODULE_7__.initViewport)()
@@ -4046,7 +4122,7 @@ __webpack_require__.r(__webpack_exports__);
         ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_13__.handleActionbar)()
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_9__.handleScriptSetting)()
         ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_13__.handleSidebar)('message')
-        // handleScroll('message')
+        ;(0,_window_js__WEBPACK_IMPORTED_MODULE_8__.handleScroll)('message')
         ;(0,_element_js__WEBPACK_IMPORTED_MODULE_12__.createUnfoldBtn)()
       })
       break

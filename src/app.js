@@ -20,6 +20,8 @@ import { handleActionbar, handleSidebar } from './actionbar.js'
 (function () {
   // setInterval(() => { debugger }, 100)
 
+  if (window.top !== window.self) { return } // 检查当前执行环境是否为顶级窗口
+
   function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
 
   initViewport()
@@ -65,7 +67,7 @@ import { handleActionbar, handleSidebar } from './actionbar.js'
         handleActionbar()
         handleScriptSetting()
         handleSidebar('message')
-        // handleScroll('message')
+        handleScroll('message')
         createUnfoldBtn()
       })
       break

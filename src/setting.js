@@ -116,12 +116,13 @@ export function handleScriptSetting () {
   const keyValue = {
     key1: 'full-unmuted',
     key2: 'ban-action-hidden',
-    key3: 'custom-longpress-speed'
+    key3: 'message-right-sidebar',
+    key4: 'custom-longpress-speed'
   }
 
-  const speedIndex = 2
+  const speedIndex = 3
 
-  if (GM_getValue('ban-action-hidden', false) === true) {
+  if (GM_getValue('ban-action-hidden', false)) {
     banActionHidden()
   }
 
@@ -134,6 +135,22 @@ export function handleScriptSetting () {
         [scroll-hidden] .top-btn {
           transform: none !important;
         }
+      `
+    })
+    document.head.appendChild(style)
+  }
+
+  if (GM_getValue('message-right-sidebar', false)) {
+    messageRightSidebar()
+  }
+
+  function messageRightSidebar () {
+    const style = Object.assign(document.createElement('style'), {
+      id: 'message-right-sidebar',
+      textContent: `
+        .space-left.space-left { left: 100%; }      
+        body>.container[sidebar] .space-left.space-left { transform: translateX(-100%); }
+
       `
     })
     document.head.appendChild(style)
@@ -154,6 +171,7 @@ export function handleScriptSetting () {
         <div class="setting-checkboxes">
           <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
+          <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
           <label><input type="number" value="2"><span>自定义视频长按倍速</span></label>
         </div>
         <button id="setting-conform-2" class="setting-conform">确认</button>
@@ -172,6 +190,7 @@ export function handleScriptSetting () {
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
       const isBanActionHidden = GM_getValue('ban-action-hidden', false)
+      const isMessageRightSidebar = GM_getValue('message-right-sidebar', false)
 
       for (const [index, value] of values.entries()) {
         if (index !== speedIndex) {
@@ -184,6 +203,9 @@ export function handleScriptSetting () {
 
       if (GM_getValue('ban-action-hidden', false) !== isBanActionHidden) {
         isBanActionHidden ? document.getElementById('ban-action-hidden').remove() : banActionHidden()
+      }
+      if (GM_getValue('message-right-sidebar', false) !== isMessageRightSidebar) {
+        isMessageRightSidebar ? document.getElementById('message-right-sidebar').remove() : messageRightSidebar()
       }
     })
   }

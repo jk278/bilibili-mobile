@@ -1,3 +1,4 @@
+/* global GM_getValue */
 // eslint-disable-next-line no-undef
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
 // 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
@@ -25,17 +26,22 @@ export function increaseVideoLoadSize () {
  * @param {string} page - 简短描述页面的字符串: search, video
  */
 export function handleScroll (page) {
-  // eslint-disable-next-line no-undef
   if (GM_getValue('settingShowHidden', [])[0] === false || GM_getValue('ban-action-hidden', false) === false) {
     scrollToHidden()
   }
 
-  if (page === 'search') {
-    scrollToClick()
-  }
-
-  if (page === 'video') {
-    scrollToToggleSidebar()
+  switch (page) {
+    case 'search':
+      scrollToClick()
+      break
+    case 'video':
+      scrollToToggleSidebar()
+      break
+    case 'message':
+      scrollToToggleMessageSidebar()
+      break
+    default:
+      break
   }
 }
 
@@ -128,4 +134,49 @@ function scrollToToggleSidebar () {
     // 阻止冒泡只对当前监听器生效，禁止全屏滑动和拖动进度条触发侧边栏
     event.stopPropagation()
   })
+}
+
+function scrollToToggleMessageSidebar () {
+  let startX = 0
+  let endX = 0
+  let startY = 0
+  let endY = 0
+  const touchXThreshold = 55
+  const messageContainer = document.querySelector('body>.container')
+
+  const sidebarOverlay = document.querySelector('#sidebar-overlay')
+  const sidebarFab = document.querySelector('#sidebar-fab')
+
+  const handleTouchStart = event => {
+    startX = event.changedTouches[0].clientX
+    startY = event.changedTouches[0].clientY
+  }
+
+  const handleTouchEnd = event => {
+    endX = event.changedTouches[0].clientX
+    endY = event.changedTouches[0].clientY
+
+    const distanceX = endX - startX
+    const distanceY = endY - startY
+
+    if (Math.abs(distanceX) > touchXThreshold && Math.abs(distanceY) < 1 / 2 * Math.abs(distanceX)) {
+      const isSidebarShown = messageContainer.hasAttribute('sidebar')
+      if (GM_getValue('message-right-sidebar', false) ? (distanceX < 0) : (distanceX > 0)) {
+        if (!isSidebarShown) {
+          messageContainer.setAttribute('sidebar', '')
+          sidebarOverlay.classList.add('show')
+          sidebarFab.classList.add('active')
+        }
+      } else {
+        if (isSidebarShown) {
+          messageContainer.removeAttribute('sidebar')
+          sidebarOverlay.classList.remove('show')
+          sidebarFab.classList.remove('active')
+        }
+      }
+    }
+  }
+
+  messageContainer.addEventListener('touchstart', handleTouchStart)
+  messageContainer.addEventListener('touchend', handleTouchEnd)
 }

@@ -58,12 +58,12 @@ body>.container {
     position: fixed;
     height: 100%;
     z-index: 3;
-    transform: translateX(-100%);
+    left: -140px;
     transition: transform .4s ease-in;
 }
 
 body>.container[sidebar] .space-left {
-    transform: none;
+    transform: translateX(100%);
 }
 
 /* 侧边栏内容居中 */
