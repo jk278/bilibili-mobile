@@ -16,7 +16,7 @@ body {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    background-color: white;
+    background-color: rgba(255, 255, 255, .85);
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
     transition: .5s transform ease-in;
 
@@ -26,7 +26,7 @@ body {
 
 @keyframes actionbarFadeIn {
     to {
-        opacity: 0.85;
+        opacity: 1;
     }
 }
 
@@ -46,15 +46,25 @@ body {
 }
 
 #actionbar.home {
-
     #refresh-fab {
         display: block;
     }
 }
 
 #actionbar.video {
+    #full-now {
+        display: block;
+    }
+}
 
-    #full-now,
+#actionbar.message {
+    #menu-fab {
+        display: none;
+    }
+}
+
+#actionbar.video,
+#actionbar.message {
     #sidebar-fab {
         display: block;
     }
@@ -65,16 +75,13 @@ body {
 }
 
 #actionbar.search {
-
     #show-more-fab {
         display: block;
     }
-    
 }
 
 #menu-fab {
     position: relative;
-    background: inherit;
 }
 
 #search-fab,
@@ -149,7 +156,8 @@ body #header-in-menu li {
 
 /* 底部菜单、侧边栏: layout */
 #menu-overlay,
-#search-overlay {
+#search-overlay,
+#sidebar-overlay {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -162,7 +170,8 @@ body #header-in-menu li {
 }
 
 #menu-overlay.show,
-#search-overlay.show {
+#search-overlay.show,
+#sidebar-overlay.show {
     pointer-events: auto;
     opacity: 1;
 }

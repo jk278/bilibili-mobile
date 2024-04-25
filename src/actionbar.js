@@ -2,7 +2,10 @@
 // eslint-disable-next-line no-undef
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
 
-// 操作栏: DOMContentLoaded 之后
+/**
+ * 管理操作栏的函数(DOMContentLoaded 之后)
+ * fuck: 消息页顶栏不统一
+ */
 export function handleActionbar () {
   const actionbar = Object.assign(document.createElement('div'), {
     id: 'actionbar',
@@ -35,31 +38,36 @@ export function handleActionbar () {
       </div>
       `
   })
-
   document.body.appendChild(actionbar)
 
-  if (window.location.pathname === '/') {
+  // window 是全局对象，window.location.href 可省略 window
+  if (location.hostname === 'www.bilibili.com' && location.pathname === '/') {
     actionbar.classList.add('home')
     setRefreshBtn()
   }
 
-  if (window.location.pathname.startsWith('/video')) {
+  if (location.pathname.startsWith('/video')) {
     actionbar.classList.add('video')
     setFullbtn()
+  } else if (location.hostname === 'message.bilibili.com') {
+    actionbar.classList.add('message')
+    setSearchBtn('message')
   } else {
     setTopBtn()
   }
 
-  if (window.location.hostname === 'search.bilibili.com') {
+  if (location.hostname === 'search.bilibili.com') {
     actionbar.classList.add('search')
-    setSearchBtn(true)
+    setSearchBtn('search')
     setShowMoreBtn()
   } else {
     setSearchBtn()
   }
 
   setHomeBtn()
-  setMenuBtn()
+  if (location.hostname !== 'message.bilibili.com') {
+    setMenuBtn()
+  }
 
   function setFullbtn () {
     let clickTimer = null
@@ -110,7 +118,11 @@ export function handleActionbar () {
     home.addEventListener('click', () => { window.location.href = 'https://www.bilibili.com/' })
   }
 
-  function setSearchBtn (isSearchPage) {
+  /**
+ * 设置不同页面的搜索事件的函数
+ * @param {string} page - 简短描述页面的字符串: search, message
+ */
+  function setSearchBtn (page) {
     const searchFab = document.getElementById('search-fab')
     const svg = searchFab.querySelector('svg')
 
@@ -118,8 +130,10 @@ export function handleActionbar () {
     searchOverlay.id = 'search-overlay'
     searchFab.appendChild(searchOverlay)
 
+    const containerSelector = page === 'message' ? '.nav-search-box' : '.center-search-container'
+
     let searchFabText
-    if (isSearchPage) {
+    if (page === 'search') {
       // 底部显示搜索文本
       const pageInput = document.querySelector('.search-input input')
       searchFabText = Object.assign(document.createElement('div'), {
@@ -142,15 +156,15 @@ export function handleActionbar () {
       clearTimeout(clickTimer)
 
       clickTimer = setTimeout(() => {
-        const input = document.querySelector('.center-search-container input')
+        const input = document.querySelector(`${containerSelector} input`)
 
         if (input) {
-          document.querySelector('.center-search-container').classList.toggle('show')
+          document.querySelector(`${containerSelector}`).classList.toggle('show')
           input.focus()
           searchOverlay.classList.toggle('show')
           searchFab.classList.toggle('active')
 
-          if (isSearchPage) {
+          if (page === 'search') {
             // 移除之前添加的 input 事件监听器
             input.removeEventListener('input', handleInput)
 
@@ -178,7 +192,7 @@ export function handleActionbar () {
       }, 300)
     })
 
-    if (isSearchPage) {
+    if (page === 'search') {
       searchFab.addEventListener('dblclick', () => {
         clearTimeout(clickTimer)
 
@@ -227,7 +241,7 @@ export function handleActionbar () {
       innerHTML: `
     <div id="header-in-menu">
       <ul>
-        <li data-refer=".right-entry--message">私信</li>
+        <li data-refer=".right-entry--message">消息</li>
         <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
         <li data-refer=".header-favorite-container">收藏</li>
         <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
@@ -241,6 +255,7 @@ export function handleActionbar () {
 
     menuFab.addEventListener('click', () => {
       menu.classList.add('show')
+      // 显示消息数
       document.body.setAttribute('menu', '')
       menuOverlay.classList.add('show')
       menuFab.classList.add('active')
@@ -255,7 +270,9 @@ export function handleActionbar () {
 
         const refer = item.dataset.refer
         sessionStorage.setItem('opened-dailog', refer)
-        simulateMouseEnter(document.querySelector(`.bili-header__bar ${refer}`))
+
+        const mouseEvent = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+        document.querySelector(`.bili-header__bar ${refer}`).dispatchEvent(mouseEvent)
       })
     })
 
@@ -267,18 +284,10 @@ export function handleActionbar () {
       menuFab.classList.remove('active')
 
       const refer = sessionStorage.getItem('opened-dailog') || ''
-      simulateMouseLeave(document.querySelector(`.bili-header__bar ${refer}`))
+
+      const mouseEvent = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+      document.querySelector(`.bili-header__bar ${refer}`).dispatchEvent(mouseEvent)
     })
-
-    function simulateMouseEnter (element) {
-      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-
-    function simulateMouseLeave (element) {
-      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
   }
 
   function setRefreshBtn () {
@@ -314,22 +323,50 @@ export function handleActionbar () {
 }
 
 // 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
-export function handleSidebar () {
-  const sidebarBtn = document.getElementById('sidebar-fab')
-  const videoContainer = document.querySelector('#mirror-vdcon')
 
-  sidebarBtn.addEventListener('click', () => {
-    videoContainer.toggleAttribute('sidebar')
-  })
-
-  function closeSidebar () {
-    videoContainer.removeAttribute('sidebar')
+/**
+ * 处理侧边栏事件的函数
+ * @param {string} page - 简短描述页面的字符串: video, message
+ */
+export function handleSidebar (page) {
+  if (page === 'message') {
+    handleMessageSidebar()
+  } else {
+    handleVideoSidebar()
   }
 
-  const recommendLiist = document.getElementById('reco_list')
-  recommendLiist.addEventListener('click', (event) => {
-    const nextPlay = document.querySelector('.rec-title')
-    const recommendFooter = document.querySelector('.rec-footer')
-    if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
-  })
+  function handleVideoSidebar () {
+    const sidebarFab = document.getElementById('sidebar-fab')
+    const videoContainer = document.querySelector('#mirror-vdcon')
+
+    sidebarFab.addEventListener('click', () => {
+      videoContainer.toggleAttribute('sidebar')
+    })
+
+    function closeSidebar () {
+      videoContainer.removeAttribute('sidebar')
+    }
+
+    const recommendLiist = document.getElementById('reco_list')
+    recommendLiist.addEventListener('click', (event) => {
+      const nextPlay = document.querySelector('.rec-title')
+      const recommendFooter = document.querySelector('.rec-footer')
+      if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+    })
+  }
+
+  function handleMessageSidebar () {
+    const sidebarFab = document.getElementById('sidebar-fab')
+    const messageContainer = document.querySelector('body>.container')
+
+    sidebarFab.addEventListener('click', () => {
+      messageContainer.toggleAttribute('sidebar')
+      sidebarOverlay.classList.toggle('show')
+      sidebarFab.classList.toggle('active')
+    })
+
+    const sidebarOverlay = document.createElement('div')
+    sidebarOverlay.id = 'sidebar-overlay'
+    sidebarFab.appendChild(sidebarOverlay)
+  }
 }

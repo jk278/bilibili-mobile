@@ -6,12 +6,14 @@ import './style/home.css'
 import './style/video.css'
 import './style/search.css'
 import './style/user.css'
+import './style/message.css'
 
 import { initViewport } from './init.js'
 import { preventBeforeUnload, increaseVideoLoadSize, handleScroll } from './window.js'
 import { handleScriptPreSetting, handleScriptSetting } from './setting.js'
 import { handleHeaderImage } from './header-image.js'
 import { videoInteraction } from './video.js'
+import { createUnfoldBtn } from './element.js'
 
 import { handleActionbar, handleSidebar } from './actionbar.js'
 
@@ -25,13 +27,12 @@ import { handleActionbar, handleSidebar } from './actionbar.js'
 
   console.log('Bilibili mobile execute!')
 
-  const url = window.location
   // 简单表达式: 常量折叠，解析引擎优化为只计算一次，然后缓存入临时变量。函数调用、对象属性访问等不适用。
-  const part = url.hostname.substring(0, url.hostname.indexOf('.'))
+  const part = location.hostname.substring(0, location.hostname.indexOf('.'))
 
   switch (part) {
     case 'www':
-      if (url.pathname === '/') {
+      if (location.pathname === '/') {
         increaseVideoLoadSize()
         handleHeaderImage()
       }
@@ -39,7 +40,7 @@ import { handleActionbar, handleSidebar } from './actionbar.js'
       waitDOMContentLoaded(() => {
         handleActionbar()
         handleScriptSetting()
-        if (url.pathname.startsWith('/video')) {
+        if (location.pathname.startsWith('/video')) {
           videoInteraction()
           handleSidebar()
           handleScroll('video')
@@ -58,7 +59,15 @@ import { handleActionbar, handleSidebar } from './actionbar.js'
       break
     case 'space':
       break
-    case 'm':
+    case 'message':
+      handleScriptPreSetting()
+      waitDOMContentLoaded(() => {
+        handleActionbar()
+        handleScriptSetting()
+        handleSidebar('message')
+        // handleScroll('message')
+        createUnfoldBtn()
+      })
       break
     default:
       break

@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.4.4
+// @version            4.5
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -347,7 +347,7 @@ body {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    background-color: white;
+    background-color: rgba(255, 255, 255, .85);
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
     transition: .5s transform ease-in;
 
@@ -357,7 +357,7 @@ body {
 
 @keyframes actionbarFadeIn {
     to {
-        opacity: 0.85;
+        opacity: 1;
     }
 }
 
@@ -377,15 +377,25 @@ body {
 }
 
 #actionbar.home {
-
     #refresh-fab {
         display: block;
     }
 }
 
 #actionbar.video {
+    #full-now {
+        display: block;
+    }
+}
 
-    #full-now,
+#actionbar.message {
+    #menu-fab {
+        display: none;
+    }
+}
+
+#actionbar.video,
+#actionbar.message {
     #sidebar-fab {
         display: block;
     }
@@ -396,16 +406,13 @@ body {
 }
 
 #actionbar.search {
-
     #show-more-fab {
         display: block;
     }
-    
 }
 
 #menu-fab {
     position: relative;
-    background: inherit;
 }
 
 #search-fab,
@@ -480,7 +487,8 @@ body #header-in-menu li {
 
 /* 底部菜单、侧边栏: layout */
 #menu-overlay,
-#search-overlay {
+#search-overlay,
+#sidebar-overlay {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -493,7 +501,8 @@ body #header-in-menu li {
 }
 
 #menu-overlay.show,
-#search-overlay.show {
+#search-overlay.show,
+#sidebar-overlay.show {
     pointer-events: auto;
     opacity: 1;
 }
@@ -768,11 +777,17 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     background: unset !important;
 }
 
+/* 首页顶栏防滚动 */
+.bili-header__bar {
+    position: fixed !important;
+}
+
 /* 首页顶栏偏移 */
 .large-header .bili-header__bar {
     top: -64px !important;
 }
 
+/* 视频搜索页顶栏内容跟随外框移出屏幕 */
 .fixed-header .bili-header__bar {
     position: absolute !important;
 }
@@ -2655,6 +2670,214 @@ span.length {
 
 /***/ }),
 /* 21 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_message_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(22);
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_message_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_message_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_message_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_message_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+/* 22 */
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/* ----- fuck: 消息页顶栏不统一 ----- */
+
+/* 顶栏外框 */
+#internationalHeader {
+    top: -64px !important;
+
+    /* 禁用原最小宽度(适配搜索框宽度) */
+    min-width: 0 !important;
+
+    /* 登录通知 */
+    position: fixed;
+}
+
+/* 顶栏空白 */
+#message-navbar {
+    display: none;
+}
+
+/* 主体纵向居中 */
+body>.container {
+    margin-top: 0;
+}
+
+.space-right {
+    padding-top: calc(32px - var(--actionbar-height)/2);
+}
+
+/* 主体宽度 */
+.container {
+    width: 100% !important;
+}
+
+/* 搜索框 */
+.nav-search-box {
+    position: absolute !important;
+    width: 100% !important;
+    left: 0;
+    top: 64px;
+    padding: 10px 20px 5px !important;
+    z-index: 3;
+    margin: 0 !important;
+    display: none !important;
+}
+
+.nav-search-box.show {
+    display: block !important;
+}
+
+/* 禁止标题("我的消息"等)、发送框、多人点赞时的头像突出 */
+.space-right-top,
+.send-box,
+.count-2 .avatar:first-child {
+    z-index: 0 !important;
+}
+
+/* 消息分类改为侧边栏 */
+.space-left {
+    position: fixed;
+    height: 100%;
+    z-index: 3;
+    transform: translateX(-100%);
+    transition: transform .4s ease-in;
+}
+
+body>.container[sidebar] .space-left {
+    transform: none;
+}
+
+/* 侧边栏内容居中 */
+.space-left .side-bar {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 消息列表 */
+.bili-im .left {
+    width: 70px !important;
+    transition: width .4s ease-in;
+}
+
+/* 列表头 */
+.bili-im .left .title {
+    padding-left: 10px !important;
+}
+
+/* 列表项 */
+.bili-im .left .list-item {
+    padding: 15px;
+
+    .avatar {
+        margin-right: 15px;
+    }
+}
+
+/* 列表底部留空 36px */
+.bili-im .left .list-container {
+    height: calc(100% - 72px) !important;
+}
+
+/* 列表添加展开按钮 */
+#unfold-btn {
+    padding-left: 22px;
+    line-height: 35px;
+    height: 36px;
+    border-top: 1px solid #e9eaec;
+    user-select: none;
+}
+
+/* 删除聊天 */
+.list-item .close {
+    width: 18px !important;
+}
+
+/* 消息通知 */
+.msg-notify {
+    width: 100% !important;
+}
+
+/* 消息外框 */
+.message-list {
+    padding: 5px;
+    /* 固定宽度: 减去最外(.space-right) padding 20px, 消息列表 70px */
+    width: calc(100vw - 90px);
+}
+
+/* 聊天设置 */
+.bili-im .menu-list {
+    left: unset !important;
+    right: 0;
+}
+
+/* 登录通知 */
+.notification-warp {
+    width: 100% !important;
+    overflow: auto;
+}`, ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+/* 23 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -2671,7 +2894,7 @@ function initViewport () {
 
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -2814,7 +3037,7 @@ function scrollToToggleSidebar () {
 
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -3015,7 +3238,7 @@ function handleScriptSetting () {
 
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -3097,7 +3320,7 @@ function handleHeaderImage () {
 
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -3237,7 +3460,52 @@ function handleVideoLongPress () {
 
 
 /***/ }),
-/* 26 */
+/* 28 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createUnfoldBtn: () => (/* binding */ createUnfoldBtn)
+/* harmony export */ });
+function createUnfoldBtn () {
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      // 遍历此次观察到的添加节点
+      Array.from(mutation.addedNodes).forEach(addedNode => {
+        // Log addedNode 和 addedNode.nodeType, nodeType 为 1 表示 Node.ELEMENT_NODE
+        if (addedNode.classList.contains('bili-im')) {
+          createElement()
+          observer.disconnect()
+        }
+      })
+    })
+  })
+
+  observer.observe(document.querySelector('body>.container'), { childList: true, subtree: true })
+
+  function createElement () {
+    const unfoldBtn = Object.assign(document.createElement('div'), {
+      id: 'unfold-btn',
+      textContent: '展开'
+    })
+    const messageList = document.querySelector('.bili-im .left')
+    messageList.appendChild(unfoldBtn)
+
+    unfoldBtn.addEventListener('click', () => {
+      if (messageList.style.cssText === '') {
+        messageList.style.cssText = 'width: 240px !important'
+        unfoldBtn.textContent = '折叠'
+      } else {
+        messageList.style.cssText = ''
+        unfoldBtn.textContent = '展开'
+      }
+    })
+  }
+}
+
+
+/***/ }),
+/* 29 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -3249,7 +3517,10 @@ __webpack_require__.r(__webpack_exports__);
 // eslint-disable-next-line no-undef
 const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
 
-// 操作栏: DOMContentLoaded 之后
+/**
+ * 管理操作栏的函数(DOMContentLoaded 之后)
+ * fuck: 消息页顶栏不统一
+ */
 function handleActionbar () {
   const actionbar = Object.assign(document.createElement('div'), {
     id: 'actionbar',
@@ -3282,31 +3553,36 @@ function handleActionbar () {
       </div>
       `
   })
-
   document.body.appendChild(actionbar)
 
-  if (window.location.pathname === '/') {
+  // window 是全局对象，window.location.href 可省略 window
+  if (location.hostname === 'www.bilibili.com' && location.pathname === '/') {
     actionbar.classList.add('home')
     setRefreshBtn()
   }
 
-  if (window.location.pathname.startsWith('/video')) {
+  if (location.pathname.startsWith('/video')) {
     actionbar.classList.add('video')
     setFullbtn()
+  } else if (location.hostname === 'message.bilibili.com') {
+    actionbar.classList.add('message')
+    setSearchBtn('message')
   } else {
     setTopBtn()
   }
 
-  if (window.location.hostname === 'search.bilibili.com') {
+  if (location.hostname === 'search.bilibili.com') {
     actionbar.classList.add('search')
-    setSearchBtn(true)
+    setSearchBtn('search')
     setShowMoreBtn()
   } else {
     setSearchBtn()
   }
 
   setHomeBtn()
-  setMenuBtn()
+  if (location.hostname !== 'message.bilibili.com') {
+    setMenuBtn()
+  }
 
   function setFullbtn () {
     let clickTimer = null
@@ -3357,7 +3633,11 @@ function handleActionbar () {
     home.addEventListener('click', () => { window.location.href = 'https://www.bilibili.com/' })
   }
 
-  function setSearchBtn (isSearchPage) {
+  /**
+ * 设置不同页面的搜索事件的函数
+ * @param {string} page - 简短描述页面的字符串: search, message
+ */
+  function setSearchBtn (page) {
     const searchFab = document.getElementById('search-fab')
     const svg = searchFab.querySelector('svg')
 
@@ -3365,8 +3645,10 @@ function handleActionbar () {
     searchOverlay.id = 'search-overlay'
     searchFab.appendChild(searchOverlay)
 
+    const containerSelector = page === 'message' ? '.nav-search-box' : '.center-search-container'
+
     let searchFabText
-    if (isSearchPage) {
+    if (page === 'search') {
       // 底部显示搜索文本
       const pageInput = document.querySelector('.search-input input')
       searchFabText = Object.assign(document.createElement('div'), {
@@ -3389,15 +3671,15 @@ function handleActionbar () {
       clearTimeout(clickTimer)
 
       clickTimer = setTimeout(() => {
-        const input = document.querySelector('.center-search-container input')
+        const input = document.querySelector(`${containerSelector} input`)
 
         if (input) {
-          document.querySelector('.center-search-container').classList.toggle('show')
+          document.querySelector(`${containerSelector}`).classList.toggle('show')
           input.focus()
           searchOverlay.classList.toggle('show')
           searchFab.classList.toggle('active')
 
-          if (isSearchPage) {
+          if (page === 'search') {
             // 移除之前添加的 input 事件监听器
             input.removeEventListener('input', handleInput)
 
@@ -3425,7 +3707,7 @@ function handleActionbar () {
       }, 300)
     })
 
-    if (isSearchPage) {
+    if (page === 'search') {
       searchFab.addEventListener('dblclick', () => {
         clearTimeout(clickTimer)
 
@@ -3474,7 +3756,7 @@ function handleActionbar () {
       innerHTML: `
     <div id="header-in-menu">
       <ul>
-        <li data-refer=".right-entry--message">私信</li>
+        <li data-refer=".right-entry--message">消息</li>
         <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
         <li data-refer=".header-favorite-container">收藏</li>
         <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
@@ -3488,6 +3770,7 @@ function handleActionbar () {
 
     menuFab.addEventListener('click', () => {
       menu.classList.add('show')
+      // 显示消息数
       document.body.setAttribute('menu', '')
       menuOverlay.classList.add('show')
       menuFab.classList.add('active')
@@ -3502,7 +3785,9 @@ function handleActionbar () {
 
         const refer = item.dataset.refer
         sessionStorage.setItem('opened-dailog', refer)
-        simulateMouseEnter(document.querySelector(`.bili-header__bar ${refer}`))
+
+        const mouseEvent = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
+        document.querySelector(`.bili-header__bar ${refer}`).dispatchEvent(mouseEvent)
       })
     })
 
@@ -3514,18 +3799,10 @@ function handleActionbar () {
       menuFab.classList.remove('active')
 
       const refer = sessionStorage.getItem('opened-dailog') || ''
-      simulateMouseLeave(document.querySelector(`.bili-header__bar ${refer}`))
+
+      const mouseEvent = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
+      document.querySelector(`.bili-header__bar ${refer}`).dispatchEvent(mouseEvent)
     })
-
-    function simulateMouseEnter (element) {
-      const event = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
-
-    function simulateMouseLeave (element) {
-      const event = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-      element.dispatchEvent(event)
-    }
   }
 
   function setRefreshBtn () {
@@ -3561,24 +3838,52 @@ function handleActionbar () {
 }
 
 // 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
-function handleSidebar () {
-  const sidebarBtn = document.getElementById('sidebar-fab')
-  const videoContainer = document.querySelector('#mirror-vdcon')
 
-  sidebarBtn.addEventListener('click', () => {
-    videoContainer.toggleAttribute('sidebar')
-  })
-
-  function closeSidebar () {
-    videoContainer.removeAttribute('sidebar')
+/**
+ * 处理侧边栏事件的函数
+ * @param {string} page - 简短描述页面的字符串: video, message
+ */
+function handleSidebar (page) {
+  if (page === 'message') {
+    handleMessageSidebar()
+  } else {
+    handleVideoSidebar()
   }
 
-  const recommendLiist = document.getElementById('reco_list')
-  recommendLiist.addEventListener('click', (event) => {
-    const nextPlay = document.querySelector('.rec-title')
-    const recommendFooter = document.querySelector('.rec-footer')
-    if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
-  })
+  function handleVideoSidebar () {
+    const sidebarFab = document.getElementById('sidebar-fab')
+    const videoContainer = document.querySelector('#mirror-vdcon')
+
+    sidebarFab.addEventListener('click', () => {
+      videoContainer.toggleAttribute('sidebar')
+    })
+
+    function closeSidebar () {
+      videoContainer.removeAttribute('sidebar')
+    }
+
+    const recommendLiist = document.getElementById('reco_list')
+    recommendLiist.addEventListener('click', (event) => {
+      const nextPlay = document.querySelector('.rec-title')
+      const recommendFooter = document.querySelector('.rec-footer')
+      if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+    })
+  }
+
+  function handleMessageSidebar () {
+    const sidebarFab = document.getElementById('sidebar-fab')
+    const messageContainer = document.querySelector('body>.container')
+
+    sidebarFab.addEventListener('click', () => {
+      messageContainer.toggleAttribute('sidebar')
+      sidebarOverlay.classList.toggle('show')
+      sidebarFab.classList.toggle('active')
+    })
+
+    const sidebarOverlay = document.createElement('div')
+    sidebarOverlay.id = 'sidebar-overlay'
+    sidebarFab.appendChild(sidebarOverlay)
+  }
 }
 
 
@@ -3666,13 +3971,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_video_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
 /* harmony import */ var _style_search_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(17);
 /* harmony import */ var _style_user_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(19);
-/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(21);
-/* harmony import */ var _window_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(22);
-/* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(23);
-/* harmony import */ var _header_image_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(24);
-/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(25);
-/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(26);
+/* harmony import */ var _style_message_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(21);
+/* harmony import */ var _init_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(23);
+/* harmony import */ var _window_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(24);
+/* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(25);
+/* harmony import */ var _header_image_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(26);
+/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(27);
+/* harmony import */ var _element_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(28);
+/* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(29);
 // @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
+
+
 
 
 
@@ -3694,45 +4003,52 @@ __webpack_require__.r(__webpack_exports__);
 
   function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
 
-  (0,_init_js__WEBPACK_IMPORTED_MODULE_6__.initViewport)()
-  ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.preventBeforeUnload)()
+  (0,_init_js__WEBPACK_IMPORTED_MODULE_7__.initViewport)()
+  ;(0,_window_js__WEBPACK_IMPORTED_MODULE_8__.preventBeforeUnload)()
 
   console.log('Bilibili mobile execute!')
 
-  const url = window.location
   // 简单表达式: 常量折叠，解析引擎优化为只计算一次，然后缓存入临时变量。函数调用、对象属性访问等不适用。
-  const part = url.hostname.substring(0, url.hostname.indexOf('.'))
+  const part = location.hostname.substring(0, location.hostname.indexOf('.'))
 
   switch (part) {
     case 'www':
-      if (url.pathname === '/') {
-        (0,_window_js__WEBPACK_IMPORTED_MODULE_7__.increaseVideoLoadSize)()
-        ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_9__.handleHeaderImage)()
+      if (location.pathname === '/') {
+        (0,_window_js__WEBPACK_IMPORTED_MODULE_8__.increaseVideoLoadSize)()
+        ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_10__.handleHeaderImage)()
       }
-      (0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
+      (0,_setting_js__WEBPACK_IMPORTED_MODULE_9__.handleScriptPreSetting)()
       waitDOMContentLoaded(() => {
-        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleActionbar)()
-        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
-        if (url.pathname.startsWith('/video')) {
-          (0,_video_js__WEBPACK_IMPORTED_MODULE_10__.videoInteraction)()
-          ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleSidebar)()
-          ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('video')
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_13__.handleActionbar)()
+        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_9__.handleScriptSetting)()
+        if (location.pathname.startsWith('/video')) {
+          (0,_video_js__WEBPACK_IMPORTED_MODULE_11__.videoInteraction)()
+          ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_13__.handleSidebar)()
+          ;(0,_window_js__WEBPACK_IMPORTED_MODULE_8__.handleScroll)('video')
         } else {
-          (0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)()
+          (0,_window_js__WEBPACK_IMPORTED_MODULE_8__.handleScroll)()
         }
       })
       break
     case 'search':
-      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
+      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_9__.handleScriptPreSetting)()
       waitDOMContentLoaded(() => {
-        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleActionbar)()
-        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
-        ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('search')
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_13__.handleActionbar)()
+        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_9__.handleScriptSetting)()
+        ;(0,_window_js__WEBPACK_IMPORTED_MODULE_8__.handleScroll)('search')
       })
       break
     case 'space':
       break
-    case 'm':
+    case 'message':
+      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_9__.handleScriptPreSetting)()
+      waitDOMContentLoaded(() => {
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_13__.handleActionbar)()
+        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_9__.handleScriptSetting)()
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_13__.handleSidebar)('message')
+        // handleScroll('message')
+        ;(0,_element_js__WEBPACK_IMPORTED_MODULE_12__.createUnfoldBtn)()
+      })
       break
     default:
       break

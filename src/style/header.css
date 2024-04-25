@@ -18,11 +18,17 @@
     background: unset !important;
 }
 
+/* 首页顶栏防滚动 */
+.bili-header__bar {
+    position: fixed !important;
+}
+
 /* 首页顶栏偏移 */
 .large-header .bili-header__bar {
     top: -64px !important;
 }
 
+/* 视频搜索页顶栏内容跟随外框移出屏幕 */
 .fixed-header .bili-header__bar {
     position: absolute !important;
 }
