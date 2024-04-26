@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.5.3.5
+// @version            4.5.3.6
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -586,6 +586,15 @@ input[type="number"]::-webkit-outer-spin-button {
     border-radius: 14px;
     border: 1px solid var(--line_regular);
     background-color: var(--graph_bg_thin) !important;
+}
+
+/* 自定义菜单弹窗边距放在选项下面,选中才显示 */
+label:has(#menu-dialog-bottom-check)+label {
+    display: none;
+}
+
+label:has(#menu-dialog-bottom-check:checked)+label {
+    display: flex;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
@@ -3303,7 +3312,7 @@ function handleScriptSetting () {
           <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
           <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
-          <label><input type="checkbox"><span>菜单弹窗(收藏、历史等)靠下</span></label>
+          <label><input type="checkbox" id="menu-dialog-bottom-check"><span>菜单弹窗(收藏、历史等)靠下</span></label>
           <label><input type="number" value="20" class="number-1"><span>自定义菜单弹窗底边距</span></label>
           <label><input type="number" value="2" class="number-2"><span>自定义视频长按倍速</span></label>
         </div>

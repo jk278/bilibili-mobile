@@ -255,3 +255,12 @@ input[type="number"]::-webkit-outer-spin-button {
     border: 1px solid var(--line_regular);
     background-color: var(--graph_bg_thin) !important;
 }
+
+/* 自定义菜单弹窗边距放在选项下面,选中才显示 */
+label:has(#menu-dialog-bottom-check)+label {
+    display: none;
+}
+
+label:has(#menu-dialog-bottom-check:checked)+label {
+    display: flex;
+}

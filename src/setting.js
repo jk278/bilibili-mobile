@@ -195,7 +195,7 @@ export function handleScriptSetting () {
           <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
           <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
-          <label><input type="checkbox"><span>菜单弹窗(收藏、历史等)靠下</span></label>
+          <label><input type="checkbox" id="menu-dialog-bottom-check"><span>菜单弹窗(收藏、历史等)靠下</span></label>
           <label><input type="number" value="20" class="number-1"><span>自定义菜单弹窗底边距</span></label>
           <label><input type="number" value="2" class="number-2"><span>自定义视频长按倍速</span></label>
         </div>
