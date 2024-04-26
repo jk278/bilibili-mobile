@@ -2,7 +2,7 @@
    ------------------------ 顶栏 ----------------------- 
    -------------------------------------------------- */
 
-/* #i_cecream 属首页和搜索页，#app #biliMainHeader 属视频页 */
+/* #i_cecream 属首页(含顶栏)和搜索页(不含顶栏)，#app #biliMainHeader 属视频页 */
 
 /* 顶栏外框: translate 会生成新的堆叠上下文，导致 position:fixed 的消息数不可显示 */
 #biliMainHeader,
@@ -18,14 +18,11 @@
     background: unset !important;
 }
 
-/* 首页顶栏防滚动 */
-.bili-header__bar {
-    position: fixed !important;
-}
-
 /* 首页顶栏偏移 */
 .large-header .bili-header__bar {
     top: -64px !important;
+    /* 首页顶栏防滚动(避免搜索页异常) */
+    position: fixed !important;
 }
 
 /* 视频搜索页顶栏内容跟随外框移出屏幕 */

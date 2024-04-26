@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.5.2
+// @version            4.5.3.5
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -762,7 +762,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
    ------------------------ 顶栏 ----------------------- 
    -------------------------------------------------- */
 
-/* #i_cecream 属首页和搜索页，#app #biliMainHeader 属视频页 */
+/* #i_cecream 属首页(含顶栏)和搜索页(不含顶栏)，#app #biliMainHeader 属视频页 */
 
 /* 顶栏外框: translate 会生成新的堆叠上下文，导致 position:fixed 的消息数不可显示 */
 #biliMainHeader,
@@ -778,14 +778,11 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -----------------------------------
     background: unset !important;
 }
 
-/* 首页顶栏防滚动 */
-.bili-header__bar {
-    position: fixed !important;
-}
-
 /* 首页顶栏偏移 */
 .large-header .bili-header__bar {
     top: -64px !important;
+    /* 首页顶栏防滚动(避免搜索页异常) */
+    position: fixed !important;
 }
 
 /* 视频搜索页顶栏内容跟随外框移出屏幕 */
@@ -3225,14 +3222,16 @@ function handleScriptPreSetting () {
 // 脚本设置
 function handleScriptSetting () {
   const keyValue = {
-    key1: 'full-unmuted',
-    key2: 'ban-action-hidden',
-    key3: 'message-sidebar-right',
-    key4: 'menu-dialog-bottom',
+    key0: 'full-unmuted',
+    key1: 'ban-action-hidden',
+    key2: 'message-sidebar-right',
+    key3: 'menu-dialog-bottom',
+    key4: 'custom-menu-dialog-bottom',
     key5: 'custom-longpress-speed'
   }
 
-  const speedIndex = 4
+  const bottomIndex = 4
+  const speedIndex = 5
 
   if (GM_getValue('ban-action-hidden', false)) {
     banActionHidden()
@@ -3268,18 +3267,20 @@ function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('message-sidebar-right', false)) {
+  if (GM_getValue('menu-dialog-bottom', false)) {
     menuDialogBottom()
   }
 
   function menuDialogBottom () {
+    const customBottom = GM_getValue('custom-menu-dialog-bottom', 20)
+
     const style = Object.assign(document.createElement('style'), {
       id: 'menu-dialog-bottom',
       textContent: `
         .v-popover.v-popover {
           top: unset !important;
           bottom: var(--actionbar-height);
-          transform: translate(-50%, -20px) !important;
+          transform: translate(-50%, -${customBottom}px) !important;
         }
       `
     })
@@ -3303,7 +3304,8 @@ function handleScriptSetting () {
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
           <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
           <label><input type="checkbox"><span>菜单弹窗(收藏、历史等)靠下</span></label>
-          <label><input type="number" value="2"><span>自定义视频长按倍速</span></label>
+          <label><input type="number" value="20" class="number-1"><span>自定义菜单弹窗底边距</span></label>
+          <label><input type="number" value="2" class="number-2"><span>自定义视频长按倍速</span></label>
         </div>
         <button id="setting-conform-2" class="setting-conform">确认</button>
         `
@@ -3313,23 +3315,26 @@ function handleScriptSetting () {
     const values = Object.values(keyValue) // 返回 [v1, v2]
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) { // 返回 [ [1,v1], [2,v2] ]
-      if (index !== speedIndex) {
+      if (index !== bottomIndex && index !== speedIndex) {
         checkboxElements[index].checked = GM_getValue(value, false)
       }
     }
-    settingPanel.querySelector('input[type="number"]').value = GM_getValue(values[speedIndex], 2)
+    settingPanel.querySelector('input.number-1[type="number"]').value = GM_getValue(values[bottomIndex], 20)
+    settingPanel.querySelector('input.number-2[type="number"]').value = GM_getValue(values[speedIndex], 2)
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
       const isBanActionHidden = GM_getValue('ban-action-hidden', false)
       const ismessageSidebarRight = GM_getValue('message-sidebar-right', false)
       const isMenuDialogBottom = GM_getValue('menu-dialog-bottom', false)
+      const customMenuDialogBottom = GM_getValue('custom-menu-dialog-bottom', 20)
 
       for (const [index, value] of values.entries()) {
-        if (index !== speedIndex) {
+        if (index !== bottomIndex && index !== speedIndex) {
           GM_setValue(value, checkboxElements[index].checked)
         }
       }
-      GM_setValue(values[speedIndex], Number(settingPanel.querySelector('input[type="number"]').value))
+      GM_setValue(values[bottomIndex], Number(settingPanel.querySelector('input.number-1[type="number"]').value))
+      GM_setValue(values[speedIndex], Number(settingPanel.querySelector('input.number-2[type="number"]').value))
 
       settingPanel.classList.remove('show')
 
@@ -3341,6 +3346,10 @@ function handleScriptSetting () {
       }
       if (GM_getValue('menu-dialog-bottom', false) !== isMenuDialogBottom) {
         isMenuDialogBottom ? document.getElementById('menu-dialog-bottom').remove() : menuDialogBottom()
+      }
+      if (GM_getValue('custom-menu-dialog-bottom', 20) !== customMenuDialogBottom) {
+        document.getElementById('menu-dialog-bottom').remove()
+        menuDialogBottom()
       }
     })
   }
