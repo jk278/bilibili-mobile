@@ -299,15 +299,12 @@ export function handleActionbar () {
     menuOverlay.addEventListener('touchstart', () => menuOverlay.addEventListener('touchmove', handleTouchMove))
     menuOverlay.addEventListener('touchend', () => menuOverlay.removeEventListener('touchmove', handleTouchMove))
 
-    const categoryDialog = Object.assign(document.createElement('div'), {
-      className: 'v-popover',
-      id: 'copy-category-dialog',
+    const falseHeader = Object.assign(document.createElement('div'), {
+      className: 'bili-header false-header',
       innerHTML: categoryInnerHTML
     })
-    const falseHeader = document.createElement('div')
-    falseHeader.className = 'bili-header false-header'
-    falseHeader.appendChild(categoryDialog)
     document.body.appendChild(falseHeader)
+    const categoryDialog = falseHeader.firstChild
 
     categoryDialog.addEventListener('mouseenter', () => { categoryDialog.style.display = 'block' })
     categoryDialog.addEventListener('mouseleave', () => { categoryDialog.style.cssText = '' })
