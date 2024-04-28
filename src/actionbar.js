@@ -1,6 +1,6 @@
 /* global GM_getValue */
-// eslint-disable-next-line no-undef
-const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
+
+import categoryInnerHTML from './category.html'
 
 /**
  * 管理操作栏的函数(DOMContentLoaded 之后)
@@ -77,22 +77,19 @@ export function handleActionbar () {
     fullBtn.addEventListener('click', () => {
       clearTimeout(clickTimer)
 
-      clickTimer = setTimeout(function () {
-        const video = document.querySelector('video')
-        // 等于符号优先级更高
+      clickTimer = setTimeout(() => {
+        const videoWrap = document.querySelector('.bpx-player-video-wrap')
+        videoWrap.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
+
         if (GM_getValue('full-unmuted', false)) {
+          const video = document.querySelector('video')
+
           video.play()
           video.muted = false
-          if (video.volume === 0) {
-            document.querySelector('.bpx-player-ctrl-muted-icon').click()
-          }
-        }
 
-        const isPortrait = video.videoWidth / video.videoHeight < 1
-        const btnSelector = isPortrait ? '.bpx-player-ctrl-web' : '.bpx-player-ctrl-full'
-        const rawFullBtn = document.querySelector(btnSelector)
-        rawFullBtn?.click()
-      }, 300)
+          if (video.volume === 0) { document.querySelector('.bpx-player-ctrl-muted-icon').click() }
+        }
+      }, 250)
     })
 
     fullBtn.addEventListener('dblclick', () => {
@@ -101,22 +98,19 @@ export function handleActionbar () {
       const video = document.querySelector('video')
       video.play()
       video.muted = false
-      if (video.volume === 0) {
-        document.querySelector('.bpx-player-ctrl-muted-icon').click()
-      }
+
+      if (video.volume === 0) { document.querySelector('.bpx-player-ctrl-muted-icon').click() }
     })
   }
 
   function setTopBtn () {
     const topBtn = document.getElementById('my-top')
-    topBtn.addEventListener('click', () => {
-      window.scrollTo({ top: 0 })
-    })
+    topBtn.addEventListener('click', () => window.scrollTo({ top: 0 }))
   }
 
   function setHomeBtn () {
     const home = document.getElementById('my-home')
-    home.addEventListener('click', () => { window.location.href = 'https://www.bilibili.com/' })
+    home.addEventListener('click', () => (location.href = 'https://www.bilibili.com/'))
   }
 
   /**
@@ -131,7 +125,7 @@ export function handleActionbar () {
     searchOverlay.id = 'search-overlay'
     searchFab.appendChild(searchOverlay)
 
-    const containerSelector = page === 'message' ? '.nav-search-box' : '.center-search-container'
+    const searchContainer = page === 'message' ? '.nav-search-box' : '.center-search-container'
 
     let searchFabText
     if (page === 'search') {
@@ -158,11 +152,11 @@ export function handleActionbar () {
       clearTimeout(clickTimer)
 
       clickTimer = setTimeout(() => {
-        const input = document.querySelector(`${containerSelector} input`)
+        const input = document.querySelector(`${searchContainer} input`)
 
         if (input) {
           // 滑动时 .center-search-container 的 class 会刷新
-          document.querySelector(`${containerSelector}`).toggleAttribute('show')
+          document.querySelector(`${searchContainer}`).toggleAttribute('show')
           input.focus()
           searchOverlay.classList.toggle('show')
           searchFab.classList.toggle('active')
@@ -196,23 +190,12 @@ export function handleActionbar () {
     })
 
     // 避免点击阴影时 input 先失焦,导致分两次隐藏
-    searchOverlay.addEventListener('click', () => {
-      const input = document.querySelector(`${containerSelector} input`)
-      input?.focus()
-    }
-    )
+    searchOverlay.addEventListener('click', () => document.querySelector(`${searchContainer} input`)?.focus())
 
-    // 移动端 click 会先触发 touchstart 和 touchend
-    function handleTouchMove () {
-      searchFab.click()
-      searchOverlay.removeEventListener('touchmove', handleTouchMove)
-    }
-    searchOverlay.addEventListener('touchstart', () => {
-      searchOverlay.addEventListener('touchmove', handleTouchMove)
-    })
-    searchOverlay.addEventListener('touchend', () => {
-      searchOverlay.removeEventListener('touchmove', handleTouchMove)
-    })
+    // 移动端 click 会先触发 touchstart, touchend 和 mousemove
+    function handleTouchMove () { searchFab.click() && searchOverlay.removeEventListener('touchmove', handleTouchMove)() }
+    searchOverlay.addEventListener('touchstart', () => searchOverlay.addEventListener('touchmove', handleTouchMove))
+    searchOverlay.addEventListener('touchend', () => searchOverlay.removeEventListener('touchmove', handleTouchMove))
 
     if (page === 'search') {
       searchFab.addEventListener('dblclick', () => {
@@ -263,6 +246,7 @@ export function handleActionbar () {
       innerHTML: `
     <div id="header-in-menu">
       <ul>
+        <li data-refer="#copy-category-dialog">分类</li>
         <li data-refer=".right-entry--message">消息</li>
         <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
         <li data-refer=".header-favorite-container">收藏</li>
@@ -284,7 +268,7 @@ export function handleActionbar () {
     })
 
     const items = menuOverlay.querySelectorAll('li')
-    items.forEach(item => {
+    items.forEach(item =>
       item.addEventListener('click', event => {
         event.stopPropagation()
         menu.classList.remove('show')
@@ -293,10 +277,10 @@ export function handleActionbar () {
         const refer = item.dataset.refer
         sessionStorage.setItem('opened-dailog', refer)
 
-        const mouseEvent = new MouseEvent('mouseenter', { bubbles: true, view: _unsafeWindow })
-        document.querySelector(`.bili-header__bar ${refer}`).dispatchEvent(mouseEvent)
+        const referElement = document.querySelector(`${refer}`)
+        referElement.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }))
       })
-    })
+    )
 
     menuOverlay.addEventListener('click', event => {
       event.stopPropagation()
@@ -307,31 +291,32 @@ export function handleActionbar () {
 
       const refer = sessionStorage.getItem('opened-dailog') || ''
 
-      const mouseEvent = new MouseEvent('mouseleave', { bubbles: true, view: _unsafeWindow })
-      document.querySelector(`.bili-header__bar ${refer}`).dispatchEvent(mouseEvent)
+      const referElement = document.querySelector(`${refer}`)
+      referElement.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
     })
 
-    function handleTouchMove () {
-      menuOverlay.click()
-      menuOverlay.removeEventListener('touchmove', handleTouchMove)
-    }
-    menuOverlay.addEventListener('touchstart', () => {
-      menuOverlay.addEventListener('touchmove', handleTouchMove)
+    function handleTouchMove () { menuOverlay.click() && menuOverlay.removeEventListener('touchmove', handleTouchMove)() }
+    menuOverlay.addEventListener('touchstart', () => menuOverlay.addEventListener('touchmove', handleTouchMove))
+    menuOverlay.addEventListener('touchend', () => menuOverlay.removeEventListener('touchmove', handleTouchMove))
+
+    const categoryDialog = Object.assign(document.createElement('div'), {
+      className: 'v-popover',
+      id: 'copy-category-dialog',
+      innerHTML: categoryInnerHTML
     })
-    menuOverlay.addEventListener('touchend', () => {
-      menuOverlay.removeEventListener('touchmove', handleTouchMove)
-    })
+    const falseHeader = document.createElement('div')
+    falseHeader.className = 'bili-header false-header'
+    falseHeader.appendChild(categoryDialog)
+    document.body.appendChild(falseHeader)
+
+    categoryDialog.addEventListener('mouseenter', () => { categoryDialog.style.display = 'block' })
+    categoryDialog.addEventListener('mouseleave', () => { categoryDialog.style.cssText = '' })
   }
 
   function setRefreshBtn () {
     const refreshFab = document.getElementById('refresh-fab')
-    refreshFab.addEventListener('click', () => {
-      refresh()
-      function refresh () {
-        const rawRefreshBtn = document.querySelector('.flexible-roll-btn-inner')
-        rawRefreshBtn ? rawRefreshBtn.click() : setTimeout(refresh, 500)
-      }
-    })
+
+    refreshFab.addEventListener('click', document.querySelector('.flexible-roll-btn-inner')?.click)
   }
 
   function setShowMoreBtn () {
@@ -339,6 +324,7 @@ export function handleActionbar () {
 
     const handleClick = () => {
       const searchConditions = document.querySelector('.search-conditions')
+
       if (searchConditions) {
         if (sessionStorage.getItem('show-conditions') !== 'true') {
           searchConditions.classList.add('show')
@@ -372,16 +358,15 @@ export function handleSidebar (page) {
     const sidebarFab = document.getElementById('sidebar-fab')
     const videoContainer = document.querySelector('#mirror-vdcon')
 
-    sidebarFab.addEventListener('click', () => {
-      videoContainer.toggleAttribute('sidebar')
-    })
+    sidebarFab.addEventListener('click', () => videoContainer.toggleAttribute('sidebar'))
 
     function closeSidebar () {
       videoContainer.removeAttribute('sidebar')
     }
 
     const recommendLiist = document.getElementById('reco_list')
-    recommendLiist.addEventListener('click', (event) => {
+
+    recommendLiist.addEventListener('click', event => {
       const nextPlay = document.querySelector('.rec-title')
       const recommendFooter = document.querySelector('.rec-footer')
       if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }

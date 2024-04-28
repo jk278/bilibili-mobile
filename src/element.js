@@ -1,18 +1,16 @@
 export function createUnfoldBtn () {
-  const observer = new MutationObserver(mutations => {
+  const observer = new MutationObserver(mutations =>
     mutations.forEach(mutation => {
-      // 遍历此次观察到的添加节点
-      Array.from(mutation.addedNodes).forEach(addedNode => {
-        // Log addedNode 和 addedNode.nodeType, nodeType 为 1 表示 Node.ELEMENT_NODE
-        if (addedNode.classList.contains('bili-im')) {
-          createElement()
-          observer.disconnect()
-        }
-      })
+    // innerHTML 属性可一次性插入多个节点。此处 mutation.addedNodes.length 为 0 或 1。非数组使用 for...of 循环。
+    // addedNode.nodeType 为 1 表示 Node.ELEMENT_NODE
+      if (mutation.addedNodes[0]?.classList.contains('bili-im')) {
+        createElement()
+        observer.disconnect()
+      }
     })
-  })
-
-  observer.observe(document.querySelector('body>.container'), { childList: true, subtree: true })
+  )
+  const messageContainer = document.querySelector('body>.container')
+  observer.observe(messageContainer, { childList: true, subtree: true })
 
   function createElement () {
     const unfoldBtn = Object.assign(document.createElement('div'), {

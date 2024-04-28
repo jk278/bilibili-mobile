@@ -8,7 +8,6 @@ import './style/search.css'
 import './style/user.css'
 import './style/message.css'
 
-import { initViewport } from './init.js'
 import { preventBeforeUnload, increaseVideoLoadSize, handleScroll } from './window.js'
 import { handleScriptPreSetting, handleScriptSetting } from './setting.js'
 import { handleHeaderImage } from './header-image.js'
@@ -24,7 +23,8 @@ import { handleActionbar, handleSidebar } from './actionbar.js'
 
   function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
 
-  initViewport()
+  /* initViewport */ document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'viewport', content: 'width=device-width, initial-scale=1' }))
+
   preventBeforeUnload()
 
   console.log('Bilibili mobile execute!')

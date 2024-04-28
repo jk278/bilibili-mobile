@@ -1,23 +1,26 @@
-/* global GM_getValue */
-// eslint-disable-next-line no-undef
-const _unsafeWindow = /* @__PURE__ */ (() => (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window))() // 立即执行表达式只调用一次
-// 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
+/* global GM_getValue unsafeWindow */
 
 export function preventBeforeUnload () {
   const originalAddEventListener = window.addEventListener
   // 重写 addEventListener 方法，禁止网站刷新时的弹窗
   window.addEventListener = (type, listener, options) =>
-    type === 'beforeunload' ? undefined : originalAddEventListener.call(this, type, listener, options)
+    type === 'beforeunload' || originalAddEventListener.call(this, type, listener, options)
 }
 
 // 增加视频加载数量函数
 export function increaseVideoLoadSize () {
-  const origFetch = _unsafeWindow.fetch
-  _unsafeWindow.fetch = function (input, init) {
-    if (typeof input === 'string' && input.includes('api.bilibili.com') && input.includes('feed/rcmd') && init.method.toUpperCase() === 'GET') {
+  // 变量提升机制: 重新声明 window 会替代整个作用域内的 widow，但初始化前无法使用
+  // typeof undefinedVariable 不会报错，而是返回 'undefined'
+
+  const _unsafeWindow = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window
+  // 不使用 //@grant none 则沙盒运行; unsafeWindow: 重写 fetch, MouseEvent 对象的 view 属性
+
+  const originalFetch = _unsafeWindow.fetch
+  _unsafeWindow.fetch = (input, init) => {
+    if (typeof input === 'string' && input.startsWith('https://api.bilibili.com') && input.includes('feed/rcmd')) {
       input = input.replace('&ps=12&', '&ps=30&')
     }
-    return origFetch(input, init)
+    return originalFetch(input, init)
   }
 }
 
@@ -32,13 +35,13 @@ export function handleScroll (page) {
 
   switch (page) {
     case 'search':
-      scrollToClick()
+      slideSearchSort()
       break
     case 'video':
-      scrollToToggleSidebar()
+      slideVideoSidebar()
       break
     case 'message':
-      scrollToToggleMessageSidebar()
+      slideMessageSidebar()
       break
     default:
       break
@@ -47,28 +50,23 @@ export function handleScroll (page) {
 
 // 滚动隐藏函数(弹幕行、评论行、操作栏)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
 function scrollToHidden () {
-  let lastScrollTop = 0
+  let lastScrollY = 0
   const scrollThreshold = 75
 
-  _unsafeWindow.addEventListener('scroll', () => {
-    const currentScrollTop = window.scrollY
+  window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY
+    const offsetY = currentScrollY - lastScrollY
 
-    const offset = currentScrollTop - lastScrollTop
-    const scrollHidden = offset > scrollThreshold ? 'true' : ''
-    const shouldUpdate = Math.abs(offset) > scrollThreshold || currentScrollTop < scrollThreshold
-
-    if (shouldUpdate) {
-      scrollHidden ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
-      lastScrollTop = currentScrollTop
+    if (Math.abs(offsetY) > scrollThreshold || currentScrollY < scrollThreshold) {
+      offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
+      lastScrollY = currentScrollY
     }
   })
 }
 
-function scrollToClick () {
-  let startX = 0
-  let endX = 0
-  let startY = 0
-  let endY = 0
+function slideSearchSort () {
+  let startX = 0; let startY = 0
+
   let clickIndex = 3
   const touchXThreshold = 55
 
@@ -78,15 +76,13 @@ function scrollToClick () {
   }
 
   const handleTouchEnd = event => {
-    endX = event.changedTouches[0].clientX
-    endY = event.changedTouches[0].clientY
-
-    const distanceX = endX - startX
-    const distanceY = endY - startY
+    const offsetX = event.changedTouches[0].clientX - startX
+    const offsetY = event.changedTouches[0].clientY - startY
 
     const navItems = [4, 3, 2, 1, 7, 6, 5]
-    if (Math.abs(distanceX) > touchXThreshold && Math.abs(distanceY) < 1 / 2 * Math.abs(distanceX)) {
-      distanceX > 0 ? clickIndex-- : clickIndex++
+
+    if (Math.abs(offsetX) > touchXThreshold && Math.abs(offsetY / offsetX) < 1 / 2) {
+      offsetX > 0 ? clickIndex-- : clickIndex++
       document.querySelector(`.vui_tabs--nav-item:nth-child(${navItems[clickIndex]})`).click()
     }
   }
@@ -96,11 +92,9 @@ function scrollToClick () {
   container.addEventListener('touchend', handleTouchEnd)
 }
 
-function scrollToToggleSidebar () {
-  let startX = 0
-  let endX = 0
-  let startY = 0
-  let endY = 0
+function slideVideoSidebar () {
+  let startX = 0; let startY = 0
+
   const touchXThreshold = 55
   const videoContainer = document.querySelector('#mirror-vdcon')
 
@@ -110,18 +104,14 @@ function scrollToToggleSidebar () {
   }
 
   const handleTouchEnd = event => {
-    endX = event.changedTouches[0].clientX
-    endY = event.changedTouches[0].clientY
+    const offsetX = event.changedTouches[0].clientX - startX
+    const offsetY = event.changedTouches[0].clientY - startY
 
-    const distanceX = endX - startX
-    const distanceY = endY - startY
+    if (Math.abs(offsetX) > touchXThreshold && Math.abs(offsetY / offsetX) < 1 / 2) {
+      const isToShow = offsetX < 0
 
-    if (Math.abs(distanceX) > touchXThreshold && Math.abs(distanceY) < 1 / 2 * Math.abs(distanceX)) {
-      const isSidebarShown = videoContainer.hasAttribute('sidebar')
-      if (distanceX > 0) {
-        isSidebarShown && videoContainer.removeAttribute('sidebar')
-      } else {
-        !isSidebarShown && videoContainer.setAttribute('sidebar', '')
+      if (isToShow !== videoContainer.hasAttribute('sidebar')) {
+        isToShow ? videoContainer.setAttribute('sidebar', '') : videoContainer.removeAttribute('sidebar')
       }
     }
   }
@@ -129,18 +119,14 @@ function scrollToToggleSidebar () {
   videoContainer.addEventListener('touchstart', handleTouchStart)
   videoContainer.addEventListener('touchend', handleTouchEnd)
 
-  const videoArea = document.querySelector('.bpx-player-video-area')
-  videoArea.addEventListener('touchstart', event => {
-    // 阻止冒泡只对当前监听器生效，禁止全屏滑动和拖动进度条触发侧边栏
-    event.stopPropagation()
-  })
+  const videoArea = document.querySelector('.bpx-player-video-area:not([style])')
+  // 阻止冒泡只对当前监听器生效，禁止全屏滑动和拖动进度条触发侧边栏。要传递参数或用形参，就要用函数而非引用
+  videoArea.addEventListener('touchstart', event => { event.stopPropagation() })
 }
 
-function scrollToToggleMessageSidebar () {
-  let startX = 0
-  let endX = 0
-  let startY = 0
-  let endY = 0
+function slideMessageSidebar () {
+  let startX = 0; let startY = 0
+
   const touchXThreshold = 55
   const messageContainer = document.querySelector('body>.container')
 
@@ -153,22 +139,18 @@ function scrollToToggleMessageSidebar () {
   }
 
   const handleTouchEnd = event => {
-    endX = event.changedTouches[0].clientX
-    endY = event.changedTouches[0].clientY
+    const offsetX = event.changedTouches[0].clientX - startX
+    const offsetY = event.changedTouches[0].clientY - startY
 
-    const distanceX = endX - startX
-    const distanceY = endY - startY
+    if (Math.abs(offsetX) > touchXThreshold && Math.abs(offsetY / offsetX) < 1 / 2) {
+      const isToShow = GM_getValue('message-sidebar-right', false) ? offsetX < 0 : offsetX > 0
 
-    if (Math.abs(distanceX) > touchXThreshold && Math.abs(distanceY) < 1 / 2 * Math.abs(distanceX)) {
-      const isSidebarShown = messageContainer.hasAttribute('sidebar')
-      if (GM_getValue('message-sidebar-right', false) ? (distanceX < 0) : (distanceX > 0)) {
-        if (!isSidebarShown) {
+      if (isToShow !== messageContainer.hasAttribute('sidebar')) {
+        if (isToShow) {
           messageContainer.setAttribute('sidebar', '')
           sidebarOverlay.classList.add('show')
           sidebarFab.classList.add('active')
-        }
-      } else {
-        if (isSidebarShown) {
+        } else {
           messageContainer.removeAttribute('sidebar')
           sidebarOverlay.classList.remove('show')
           sidebarFab.classList.remove('active')

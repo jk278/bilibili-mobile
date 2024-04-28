@@ -166,9 +166,15 @@
     height: 100% !important;
 }
 
+/* 移除白色阴影 */
 .bpx-player-container,
 #bilibili-player-placeholder {
     box-shadow: none !important;
+}
+
+/* 不显示原双击全屏层 */
+.bpx-player-video-perch {
+    max-height: 0;
 }
 
 /* 小窗时的隐藏 - 始终隐藏*/
@@ -181,19 +187,10 @@
     display: none !important;
 }
 
-/* 小窗时的隐藏 - 固定显示*/
-/* 视频控制栏 */
-/* 弹幕行 */
-/* .bpx-player-control-wrap,
-.bpx-player-sending-area {
-    display: block !important;
-} */
-
 /* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
 .bpx-player-toast-wrap {
-    bottom: unset !important;
-    top: 50%;
-    transform: translateY(-50%);
+    bottom: 50% !important;
+    transform: translateY(50%);
 }
 
 /* 小窗按钮 */

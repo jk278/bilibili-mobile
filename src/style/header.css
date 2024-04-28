@@ -104,16 +104,23 @@
     left: 50% !important;
 }
 
-/* 取消分类图在加载过程中类的变化导致的横向平移从0到-50%的不好看的动画 */
-/* .v-popover.is-bottom-start {
-    transform: translate(-50%, -50%) !important;
-} */
+/* 复制的分类图外框 */
+.bili-header.false-header {
+    min-height: 0;
+}
+
+/* 复制的分类图 */
+#copy-category-dialog.v-popover {
+    /* transform: translate(-50%, -50%) !important; */
+    display: none;
+    z-index: 2;
+}
 
 /* 分类(左侧入口)展开图: 一列 */
-/* .channel-panel__column {
+.channel-panel__column {
     flex: 1;
     padding: 0 !important;
-} */
+}
 
 /* 右侧入口展开图 */
 .dynamic-panel-popover,

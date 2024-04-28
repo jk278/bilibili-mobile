@@ -1,6 +1,5 @@
 /* global GM_getValue GM_setValue GM_registerMenuCommand */
 function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
-function ensureHeadGetted (element) { document.head ? document.head.appendChild(element) : waitDOMContentLoaded(document.head.appendChild(element)) }
 
 // 脚本预加载设置
 export function handleScriptPreSetting () {
@@ -31,9 +30,7 @@ export function handleScriptPreSetting () {
   waitDOMContentLoaded(() => {
     createSettingPanel()
 
-    GM_registerMenuCommand('元素隐藏设置', () => {
-      document.getElementById('setting-panel-style').classList.add('show')
-    })
+    GM_registerMenuCommand('元素隐藏设置', () => document.getElementById('setting-panel-style').classList.add('show'))
   })
 
   // 形参 diference 隐式声明成 let
@@ -47,14 +44,11 @@ export function handleScriptPreSetting () {
         if (value) {
           if (settingShowHidden[index]) {
             const scriptPreStyle = Object.assign(document.createElement('style'), {
-              id: `script-pre-style-${index}`,
-              textContent: values[index]
+              id: `script-pre-style-${index}`, textContent: values[index]
             })
-            ensureHeadGetted(scriptPreStyle)
+            document.head.appendChild(scriptPreStyle)
           } else {
-            document.head
-              ? document.getElementById(`script-pre-style-${index}`)?.remove()
-              : waitDOMContentLoaded(document.getElementById(`script-pre-style-${index}`))
+            document.getElementById(`script-pre-style-${index}`)?.remove()
           }
         }
       }
@@ -62,10 +56,9 @@ export function handleScriptPreSetting () {
       for (const [index, value] of values.entries()) {
         if (settingShowHidden[index]) {
           const scriptPreStyle = Object.assign(document.createElement('style'), {
-            id: `script-pre-style-${index}`,
-            textContent: value
+            id: `script-pre-style-${index}`, textContent: value
           })
-          ensureHeadGetted(scriptPreStyle)
+          document.head.appendChild(scriptPreStyle)
         }
       }
     }
@@ -114,16 +107,18 @@ export function handleScriptPreSetting () {
 // 脚本设置
 export function handleScriptSetting () {
   const keyValue = {
-    key0: 'full-unmuted',
-    key1: 'ban-action-hidden',
-    key2: 'message-sidebar-right',
-    key3: 'menu-dialog-bottom',
-    key4: 'custom-menu-dialog-bottom',
-    key5: 'custom-longpress-speed'
+    key0: 'ban-video-click-play',
+    key1: 'full-unmuted',
+    key2: 'ban-action-hidden',
+    key3: 'message-sidebar-right',
+    key4: 'menu-dialog-bottom',
+    key5: 'custom-menu-dialog-bottom',
+    key6: 'custom-longpress-speed'
   }
 
-  const bottomIndex = 4
-  const speedIndex = 5
+  // 独立对象？遍历元素？
+  const bottomIndex = 5
+  const speedIndex = 6
 
   if (GM_getValue('ban-action-hidden', false)) {
     banActionHidden()
@@ -181,9 +176,7 @@ export function handleScriptSetting () {
 
   createSettingPanel()
 
-  GM_registerMenuCommand('操作偏好设置', () => {
-    document.getElementById('setting-panel-preference').classList.add('show')
-  })
+  GM_registerMenuCommand('操作偏好设置', () => document.getElementById('setting-panel-preference').classList.add('show'))
 
   function createSettingPanel () {
     const settingPanel = Object.assign(document.createElement('div'), {
@@ -192,6 +185,7 @@ export function handleScriptSetting () {
       innerHTML: `
         <div class="setting-title">操作偏好</div>
         <div class="setting-checkboxes">
+          <label><input type="checkbox"><span>禁用点击视频播放/暂停</span></label>
           <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
           <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
