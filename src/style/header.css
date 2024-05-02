@@ -41,7 +41,7 @@
 }
 
 .center-search-container[show] {
-    display: block;
+    display: block !important;
 }
 
 /* 修复历史项点击时意外移除的问题 */
@@ -131,8 +131,8 @@
 }
 
 /* 消息展开图 */
-.bili-header .message-entry-popover .message-inner-list__item {
-    padding-left: 43px;
+.message-entry-popover .message-inner-list__item {
+    padding-left: 43px !important;
 }
 
 /* 动态展开图 */

@@ -17,7 +17,7 @@ export function handleScriptPreSetting () {
       .show-more {display:none;}
     `,
     css4: '.trending {display:none;}',
-    css5: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {position:fixed !important; z-index:-10; visibility:hidden;}',
+    css5: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {display: none;}',
     css6: '.bpx-player-contextmenu {display:none;}',
     css7: `
       .bili-footer {display: none;}

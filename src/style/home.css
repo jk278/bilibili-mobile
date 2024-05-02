@@ -12,7 +12,7 @@ body {
     grid-template-columns: repeat(2, 1fr) !important;
     padding: 5px;
     grid-gap: 5px !important;
-    background: #f1f2f3;
+    background-color: #f1f2f3;
 }
 
 /* 头图底色 */
@@ -158,10 +158,9 @@ body,
  ------------------------- 按钮 -----------------------
  ----------------------------------------------------- */
 
-/* 原首页按钮(置顶、刷新按钮):底层隐藏 -10 (同原全屏、音量按钮)(顶栏视口外隐藏) */
+/* 原首页按钮(置顶、刷新按钮): 可以通过 JavaScript 与隐藏元素进行交互 */
 .palette-button-outer {
-    z-index: -10;
-    visibility: hidden;
+    display: none;
 }
 
 /* 首页按钮组 */

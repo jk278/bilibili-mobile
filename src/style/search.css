@@ -69,17 +69,16 @@ ul.vui_tabs--nav>* {
 /* 排序筛选 */
 .search-conditions {
     position: fixed;
-    bottom: var(--actionbar-height);
+    bottom: 0;
     z-index: 2;
     background: white;
     padding: 5px !important;
-    transform: translateY(100%);
     opacity: 0;
     transition: .4s ease-in;
 }
 
 .search-conditions.show {
-    transform: none;
+    bottom: var(--actionbar-height);
     opacity: 1;
 }
 

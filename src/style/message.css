@@ -42,7 +42,7 @@ body>.container {
     display: none !important;
 }
 
-.nav-search-box.show {
+.nav-search-box[show] {
     display: block !important;
 }
 

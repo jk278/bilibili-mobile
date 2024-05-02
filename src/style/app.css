@@ -14,12 +14,14 @@ body {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    background-color: rgba(255, 255, 255, .85);
+    background-color: rgba(255, 255, 255, .8);
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
     transition: .5s transform ease-in;
 
     opacity: 0;
     animation: actionbarFadeIn .4s ease-in forwards;
+
+    backdrop-filter: blur(5px);
 }
 
 @keyframes actionbarFadeIn {
@@ -72,7 +74,8 @@ body {
     }
 }
 
-#actionbar.search {
+#actionbar.search,
+#actionbar.space {
     #show-more-fab {
         display: block;
     }
@@ -157,8 +160,9 @@ body #header-in-menu li {
 #search-overlay,
 #sidebar-overlay {
     position: fixed;
-    top: 0;
     bottom: 0;
+    /* actionbar 使用 backdrop-filter 导致创建了新的堆叠上下文 */
+    height: 100vh;
     left: 0;
     right: 0;
     pointer-events: none;
@@ -230,7 +234,7 @@ body #header-in-menu li {
     text-align: center;
 }
 
-/* 属性选择器中值为单个单词可省略引号 */
+/* 属性选择器中只存在单个值时 (无空格) 可省略引号 */
 
 .setting-checkboxes input[type=checkbox] {
     width: 16px;

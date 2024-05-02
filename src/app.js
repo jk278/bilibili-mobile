@@ -5,7 +5,7 @@ import './style/header.css'
 import './style/home.css'
 import './style/video.css'
 import './style/search.css'
-import './style/user.css'
+import './style/space.css'
 import './style/message.css'
 
 import { preventBeforeUnload, increaseVideoLoadSize, handleScroll } from './window.js'
@@ -14,7 +14,7 @@ import { handleHeaderImage } from './header-image.js'
 import { videoInteraction } from './video.js'
 import { createUnfoldBtn } from './element.js'
 
-import { handleActionbar, handleSidebar } from './actionbar.js'
+import { handleActionbar } from './actionbar.js'
 
 (function () {
   // setInterval(() => { debugger }, 100)
@@ -37,36 +37,43 @@ import { handleActionbar, handleSidebar } from './actionbar.js'
       if (location.pathname === '/') {
         increaseVideoLoadSize()
         handleHeaderImage()
-      }
-      handleScriptPreSetting()
-      waitDOMContentLoaded(() => {
-        handleActionbar()
-        handleScriptSetting()
-        if (location.pathname.startsWith('/video')) {
-          videoInteraction()
-          handleSidebar()
-          handleScroll('video')
-        } else {
+        handleScriptPreSetting()
+        waitDOMContentLoaded(() => {
+          handleActionbar('home')
+          handleScriptSetting()
           handleScroll()
-        }
-      })
+        })
+      } else if (location.pathname.startsWith('/video')) {
+        handleScriptPreSetting()
+        waitDOMContentLoaded(() => {
+          handleActionbar('video')
+          handleScriptSetting()
+          videoInteraction()
+          handleScroll('video')
+        })
+      }
       break
     case 'search':
       handleScriptPreSetting()
       waitDOMContentLoaded(() => {
-        handleActionbar()
+        handleActionbar('search')
         handleScriptSetting()
         handleScroll('search')
       })
       break
     case 'space':
+      handleScriptPreSetting()
+      waitDOMContentLoaded(() => {
+        handleActionbar('space')
+        handleScriptSetting()
+        handleScroll('space')
+      })
       break
     case 'message':
       handleScriptPreSetting()
       waitDOMContentLoaded(() => {
-        handleActionbar()
+        handleActionbar('message')
         handleScriptSetting()
-        handleSidebar('message')
         handleScroll('message')
         createUnfoldBtn()
       })

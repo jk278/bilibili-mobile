@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            4.5.5
+// @version            5.0-alpha
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -345,12 +345,14 @@ body {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    background-color: rgba(255, 255, 255, .85);
+    background-color: rgba(255, 255, 255, .8);
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
     transition: .5s transform ease-in;
 
     opacity: 0;
     animation: actionbarFadeIn .4s ease-in forwards;
+
+    backdrop-filter: blur(5px);
 }
 
 @keyframes actionbarFadeIn {
@@ -403,7 +405,8 @@ body {
     }
 }
 
-#actionbar.search {
+#actionbar.search,
+#actionbar.space {
     #show-more-fab {
         display: block;
     }
@@ -488,8 +491,9 @@ body #header-in-menu li {
 #search-overlay,
 #sidebar-overlay {
     position: fixed;
-    top: 0;
     bottom: 0;
+    /* actionbar 使用 backdrop-filter 导致创建了新的堆叠上下文 */
+    height: 100vh;
     left: 0;
     right: 0;
     pointer-events: none;
@@ -561,7 +565,7 @@ body #header-in-menu li {
     text-align: center;
 }
 
-/* 属性选择器中值为单个单词可省略引号 */
+/* 属性选择器中只存在单个值时 (无空格) 可省略引号 */
 
 .setting-checkboxes input[type=checkbox] {
     width: 16px;
@@ -809,7 +813,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------------ 顶栏 ---
 }
 
 .center-search-container[show] {
-    display: block;
+    display: block !important;
 }
 
 /* 修复历史项点击时意外移除的问题 */
@@ -899,8 +903,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------------ 顶栏 ---
 }
 
 /* 消息展开图 */
-.bili-header .message-entry-popover .message-inner-list__item {
-    padding-left: 43px;
+.message-entry-popover .message-inner-list__item {
+    padding-left: 43px !important;
 }
 
 /* 动态展开图 */
@@ -1072,7 +1076,7 @@ body {
     grid-template-columns: repeat(2, 1fr) !important;
     padding: 5px;
     grid-gap: 5px !important;
-    background: #f1f2f3;
+    background-color: #f1f2f3;
 }
 
 /* 头图底色 */
@@ -1218,10 +1222,9 @@ body,
  ------------------------- 按钮 -----------------------
  ----------------------------------------------------- */
 
-/* 原首页按钮(置顶、刷新按钮):底层隐藏 -10 (同原全屏、音量按钮)(顶栏视口外隐藏) */
+/* 原首页按钮(置顶、刷新按钮): 可以通过 JavaScript 与隐藏元素进行交互 */
 .palette-button-outer {
-    z-index: -10;
-    visibility: hidden;
+    display: none;
 }
 
 /* 首页按钮组 */
@@ -1504,15 +1507,14 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
 /* 右下角暂停图标 */
 /* 取消静音 */
 .bpx-player-top-wrap,
-.bpx-player-state-wrap,
-.bpx-player-toast-wrap {
+.bpx-player-state-wrap {
     display: none !important;
 }
 
 /* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
 .bpx-player-toast-wrap {
-    bottom: 50% !important;
-    transform: translateY(50%);
+    display: block !important;
+    bottom: 65px !important;
 }
 
 /* 小窗按钮 */
@@ -1525,12 +1527,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
 /* 客服按钮 */
 .customer-service {
     display: none !important;
-}
-
-/* 窄屏不隐藏控制条和阴影 */
-.bpx-player-control-entity,
-.bpx-player-control-mask {
-    display: block !important;
 }
 
 /* 移除次要按钮：画中画、宽屏、时间、选集 */
@@ -1623,7 +1619,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     padding-bottom: 3px !important;
 }
 
-/* 阴影(控制栏展开时: 高能区 100% - 1px) */
+/* 高能区 (控制栏展开时: 高能区 100% - 1px) */
 .bpx-player-pbp {
     bottom: 1px !important;
 }
@@ -1645,8 +1641,11 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
 
 /* 倍速弹窗 */
 .bpx-player-ctrl-playbackrate-menu-item {
-    height: 30px !important;
-    line-height: 30px !important;
+    height: 6.8vw !important;
+    max-height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* 设置弹窗 */
@@ -1694,6 +1693,64 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     text-overflow: unset !important;
     font-size: 12px;
     flex: none;
+}
+
+/* 隐藏旧控制栏 */
+.bpx-player-control-wrap:not(.new) {
+    display: none;
+}
+
+/* 窄屏不禁用控制条和阴影 (新控制栏默认不禁用阴影) */
+.bpx-player-control-entity,
+.bpx-player-control-mask {
+    display: block !important;
+}
+
+/* 隐藏控制条时不响应点击 */
+.bpx-player-container[data-ctrl-hidden=true] .bpx-player-control-bottom {
+    display: none;
+}
+
+/* --- 播完预览: 窄屏不隐藏 ( screen-mode=little-screen ) --- */
+.bpx-player-ending-wrap[hidden] {
+    display: block !important;
+}
+
+/* 内容 (scale 动态设置) */
+#app .bpx-player-ending-content {
+    height: 295px;
+    margin-top: -147px;
+}
+
+/* 关注按钮 */
+.bpx-player-ending-functions-follow {
+    padding: 0 15px !important;
+}
+
+/* 重播按钮 */
+.bpx-player-ending-functions-btn[data-action=restart] {
+    padding-right: 15px !important;
+}
+
+/* 反馈按钮组 */
+.bpx-player-ending-functions-pagecallback {
+    margin-left: 5px !important;
+
+    .bpx-player-ending-functions-btn {
+        margin-left: 10px !important;
+    }
+}
+
+/* 自动连播倒计时图标 */
+.bpx-player-ending-related-item-countdown {
+    margin-top: 34px !important;
+    width: 48px !important;
+}
+
+/* up 名 */
+.bpx-player-ending-functions-upinfo {
+    height: 56px !important;
+    margin-top: 0 !important;
 }
 
 /* ----------------------------------------------------
@@ -1819,13 +1876,13 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     margin: 10px 0 !important;
 }
 
-/* 热门排行标签 */
-.honor-rank {
+/* 全站排行、每周必看等标签 */
+.honor.item {
     position: absolute;
     align-self: start !important;
 }
 
-.video-info-detail-list:has(.honor-rank) {
+.video-info-detail-list:has(.honor.item) {
     height: 48px !important;
     align-items: end !important;
     margin-right: 5px !important;
@@ -2031,15 +2088,26 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     padding: 4px 0 4px 37px !important;
 }
 
+/* 评论信息 (点赞等) */
+.reply-info,
+.sub-reply-info {
+    justify-content: space-between;
+}
+
+.reply-info>*,
+.sub-reply-info>* {
+    margin-right: 0 !important;
+}
+
 /* 评论举报操作按钮 */
-.reply-operation-warp {
-    display: block !important;
-    right: 4px !important;
+.reply-operation-warp,
+.sub-reply-operation-warp {
+    display: inline-flex !important;
+    position: static !important;
 }
 
 .sub-reply-operation-warp {
     opacity: 1 !important;
-    right: 4px !important;
 }
 
 .reply-info,
@@ -2265,17 +2333,16 @@ ul.vui_tabs--nav>* {
 /* 排序筛选 */
 .search-conditions {
     position: fixed;
-    bottom: var(--actionbar-height);
+    bottom: 0;
     z-index: 2;
     background: white;
     padding: 5px !important;
-    transform: translateY(100%);
     opacity: 0;
     transition: .4s ease-in;
 }
 
 .search-conditions.show {
-    transform: none;
+    bottom: var(--actionbar-height);
     opacity: 1;
 }
 
@@ -2472,7 +2539,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_user_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(20);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_space_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(20);
 
       
       
@@ -2494,12 +2561,12 @@ options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWi
 options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
 options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
 
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_user_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_space_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
 
 
 
 
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_user_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_user_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_user_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_space_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_space_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_space_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
 
 
 /***/ }),
@@ -2521,35 +2588,219 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------- 个人主页 ----------------------- */
 
-.wrapper {
-    width: 100% !important;
-}
-
+/* 包裹块、分栏内容 */
+.wrapper,
 .content {
     max-width: 100%;
 }
 
-#page-index .col-1 {
-    max-width: 100%;
+/* --------- 导航栏 --------- */
+
+/* 隐藏贴顶栏 (不是主页而是 up 名) */
+#navigator-fixed {
+    display: none;
+}
+
+/* 静态版块栏贴顶 */
+#navigator.sticky {
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    width: 100%;
+}
+
+/* 移除搜索框: 隐藏后依然能模拟输入和代码触发元素点击事件 */
+/* 用 CSS 属性 display: none; 隐藏元素后，虽然元素在视觉上消失了，但是它在 DOM 中仍然存在。这意味着仍然可以通过 JavaScript 与隐藏元素进行交互 */
+#navigator .search-container {
+    display: none;
+}
+
+/* 贴顶后内容区高度补偿 (移除搜索框后) */
+#app:has(>.sticky)>.s-space {
+    padding-top: 49px;
+}
+
+/* 内框 */
+.n .n-inner {
+    height: auto !important;
     padding: 0 !important;
+}
+
+/* 导航项框 */
+.n .n-tab-links {
+    display: flex !important;
+    justify-content: space-evenly;
+}
+
+/* 导航项 */
+#app .n .n-btn {
+    line-height: unset;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .iconfont {
+        margin-right: 0;
+    }
+
+    .n-text {
+        line-height: 15px;
+        width: 26px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .n-num {
+        line-height: 14px;
+        margin-left: 0;
+        text-align: center;
+    }
+}
+
+/* 导航: 排序 */
+/* 投稿 */
+.n .n-video.n-audio.n-article.n-album {
+    order: -2;
+}
+
+/* 动态 */
+.n .n-dynamic {
+    order: -1;
+}
+
+/* 主页 .n .n-index.n-fans */
+
+/* 合集 */
+.n .n-channel {
+    order: 1;
+}
+
+/* 收藏 */
+.n .n-favlist {
+    order: 2;
+}
+
+/* 课程 */
+.n .n-pugv {
+    order: 3;
+}
+
+/* 降低高度: 时长、充电头像、充电图 */
+.col-1 span.length,
+.col-2 .elec .elec-hito:nth-child(4),
+.col-2 .elec .elec-status {
+    z-index: 1;
+}
+
+/* --------- 关注栏 --------- */
+
+/* 降低关注栏高度 */
+#app .h {
+    z-index: 1;
+}
+
+/* 折叠关注按钮栏 */
+#app .h .h-action {
+    position: fixed;
+    background-color: #f1f2f3;
+    left: 0;
+    bottom: 0 !important;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    opacity: 0;
+    transition: .4s ease-in;
+}
+
+#app .h .h-action.show {
+    bottom: var(--actionbar-height) !important;
+    opacity: 1;
+}
+
+.h .h-action .h-f-btn {
+    margin: 10px;
+}
+
+/* 更多按钮 */
+.be-dropdown.h-add-to-black {
+    background: rgba(0, 0, 0, .45);
+    box-shadow: 0 0 0 2px hsla(0, 0%, 100%, .3);
+    border-radius: 4px;
+}
+
+/* --------- up 块 --------- */
+
+/* up 块背景阴影 */
+.h .h-gradient {
+    height: 120% !important;
+    background-size: auto 100%;
+}
+
+/* up 信息上空白 */
+#app .h .h-inner {
+    padding-top: 20px;
+}
+
+/* up 信息 */
+#app .h .h-info {
+    margin: 0 10px;
+    padding-bottom: calc(40px + 12px);
+}
+
+/* up 简介 */
+#app .h .h-sign {
+    width: 100%;
+    word-break: break-all;
+    height: fit-content;
+    line-height: 18px;
+}
+
+/* 关注、粉丝数 (height: 40px) */
+.n .n-statistics {
+    position: absolute;
+    top: 0;
+    transform: translateY(-100%);
+    z-index: 10;
+    /* 不减去左右 margin 会溢出 */
+    width: calc(100% - 20px);
+    height: auto !important;
+    display: flex;
+    justify-content: space-evenly;
+    padding: 4px 0 5px;
+    margin: 0 10px;
+    border-top: 1px solid var(--line_regular);
+
+    .n-data {
+        padding: 0 5px;
+        height: auto;
+    }
+
+    .n-data-k {
+        color: white !important;
+    }
+
+    .n-data-v {
+        color: hsla(0, 0%, 100%, .8) !important;
+        margin-top: 0 !important;
+    }
+}
+
+/* 宽度 100% 时, 溢出因素: margin、padding、border */
+
+/* up 视频 */
+#page-index .col-1 {
+    max-width: calc(100% - 20px);
+    padding: 0 10px !important;
+    border: none !important;
+    margin-bottom: 10px;
 }
 
 .channel-video {
     white-space: wrap !important;
 }
 
-/* 关注按钮 */
-.h .h-action {
-    bottom: 84px !important;
-    left: 20px;
-}
-
-/* 置顶内容 */
-.content.i-pin-has-content {
-    display: flex;
-    flex-direction: column;
-    margin: 0 5px;
-}
+/* ------ 已关注置顶推荐 ------ */
 
 .i-pin-c.cover-big {
     padding-bottom: 5px;
@@ -2569,12 +2820,19 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------- 个人主页 --
     height: auto !important;
 }
 
-/* TA的视频: 外框 */
+/* 描述 - 不限高 */
+.i-pin-desc {
+    max-height: unset !important;
+}
+
+/* ------ TA的视频 ------ */
+
+/* 标题 */
 .section-title {
     padding: 0 5px 33px !important;
 }
 
-/* TA: 主页视频排序 */
+/* 标题 - 视频排序 */
 #page-index .video .be-tab {
     position: absolute;
     left: 0;
@@ -2586,10 +2844,32 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------- 个人主页 --
     margin: 0 5px !important;
 }
 
-/* 主页视频 */
+/* 标题 - 右侧按钮 */
+.section .more,
+.section-title .play-all-channel {
+    margin-right: 5px;
+}
+
+/* TA的视频: 不限制高度 */
 #page-index .video .content {
     max-height: unset !important;
 }
+
+/* ------ TA的收藏夹 ------ */
+
+/* ... */
+
+/* ------ 合集 ------ */
+
+/* ... */
+
+/* ------ TA的专栏 ------ */
+
+/* ... */
+
+/* ------ 最近点赞 ------ */
+
+/* ... */
 
 .small-item {
     width: calc(50% - 10px) !important;
@@ -2629,36 +2909,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------- 个人主页 --
     width: 100% !important;
 }
 
-.n .n-inner {
-    display: flex;
-    flex-wrap: wrap;
-    height: auto !important;
-    padding: 0 !important;
-}
-
-.n-tab-links>* {
-    margin: 0 !important;
-}
-
-.n-data {
-    padding: 0 5px !important;
-    height: auto !important;
-}
-
-.n-statistics {
-    height: auto !important;
-}
-
-.n .n-btn {
-    height: auto !important;
-    line-height: 30px !important;
-}
-
-.n-tab-links {
-    white-space: nowrap;
-    overflow: auto;
-}
-
 .favInfo-details {
     max-width: 60%;
     margin-left: 5px !important;
@@ -2673,16 +2923,61 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------- 个人主页 --
     margin: 0 10px !important;
 }
 
-.n-cursor {
-    bottom: 35px !important;
+/* 隐藏回顶小飞机 */
+#app .to-top {
+    display: none !important;
 }
 
-.navigator-fixed {
-    display: none;
+/* --- 专栏项 (横向排列) -- */
+.article-item .clearfix {
+    display: flex;
 }
 
-span.length {
-    z-index: 1 !important;
+/* 文本 */
+.article-content {
+    min-width: 0;
+    padding-right: 10px;
+    /* 元信息栏 width: 10vw */
+    overflow: hidden;
+}
+
+/* 配图 */
+.article-img {
+    flex-shrink: 0;
+}
+
+/* 文本内容 */
+.article-content .article-con a {
+    height: 54px;
+    line-height: 18px;
+    white-space: normal;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+/* 文本标题 */
+h2.article-title {
+    max-height: unset;
+    font-size: 17px;
+    line-height: 20px;
+}
+
+.article-title a {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+/* 元信息栏 (笔记类型、访问量) */
+.article-content .meta-col {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100vw;
+
+    span {
+        margin-right: 0;
+    }
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
@@ -2799,7 +3094,7 @@ body>.container {
     display: none !important;
 }
 
-.nav-search-box.show {
+.nav-search-box[show] {
     display: block !important;
 }
 
@@ -2934,7 +3229,7 @@ function increaseVideoLoadSize () {
 
 /**
  * 管理滚动和滑动事件的函数
- * @param {string} page - 简短描述页面的字符串: search, video
+ * @param {string} page - 简短描述页面的字符串: search, video, message, space
  */
 function handleScroll (page) {
   if (GM_getValue('settingShowHidden', [])[0] === false || GM_getValue('ban-action-hidden', false) === false) {
@@ -2950,6 +3245,9 @@ function handleScroll (page) {
       break
     case 'message':
       slideMessageSidebar()
+      break
+    case 'space':
+      handleSpaceSwipe()
       break
     default:
       break
@@ -3026,10 +3324,6 @@ function slideVideoSidebar () {
 
   videoContainer.addEventListener('touchstart', handleTouchStart)
   videoContainer.addEventListener('touchend', handleTouchEnd)
-
-  const videoArea = document.querySelector('.bpx-player-video-area:not([style])')
-  // 阻止冒泡只对当前监听器生效，禁止全屏滑动和拖动进度条触发侧边栏。要传递参数或用形参，就要用函数而非引用
-  videoArea.addEventListener('touchstart', event => { event.stopPropagation() })
 }
 
 function slideMessageSidebar () {
@@ -3073,6 +3367,67 @@ function slideMessageSidebar () {
   sidebarOverlay.addEventListener('touchend', handleTouchEnd)
 }
 
+//
+function handleSpaceSwipe () {
+  const observer = new MutationObserver(mutationsList => {
+    mutationsList.forEach(mutation => {
+      mutation.addedNodes.forEach(addedNode => {
+        if (addedNode.id === 'app') {
+          setTimeout(scrollToStick, 50) // 等待粉丝牌宽度 (可能影响高度) 动态加载
+          slideSpaceNavigator()
+          observer.disconnect()
+        }
+      })
+    })
+  })
+  observer.observe(document.body, { childList: true })
+
+  function scrollToStick () {
+    const navigator = document.querySelector('#navigator')
+    const threshold = navigator.getBoundingClientRect().top
+
+    let isStuck = false
+
+    window.addEventListener('scroll', () => {
+      if (isStuck !== (window.scrollY > threshold)) {
+        navigator.classList.toggle('sticky')
+        isStuck = !isStuck
+      }
+    })
+  }
+
+  function slideSpaceNavigator () {
+    let startX = 0; let startY = 0
+
+    const touchXThreshold = 55
+
+    const current = document.querySelector('#navigator .active')
+    const siblings = Array.from(document.querySelectorAll('#navigator .n-btn')).sort((a, b) => {
+      return parseInt(getComputedStyle(a).order) - parseInt(getComputedStyle(b).order)
+    })
+    let index = siblings.findIndex(el => el === current)
+
+    const handleTouchStart = event => {
+      startX = event.changedTouches[0].clientX
+      startY = event.changedTouches[0].clientY
+    }
+
+    const handleTouchEnd = event => {
+      const offsetX = event.changedTouches[0].clientX - startX
+      const offsetY = event.changedTouches[0].clientY - startY
+
+      if (Math.abs(offsetX) > touchXThreshold && Math.abs(offsetY / offsetX) < 1 / 2) {
+        offsetX > 0 ? index-- : index++
+        siblings[index].click()
+      }
+    }
+
+    const container = document.querySelector('#app')
+    container.addEventListener('touchstart', handleTouchStart)
+    container.addEventListener('touchend', handleTouchEnd)
+  }
+}
+
 
 /***/ }),
 /* 24 */
@@ -3102,7 +3457,7 @@ function handleScriptPreSetting () {
       .show-more {display:none;}
     `,
     css4: '.trending {display:none;}',
-    css5: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {position:fixed !important; z-index:-10; visibility:hidden;}',
+    css5: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {display: none;}',
     css6: '.bpx-player-contextmenu {display:none;}',
     css7: `
       .bili-footer {display: none;}
@@ -3425,6 +3780,8 @@ function videoInteraction () {
   handleVideoLongPress()
 
   closeMiniPlayer()
+
+  setEndingContent()
 }
 
 let isPortrait = false
@@ -3440,81 +3797,91 @@ function handlePortrait () {
 
 // 接管视频点击事件
 function handlelVideoClick () {
-  // 架空双击全屏层以适应竖屏
-  const videoPerch = document.querySelector('.bpx-player-video-perch')
-  const videoWrap = document.querySelector('.bpx-player-video-wrap')
+  const playerContainter = document.querySelector('.bpx-player-container')
+  const videoArea = playerContainter.querySelector('.bpx-player-video-area')
+  const videoPerch = videoArea.querySelector('.bpx-player-video-perch')
+  const videoWrap = videoPerch.querySelector('.bpx-player-video-wrap')
   const video = videoWrap.querySelector('video')
 
-  videoPerch.parentElement.insertBefore(videoWrap, videoPerch)
-
-  // 阻止添加 mousemove 监听器以禁用双击时控制栏变化
-  const videoArea = document.querySelector('.bpx-player-video-area')
-  const newVideoArea = document.createElement('div')
-  newVideoArea.className = 'bpx-player-video-area'
-  videoArea.parentElement.insertBefore(newVideoArea, videoArea.nextSibling)
-
-  while (videoArea.firstChild) { newVideoArea.appendChild(videoArea.firstChild) }
-  videoArea.style.display = 'none'
+  // 架空双击全屏层以适应竖屏
+  videoArea.insertBefore(videoWrap, videoPerch)
 
   // safari 内联播放
   if (video) { video.playsInline = true }
 
-  const controlWrap = document.querySelector('.bpx-player-control-wrap')
+  const oldControlWrap = videoArea.querySelector('.bpx-player-control-wrap')
+  const controlEntity = oldControlWrap.querySelector('.bpx-player-control-entity')
 
   let clickTimer = null
 
-  let controlWrapTimer = null // 返回值为 id
+  let hideTimer = null
 
-  let isBpxStateShow = false
+  // 可以作语句的表达式：需要赋值给变量或者作为函数调用的一部分，能够产生一个可以被丢弃的值
+  // 布尔值不能直接作为语句，因为它们不执行任何动作，也不改变程序的状态
+  // x++ 作语句时执行操作，但是不显式返回值，实际 x 的值隐式地改变了；作表达式时根据前后缀，依次返回 x 的值和执行操作
+  const isShown = () => playerContainter.dataset.ctrlHidden === 'false' // controlWrap 的 mouseleave 事件导致点击非视频部分会隐藏控制栏, 实际已不必要
 
-  function hideControlWrap () {
-    if (!video.paused && !isBpxStateShow) {
-      controlWrap.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
-      clearTimeout(controlWrapTimer)
-      controlWrapTimer = null
+  // 阻止 controlWrap 的 mouseleave 事件隐藏控制栏, mouseleave 事件不会在冒泡阶段和捕获阶段传播
+  const controlWrap = Object.assign(document.createElement('div'), {
+    className: 'bpx-player-control-wrap new',
+    innerHTML: '<div class="bpx-player-control-mask"></div>'
+  })
+  videoArea.insertBefore(controlWrap, oldControlWrap)
+  controlWrap.appendChild(controlEntity)
+
+  // 观察控制栏按键弹窗, 箭头函数函数体为表达式可省略 return 和 {} 隐式返回, 元素发生移动后, 之前的 querySelector 会失效 (无法找到该元素)
+  const isBpxStateShow = () => { controlEntity.querySelector('.bpx-player-control-bottom-right>.bpx-state-show') }
+
+  const controlTop = controlEntity.querySelector('.bpx-player-control-top')
+
+  function hideControlWrap (isEnd) {
+    if ((!video.paused && !isBpxStateShow()) || isEnd) {
+      playerContainter.dataset.ctrlHidden = 'true'
+      controlEntity.dataset.shadowShow = 'true'
+      clearTimeout(hideTimer)
+    } else {
+      delayHideTimer()
     }
   }
 
+  video.addEventListener('ended', () => { hideControlWrap(true) })
+
   function showControlWrap () {
-    // view 省略时指向当前窗口
-    controlWrap.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }))
-    controlWrapTimer = setTimeout(hideControlWrap, 3000)
+    playerContainter.dataset.ctrlHidden = 'false'
+    controlEntity.dataset.shadowShow = 'false'
+    hideTimer = setTimeout(hideControlWrap, 3500)
   }
+
+  function delayHideTimer () {
+    clearTimeout(hideTimer)
+    hideTimer = setTimeout(hideControlWrap, 3500)
+  }
+
+  // 只剩下初始化显示状态栏, 初次播放 1s 后隐藏控制栏
+
+  // 阻止触摸单击触发 videoArea 的 mousemove 事件而显隐控制栏
+  videoWrap.addEventListener('mousemove', event => { event.stopPropagation() })
+  controlWrap.addEventListener('mousemove', event => { event.stopPropagation() })
+
+  video.addEventListener('play', delayHideTimer)
+
+  controlWrap.addEventListener('click', event => {
+    event.stopPropagation()
+    delayHideTimer()
+  })
+
+  controlTop.addEventListener('touchstart', delayHideTimer)
 
   // 单击监听
   videoWrap.addEventListener('click', () => {
     clearTimeout(clickTimer)
 
     clickTimer = setTimeout(() => {
-      controlWrapTimer ? hideControlWrap() : showControlWrap()
+      isShown() ? hideControlWrap() : showControlWrap()
 
       if (!GM_getValue('ban-video-click-play', false)) { video.paused ? video.play() : video.pause() } // videoPerch.click()
     }, 250)
   })
-
-  // 观察控制栏按键弹窗
-  const controlBottom = document.querySelector('.bpx-player-control-bottom-right')
-
-  const childObserver = new MutationObserver(mutationsList => {
-    mutationsList.forEach(mutation => {
-      if (isBpxStateShow !== mutation.target.classList.contains('bpx-state-show')) {
-        if (isBpxStateShow) { showControlWrap() } // 关闭窗口会控制栏会 mouseleave
-        isBpxStateShow = !isBpxStateShow
-      }
-    })
-  })
-
-  const controlObserver = new MutationObserver(mutationsList => {
-    mutationsList.forEach(mutation => {
-      mutation.addedNodes.forEach(addedNode => {
-        childObserver.observe(addedNode, { attributes: true, attributeFilter: ['class'] })
-        clearTimeout(observerTimer)
-      })
-    })
-  })
-  controlObserver.observe(controlBottom, { childList: true })
-
-  const observerTimer = setTimeout(() => { controlObserver.disconnect() }, 3000)
 
   // 双击监听
   videoWrap.addEventListener('dblclick', () => {
@@ -3526,8 +3893,13 @@ function handlelVideoClick () {
 
     isPortrait
       ? document.querySelector('.bpx-player-ctrl-web').click()
+      // view 省略时指向当前窗口
       : videoPerch.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
   })
+
+  // 阻止视频响应滑动侧边栏
+  // 阻止冒泡只对当前监听器生效，禁止全屏滑动和拖动进度条触发侧边栏。要传递参数或用形参，就要用函数而非引用
+  videoArea.addEventListener('touchstart', event => { event.stopPropagation() })
 }
 
 function closeMiniPlayer () {
@@ -3571,6 +3943,14 @@ function handleVideoLongPress () {
       isLongPress = false
     }
   }
+}
+
+function setEndingContent () {
+  const style = Object.assign(document.createElement('style'), {
+    id: 'ending-content-scale',
+    textContent: `.bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/536*0.9)) !important; }`
+  })
+  document.head.appendChild(style)
 }
 
 
@@ -3623,19 +4003,18 @@ function createUnfoldBtn () {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   handleActionbar: () => (/* binding */ handleActionbar),
-/* harmony export */   handleSidebar: () => (/* binding */ handleSidebar)
+/* harmony export */   handleActionbar: () => (/* binding */ handleActionbar)
 /* harmony export */ });
-/* harmony import */ var _category_html__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(29);
+/* harmony import */ var _html_category_html__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(29);
 /* global GM_getValue */
 
 
 
 /**
- * 管理操作栏的函数(DOMContentLoaded 之后)
- * fuck: 消息页顶栏不统一
+ * 管理操作栏的函数 (DOMContentLoaded 之后)
+ * @param {string} page - 简短描述页面的字符串: home, video, search, space, message
  */
-function handleActionbar () {
+function handleActionbar (page) {
   const actionbar = Object.assign(document.createElement('div'), {
     id: 'actionbar',
     // <div style="display:flex; transform:scale(4)">
@@ -3669,33 +4048,33 @@ function handleActionbar () {
   })
   document.body.appendChild(actionbar)
 
-  // window 是全局对象，window.location.href 可省略 window
-  if (location.hostname === 'www.bilibili.com' && location.pathname === '/') {
-    actionbar.classList.add('home')
-    setRefreshBtn()
-  }
-
-  if (location.pathname.startsWith('/video')) {
-    actionbar.classList.add('video')
-    setFullbtn()
-  } else if (location.hostname === 'message.bilibili.com') {
-    actionbar.classList.add('message')
-    setSearchBtn('message')
-  } else {
-    setTopBtn()
-  }
-
-  if (location.hostname === 'search.bilibili.com') {
-    actionbar.classList.add('search')
-    setSearchBtn('search')
-    setShowMoreBtn()
-  } else {
-    setSearchBtn()
-  }
-
+  actionbar.classList.add(page)
   setHomeBtn()
-  if (location.hostname !== 'message.bilibili.com') {
-    setMenuBtn()
+  setSearchBtn()
+  if (page !== 'message') { setMenuBtn() }
+
+  switch (page) {
+    case 'home':
+      setTopBtn()
+      setRefreshBtn()
+      break
+    case 'video':
+      setFullbtn()
+      setSidebarBtn()
+      break
+    case 'search':
+      setTopBtn()
+      setShowMoreBtn()
+      break
+    case 'space':
+      setTopBtn()
+      setShowMoreBtn()
+      break
+    case 'message':
+      setSidebarBtn()
+      break
+    default:
+      break
   }
 
   function setFullbtn () {
@@ -3704,7 +4083,7 @@ function handleActionbar () {
     const fullBtn = document.getElementById('full-now')
 
     fullBtn.addEventListener('click', () => {
-      clearTimeout(clickTimer)
+      clearTimeout(clickTimer) // 双击会产生两次单击事件和两个定时器, 双击事件只能清除第二个定时器
 
       clickTimer = setTimeout(() => {
         const videoWrap = document.querySelector('.bpx-player-video-wrap')
@@ -3743,10 +4122,9 @@ function handleActionbar () {
   }
 
   /**
- * 设置不同页面的搜索事件的函数
- * @param {string} page - 简短描述页面的字符串: search, message
- */
-  function setSearchBtn (page) {
+   * 设置不同页面的搜索事件的函数
+   */
+  function setSearchBtn () {
     const searchFab = document.getElementById('search-fab')
     const svg = searchFab.querySelector('svg')
 
@@ -3754,7 +4132,7 @@ function handleActionbar () {
     searchOverlay.id = 'search-overlay'
     searchFab.appendChild(searchOverlay)
 
-    const searchContainer = page === 'message' ? '.nav-search-box' : '.center-search-container'
+    const searchContainerSelector = page === 'message' ? '.nav-search-box' : '.center-search-container'
 
     let searchFabText
     if (page === 'search') {
@@ -3777,49 +4155,81 @@ function handleActionbar () {
 
     let handleInput = null
 
+    function handleClick (input) {
+      // 滑动时 .center-search-container 的 class 会刷新
+      const searchContainer = document.querySelector(`${searchContainerSelector}`)
+
+      searchContainer.toggleAttribute('show')
+      input.focus()
+      searchOverlay.classList.toggle('show')
+      searchFab.classList.toggle('active')
+    }
+
+    /**
+     * 单击事件、双击事件、spaceHandleInput 共用的 input
+     */
+    let input = null
+
+    // 使用 let handleInput 声明变量并在内部块中赋值时，实际上是在创建一个新的函数。即使引用移除事件监听器时能访问到 let handleInput 变量，但是此时 handleInput 变量引用的函数并不是添加事件监听器时使用的那个函数
+    const spaceHandleInput = event => {
+      if (event.key === 'Enter') {
+        const spaceInput = document.querySelector('#navigator .space_input')
+        const spaceSearchBtn = document.querySelector('#navigator .search-btn')
+
+        event.preventDefault()
+        spaceInput.value = input.value
+        spaceInput.dispatchEvent(new Event('input', { bubbles: true }))
+        spaceSearchBtn.click()
+
+        searchOverlay.click()
+      }
+    }
+
     searchFab.addEventListener('click', () => {
+      input = document.querySelector(`${searchContainerSelector} input`)
+      if (!input) { return }
+
       clearTimeout(clickTimer)
 
       clickTimer = setTimeout(() => {
-        const input = document.querySelector(`${searchContainer} input`)
+        handleClick(input)
 
-        if (input) {
-          // 滑动时 .center-search-container 的 class 会刷新
-          document.querySelector(`${searchContainer}`).toggleAttribute('show')
-          input.focus()
-          searchOverlay.classList.toggle('show')
-          searchFab.classList.toggle('active')
+        if (page === 'search') {
+          // 移除之前添加的 input 事件监听器
+          input.removeEventListener('input', handleInput)
 
-          if (page === 'search') {
-            // 移除之前添加的 input 事件监听器
-            input.removeEventListener('input', handleInput)
+          // 模拟输入: 将文本填入底部搜索
+          input.value = searchFabText.textContent
+          input.dispatchEvent(new Event('input', { bubbles: true }))
 
-            // 模拟输入: 将文本填入底部搜索
-            input.value = searchFabText.textContent
-            input.dispatchEvent(new Event('input', { bubbles: true }))
-
-            // 文本更新到搜索页搜索
-            handleInput = () => {
-              searchFabText.textContent = input.value
-              if (input.value === '') {
-                searchFab.style.cssText = ''
-                svg.style.flex = ''
-              } else {
-                searchFab.style.cssText = `
+          // 文本更新到底部搜索
+          handleInput = () => {
+            searchFabText.textContent = input.value
+            if (input.value === '') {
+              searchFab.style.cssText = ''
+              svg.style.flex = ''
+            } else {
+              searchFab.style.cssText = `
                   background-color: var(--graph_bg_thick);
                   border-radius: 16px;
                 `
-                svg.style.flex = '0 0 20px'
-              }
+              svg.style.flex = '0 0 20px'
             }
-            input.addEventListener('input', handleInput)
           }
+          input.addEventListener('input', handleInput)
+        } else if (page === 'space') {
+          // 移除之前添加的 keydown 事件监听器
+          input.removeEventListener('keydown', spaceHandleInput)
+
+          // 移除事件监听器时，回调函数需要与添加事件监听器时使用的回调函数完全一致。内联定义的新箭头函数不是添加事件监听器时使用的原始回调函数
+          // 引用回调函数时，形参写在函数声明中，不需要内联一个匿名函数 (匿名内部函数, 无函数名)
+          input.addEventListener('keydown', spaceHandleInput)
         }
       }, 300)
     })
 
     // 避免点击阴影时 input 先失焦,导致分两次隐藏
-    searchOverlay.addEventListener('click', () => document.querySelector(`${searchContainer} input`)?.focus())
+    searchOverlay.addEventListener('click', () => document.querySelector(`${searchContainerSelector} input`)?.focus())
 
     // 移动端 click 会先触发 touchstart, touchend 和 mousemove
     function handleTouchMove () { searchFab.click() && searchOverlay.removeEventListener('touchmove', handleTouchMove)() }
@@ -3828,40 +4238,48 @@ function handleActionbar () {
 
     if (page === 'search') {
       searchFab.addEventListener('dblclick', () => {
+        if (!input) { return }
+
         clearTimeout(clickTimer)
 
-        const input = document.querySelector('.center-search-container input')
+        document.querySelector('.center-search-container').toggleAttribute('show')
+        input.focus()
+        searchOverlay.classList.toggle('show')
+        searchFab.classList.toggle('active')
 
-        if (input) {
-          document.querySelector('.center-search-container').classList.toggle('show')
-          input.focus()
-          searchOverlay.classList.toggle('show')
-          searchFab.classList.toggle('active')
+        input.value = ''
+        input.dispatchEvent(new Event('input', { bubbles: true }))
 
-          input.value = ''
-          input.dispatchEvent(new Event('input', { bubbles: true }))
+        searchFabText.textContent = input.value
+        searchFab.style.cssText = ''
+        svg.style.flex = ''
 
+        // 文本更新到搜索页搜索
+        handleInput = () => {
           searchFabText.textContent = input.value
-          searchFab.style.cssText = ''
-          svg.style.flex = ''
-
-          input.removeEventListener('input', handleInput)
-          // 文本更新到搜索页搜索
-          handleInput = () => {
-            searchFabText.textContent = input.value
-            if (input.value === '') {
-              searchFab.style.cssText = ''
-              svg.style.flex = ''
-            } else {
-              searchFab.style.cssText = `
+          if (input.value === '') {
+            searchFab.style.cssText = ''
+            svg.style.flex = ''
+          } else {
+            searchFab.style.cssText = `
                 background-color: var(--graph_bg_thick);
                 border-radius: 16px;
               `
-              svg.style.flex = '0 0 20px'
-            }
+            svg.style.flex = '0 0 20px'
           }
-          input.addEventListener('input', handleInput)
         }
+        input.removeEventListener('input', handleInput)
+        input.addEventListener('input', handleInput)
+      })
+    } else if (page === 'space') {
+      searchFab.addEventListener('dblclick', () => {
+        if (!input) { return }
+
+        clearTimeout(clickTimer)
+
+        handleClick(input)
+
+        input.removeEventListener('keydown', spaceHandleInput)
       })
     }
   }
@@ -3930,7 +4348,7 @@ function handleActionbar () {
 
     const falseHeader = Object.assign(document.createElement('div'), {
       className: 'bili-header false-header',
-      innerHTML: _category_html__WEBPACK_IMPORTED_MODULE_0__["default"]
+      innerHTML: _html_category_html__WEBPACK_IMPORTED_MODULE_0__["default"]
     })
     document.body.appendChild(falseHeader)
     const categoryDialog = falseHeader.firstChild
@@ -3940,78 +4358,85 @@ function handleActionbar () {
   }
 
   function setRefreshBtn () {
-    const refreshFab = document.getElementById('refresh-fab')
+    const refreshFab = document.getElementById('refresh-fab') // 返回动态 HTML Collection
 
-    refreshFab.addEventListener('click', document.querySelector('.flexible-roll-btn-inner')?.click)
+    // 使用rollBtn?.click可选链操作符前的rollBtn会立即执行，如果rollBtn存在才传递该元素的click函数引用。而创建了一个新的箭头函数()=>{rollBtn?.click()}则会在监听事件触发时才执行rollBtn
+    refreshFab.addEventListener('click', () => { document.querySelector('.flexible-roll-btn-inner')?.click() })
   }
 
   function setShowMoreBtn () {
     const showMoreFab = document.getElementById('show-more-fab')
 
     const handleClick = () => {
-      const searchConditions = document.querySelector('.search-conditions')
+      if (page === 'search') {
+        const searchConditions = document.querySelector('.search-conditions')
 
-      if (searchConditions) {
-        if (sessionStorage.getItem('show-conditions') !== 'true') {
-          searchConditions.classList.add('show')
-          showMoreFab.classList.add('reverse')
-          sessionStorage.setItem('show-conditions', 'true')
-        } else {
-          searchConditions.classList.remove('show')
-          showMoreFab.classList.remove('reverse')
-          sessionStorage.setItem('show-conditions', '')
+        if (searchConditions) {
+          if (sessionStorage.getItem('show-conditions') !== 'true') {
+            searchConditions.classList.add('show')
+            showMoreFab.classList.add('reverse')
+            sessionStorage.setItem('show-conditions', 'true')
+          } else {
+            searchConditions.classList.remove('show')
+            showMoreFab.classList.remove('reverse')
+            sessionStorage.setItem('show-conditions', '')
+          }
         }
+      } else if (page === 'space') {
+        const followRow = document.querySelector('.h .h-action')
+
+        followRow?.classList.toggle('show')
+        showMoreFab.classList.toggle('reverse')
       }
     }
     showMoreFab.addEventListener('click', handleClick)
   }
-}
 
-// 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
+  // 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
 
-/**
+  /**
  * 处理侧边栏事件的函数
- * @param {string} page - 简短描述页面的字符串: video, message
  */
-function handleSidebar (page) {
-  if (page === 'message') {
-    handleMessageSidebar()
-  } else {
-    handleVideoSidebar()
-  }
-
-  function handleVideoSidebar () {
-    const sidebarFab = document.getElementById('sidebar-fab')
-    const videoContainer = document.querySelector('#mirror-vdcon')
-
-    sidebarFab.addEventListener('click', () => videoContainer.toggleAttribute('sidebar'))
-
-    function closeSidebar () {
-      videoContainer.removeAttribute('sidebar')
+  function setSidebarBtn () {
+    if (page === 'video') {
+      handleVideoSidebar()
+    } else if (page === 'message') {
+      handleMessageSidebar()
     }
 
-    const recommendLiist = document.getElementById('reco_list')
+    function handleVideoSidebar () {
+      const sidebarFab = document.getElementById('sidebar-fab')
+      const videoContainer = document.querySelector('#mirror-vdcon')
 
-    recommendLiist.addEventListener('click', event => {
-      const nextPlay = document.querySelector('.rec-title')
-      const recommendFooter = document.querySelector('.rec-footer')
-      if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
-    })
-  }
+      sidebarFab.addEventListener('click', () => videoContainer.toggleAttribute('sidebar'))
 
-  function handleMessageSidebar () {
-    const sidebarFab = document.getElementById('sidebar-fab')
-    const messageContainer = document.querySelector('body>.container')
+      function closeSidebar () {
+        videoContainer.removeAttribute('sidebar')
+      }
 
-    sidebarFab.addEventListener('click', () => {
-      messageContainer.toggleAttribute('sidebar')
-      sidebarOverlay.classList.toggle('show')
-      sidebarFab.classList.toggle('active')
-    })
+      const recommendLiist = document.getElementById('reco_list')
 
-    const sidebarOverlay = document.createElement('div')
-    sidebarOverlay.id = 'sidebar-overlay'
-    sidebarFab.appendChild(sidebarOverlay)
+      recommendLiist.addEventListener('click', event => {
+        const nextPlay = document.querySelector('.rec-title')
+        const recommendFooter = document.querySelector('.rec-footer')
+        if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+      })
+    }
+
+    function handleMessageSidebar () {
+      const sidebarFab = document.getElementById('sidebar-fab')
+      const messageContainer = document.querySelector('body>.container')
+
+      sidebarFab.addEventListener('click', () => {
+        messageContainer.toggleAttribute('sidebar')
+        sidebarOverlay.classList.toggle('show')
+        sidebarFab.classList.toggle('active')
+      })
+
+      const sidebarOverlay = document.createElement('div')
+      sidebarOverlay.id = 'sidebar-overlay'
+      sidebarFab.appendChild(sidebarOverlay)
+    }
   }
 }
 
@@ -4112,7 +4537,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_home_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(13);
 /* harmony import */ var _style_video_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
 /* harmony import */ var _style_search_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(17);
-/* harmony import */ var _style_user_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(19);
+/* harmony import */ var _style_space_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(19);
 /* harmony import */ var _style_message_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(21);
 /* harmony import */ var _window_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(23);
 /* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(24);
@@ -4159,36 +4584,43 @@ __webpack_require__.r(__webpack_exports__);
       if (location.pathname === '/') {
         (0,_window_js__WEBPACK_IMPORTED_MODULE_7__.increaseVideoLoadSize)()
         ;(0,_header_image_js__WEBPACK_IMPORTED_MODULE_9__.handleHeaderImage)()
-      }
-      (0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
-      waitDOMContentLoaded(() => {
-        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_12__.handleActionbar)()
-        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
-        if (location.pathname.startsWith('/video')) {
-          (0,_video_js__WEBPACK_IMPORTED_MODULE_10__.videoInteraction)()
-          ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_12__.handleSidebar)()
+        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
+        waitDOMContentLoaded(() => {
+          ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_12__.handleActionbar)('home')
+          ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
+          ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)()
+        })
+      } else if (location.pathname.startsWith('/video')) {
+        (0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
+        waitDOMContentLoaded(() => {
+          ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_12__.handleActionbar)('video')
+          ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
+          ;(0,_video_js__WEBPACK_IMPORTED_MODULE_10__.videoInteraction)()
           ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('video')
-        } else {
-          (0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)()
-        }
-      })
+        })
+      }
       break
     case 'search':
       ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
       waitDOMContentLoaded(() => {
-        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_12__.handleActionbar)()
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_12__.handleActionbar)('search')
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
         ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('search')
       })
       break
     case 'space':
+      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
+      waitDOMContentLoaded(() => {
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_12__.handleActionbar)('space')
+        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
+        ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('space')
+      })
       break
     case 'message':
       ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
       waitDOMContentLoaded(() => {
-        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_12__.handleActionbar)()
+        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_12__.handleActionbar)('message')
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
-        ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_12__.handleSidebar)('message')
         ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('message')
         ;(0,_element_js__WEBPACK_IMPORTED_MODULE_11__.createUnfoldBtn)()
       })

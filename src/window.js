@@ -26,7 +26,7 @@ export function increaseVideoLoadSize () {
 
 /**
  * 管理滚动和滑动事件的函数
- * @param {string} page - 简短描述页面的字符串: search, video
+ * @param {string} page - 简短描述页面的字符串: search, video, message, space
  */
 export function handleScroll (page) {
   if (GM_getValue('settingShowHidden', [])[0] === false || GM_getValue('ban-action-hidden', false) === false) {
@@ -42,6 +42,9 @@ export function handleScroll (page) {
       break
     case 'message':
       slideMessageSidebar()
+      break
+    case 'space':
+      handleSpaceSwipe()
       break
     default:
       break
@@ -118,10 +121,6 @@ function slideVideoSidebar () {
 
   videoContainer.addEventListener('touchstart', handleTouchStart)
   videoContainer.addEventListener('touchend', handleTouchEnd)
-
-  const videoArea = document.querySelector('.bpx-player-video-area:not([style])')
-  // 阻止冒泡只对当前监听器生效，禁止全屏滑动和拖动进度条触发侧边栏。要传递参数或用形参，就要用函数而非引用
-  videoArea.addEventListener('touchstart', event => { event.stopPropagation() })
 }
 
 function slideMessageSidebar () {
@@ -163,4 +162,65 @@ function slideMessageSidebar () {
   messageContainer.addEventListener('touchend', handleTouchEnd)
   sidebarOverlay.addEventListener('touchstart', handleTouchStart)
   sidebarOverlay.addEventListener('touchend', handleTouchEnd)
+}
+
+//
+function handleSpaceSwipe () {
+  const observer = new MutationObserver(mutationsList => {
+    mutationsList.forEach(mutation => {
+      mutation.addedNodes.forEach(addedNode => {
+        if (addedNode.id === 'app') {
+          setTimeout(scrollToStick, 50) // 等待粉丝牌宽度 (可能影响高度) 动态加载
+          slideSpaceNavigator()
+          observer.disconnect()
+        }
+      })
+    })
+  })
+  observer.observe(document.body, { childList: true })
+
+  function scrollToStick () {
+    const navigator = document.querySelector('#navigator')
+    const threshold = navigator.getBoundingClientRect().top
+
+    let isStuck = false
+
+    window.addEventListener('scroll', () => {
+      if (isStuck !== (window.scrollY > threshold)) {
+        navigator.classList.toggle('sticky')
+        isStuck = !isStuck
+      }
+    })
+  }
+
+  function slideSpaceNavigator () {
+    let startX = 0; let startY = 0
+
+    const touchXThreshold = 55
+
+    const current = document.querySelector('#navigator .active')
+    const siblings = Array.from(document.querySelectorAll('#navigator .n-btn')).sort((a, b) => {
+      return parseInt(getComputedStyle(a).order) - parseInt(getComputedStyle(b).order)
+    })
+    let index = siblings.findIndex(el => el === current)
+
+    const handleTouchStart = event => {
+      startX = event.changedTouches[0].clientX
+      startY = event.changedTouches[0].clientY
+    }
+
+    const handleTouchEnd = event => {
+      const offsetX = event.changedTouches[0].clientX - startX
+      const offsetY = event.changedTouches[0].clientY - startY
+
+      if (Math.abs(offsetX) > touchXThreshold && Math.abs(offsetY / offsetX) < 1 / 2) {
+        offsetX > 0 ? index-- : index++
+        siblings[index].click()
+      }
+    }
+
+    const container = document.querySelector('#app')
+    container.addEventListener('touchstart', handleTouchStart)
+    container.addEventListener('touchend', handleTouchEnd)
+  }
 }

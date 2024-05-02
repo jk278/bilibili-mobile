@@ -182,15 +182,14 @@
 /* 右下角暂停图标 */
 /* 取消静音 */
 .bpx-player-top-wrap,
-.bpx-player-state-wrap,
-.bpx-player-toast-wrap {
+.bpx-player-state-wrap {
     display: none !important;
 }
 
 /* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
 .bpx-player-toast-wrap {
-    bottom: 50% !important;
-    transform: translateY(50%);
+    display: block !important;
+    bottom: 65px !important;
 }
 
 /* 小窗按钮 */
@@ -203,12 +202,6 @@
 /* 客服按钮 */
 .customer-service {
     display: none !important;
-}
-
-/* 窄屏不隐藏控制条和阴影 */
-.bpx-player-control-entity,
-.bpx-player-control-mask {
-    display: block !important;
 }
 
 /* 移除次要按钮：画中画、宽屏、时间、选集 */
@@ -301,7 +294,7 @@
     padding-bottom: 3px !important;
 }
 
-/* 阴影(控制栏展开时: 高能区 100% - 1px) */
+/* 高能区 (控制栏展开时: 高能区 100% - 1px) */
 .bpx-player-pbp {
     bottom: 1px !important;
 }
@@ -323,8 +316,11 @@
 
 /* 倍速弹窗 */
 .bpx-player-ctrl-playbackrate-menu-item {
-    height: 30px !important;
-    line-height: 30px !important;
+    height: 6.8vw !important;
+    max-height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* 设置弹窗 */
@@ -372,6 +368,64 @@
     text-overflow: unset !important;
     font-size: 12px;
     flex: none;
+}
+
+/* 隐藏旧控制栏 */
+.bpx-player-control-wrap:not(.new) {
+    display: none;
+}
+
+/* 窄屏不禁用控制条和阴影 (新控制栏默认不禁用阴影) */
+.bpx-player-control-entity,
+.bpx-player-control-mask {
+    display: block !important;
+}
+
+/* 隐藏控制条时不响应点击 */
+.bpx-player-container[data-ctrl-hidden=true] .bpx-player-control-bottom {
+    display: none;
+}
+
+/* --- 播完预览: 窄屏不隐藏 ( screen-mode=little-screen ) --- */
+.bpx-player-ending-wrap[hidden] {
+    display: block !important;
+}
+
+/* 内容 (scale 动态设置) */
+#app .bpx-player-ending-content {
+    height: 295px;
+    margin-top: -147px;
+}
+
+/* 关注按钮 */
+.bpx-player-ending-functions-follow {
+    padding: 0 15px !important;
+}
+
+/* 重播按钮 */
+.bpx-player-ending-functions-btn[data-action=restart] {
+    padding-right: 15px !important;
+}
+
+/* 反馈按钮组 */
+.bpx-player-ending-functions-pagecallback {
+    margin-left: 5px !important;
+
+    .bpx-player-ending-functions-btn {
+        margin-left: 10px !important;
+    }
+}
+
+/* 自动连播倒计时图标 */
+.bpx-player-ending-related-item-countdown {
+    margin-top: 34px !important;
+    width: 48px !important;
+}
+
+/* up 名 */
+.bpx-player-ending-functions-upinfo {
+    height: 56px !important;
+    margin-top: 0 !important;
 }
 
 /* ----------------------------------------------------
@@ -497,13 +551,13 @@
     margin: 10px 0 !important;
 }
 
-/* 热门排行标签 */
-.honor-rank {
+/* 全站排行、每周必看等标签 */
+.honor.item {
     position: absolute;
     align-self: start !important;
 }
 
-.video-info-detail-list:has(.honor-rank) {
+.video-info-detail-list:has(.honor.item) {
     height: 48px !important;
     align-items: end !important;
     margin-right: 5px !important;
@@ -709,15 +763,26 @@
     padding: 4px 0 4px 37px !important;
 }
 
+/* 评论信息 (点赞等) */
+.reply-info,
+.sub-reply-info {
+    justify-content: space-between;
+}
+
+.reply-info>*,
+.sub-reply-info>* {
+    margin-right: 0 !important;
+}
+
 /* 评论举报操作按钮 */
-.reply-operation-warp {
-    display: block !important;
-    right: 4px !important;
+.reply-operation-warp,
+.sub-reply-operation-warp {
+    display: inline-flex !important;
+    position: static !important;
 }
 
 .sub-reply-operation-warp {
     opacity: 1 !important;
-    right: 4px !important;
 }
 
 .reply-info,

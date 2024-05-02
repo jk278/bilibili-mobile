@@ -1,12 +1,12 @@
 /* global GM_getValue */
 
-import categoryInnerHTML from './category.html'
+import categoryInnerHTML from './html/category.html'
 
 /**
- * 管理操作栏的函数(DOMContentLoaded 之后)
- * fuck: 消息页顶栏不统一
+ * 管理操作栏的函数 (DOMContentLoaded 之后)
+ * @param {string} page - 简短描述页面的字符串: home, video, search, space, message
  */
-export function handleActionbar () {
+export function handleActionbar (page) {
   const actionbar = Object.assign(document.createElement('div'), {
     id: 'actionbar',
     // <div style="display:flex; transform:scale(4)">
@@ -40,33 +40,33 @@ export function handleActionbar () {
   })
   document.body.appendChild(actionbar)
 
-  // window 是全局对象，window.location.href 可省略 window
-  if (location.hostname === 'www.bilibili.com' && location.pathname === '/') {
-    actionbar.classList.add('home')
-    setRefreshBtn()
-  }
-
-  if (location.pathname.startsWith('/video')) {
-    actionbar.classList.add('video')
-    setFullbtn()
-  } else if (location.hostname === 'message.bilibili.com') {
-    actionbar.classList.add('message')
-    setSearchBtn('message')
-  } else {
-    setTopBtn()
-  }
-
-  if (location.hostname === 'search.bilibili.com') {
-    actionbar.classList.add('search')
-    setSearchBtn('search')
-    setShowMoreBtn()
-  } else {
-    setSearchBtn()
-  }
-
+  actionbar.classList.add(page)
   setHomeBtn()
-  if (location.hostname !== 'message.bilibili.com') {
-    setMenuBtn()
+  setSearchBtn()
+  if (page !== 'message') { setMenuBtn() }
+
+  switch (page) {
+    case 'home':
+      setTopBtn()
+      setRefreshBtn()
+      break
+    case 'video':
+      setFullbtn()
+      setSidebarBtn()
+      break
+    case 'search':
+      setTopBtn()
+      setShowMoreBtn()
+      break
+    case 'space':
+      setTopBtn()
+      setShowMoreBtn()
+      break
+    case 'message':
+      setSidebarBtn()
+      break
+    default:
+      break
   }
 
   function setFullbtn () {
@@ -75,7 +75,7 @@ export function handleActionbar () {
     const fullBtn = document.getElementById('full-now')
 
     fullBtn.addEventListener('click', () => {
-      clearTimeout(clickTimer)
+      clearTimeout(clickTimer) // 双击会产生两次单击事件和两个定时器, 双击事件只能清除第二个定时器
 
       clickTimer = setTimeout(() => {
         const videoWrap = document.querySelector('.bpx-player-video-wrap')
@@ -114,10 +114,9 @@ export function handleActionbar () {
   }
 
   /**
- * 设置不同页面的搜索事件的函数
- * @param {string} page - 简短描述页面的字符串: search, message
- */
-  function setSearchBtn (page) {
+   * 设置不同页面的搜索事件的函数
+   */
+  function setSearchBtn () {
     const searchFab = document.getElementById('search-fab')
     const svg = searchFab.querySelector('svg')
 
@@ -125,7 +124,7 @@ export function handleActionbar () {
     searchOverlay.id = 'search-overlay'
     searchFab.appendChild(searchOverlay)
 
-    const searchContainer = page === 'message' ? '.nav-search-box' : '.center-search-container'
+    const searchContainerSelector = page === 'message' ? '.nav-search-box' : '.center-search-container'
 
     let searchFabText
     if (page === 'search') {
@@ -148,49 +147,81 @@ export function handleActionbar () {
 
     let handleInput = null
 
+    function handleClick (input) {
+      // 滑动时 .center-search-container 的 class 会刷新
+      const searchContainer = document.querySelector(`${searchContainerSelector}`)
+
+      searchContainer.toggleAttribute('show')
+      input.focus()
+      searchOverlay.classList.toggle('show')
+      searchFab.classList.toggle('active')
+    }
+
+    /**
+     * 单击事件、双击事件、spaceHandleInput 共用的 input
+     */
+    let input = null
+
+    // 使用 let handleInput 声明变量并在内部块中赋值时，实际上是在创建一个新的函数。即使引用移除事件监听器时能访问到 let handleInput 变量，但是此时 handleInput 变量引用的函数并不是添加事件监听器时使用的那个函数
+    const spaceHandleInput = event => {
+      if (event.key === 'Enter') {
+        const spaceInput = document.querySelector('#navigator .space_input')
+        const spaceSearchBtn = document.querySelector('#navigator .search-btn')
+
+        event.preventDefault()
+        spaceInput.value = input.value
+        spaceInput.dispatchEvent(new Event('input', { bubbles: true }))
+        spaceSearchBtn.click()
+
+        searchOverlay.click()
+      }
+    }
+
     searchFab.addEventListener('click', () => {
+      input = document.querySelector(`${searchContainerSelector} input`)
+      if (!input) { return }
+
       clearTimeout(clickTimer)
 
       clickTimer = setTimeout(() => {
-        const input = document.querySelector(`${searchContainer} input`)
+        handleClick(input)
 
-        if (input) {
-          // 滑动时 .center-search-container 的 class 会刷新
-          document.querySelector(`${searchContainer}`).toggleAttribute('show')
-          input.focus()
-          searchOverlay.classList.toggle('show')
-          searchFab.classList.toggle('active')
+        if (page === 'search') {
+          // 移除之前添加的 input 事件监听器
+          input.removeEventListener('input', handleInput)
 
-          if (page === 'search') {
-            // 移除之前添加的 input 事件监听器
-            input.removeEventListener('input', handleInput)
+          // 模拟输入: 将文本填入底部搜索
+          input.value = searchFabText.textContent
+          input.dispatchEvent(new Event('input', { bubbles: true }))
 
-            // 模拟输入: 将文本填入底部搜索
-            input.value = searchFabText.textContent
-            input.dispatchEvent(new Event('input', { bubbles: true }))
-
-            // 文本更新到搜索页搜索
-            handleInput = () => {
-              searchFabText.textContent = input.value
-              if (input.value === '') {
-                searchFab.style.cssText = ''
-                svg.style.flex = ''
-              } else {
-                searchFab.style.cssText = `
+          // 文本更新到底部搜索
+          handleInput = () => {
+            searchFabText.textContent = input.value
+            if (input.value === '') {
+              searchFab.style.cssText = ''
+              svg.style.flex = ''
+            } else {
+              searchFab.style.cssText = `
                   background-color: var(--graph_bg_thick);
                   border-radius: 16px;
                 `
-                svg.style.flex = '0 0 20px'
-              }
+              svg.style.flex = '0 0 20px'
             }
-            input.addEventListener('input', handleInput)
           }
+          input.addEventListener('input', handleInput)
+        } else if (page === 'space') {
+          // 移除之前添加的 keydown 事件监听器
+          input.removeEventListener('keydown', spaceHandleInput)
+
+          // 移除事件监听器时，回调函数需要与添加事件监听器时使用的回调函数完全一致。内联定义的新箭头函数不是添加事件监听器时使用的原始回调函数
+          // 引用回调函数时，形参写在函数声明中，不需要内联一个匿名函数 (匿名内部函数, 无函数名)
+          input.addEventListener('keydown', spaceHandleInput)
         }
       }, 300)
     })
 
     // 避免点击阴影时 input 先失焦,导致分两次隐藏
-    searchOverlay.addEventListener('click', () => document.querySelector(`${searchContainer} input`)?.focus())
+    searchOverlay.addEventListener('click', () => document.querySelector(`${searchContainerSelector} input`)?.focus())
 
     // 移动端 click 会先触发 touchstart, touchend 和 mousemove
     function handleTouchMove () { searchFab.click() && searchOverlay.removeEventListener('touchmove', handleTouchMove)() }
@@ -199,40 +230,48 @@ export function handleActionbar () {
 
     if (page === 'search') {
       searchFab.addEventListener('dblclick', () => {
+        if (!input) { return }
+
         clearTimeout(clickTimer)
 
-        const input = document.querySelector('.center-search-container input')
+        document.querySelector('.center-search-container').toggleAttribute('show')
+        input.focus()
+        searchOverlay.classList.toggle('show')
+        searchFab.classList.toggle('active')
 
-        if (input) {
-          document.querySelector('.center-search-container').classList.toggle('show')
-          input.focus()
-          searchOverlay.classList.toggle('show')
-          searchFab.classList.toggle('active')
+        input.value = ''
+        input.dispatchEvent(new Event('input', { bubbles: true }))
 
-          input.value = ''
-          input.dispatchEvent(new Event('input', { bubbles: true }))
+        searchFabText.textContent = input.value
+        searchFab.style.cssText = ''
+        svg.style.flex = ''
 
+        // 文本更新到搜索页搜索
+        handleInput = () => {
           searchFabText.textContent = input.value
-          searchFab.style.cssText = ''
-          svg.style.flex = ''
-
-          input.removeEventListener('input', handleInput)
-          // 文本更新到搜索页搜索
-          handleInput = () => {
-            searchFabText.textContent = input.value
-            if (input.value === '') {
-              searchFab.style.cssText = ''
-              svg.style.flex = ''
-            } else {
-              searchFab.style.cssText = `
+          if (input.value === '') {
+            searchFab.style.cssText = ''
+            svg.style.flex = ''
+          } else {
+            searchFab.style.cssText = `
                 background-color: var(--graph_bg_thick);
                 border-radius: 16px;
               `
-              svg.style.flex = '0 0 20px'
-            }
+            svg.style.flex = '0 0 20px'
           }
-          input.addEventListener('input', handleInput)
         }
+        input.removeEventListener('input', handleInput)
+        input.addEventListener('input', handleInput)
+      })
+    } else if (page === 'space') {
+      searchFab.addEventListener('dblclick', () => {
+        if (!input) { return }
+
+        clearTimeout(clickTimer)
+
+        handleClick(input)
+
+        input.removeEventListener('keydown', spaceHandleInput)
       })
     }
   }
@@ -311,77 +350,84 @@ export function handleActionbar () {
   }
 
   function setRefreshBtn () {
-    const refreshFab = document.getElementById('refresh-fab')
+    const refreshFab = document.getElementById('refresh-fab') // 返回动态 HTML Collection
 
-    refreshFab.addEventListener('click', document.querySelector('.flexible-roll-btn-inner')?.click)
+    // 使用rollBtn?.click可选链操作符前的rollBtn会立即执行，如果rollBtn存在才传递该元素的click函数引用。而创建了一个新的箭头函数()=>{rollBtn?.click()}则会在监听事件触发时才执行rollBtn
+    refreshFab.addEventListener('click', () => { document.querySelector('.flexible-roll-btn-inner')?.click() })
   }
 
   function setShowMoreBtn () {
     const showMoreFab = document.getElementById('show-more-fab')
 
     const handleClick = () => {
-      const searchConditions = document.querySelector('.search-conditions')
+      if (page === 'search') {
+        const searchConditions = document.querySelector('.search-conditions')
 
-      if (searchConditions) {
-        if (sessionStorage.getItem('show-conditions') !== 'true') {
-          searchConditions.classList.add('show')
-          showMoreFab.classList.add('reverse')
-          sessionStorage.setItem('show-conditions', 'true')
-        } else {
-          searchConditions.classList.remove('show')
-          showMoreFab.classList.remove('reverse')
-          sessionStorage.setItem('show-conditions', '')
+        if (searchConditions) {
+          if (sessionStorage.getItem('show-conditions') !== 'true') {
+            searchConditions.classList.add('show')
+            showMoreFab.classList.add('reverse')
+            sessionStorage.setItem('show-conditions', 'true')
+          } else {
+            searchConditions.classList.remove('show')
+            showMoreFab.classList.remove('reverse')
+            sessionStorage.setItem('show-conditions', '')
+          }
         }
+      } else if (page === 'space') {
+        const followRow = document.querySelector('.h .h-action')
+
+        followRow?.classList.toggle('show')
+        showMoreFab.classList.toggle('reverse')
       }
     }
     showMoreFab.addEventListener('click', handleClick)
   }
-}
 
-// 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
+  // 侧边栏(使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。)
 
-/**
+  /**
  * 处理侧边栏事件的函数
- * @param {string} page - 简短描述页面的字符串: video, message
  */
-export function handleSidebar (page) {
-  if (page === 'message') {
-    handleMessageSidebar()
-  } else {
-    handleVideoSidebar()
-  }
-
-  function handleVideoSidebar () {
-    const sidebarFab = document.getElementById('sidebar-fab')
-    const videoContainer = document.querySelector('#mirror-vdcon')
-
-    sidebarFab.addEventListener('click', () => videoContainer.toggleAttribute('sidebar'))
-
-    function closeSidebar () {
-      videoContainer.removeAttribute('sidebar')
+  function setSidebarBtn () {
+    if (page === 'video') {
+      handleVideoSidebar()
+    } else if (page === 'message') {
+      handleMessageSidebar()
     }
 
-    const recommendLiist = document.getElementById('reco_list')
+    function handleVideoSidebar () {
+      const sidebarFab = document.getElementById('sidebar-fab')
+      const videoContainer = document.querySelector('#mirror-vdcon')
 
-    recommendLiist.addEventListener('click', event => {
-      const nextPlay = document.querySelector('.rec-title')
-      const recommendFooter = document.querySelector('.rec-footer')
-      if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
-    })
-  }
+      sidebarFab.addEventListener('click', () => videoContainer.toggleAttribute('sidebar'))
 
-  function handleMessageSidebar () {
-    const sidebarFab = document.getElementById('sidebar-fab')
-    const messageContainer = document.querySelector('body>.container')
+      function closeSidebar () {
+        videoContainer.removeAttribute('sidebar')
+      }
 
-    sidebarFab.addEventListener('click', () => {
-      messageContainer.toggleAttribute('sidebar')
-      sidebarOverlay.classList.toggle('show')
-      sidebarFab.classList.toggle('active')
-    })
+      const recommendLiist = document.getElementById('reco_list')
 
-    const sidebarOverlay = document.createElement('div')
-    sidebarOverlay.id = 'sidebar-overlay'
-    sidebarFab.appendChild(sidebarOverlay)
+      recommendLiist.addEventListener('click', event => {
+        const nextPlay = document.querySelector('.rec-title')
+        const recommendFooter = document.querySelector('.rec-footer')
+        if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+      })
+    }
+
+    function handleMessageSidebar () {
+      const sidebarFab = document.getElementById('sidebar-fab')
+      const messageContainer = document.querySelector('body>.container')
+
+      sidebarFab.addEventListener('click', () => {
+        messageContainer.toggleAttribute('sidebar')
+        sidebarOverlay.classList.toggle('show')
+        sidebarFab.classList.toggle('active')
+      })
+
+      const sidebarOverlay = document.createElement('div')
+      sidebarOverlay.id = 'sidebar-overlay'
+      sidebarFab.appendChild(sidebarOverlay)
+    }
   }
 }

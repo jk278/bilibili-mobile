@@ -1,0 +1,393 @@
+/* ------------------- 个人主页 ----------------------- */
+
+/* 包裹块、分栏内容 */
+.wrapper,
+.content {
+    max-width: 100%;
+}
+
+/* --------- 导航栏 --------- */
+
+/* 隐藏贴顶栏 (不是主页而是 up 名) */
+#navigator-fixed {
+    display: none;
+}
+
+/* 静态版块栏贴顶 */
+#navigator.sticky {
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    width: 100%;
+}
+
+/* 移除搜索框: 隐藏后依然能模拟输入和代码触发元素点击事件 */
+/* 用 CSS 属性 display: none; 隐藏元素后，虽然元素在视觉上消失了，但是它在 DOM 中仍然存在。这意味着仍然可以通过 JavaScript 与隐藏元素进行交互 */
+#navigator .search-container {
+    display: none;
+}
+
+/* 贴顶后内容区高度补偿 (移除搜索框后) */
+#app:has(>.sticky)>.s-space {
+    padding-top: 49px;
+}
+
+/* 内框 */
+.n .n-inner {
+    height: auto !important;
+    padding: 0 !important;
+}
+
+/* 导航项框 */
+.n .n-tab-links {
+    display: flex !important;
+    justify-content: space-evenly;
+}
+
+/* 导航项 */
+#app .n .n-btn {
+    line-height: unset;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .iconfont {
+        margin-right: 0;
+    }
+
+    .n-text {
+        line-height: 15px;
+        width: 26px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .n-num {
+        line-height: 14px;
+        margin-left: 0;
+        text-align: center;
+    }
+}
+
+/* 导航: 排序 */
+/* 投稿 */
+.n .n-video.n-audio.n-article.n-album {
+    order: -2;
+}
+
+/* 动态 */
+.n .n-dynamic {
+    order: -1;
+}
+
+/* 主页 .n .n-index.n-fans */
+
+/* 合集 */
+.n .n-channel {
+    order: 1;
+}
+
+/* 收藏 */
+.n .n-favlist {
+    order: 2;
+}
+
+/* 课程 */
+.n .n-pugv {
+    order: 3;
+}
+
+/* 降低高度: 时长、充电头像、充电图 */
+.col-1 span.length,
+.col-2 .elec .elec-hito:nth-child(4),
+.col-2 .elec .elec-status {
+    z-index: 1;
+}
+
+/* --------- 关注栏 --------- */
+
+/* 降低关注栏高度 */
+#app .h {
+    z-index: 1;
+}
+
+/* 折叠关注按钮栏 */
+#app .h .h-action {
+    position: fixed;
+    background-color: #f1f2f3;
+    left: 0;
+    bottom: 0 !important;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    opacity: 0;
+    transition: .4s ease-in;
+}
+
+#app .h .h-action.show {
+    bottom: var(--actionbar-height) !important;
+    opacity: 1;
+}
+
+.h .h-action .h-f-btn {
+    margin: 10px;
+}
+
+/* 更多按钮 */
+.be-dropdown.h-add-to-black {
+    background: rgba(0, 0, 0, .45);
+    box-shadow: 0 0 0 2px hsla(0, 0%, 100%, .3);
+    border-radius: 4px;
+}
+
+/* --------- up 块 --------- */
+
+/* up 块背景阴影 */
+.h .h-gradient {
+    height: 120% !important;
+    background-size: auto 100%;
+}
+
+/* up 信息上空白 */
+#app .h .h-inner {
+    padding-top: 20px;
+}
+
+/* up 信息 */
+#app .h .h-info {
+    margin: 0 10px;
+    padding-bottom: calc(40px + 12px);
+}
+
+/* up 简介 */
+#app .h .h-sign {
+    width: 100%;
+    word-break: break-all;
+    height: fit-content;
+    line-height: 18px;
+}
+
+/* 关注、粉丝数 (height: 40px) */
+.n .n-statistics {
+    position: absolute;
+    top: 0;
+    transform: translateY(-100%);
+    z-index: 10;
+    /* 不减去左右 margin 会溢出 */
+    width: calc(100% - 20px);
+    height: auto !important;
+    display: flex;
+    justify-content: space-evenly;
+    padding: 4px 0 5px;
+    margin: 0 10px;
+    border-top: 1px solid var(--line_regular);
+
+    .n-data {
+        padding: 0 5px;
+        height: auto;
+    }
+
+    .n-data-k {
+        color: white !important;
+    }
+
+    .n-data-v {
+        color: hsla(0, 0%, 100%, .8) !important;
+        margin-top: 0 !important;
+    }
+}
+
+/* 宽度 100% 时, 溢出因素: margin、padding、border */
+
+/* up 视频 */
+#page-index .col-1 {
+    max-width: calc(100% - 20px);
+    padding: 0 10px !important;
+    border: none !important;
+    margin-bottom: 10px;
+}
+
+.channel-video {
+    white-space: wrap !important;
+}
+
+/* ------ 已关注置顶推荐 ------ */
+
+.i-pin-c.cover-big {
+    padding-bottom: 5px;
+}
+
+.i-pin-c .i-pin-cover {
+    width: 100% !important;
+    height: fit-content !important;
+}
+
+.i-pin-title {
+    white-space: wrap !important;
+}
+
+.i-pin-info {
+    margin-left: 0 !important;
+    height: auto !important;
+}
+
+/* 描述 - 不限高 */
+.i-pin-desc {
+    max-height: unset !important;
+}
+
+/* ------ TA的视频 ------ */
+
+/* 标题 */
+.section-title {
+    padding: 0 5px 33px !important;
+}
+
+/* 标题 - 视频排序 */
+#page-index .video .be-tab {
+    position: absolute;
+    left: 0;
+    transform: translateX(calc(50vw - 50%));
+    margin: 33px 0 0 !important;
+}
+
+.be-tab-item {
+    margin: 0 5px !important;
+}
+
+/* 标题 - 右侧按钮 */
+.section .more,
+.section-title .play-all-channel {
+    margin-right: 5px;
+}
+
+/* TA的视频: 不限制高度 */
+#page-index .video .content {
+    max-height: unset !important;
+}
+
+/* ------ TA的收藏夹 ------ */
+
+/* ... */
+
+/* ------ 合集 ------ */
+
+/* ... */
+
+/* ------ TA的专栏 ------ */
+
+/* ... */
+
+/* ------ 最近点赞 ------ */
+
+/* ... */
+
+.small-item {
+    width: calc(50% - 10px) !important;
+    padding: 0 5px 5px !important;
+}
+
+.small-item .cover {
+    width: 100% !important;
+    height: auto !important;
+}
+
+/* 频道: 更多 */
+#page-index .channel .channel-item .channel-title {
+    padding: 0 5px 34px;
+}
+
+#page-index .channel .section-right-options {
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+}
+
+/* 空番剧文本 */
+#page-index .col-1 .section.empty:after {
+    left: 100px !important;
+}
+
+#i-masterpiece {
+    margin-left: 0 !important;
+}
+
+#page-index .fav-item {
+    margin: 0 10px !important;
+}
+
+#page-fav .fav-main {
+    width: 100% !important;
+}
+
+.favInfo-details {
+    max-width: 60%;
+    margin-left: 5px !important;
+}
+
+.fav-options>* {
+    margin: 0 !important;
+}
+
+.favList-info {
+    padding: 0 !important;
+    margin: 0 10px !important;
+}
+
+/* 隐藏回顶小飞机 */
+#app .to-top {
+    display: none !important;
+}
+
+/* --- 专栏项 (横向排列) -- */
+.article-item .clearfix {
+    display: flex;
+}
+
+/* 文本 */
+.article-content {
+    min-width: 0;
+    padding-right: 10px;
+    /* 元信息栏 width: 10vw */
+    overflow: hidden;
+}
+
+/* 配图 */
+.article-img {
+    flex-shrink: 0;
+}
+
+/* 文本内容 */
+.article-content .article-con a {
+    height: 54px;
+    line-height: 18px;
+    white-space: normal;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+/* 文本标题 */
+h2.article-title {
+    max-height: unset;
+    font-size: 17px;
+    line-height: 20px;
+}
+
+.article-title a {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+/* 元信息栏 (笔记类型、访问量) */
+.article-content .meta-col {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100vw;
+
+    span {
+        margin-right: 0;
+    }
+}
