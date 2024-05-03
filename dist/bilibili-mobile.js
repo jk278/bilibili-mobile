@@ -809,10 +809,31 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------------ 顶栏 ---
     padding: 10px 20px 5px !important;
     z-index: 3;
     margin: 0 !important;
+    opacity: 0;
+    transform: scale(.9);
+    transition: .4s ease-in;
     display: none;
 }
 
 .center-search-container[show] {
+    opacity: 1;
+    transform: none;
+}
+
+/* 失焦后立即重新聚焦会导致搜索历史折叠闪烁，直接强制保留聚焦状态 (.is-focus) */
+.center-search-container #nav-searchform {
+    border-radius: 8px 8px 0px 0px !important;
+
+    border: 1px solid var(--line_regular) !important;
+    border-bottom: none !important;
+    background: var(--bg1) !important;
+}
+
+.center-search-container #nav-searchform .nav-search-content {
+    background-color: var(--graph_bg_thick) !important;
+}
+
+.center-search-container .search-panel {
     display: block !important;
 }
 
@@ -1352,7 +1373,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
 
 .left-container {
     overflow: auto;
-    height: auto !important;
+    /* 同 .right-container */
+    height: calc(100% - 56.25vw) !important;
 }
 
 /* ----------------------------------------------------
@@ -3829,8 +3851,9 @@ function handlelVideoClick () {
   videoArea.insertBefore(controlWrap, oldControlWrap)
   controlWrap.appendChild(controlEntity)
 
-  // 观察控制栏按键弹窗, 箭头函数函数体为表达式可省略 return 和 {} 隐式返回, 元素发生移动后, 之前的 querySelector 会失效 (无法找到该元素)
-  const isBpxStateShow = () => { controlEntity.querySelector('.bpx-player-control-bottom-right>.bpx-state-show') }
+  // 观察控制栏按键弹窗, 元素发生移动后, 之前的 querySelector 会失效 (无法找到该元素)
+  // 当箭头函数的函数体只有一条语句时，如果使用了花括号，则该语句会被解释为函数体，而不是返回值。因此，当使用了花括号时，isBpxStateShow 的返回值为 undefined。
+  const isBpxStateShow = () => controlEntity.querySelector('.bpx-player-control-bottom-right>.bpx-state-show')
 
   const controlTop = controlEntity.querySelector('.bpx-player-control-top')
 
@@ -3857,7 +3880,7 @@ function handlelVideoClick () {
     hideTimer = setTimeout(hideControlWrap, 3500)
   }
 
-  // 只剩下初始化显示状态栏, 初次播放 1s 后隐藏控制栏
+  // 只剩下初始化显示状态栏, 初次播放 1s 后隐藏控制栏 (再过 2s 又隐藏一次)
 
   // 阻止触摸单击触发 videoArea 的 mousemove 事件而显隐控制栏
   videoWrap.addEventListener('mousemove', event => { event.stopPropagation() })
@@ -4134,67 +4157,66 @@ function handleActionbar (page) {
 
     const searchContainerSelector = page === 'message' ? '.nav-search-box' : '.center-search-container'
 
-    let searchFabText
-    if (page === 'search') {
-      // 底部显示搜索文本
-      const pageInput = document.querySelector('.search-input input')
-      searchFabText = Object.assign(document.createElement('div'), {
-        id: 'search-fab-text',
-        textContent: pageInput.value
-      })
-      searchFab.appendChild(searchFabText)
-
-      searchFab.style.cssText = `
-        background-color: var(--graph_bg_thick);
-        border-radius: 16px;
-      `
-      svg.style.flex = '0 0 20px'
-    }
-
     let clickTimer = null
-
-    let handleInput = null
 
     function handleClick (input) {
       // 滑动时 .center-search-container 的 class 会刷新
       const searchContainer = document.querySelector(`${searchContainerSelector}`)
 
-      searchContainer.toggleAttribute('show')
+      searchContainer.style.display = 'block'
+      // 在同一个执行上下文中修改多个 CSS 属性时，浏览器会将这些属性的变化合并为一个重绘和重排操作
+      setTimeout(() => { searchContainer.setAttribute('show', '') }, 0)
+
       input.focus()
-      searchOverlay.classList.toggle('show')
-      searchFab.classList.toggle('active')
+      searchOverlay.classList.add('show')
+      searchFab.classList.add('active')
     }
 
     /**
-     * 单击事件、双击事件、spaceHandleInput 共用的 input
+     * 单击事件、双击事件、searchOverlay 共用的 input
      */
     let input = null
 
-    // 使用 let handleInput 声明变量并在内部块中赋值时，实际上是在创建一个新的函数。即使引用移除事件监听器时能访问到 let handleInput 变量，但是此时 handleInput 变量引用的函数并不是添加事件监听器时使用的那个函数
-    const spaceHandleInput = event => {
-      if (event.key === 'Enter') {
-        const spaceInput = document.querySelector('#navigator .space_input')
-        const spaceSearchBtn = document.querySelector('#navigator .search-btn')
+    if (page !== 'search' && page !== 'space') {
+      searchFab.addEventListener('click', () => {
+        input = document.querySelector(`${searchContainerSelector} input`)
+        if (!input) { return }
 
-        event.preventDefault()
-        spaceInput.value = input.value
-        spaceInput.dispatchEvent(new Event('input', { bubbles: true }))
-        spaceSearchBtn.click()
-
-        searchOverlay.click()
-      }
+        handleClick(input)
+      })
     }
 
-    searchFab.addEventListener('click', () => {
-      input = document.querySelector(`${searchContainerSelector} input`)
-      if (!input) { return }
+    if (page === 'search') {
+      // 底部显示搜索文本
+      const pageInput = document.querySelector('.search-input input')
 
-      clearTimeout(clickTimer)
+      const searchFabText = Object.assign(document.createElement('div'), { id: 'search-fab-text', textContent: pageInput.value })
+      searchFab.appendChild(searchFabText)
 
-      clickTimer = setTimeout(() => {
-        handleClick(input)
+      searchFab.style.cssText = 'background-color: var(--graph_bg_thick); border-radius: 16px;'
+      svg.style.flex = '0 0 20px'
 
-        if (page === 'search') {
+      // 文本更新到底部搜索
+      const handleInput = () => {
+        searchFabText.textContent = input.value
+        if (input.value === '') {
+          searchFab.style.cssText = ''
+          svg.style.flex = ''
+        } else {
+          searchFab.style.cssText = 'background-color: var(--graph_bg_thick); border-radius: 16px;'
+          svg.style.flex = '0 0 20px'
+        }
+      }
+
+      searchFab.addEventListener('click', () => {
+        input = document.querySelector(`${searchContainerSelector} input`)
+        if (!input) { return }
+
+        clearTimeout(clickTimer)
+
+        clickTimer = setTimeout(() => {
+          handleClick(input)
+
           // 移除之前添加的 input 事件监听器
           input.removeEventListener('input', handleInput)
 
@@ -4202,41 +4224,12 @@ function handleActionbar (page) {
           input.value = searchFabText.textContent
           input.dispatchEvent(new Event('input', { bubbles: true }))
 
-          // 文本更新到底部搜索
-          handleInput = () => {
-            searchFabText.textContent = input.value
-            if (input.value === '') {
-              searchFab.style.cssText = ''
-              svg.style.flex = ''
-            } else {
-              searchFab.style.cssText = `
-                  background-color: var(--graph_bg_thick);
-                  border-radius: 16px;
-                `
-              svg.style.flex = '0 0 20px'
-            }
-          }
+          handleInput()
+
           input.addEventListener('input', handleInput)
-        } else if (page === 'space') {
-          // 移除之前添加的 keydown 事件监听器
-          input.removeEventListener('keydown', spaceHandleInput)
+        }, 300)
+      })
 
-          // 移除事件监听器时，回调函数需要与添加事件监听器时使用的回调函数完全一致。内联定义的新箭头函数不是添加事件监听器时使用的原始回调函数
-          // 引用回调函数时，形参写在函数声明中，不需要内联一个匿名函数 (匿名内部函数, 无函数名)
-          input.addEventListener('keydown', spaceHandleInput)
-        }
-      }, 300)
-    })
-
-    // 避免点击阴影时 input 先失焦,导致分两次隐藏
-    searchOverlay.addEventListener('click', () => document.querySelector(`${searchContainerSelector} input`)?.focus())
-
-    // 移动端 click 会先触发 touchstart, touchend 和 mousemove
-    function handleTouchMove () { searchFab.click() && searchOverlay.removeEventListener('touchmove', handleTouchMove)() }
-    searchOverlay.addEventListener('touchstart', () => searchOverlay.addEventListener('touchmove', handleTouchMove))
-    searchOverlay.addEventListener('touchend', () => searchOverlay.removeEventListener('touchmove', handleTouchMove))
-
-    if (page === 'search') {
       searchFab.addEventListener('dblclick', () => {
         if (!input) { return }
 
@@ -4254,24 +4247,46 @@ function handleActionbar (page) {
         searchFab.style.cssText = ''
         svg.style.flex = ''
 
-        // 文本更新到搜索页搜索
-        handleInput = () => {
-          searchFabText.textContent = input.value
-          if (input.value === '') {
-            searchFab.style.cssText = ''
-            svg.style.flex = ''
-          } else {
-            searchFab.style.cssText = `
-                background-color: var(--graph_bg_thick);
-                border-radius: 16px;
-              `
-            svg.style.flex = '0 0 20px'
-          }
-        }
+        handleInput()
+
         input.removeEventListener('input', handleInput)
         input.addEventListener('input', handleInput)
       })
-    } else if (page === 'space') {
+    }
+
+    if (page === 'space') {
+      // 使用 let handleInput 声明变量并在内部块中赋值时，实际上是在创建一个新的函数。即使引用移除事件监听器时能访问到 let handleInput 变量，但是此时 handleInput 变量引用的函数并不是添加事件监听器时使用的那个函数
+      const spaceHandleInput = event => {
+        if (event.key === 'Enter') {
+          const spaceInput = document.querySelector('#navigator .space_input')
+          const spaceSearchBtn = document.querySelector('#navigator .search-btn')
+
+          event.preventDefault()
+          spaceInput.value = input.value
+          spaceInput.dispatchEvent(new Event('input', { bubbles: true }))
+          spaceSearchBtn.click()
+
+          searchOverlay.click()
+        }
+      }
+
+      searchFab.addEventListener('click', () => {
+        input = document.querySelector(`${searchContainerSelector} input`)
+        if (!input) { return }
+
+        clearTimeout(clickTimer)
+
+        clickTimer = setTimeout(() => {
+          handleClick(input)
+          // 移除之前添加的 keydown 事件监听器
+          input.removeEventListener('keydown', spaceHandleInput)
+
+          // 移除事件监听器时，回调函数需要与添加事件监听器时使用的回调函数完全一致。内联定义的新箭头函数不是添加事件监听器时使用的原始回调函数
+          // 引用回调函数时，形参写在函数声明中，不需要内联一个匿名函数 (匿名内部函数, 无函数名)
+          input.addEventListener('keydown', spaceHandleInput)
+        }, 300)
+      })
+
       searchFab.addEventListener('dblclick', () => {
         if (!input) { return }
 
@@ -4282,6 +4297,24 @@ function handleActionbar (page) {
         input.removeEventListener('keydown', spaceHandleInput)
       })
     }
+
+    // 避免存在双击事件时的延时操作导致视频页滑动阴影无法滚动内容以及卡顿感
+    searchOverlay.addEventListener('click', event => {
+      event.stopPropagation()
+
+      const searchContainer = document.querySelector(`${searchContainerSelector}`)
+
+      searchContainer.removeAttribute('show')
+      searchContainer.addEventListener('transitionend', () => { searchContainer.style.cssText = '' }, { once: true })
+
+      searchOverlay.classList.remove('show')
+      searchFab.classList.remove('active')
+    })
+
+    // 移动端 click 会先触发 touchstart, touchend 和 mousemove
+    function handleTouchMove () { searchOverlay.click() } // searchOverlay.click() 返回值为 undefined
+    searchOverlay.addEventListener('touchstart', () => searchOverlay.addEventListener('touchmove', handleTouchMove, { once: true }))
+    searchOverlay.addEventListener('touchend', () => searchOverlay.removeEventListener('touchmove', handleTouchMove))
   }
 
   function setMenuBtn () {
@@ -4308,8 +4341,7 @@ function handleActionbar (page) {
 
     menuFab.addEventListener('click', () => {
       menu.classList.add('show')
-      // 显示消息数
-      document.body.setAttribute('menu', '')
+      document.body.setAttribute('menu', '') // 显示消息数
       menuOverlay.classList.add('show')
       menuFab.classList.add('active')
     })
@@ -4337,13 +4369,14 @@ function handleActionbar (page) {
       menuFab.classList.remove('active')
 
       const refer = sessionStorage.getItem('opened-dailog') || ''
+      if (refer === '') { return }
 
       const referElement = document.querySelector(`${refer}`)
       referElement.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
     })
 
-    function handleTouchMove () { menuOverlay.click() && menuOverlay.removeEventListener('touchmove', handleTouchMove)() }
-    menuOverlay.addEventListener('touchstart', () => menuOverlay.addEventListener('touchmove', handleTouchMove))
+    function handleTouchMove () { menuOverlay.click() }
+    menuOverlay.addEventListener('touchstart', () => menuOverlay.addEventListener('touchmove', handleTouchMove, { once: true }))
     menuOverlay.addEventListener('touchend', () => menuOverlay.removeEventListener('touchmove', handleTouchMove))
 
     const falseHeader = Object.assign(document.createElement('div'), {

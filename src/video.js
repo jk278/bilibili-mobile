@@ -57,8 +57,9 @@ function handlelVideoClick () {
   videoArea.insertBefore(controlWrap, oldControlWrap)
   controlWrap.appendChild(controlEntity)
 
-  // 观察控制栏按键弹窗, 箭头函数函数体为表达式可省略 return 和 {} 隐式返回, 元素发生移动后, 之前的 querySelector 会失效 (无法找到该元素)
-  const isBpxStateShow = () => { controlEntity.querySelector('.bpx-player-control-bottom-right>.bpx-state-show') }
+  // 观察控制栏按键弹窗, 元素发生移动后, 之前的 querySelector 会失效 (无法找到该元素)
+  // 当箭头函数的函数体只有一条语句时，如果使用了花括号，则该语句会被解释为函数体，而不是返回值。因此，当使用了花括号时，isBpxStateShow 的返回值为 undefined。
+  const isBpxStateShow = () => controlEntity.querySelector('.bpx-player-control-bottom-right>.bpx-state-show')
 
   const controlTop = controlEntity.querySelector('.bpx-player-control-top')
 
@@ -85,7 +86,7 @@ function handlelVideoClick () {
     hideTimer = setTimeout(hideControlWrap, 3500)
   }
 
-  // 只剩下初始化显示状态栏, 初次播放 1s 后隐藏控制栏
+  // 只剩下初始化显示状态栏, 初次播放 1s 后隐藏控制栏 (再过 2s 又隐藏一次)
 
   // 阻止触摸单击触发 videoArea 的 mousemove 事件而显隐控制栏
   videoWrap.addEventListener('mousemove', event => { event.stopPropagation() })

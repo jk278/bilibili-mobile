@@ -27,7 +27,8 @@
 
 .left-container {
     overflow: auto;
-    height: auto !important;
+    /* 同 .right-container */
+    height: calc(100% - 56.25vw) !important;
 }
 
 /* ----------------------------------------------------
@@ -51,7 +52,8 @@
 
 .left-container::after {
     content: '';
-    position: absolute;
+    /* 因为现在是限制高度 + overflow:auto，所以不用 absolute 了 */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
