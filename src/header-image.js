@@ -1,20 +1,27 @@
 // 控制首页头图函数
 export function handleHeaderImage () {
+  // eslint-disable-next-line no-undef
+  const source = GM_getValue('custom-header-image-source', 'unsplash')
+
   const key = 'header-image'
-  const url = 'https://source.unsplash.com/random/840x400'
+  const formattedDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/-/g, '/')
+  const url = source === 'unsplash' ? 'https://source.unsplash.com/random/840x400' : `https://api.ee123.net/img/bingimg/${formattedDate}.jpg`
+
   const elementSelector = '.bili-header__banner'
 
   loadImage(key, elementSelector)
 
-  setTimeout(async () => {
-    try {
-      const img = await getImage(url)
-      const base64Data = imageToBase64(img)
-      storeImage(key, base64Data)
-    } catch (error) {
-      console.error('Failed to get image:', error)
-    }
-  }, 5000)
+  if (source !== 'local') {
+    setTimeout(async () => {
+      try {
+        const img = await getImage(url)
+        const base64Data = imageToBase64(img)
+        storeImage(key, base64Data)
+      } catch (error) {
+        console.error('Failed to get image:', error)
+      }
+    }, 5000)
+  }
 
   function getImage (url) {
     return new Promise((resolve, reject) => {

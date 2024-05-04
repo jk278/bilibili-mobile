@@ -1,5 +1,3 @@
-/* global GM_getValue */
-
 import categoryInnerHTML from './html/category.html'
 
 /**
@@ -74,33 +72,27 @@ export function handleActionbar (page) {
 
     const fullBtn = document.getElementById('full-now')
 
+    function playVideo () {
+      const video = document.querySelector('video')
+      video.play()
+      video.muted = false
+      if (video.volume === 0) { document.querySelector('.bpx-player-ctrl-muted-icon').click() }
+    }
+
     fullBtn.addEventListener('click', () => {
       clearTimeout(clickTimer) // 双击会产生两次单击事件和两个定时器, 双击事件只能清除第二个定时器
+
+      // via 报错：DOMException: play() can only be initiated by a user gesture. 是浏览器为防止未经请求的视频播放而实施的安全措施。
+      // 如果 video.play() 方法是在 setTimeout 函数中调用的，这不被视为直接用户手势。
+      playVideo()
 
       clickTimer = setTimeout(() => {
         const videoWrap = document.querySelector('.bpx-player-video-wrap')
         videoWrap.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
-
-        if (GM_getValue('full-unmuted', false)) {
-          const video = document.querySelector('video')
-
-          video.play()
-          video.muted = false
-
-          if (video.volume === 0) { document.querySelector('.bpx-player-ctrl-muted-icon').click() }
-        }
       }, 250)
     })
 
-    fullBtn.addEventListener('dblclick', () => {
-      clearTimeout(clickTimer)
-
-      const video = document.querySelector('video')
-      video.play()
-      video.muted = false
-
-      if (video.volume === 0) { document.querySelector('.bpx-player-ctrl-muted-icon').click() }
-    })
+    fullBtn.addEventListener('dblclick', () => { clearTimeout(clickTimer) })
   }
 
   function setTopBtn () {
@@ -341,7 +333,7 @@ export function handleActionbar (page) {
       if (refer === '') { return }
 
       const referElement = document.querySelector(`${refer}`)
-      referElement.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
+      referElement.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })) // 鼠标一动就会触发 mouseleave
     })
 
     function handleTouchMove () { menuOverlay.click() }

@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-alpha
+// @version            5.0-alpha.5
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -560,7 +560,8 @@ body #header-in-menu li {
     align-items: center;
 }
 
-.setting-checkboxes span {
+.setting-checkboxes span,
+.setting-checkboxes details {
     flex-grow: 1;
     text-align: center;
 }
@@ -1398,7 +1399,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
 
 .left-container::after {
     content: '';
-    position: absolute;
+    /* 因为现在是限制高度 + overflow:auto，所以不用 absolute 了 */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -3254,15 +3256,14 @@ function increaseVideoLoadSize () {
  * @param {string} page - 简短描述页面的字符串: search, video, message, space
  */
 function handleScroll (page) {
-  if (GM_getValue('settingShowHidden', [])[0] === false || GM_getValue('ban-action-hidden', false) === false) {
-    scrollToHidden()
-  }
+  if (page !== 'video') { scrollToHidden() }
 
   switch (page) {
     case 'search':
       slideSearchSort()
       break
     case 'video':
+      scrollToHidden('video')
       slideVideoSidebar()
       break
     case 'message':
@@ -3277,19 +3278,33 @@ function handleScroll (page) {
 }
 
 // 滚动隐藏函数(弹幕行、评论行、操作栏)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
-function scrollToHidden () {
+function scrollToHidden (page) {
   let lastScrollY = 0
   const scrollThreshold = 75
 
-  window.addEventListener('scroll', () => {
-    const currentScrollY = window.scrollY
-    const offsetY = currentScrollY - lastScrollY
+  if (page !== 'video') {
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY
+      const offsetY = currentScrollY - lastScrollY
 
-    if (Math.abs(offsetY) > scrollThreshold || currentScrollY < scrollThreshold) {
-      offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
-      lastScrollY = currentScrollY
-    }
-  })
+      if (Math.abs(offsetY) > scrollThreshold || currentScrollY < scrollThreshold) {
+        offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
+        lastScrollY = currentScrollY
+      }
+    })
+  } else {
+    const leftContainer = document.body.querySelector('.left-container')
+
+    leftContainer.addEventListener('scroll', () => { // change
+      const currentScrollY = leftContainer.scrollTop // change
+      const offsetY = currentScrollY - lastScrollY
+
+      if (Math.abs(offsetY) > scrollThreshold || currentScrollY < scrollThreshold) {
+        offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
+        lastScrollY = currentScrollY
+      }
+    })
+  }
 }
 
 function slideSearchSort () {
@@ -3465,7 +3480,7 @@ function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? d
 
 // 脚本预加载设置
 function handleScriptPreSetting () {
-  const defaultValue = [false, false, false, false, false, false]
+  const defaultValue = [false, false, false, false, false, false, false]
 
   const css = {
     css1: `
@@ -3569,22 +3584,23 @@ function handleScriptPreSetting () {
 // 脚本设置
 function handleScriptSetting () {
   const keyValue = {
-    key0: 'ban-video-click-play',
-    key1: 'full-unmuted',
-    key2: 'ban-action-hidden',
-    key3: 'message-sidebar-right',
-    key4: 'menu-dialog-bottom',
-    key5: 'custom-menu-dialog-bottom',
-    key6: 'custom-longpress-speed'
+    key1: 'ban-video-click-play',
+    key3: 'ban-action-hidden',
+    key4: 'message-sidebar-right',
+    key5: 'menu-dialog-bottom'
   }
 
   // 独立对象？遍历元素？
   const bottomIndex = 5
   const speedIndex = 6
 
-  if (GM_getValue('ban-action-hidden', false)) {
-    banActionHidden()
+  const customKeyValue = {
+    key1: 'custom-menu-dialog-bottom',
+    key2: 'custom-longpress-speed',
+    key3: 'custom-header-image-source'
   }
+
+  if (GM_getValue('ban-action-hidden', false)) { banActionHidden() }
 
   function banActionHidden () {
     const style = Object.assign(document.createElement('style'), {
@@ -3600,9 +3616,7 @@ function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('message-sidebar-right', false)) {
-    messageSidebarRight()
-  }
+  if (GM_getValue('message-sidebar-right', false)) { messageSidebarRight() }
 
   function messageSidebarRight () {
     const style = Object.assign(document.createElement('style'), {
@@ -3616,9 +3630,7 @@ function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('menu-dialog-bottom', false)) {
-    menuDialogBottom()
-  }
+  if (GM_getValue('menu-dialog-bottom', false)) { menuDialogBottom() }
 
   function menuDialogBottom () {
     const customBottom = GM_getValue('custom-menu-dialog-bottom', 20)
@@ -3648,27 +3660,35 @@ function handleScriptSetting () {
         <div class="setting-title">操作偏好</div>
         <div class="setting-checkboxes">
           <label><input type="checkbox"><span>禁用点击视频播放/暂停</span></label>
-          <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
           <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
           <label><input type="checkbox" id="menu-dialog-bottom-check"><span>菜单弹窗(收藏、历史等)靠下</span></label>
-          <label><input type="number" value="20" class="number-1"><span>自定义菜单弹窗底边距</span></label>
-          <label><input type="number" value="2" class="number-2"><span>自定义视频长按倍速</span></label>
-        </div>
-        <button id="setting-conform-2" class="setting-conform">确认</button>
+          <label><input type="number" value="20" class="label-inner-bottom"><span>自定义菜单弹窗底边距</span></label>
+          <label><input type="number" value="2" class="label-inner-speed"><span>自定义视频长按倍速</span></label>
+          <label><select class="label-inner-source">
+              <option value="unsplash">unsplash</option>
+              <option value="bing">必应每日</option>
+              <option value="local">本地图片</option>
+            </select><details><summary>主页头图换源</summary>本地图片限制大小</details></label>
+          </div>
+          <button id="setting-conform-2" class="setting-conform">确认</button>
         `
     })
     document.body.appendChild(settingPanel)
 
     const values = Object.values(keyValue) // 返回 [v1, v2]
+    const customValues = Object.values(customKeyValue)
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) { // 返回 [ [1,v1], [2,v2] ]
-      if (index !== bottomIndex && index !== speedIndex) {
-        checkboxElements[index].checked = GM_getValue(value, false)
-      }
+      checkboxElements[index].checked = GM_getValue(value, false)
     }
-    settingPanel.querySelector('input.number-1[type="number"]').value = GM_getValue(values[bottomIndex], 20)
-    settingPanel.querySelector('input.number-2[type="number"]').value = GM_getValue(values[speedIndex], 2)
+
+    const bottomItem = settingPanel.querySelector('.label-inner-bottom')
+    const speedItem = settingPanel.querySelector('.label-inner-speed')
+    const sourceItem = settingPanel.querySelector('.label-inner-source')
+    bottomItem.value = GM_getValue(customValues[0], 20)
+    speedItem.value = GM_getValue(customValues[1], 2)
+    sourceItem.value = GM_getValue(customValues[2], 'unsplash')
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
       const isBanActionHidden = GM_getValue('ban-action-hidden', false)
@@ -3681,8 +3701,9 @@ function handleScriptSetting () {
           GM_setValue(value, checkboxElements[index].checked)
         }
       }
-      GM_setValue(values[bottomIndex], Number(settingPanel.querySelector('input.number-1[type="number"]').value))
-      GM_setValue(values[speedIndex], Number(settingPanel.querySelector('input.number-2[type="number"]').value))
+      GM_setValue(customValues[0], Number(bottomItem.value))
+      GM_setValue(customValues[1], Number(speedItem.value))
+      GM_setValue(customValues[2], sourceItem.value)
 
       settingPanel.classList.remove('show')
 
@@ -3700,6 +3721,25 @@ function handleScriptSetting () {
         menuDialogBottom()
       }
     })
+
+    sourceItem.addEventListener('change', event => {
+      // unsafeWindow.document.querySelector('.label-inner-source').addEventListener('change', () => { console.log(this.value) })
+      if (event.target.value === 'local') {
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.accept = 'image/*'
+        input.addEventListener('change', () => {
+          const file = input.files[0]
+          const reader = new FileReader()
+          reader.readAsDataURL(file)
+          reader.onload = () => {
+            const base64Data = reader.result
+            localStorage.setItem('header-image', base64Data)
+          }
+        })
+        input.click()
+      }
+    })
   }
 }
 
@@ -3714,21 +3754,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 // 控制首页头图函数
 function handleHeaderImage () {
+  // eslint-disable-next-line no-undef
+  const source = GM_getValue('custom-header-image-source', 'unsplash')
+
   const key = 'header-image'
-  const url = 'https://source.unsplash.com/random/840x400'
+  const formattedDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/-/g, '/')
+  const url = source === 'unsplash' ? 'https://source.unsplash.com/random/840x400' : `https://api.ee123.net/img/bingimg/${formattedDate}.jpg`
+
   const elementSelector = '.bili-header__banner'
 
   loadImage(key, elementSelector)
 
-  setTimeout(async () => {
-    try {
-      const img = await getImage(url)
-      const base64Data = imageToBase64(img)
-      storeImage(key, base64Data)
-    } catch (error) {
-      console.error('Failed to get image:', error)
-    }
-  }, 5000)
+  if (source !== 'local') {
+    setTimeout(async () => {
+      try {
+        const img = await getImage(url)
+        const base64Data = imageToBase64(img)
+        storeImage(key, base64Data)
+      } catch (error) {
+        console.error('Failed to get image:', error)
+      }
+    }, 5000)
+  }
 
   function getImage (url) {
     return new Promise((resolve, reject) => {
@@ -4029,8 +4076,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   handleActionbar: () => (/* binding */ handleActionbar)
 /* harmony export */ });
 /* harmony import */ var _html_category_html__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(29);
-/* global GM_getValue */
-
 
 
 /**
@@ -4105,33 +4150,27 @@ function handleActionbar (page) {
 
     const fullBtn = document.getElementById('full-now')
 
+    function playVideo () {
+      const video = document.querySelector('video')
+      video.play()
+      video.muted = false
+      if (video.volume === 0) { document.querySelector('.bpx-player-ctrl-muted-icon').click() }
+    }
+
     fullBtn.addEventListener('click', () => {
       clearTimeout(clickTimer) // 双击会产生两次单击事件和两个定时器, 双击事件只能清除第二个定时器
+
+      // via 报错：DOMException: play() can only be initiated by a user gesture. 是浏览器为防止未经请求的视频播放而实施的安全措施。
+      // 如果 video.play() 方法是在 setTimeout 函数中调用的，这不被视为直接用户手势。
+      playVideo()
 
       clickTimer = setTimeout(() => {
         const videoWrap = document.querySelector('.bpx-player-video-wrap')
         videoWrap.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
-
-        if (GM_getValue('full-unmuted', false)) {
-          const video = document.querySelector('video')
-
-          video.play()
-          video.muted = false
-
-          if (video.volume === 0) { document.querySelector('.bpx-player-ctrl-muted-icon').click() }
-        }
       }, 250)
     })
 
-    fullBtn.addEventListener('dblclick', () => {
-      clearTimeout(clickTimer)
-
-      const video = document.querySelector('video')
-      video.play()
-      video.muted = false
-
-      if (video.volume === 0) { document.querySelector('.bpx-player-ctrl-muted-icon').click() }
-    })
+    fullBtn.addEventListener('dblclick', () => { clearTimeout(clickTimer) })
   }
 
   function setTopBtn () {
@@ -4372,7 +4411,7 @@ function handleActionbar (page) {
       if (refer === '') { return }
 
       const referElement = document.querySelector(`${refer}`)
-      referElement.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
+      referElement.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })) // 鼠标一动就会触发 mouseleave
     })
 
     function handleTouchMove () { menuOverlay.click() }

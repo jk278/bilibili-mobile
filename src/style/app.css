@@ -229,7 +229,8 @@ body #header-in-menu li {
     align-items: center;
 }
 
-.setting-checkboxes span {
+.setting-checkboxes span,
+.setting-checkboxes details {
     flex-grow: 1;
     text-align: center;
 }

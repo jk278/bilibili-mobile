@@ -3,7 +3,7 @@ function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? d
 
 // 脚本预加载设置
 export function handleScriptPreSetting () {
-  const defaultValue = [false, false, false, false, false, false]
+  const defaultValue = [false, false, false, false, false, false, false]
 
   const css = {
     css1: `
@@ -107,22 +107,23 @@ export function handleScriptPreSetting () {
 // 脚本设置
 export function handleScriptSetting () {
   const keyValue = {
-    key0: 'ban-video-click-play',
-    key1: 'full-unmuted',
-    key2: 'ban-action-hidden',
-    key3: 'message-sidebar-right',
-    key4: 'menu-dialog-bottom',
-    key5: 'custom-menu-dialog-bottom',
-    key6: 'custom-longpress-speed'
+    key1: 'ban-video-click-play',
+    key3: 'ban-action-hidden',
+    key4: 'message-sidebar-right',
+    key5: 'menu-dialog-bottom'
   }
 
   // 独立对象？遍历元素？
   const bottomIndex = 5
   const speedIndex = 6
 
-  if (GM_getValue('ban-action-hidden', false)) {
-    banActionHidden()
+  const customKeyValue = {
+    key1: 'custom-menu-dialog-bottom',
+    key2: 'custom-longpress-speed',
+    key3: 'custom-header-image-source'
   }
+
+  if (GM_getValue('ban-action-hidden', false)) { banActionHidden() }
 
   function banActionHidden () {
     const style = Object.assign(document.createElement('style'), {
@@ -138,9 +139,7 @@ export function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('message-sidebar-right', false)) {
-    messageSidebarRight()
-  }
+  if (GM_getValue('message-sidebar-right', false)) { messageSidebarRight() }
 
   function messageSidebarRight () {
     const style = Object.assign(document.createElement('style'), {
@@ -154,9 +153,7 @@ export function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('menu-dialog-bottom', false)) {
-    menuDialogBottom()
-  }
+  if (GM_getValue('menu-dialog-bottom', false)) { menuDialogBottom() }
 
   function menuDialogBottom () {
     const customBottom = GM_getValue('custom-menu-dialog-bottom', 20)
@@ -186,27 +183,35 @@ export function handleScriptSetting () {
         <div class="setting-title">操作偏好</div>
         <div class="setting-checkboxes">
           <label><input type="checkbox"><span>禁用点击视频播放/暂停</span></label>
-          <label><input type="checkbox"><span>用底部全屏键播放和打开声音</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
           <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
           <label><input type="checkbox" id="menu-dialog-bottom-check"><span>菜单弹窗(收藏、历史等)靠下</span></label>
-          <label><input type="number" value="20" class="number-1"><span>自定义菜单弹窗底边距</span></label>
-          <label><input type="number" value="2" class="number-2"><span>自定义视频长按倍速</span></label>
-        </div>
-        <button id="setting-conform-2" class="setting-conform">确认</button>
+          <label><input type="number" value="20" class="label-inner-bottom"><span>自定义菜单弹窗底边距</span></label>
+          <label><input type="number" value="2" class="label-inner-speed"><span>自定义视频长按倍速</span></label>
+          <label><select class="label-inner-source">
+              <option value="unsplash">unsplash</option>
+              <option value="bing">必应每日</option>
+              <option value="local">本地图片</option>
+            </select><details><summary>主页头图换源</summary>本地图片限制大小</details></label>
+          </div>
+          <button id="setting-conform-2" class="setting-conform">确认</button>
         `
     })
     document.body.appendChild(settingPanel)
 
     const values = Object.values(keyValue) // 返回 [v1, v2]
+    const customValues = Object.values(customKeyValue)
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) { // 返回 [ [1,v1], [2,v2] ]
-      if (index !== bottomIndex && index !== speedIndex) {
-        checkboxElements[index].checked = GM_getValue(value, false)
-      }
+      checkboxElements[index].checked = GM_getValue(value, false)
     }
-    settingPanel.querySelector('input.number-1[type="number"]').value = GM_getValue(values[bottomIndex], 20)
-    settingPanel.querySelector('input.number-2[type="number"]').value = GM_getValue(values[speedIndex], 2)
+
+    const bottomItem = settingPanel.querySelector('.label-inner-bottom')
+    const speedItem = settingPanel.querySelector('.label-inner-speed')
+    const sourceItem = settingPanel.querySelector('.label-inner-source')
+    bottomItem.value = GM_getValue(customValues[0], 20)
+    speedItem.value = GM_getValue(customValues[1], 2)
+    sourceItem.value = GM_getValue(customValues[2], 'unsplash')
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
       const isBanActionHidden = GM_getValue('ban-action-hidden', false)
@@ -219,8 +224,9 @@ export function handleScriptSetting () {
           GM_setValue(value, checkboxElements[index].checked)
         }
       }
-      GM_setValue(values[bottomIndex], Number(settingPanel.querySelector('input.number-1[type="number"]').value))
-      GM_setValue(values[speedIndex], Number(settingPanel.querySelector('input.number-2[type="number"]').value))
+      GM_setValue(customValues[0], Number(bottomItem.value))
+      GM_setValue(customValues[1], Number(speedItem.value))
+      GM_setValue(customValues[2], sourceItem.value)
 
       settingPanel.classList.remove('show')
 
@@ -236,6 +242,25 @@ export function handleScriptSetting () {
       if (GM_getValue('custom-menu-dialog-bottom', 20) !== customMenuDialogBottom) {
         document.getElementById('menu-dialog-bottom').remove()
         menuDialogBottom()
+      }
+    })
+
+    sourceItem.addEventListener('change', event => {
+      // unsafeWindow.document.querySelector('.label-inner-source').addEventListener('change', () => { console.log(this.value) })
+      if (event.target.value === 'local') {
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.accept = 'image/*'
+        input.addEventListener('change', () => {
+          const file = input.files[0]
+          const reader = new FileReader()
+          reader.readAsDataURL(file)
+          reader.onload = () => {
+            const base64Data = reader.result
+            localStorage.setItem('header-image', base64Data)
+          }
+        })
+        input.click()
       }
     })
   }

@@ -29,15 +29,14 @@ export function increaseVideoLoadSize () {
  * @param {string} page - 简短描述页面的字符串: search, video, message, space
  */
 export function handleScroll (page) {
-  if (GM_getValue('settingShowHidden', [])[0] === false || GM_getValue('ban-action-hidden', false) === false) {
-    scrollToHidden()
-  }
+  if (page !== 'video') { scrollToHidden() }
 
   switch (page) {
     case 'search':
       slideSearchSort()
       break
     case 'video':
+      scrollToHidden('video')
       slideVideoSidebar()
       break
     case 'message':
@@ -52,19 +51,33 @@ export function handleScroll (page) {
 }
 
 // 滚动隐藏函数(弹幕行、评论行、操作栏)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
-function scrollToHidden () {
+function scrollToHidden (page) {
   let lastScrollY = 0
   const scrollThreshold = 75
 
-  window.addEventListener('scroll', () => {
-    const currentScrollY = window.scrollY
-    const offsetY = currentScrollY - lastScrollY
+  if (page !== 'video') {
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY
+      const offsetY = currentScrollY - lastScrollY
 
-    if (Math.abs(offsetY) > scrollThreshold || currentScrollY < scrollThreshold) {
-      offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
-      lastScrollY = currentScrollY
-    }
-  })
+      if (Math.abs(offsetY) > scrollThreshold || currentScrollY < scrollThreshold) {
+        offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
+        lastScrollY = currentScrollY
+      }
+    })
+  } else {
+    const leftContainer = document.body.querySelector('.left-container')
+
+    leftContainer.addEventListener('scroll', () => { // change
+      const currentScrollY = leftContainer.scrollTop // change
+      const offsetY = currentScrollY - lastScrollY
+
+      if (Math.abs(offsetY) > scrollThreshold || currentScrollY < scrollThreshold) {
+        offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
+        lastScrollY = currentScrollY
+      }
+    })
+  }
 }
 
 function slideSearchSort () {
