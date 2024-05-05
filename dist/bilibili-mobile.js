@@ -2749,7 +2749,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------- 个人主页 --
 }
 
 /* 单击页内搜索添加提示 */
-.space-search-tip {
+div.header.space-search-tip {
     justify-content: center;
 }
 
