@@ -6,6 +6,16 @@
     max-width: 100%;
 }
 
+/* 单击页内搜索添加提示 */
+div.header.space-search-tip {
+    justify-content: center;
+}
+
+/* 隐藏提示下面的历史或建议 */
+.space-search-tip+div {
+    display: none;
+}
+
 /* --------- 导航栏 --------- */
 
 /* 隐藏贴顶栏 (不是主页而是 up 名) */

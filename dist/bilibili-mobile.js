@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-alpha.5
+// @version            5.0-alpha.6
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -2018,24 +2018,36 @@ div.bpx-player-control-bottom {
     margin: 10px 0 !important;
 }
 
-/* 全站排行、每周必看等标签 */
-.honor.item {
-    position: absolute;
-    align-self: start !important;
+.video-info-detail-list .item {
+    margin-right: 4px !important;
 }
 
-.video-info-detail-list:has(.honor.item) {
-    height: 48px !important;
-    align-items: end !important;
-    margin-right: 5px !important;
-}
-
+/* 更新时间: 避免窄屏隐藏 */
 .pubdate-ip {
     display: block !important;
 }
 
-.video-info-detail-list .item {
-    margin-right: 4px !important;
+/* 全站排行、每周必看等标签 & 温馨提示 */
+.video-info-detail-list:has(.honor.item) {
+    margin-top: 24px;
+}
+
+.video-info-detail-list:has(.video-argue.item) {
+    margin-bottom: 20px;
+}
+
+.honor.item {
+    position: absolute;
+    align-self: start !important;
+    top: 0;
+}
+
+.video-argue.item {
+    position: absolute;
+    align-self: start !important;
+    bottom: 0;
+    /* 避免窄屏隐藏温馨提示 */
+    display: block !important;
 }
 
 /* 点赞投币行 */
@@ -2734,6 +2746,16 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------- 个人主页 --
 .wrapper,
 .content {
     max-width: 100%;
+}
+
+/* 单击页内搜索添加提示 */
+.space-search-tip {
+    justify-content: center;
+}
+
+/* 隐藏提示下面的历史或建议 */
+.space-search-tip+div {
+    display: none;
 }
 
 /* --------- 导航栏 --------- */
@@ -4449,7 +4471,14 @@ function handleActionbar (page) {
           // 引用回调函数时，形参写在函数声明中，不需要内联一个匿名函数 (匿名内部函数, 无函数名)
           input.addEventListener('keydown', spaceHandleInput)
 
-          // const searchPanel=document.querySelector('.search-panel')
+          const searchPanel = document.querySelector('.search-panel')
+          const firstChild = searchPanel.firstChild
+          if (firstChild.nodeType === Node.COMMENT_NODE || !firstChild.classList.contains('space-search-tip')) {
+            const spaceSearchTip = Object.assign(document.createElement('div'), {
+              className: 'header space-search-tip', innerHTML: '<div class="title">搜索 up 的视频、动态</div>'
+            })
+            searchPanel.insertBefore(spaceSearchTip, firstChild)
+          }
         }, 300)
       })
 
@@ -4461,6 +4490,8 @@ function handleActionbar (page) {
         handleClick(input)
 
         input.removeEventListener('keydown', spaceHandleInput)
+
+        document.querySelector('.space-search-tip')?.remove()
       })
     }
 

@@ -245,6 +245,15 @@ export function handleActionbar (page) {
           // 移除事件监听器时，回调函数需要与添加事件监听器时使用的回调函数完全一致。内联定义的新箭头函数不是添加事件监听器时使用的原始回调函数
           // 引用回调函数时，形参写在函数声明中，不需要内联一个匿名函数 (匿名内部函数, 无函数名)
           input.addEventListener('keydown', spaceHandleInput)
+
+          const searchPanel = document.querySelector('.search-panel')
+          const firstChild = searchPanel.firstChild
+          if (firstChild.nodeType === Node.COMMENT_NODE || !firstChild.classList.contains('space-search-tip')) {
+            const spaceSearchTip = Object.assign(document.createElement('div'), {
+              className: 'header space-search-tip', innerHTML: '<div class="title">搜索 up 的视频、动态</div>'
+            })
+            searchPanel.insertBefore(spaceSearchTip, firstChild)
+          }
         }, 300)
       })
 
@@ -256,6 +265,8 @@ export function handleActionbar (page) {
         handleClick(input)
 
         input.removeEventListener('keydown', spaceHandleInput)
+
+        document.querySelector('.space-search-tip')?.remove()
       })
     }
 

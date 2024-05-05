@@ -671,24 +671,36 @@ div.bpx-player-control-bottom {
     margin: 10px 0 !important;
 }
 
-/* 全站排行、每周必看等标签 */
-.honor.item {
-    position: absolute;
-    align-self: start !important;
+.video-info-detail-list .item {
+    margin-right: 4px !important;
 }
 
-.video-info-detail-list:has(.honor.item) {
-    height: 48px !important;
-    align-items: end !important;
-    margin-right: 5px !important;
-}
-
+/* 更新时间: 避免窄屏隐藏 */
 .pubdate-ip {
     display: block !important;
 }
 
-.video-info-detail-list .item {
-    margin-right: 4px !important;
+/* 全站排行、每周必看等标签 & 温馨提示 */
+.video-info-detail-list:has(.honor.item) {
+    margin-top: 24px;
+}
+
+.video-info-detail-list:has(.video-argue.item) {
+    margin-bottom: 20px;
+}
+
+.honor.item {
+    position: absolute;
+    align-self: start !important;
+    top: 0;
+}
+
+.video-argue.item {
+    position: absolute;
+    align-self: start !important;
+    bottom: 0;
+    /* 避免窄屏隐藏温馨提示 */
+    display: block !important;
 }
 
 /* 点赞投币行 */
