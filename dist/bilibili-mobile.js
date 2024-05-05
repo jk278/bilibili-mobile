@@ -593,11 +593,11 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 /* 自定义菜单弹窗边距放在选项下面,选中才显示 */
-label:has(#menu-dialog-bottom-check)+label {
+label:has(.menu-dialog-move-down)+label {
     display: none;
 }
 
-label:has(#menu-dialog-bottom-check:checked)+label {
+label:has(.menu-dialog-move-down:checked)+label {
     display: flex;
 }`, ""]);
 // Exports
@@ -1553,6 +1553,79 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     display: none !important;
 }
 
+/* ------------ 控制栏隐藏 (覆盖原显隐：3级选择器覆盖2级) ------------ */
+
+/* control-bottom 和 mask (阴影) */
+.bpx-player-container[ctrl-shown=false] .bpx-player-control-wrap .bpx-player-control-mask {
+    opacity: 0;
+    /* 渐变属性应用在需要变化的状态 */
+    transition: opacity .2s ease-in;
+}
+
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-wrap .bpx-player-control-mask {
+    opacity: 1;
+}
+
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-control-bottom {
+    opacity: 1;
+    display: flex;
+
+}
+
+.bpx-player-container[ctrl-shown=false] .bpx-player-control-entity .bpx-player-control-bottom {
+    display: none;
+}
+
+/* 进度条 */
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-control-top,
+.bpx-player-container[ctrl-shown=false] .bpx-player-control-entity .bpx-player-shadow-progress-area {
+    opacity: 1;
+    visibility: visible;
+}
+
+.bpx-player-container[ctrl-shown=false] .bpx-player-control-entity .bpx-player-control-top,
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-shadow-progress-area {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* 高能进度 */
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-pbp {
+    bottom: calc(100% + 6px);
+    left: 0;
+    opacity: 1;
+    width: 100%;
+}
+
+/*
+    权重：
+    ID 选择器：100
+    类选择器、属性选择器、伪类选择器：10
+    元素选择器、伪元素选择器：1
+
+    如果有多个选择器同时作用于同一个元素，则计算每个选择器的权重值，并将其相加，得出总权重值。
+*/
+
+/* 覆盖 show */
+div.bpx-player-control-entity .bpx-player-pbp {
+    bottom: 1px;
+    opacity: 0;
+    left: -12px;
+    width: calc(100% + 24px);
+}
+
+/* pin 按钮: display 代替 opacity */
+.bpx-player-pbp-pin {
+    opacity: 1 !important;
+    display: none;
+}
+
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-pbp-pin {
+    display: block;
+}
+
+/* ------------ 控制栏样式 ------------ */
+
 /* 移除次要按钮：画中画、宽屏、时间、选集 */
 .bpx-player-ctrl-pip,
 .bpx-player-ctrl-wide,
@@ -1566,6 +1639,43 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     .bpx-player-ctrl-time {
         display: block !important;
     }
+}
+
+/* 清晰度文本:全屏时恢复大小 */
+@media screen and (min-width: 750px) {
+    .bpx-player-container[data-screen=full] .bpx-player-ctrl-quality-result {
+        font-size: 16px !important;
+        height: unset !important;
+    }
+}
+
+/* 修复宽屏全屏时的控制栏图标增大导致的高度过高 */
+@media screen and (min-width: 750px) {
+    .bpx-player-container[data-screen=full] .bpx-player-control-wrap {
+        height: 43px !important;
+    }
+
+    .bpx-player-container[data-screen=full] .bpx-player-control-top {
+        bottom: 43px !important;
+    }
+}
+
+/* 进度条 */
+div.bpx-player-control-top {
+    bottom: 36px;
+    transition: none;
+}
+
+/* 隐藏颠倒的高能进度条常驻切换提示 */
+.bpx-player-pbp .bpx-player-pbp-pin-tip {
+    display: none !important;
+}
+
+/* 主控制区(图标22px，算 margin 37px) */
+div.bpx-player-control-bottom {
+    height: 29px;
+    margin-top: 7px;
+    padding: 0 7px;
 }
 
 /* 左右控制区 */
@@ -1604,52 +1714,10 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     text-wrap: nowrap;
 }
 
-/* 清晰度文本:全屏时恢复大小 */
-@media screen and (min-width: 750px) {
-    .bpx-player-container[data-screen=full] .bpx-player-ctrl-quality-result {
-        font-size: 16px !important;
-        height: unset !important;
-    }
-}
-
-/* 按钮区(图标22px，算 margin 37px) */
-.bpx-player-control-bottom {
-    height: 29px !important;
-    margin-top: 7px !important;
-    padding: 0 7px !important;
-}
-
-/* 进度条 */
-.bpx-player-control-top {
-    bottom: 36px !important;
-}
-
-/* 修复部分情况下的控制栏图标增大导致的高度过高 */
-@media screen and (min-width: 750px) {
-    .bpx-player-container[data-screen=full] {
-        .bpx-player-control-wrap {
-            height: 43px !important;
-        }
-
-        .bpx-player-control-top {
-            bottom: 43px !important;
-        }
-    }
-}
-
 /* 进度条细条包含块（高12px） */
 .bpx-player-progress-wrap {
     height: 7px !important;
     padding-bottom: 3px !important;
-}
-
-/* 高能区 (控制栏展开时: 高能区 100% - 1px) */
-.bpx-player-pbp {
-    bottom: 1px !important;
-}
-
-.bpx-player-pbp.show {
-    bottom: calc(100% + 6px) !important;
 }
 
 /* 替换via暗色异常的阴影 */
@@ -1659,13 +1727,42 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
 
 /* 清晰度弹窗 */
 .bpx-player-ctrl-quality-menu-wrap {
-    bottom: 0 !important;
-    max-height: var(--video-min-height) !important;
+    bottom: 22px !important;
+}
+
+.bpx-player-ctrl-quality-menu-item {
+    height: 7.7vw !important;
+    max-height: 36px;
+    max-width: 95px;
+    padding: 0 8px 0 12px !important;
+}
+
+/* 高码率会员图标 */
+.bpx-player-ctrl-quality-badge-bigvip {
+    background-color: #f25d8e;
+    color: #fff;
+    width: 16px;
+    overflow: hidden;
+    right: 8px !important;
+}
+
+/* 用字母 V 覆盖 */
+.bpx-player-ctrl-quality-badge-bigvip:before {
+    background-color: #f25d8e;
+    color: #fff;
+    content: 'V';
+    padding: 0 4px;
+    position: absolute;
+    left: 0;
 }
 
 /* 倍速弹窗 */
+.bpx-player-ctrl-playbackrate-menu {
+    bottom: 22px !important;
+}
+
 .bpx-player-ctrl-playbackrate-menu-item {
-    height: 6.8vw !important;
+    height: 7.7vw !important;
     max-height: 36px;
     display: flex;
     justify-content: center;
@@ -1681,12 +1778,32 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
 /* 更多设置 */
 .bpx-player-ctrl-setting-menu-right {
     padding: 5px !important;
-    max-height: var(--video-min-height) !important;
 }
 
-/* 更多设置 */
-.bui.bui-radio.bui-dark {
-    margin-bottom: 5px !important;
+.bpx-player-ctrl-setting-menu-right>div {
+    height: 10vw !important;
+    max-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 更多设置 - 选项行 */
+.bpx-player-ctrl-setting-menu-right .bui-radio {
+    margin: 0 0 8px 7px;
+    width: 77%;
+}
+
+.bpx-player-ctrl-setting-others-content {
+    width: 77% !important;
+    margin-left: 7px;
+}
+
+/* 高能进度条选项 */
+.bpx-player-ctrl-setting-highenergy .bui-checkbox-name {
+    white-space: nowrap;
+    width: 48px;
+    overflow: hidden;
 }
 
 /* 弹幕设置弹窗 */
@@ -1735,7 +1852,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     display: none;
 }
 
-/* --- 播完预览: 窄屏不隐藏 ( screen-mode=little-screen ) --- */
+/* ------ 播完预览: 窄屏不隐藏 ( screen-mode=little-screen ) ------ */
+
 .bpx-player-ending-wrap[hidden] {
     display: block !important;
 }
@@ -3583,21 +3701,18 @@ function handleScriptPreSetting () {
 
 // 脚本设置
 function handleScriptSetting () {
-  const keyValue = {
+  // 修改顺序后，更改下面的选项变更操作
+  const keyValues = {
     key1: 'ban-video-click-play',
     key3: 'ban-action-hidden',
-    key4: 'message-sidebar-right',
-    key5: 'menu-dialog-bottom'
+    key4: 'message-sidebar-change-right',
+    key5: 'menu-dialog-move-down'
   }
 
-  // 独立对象？遍历元素？
-  const bottomIndex = 5
-  const speedIndex = 6
-
-  const customKeyValue = {
-    key1: 'custom-menu-dialog-bottom',
-    key2: 'custom-longpress-speed',
-    key3: 'custom-header-image-source'
+  const customKeyValues = {
+    'menu-dialog-down-value': '20',
+    'video-longpress-speed': '2',
+    'header-image-source': 'unsplash'
   }
 
   if (GM_getValue('ban-action-hidden', false)) { banActionHidden() }
@@ -3616,11 +3731,11 @@ function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('message-sidebar-right', false)) { messageSidebarRight() }
+  if (GM_getValue('message-sidebar-change-right', false)) { messageSidebarRight() }
 
   function messageSidebarRight () {
     const style = Object.assign(document.createElement('style'), {
-      id: 'message-sidebar-right',
+      id: 'message-sidebar-change-right',
       textContent: `
         .space-left.space-left { left: 100%; }      
         body>.container[sidebar] .space-left.space-left { transform: translateX(-100%); }
@@ -3630,18 +3745,18 @@ function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('menu-dialog-bottom', false)) { menuDialogBottom() }
+  if (GM_getValue('menu-dialog-move-down', false)) { menuDialogDown() }
 
-  function menuDialogBottom () {
-    const customBottom = GM_getValue('custom-menu-dialog-bottom', 20)
+  function menuDialogDown () {
+    const downValue = GM_getValue('menu-dialog-move-down-value', '20')
 
     const style = Object.assign(document.createElement('style'), {
-      id: 'menu-dialog-bottom',
+      id: 'menu-dialog-move-down',
       textContent: `
         .v-popover.v-popover {
           top: unset !important;
           bottom: var(--actionbar-height);
-          transform: translate(-50%, -${customBottom}px) !important;
+          transform: translate(-50%, -${downValue}px) !important;
         }
       `
     })
@@ -3662,10 +3777,10 @@ function handleScriptSetting () {
           <label><input type="checkbox"><span>禁用点击视频播放/暂停</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
           <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
-          <label><input type="checkbox" id="menu-dialog-bottom-check"><span>菜单弹窗(收藏、历史等)靠下</span></label>
-          <label><input type="number" value="20" class="label-inner-bottom"><span>自定义菜单弹窗底边距</span></label>
-          <label><input type="number" value="2" class="label-inner-speed"><span>自定义视频长按倍速</span></label>
-          <label><select class="label-inner-source">
+          <label><input type="checkbox" class="menu-dialog-move-down"><span>菜单弹窗(收藏、历史等)靠下</span></label>
+          <label><input type="number" value="20" class="menu-dialog-move-down-value"><span>自定义菜单弹窗底边距</span></label>
+          <label><input type="number" value="2" class="video-longpress-speed"><span>自定义视频长按倍速</span></label>
+          <label><select class="header-image-source">
               <option value="unsplash">unsplash</option>
               <option value="bing">必应每日</option>
               <option value="local">本地图片</option>
@@ -3676,54 +3791,40 @@ function handleScriptSetting () {
     })
     document.body.appendChild(settingPanel)
 
-    const values = Object.values(keyValue) // 返回 [v1, v2]
-    const customValues = Object.values(customKeyValue)
+    const values = Object.values(keyValues) // 返回 [v1, v2]
+    const customKeys = Object.keys(customKeyValues)
+    const customValues = Object.values(customKeyValues)
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) { // 返回 [ [1,v1], [2,v2] ]
       checkboxElements[index].checked = GM_getValue(value, false)
     }
 
-    const bottomItem = settingPanel.querySelector('.label-inner-bottom')
-    const speedItem = settingPanel.querySelector('.label-inner-speed')
-    const sourceItem = settingPanel.querySelector('.label-inner-source')
-    bottomItem.value = GM_getValue(customValues[0], 20)
-    speedItem.value = GM_getValue(customValues[1], 2)
-    sourceItem.value = GM_getValue(customValues[2], 'unsplash')
+    const customElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="number"], .setting-checkboxes select')
+    for (const [index, value] of customKeys.entries()) {
+      customElements[index].value = GM_getValue(value, Object.values(customValues)[index])
+    }
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
-      const isBanActionHidden = GM_getValue('ban-action-hidden', false)
-      const ismessageSidebarRight = GM_getValue('message-sidebar-right', false)
-      const isMenuDialogBottom = GM_getValue('menu-dialog-bottom', false)
-      const customMenuDialogBottom = GM_getValue('custom-menu-dialog-bottom', 20)
-
-      for (const [index, value] of values.entries()) {
-        if (index !== bottomIndex && index !== speedIndex) {
-          GM_setValue(value, checkboxElements[index].checked)
-        }
-      }
-      GM_setValue(customValues[0], Number(bottomItem.value))
-      GM_setValue(customValues[1], Number(speedItem.value))
-      GM_setValue(customValues[2], sourceItem.value)
-
       settingPanel.classList.remove('show')
 
-      if (GM_getValue('ban-action-hidden', false) !== isBanActionHidden) {
-        isBanActionHidden ? document.getElementById('ban-action-hidden').remove() : banActionHidden()
+      const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
+      const writenValues = Array.from(customElements).map(elem => elem.value)
+
+      if (selectedValues[1] !== GM_getValue(values[1], false)) { selectedValues[1] ? banActionHidden() : document.getElementById(values[1]).remove() }
+      if (selectedValues[2] !== GM_getValue(values[2], false)) { selectedValues[2] ? messageSidebarRight() : document.getElementById(values[2]).remove() }
+      if (selectedValues[3] !== GM_getValue(values[3], false)) { selectedValues[3] ? menuDialogDown() : document.getElementById(values[3]).remove() }
+
+      if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0]).remove(); menuDialogDown() }
+      if (writenValues[2] !== GM_getValue(customKeys[2], customValues[2])) {
+        writenValues[2] !== 'local' && window.dispatchEvent(new CustomEvent('variableChanged', { detail: { key: customKeys[2], newValue: writenValues[2] } }))
       }
-      if (GM_getValue('message-sidebar-right', false) !== ismessageSidebarRight) {
-        ismessageSidebarRight ? document.getElementById('message-sidebar-right').remove() : messageSidebarRight()
-      }
-      if (GM_getValue('menu-dialog-bottom', false) !== isMenuDialogBottom) {
-        isMenuDialogBottom ? document.getElementById('menu-dialog-bottom').remove() : menuDialogBottom()
-      }
-      if (GM_getValue('custom-menu-dialog-bottom', 20) !== customMenuDialogBottom) {
-        document.getElementById('menu-dialog-bottom').remove()
-        menuDialogBottom()
-      }
+
+      for (const [index, value] of values.entries()) { GM_setValue(value, selectedValues[index]) }
+      for (const [index, value] of customKeys.entries()) { GM_setValue(value, writenValues[index]) }
     })
 
-    sourceItem.addEventListener('change', event => {
-      // unsafeWindow.document.querySelector('.label-inner-source').addEventListener('change', () => { console.log(this.value) })
+    settingPanel.querySelector('.header-image-source').addEventListener('change', event => {
+      // unsafeWindow.document.querySelector('.header-image-source').addEventListener('change', () => { console.log(this.value) })
       if (event.target.value === 'local') {
         const input = document.createElement('input')
         input.type = 'file'
@@ -3754,8 +3855,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 // 控制首页头图函数
 function handleHeaderImage () {
+  let source
   // eslint-disable-next-line no-undef
-  const source = GM_getValue('custom-header-image-source', 'unsplash')
+  source = GM_getValue('custom-header-image-source', 'unsplash')
 
   const key = 'header-image'
   const formattedDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/-/g, '/')
@@ -3765,16 +3867,23 @@ function handleHeaderImage () {
 
   loadImage(key, elementSelector)
 
-  if (source !== 'local') {
-    setTimeout(async () => {
-      try {
-        const img = await getImage(url)
-        const base64Data = imageToBase64(img)
-        storeImage(key, base64Data)
-      } catch (error) {
-        console.error('Failed to get image:', error)
-      }
-    }, 5000)
+  if (source !== 'local') { setTimeout(renewImage, 5000) }
+
+  window.addEventListener('variableChanged', e => {
+    if (e.detail.key === 'header-image-source') {
+      source = e.detail.newValue
+      setTimeout(renewImage, 0)
+    }
+  })
+
+  async function renewImage () {
+    try {
+      const img = await getImage(url)
+      const base64Data = imageToBase64(img)
+      storeImage(key, base64Data)
+    } catch (error) {
+      console.error('Failed to get image:', error)
+    }
   }
 
   function getImage (url) {
@@ -3879,16 +3988,11 @@ function handlelVideoClick () {
   if (video) { video.playsInline = true }
 
   const oldControlWrap = videoArea.querySelector('.bpx-player-control-wrap')
-  const controlEntity = oldControlWrap.querySelector('.bpx-player-control-entity')
+  const controlEntity = oldControlWrap.querySelector('.bpx-player-control-entity') // 移动后再使用
 
   let clickTimer = null
 
   let hideTimer = null
-
-  // 可以作语句的表达式：需要赋值给变量或者作为函数调用的一部分，能够产生一个可以被丢弃的值
-  // 布尔值不能直接作为语句，因为它们不执行任何动作，也不改变程序的状态
-  // x++ 作语句时执行操作，但是不显式返回值，实际 x 的值隐式地改变了；作表达式时根据前后缀，依次返回 x 的值和执行操作
-  const isShown = () => playerContainter.dataset.ctrlHidden === 'false' // controlWrap 的 mouseleave 事件导致点击非视频部分会隐藏控制栏, 实际已不必要
 
   // 阻止 controlWrap 的 mouseleave 事件隐藏控制栏, mouseleave 事件不会在冒泡阶段和捕获阶段传播
   const controlWrap = Object.assign(document.createElement('div'), {
@@ -3903,11 +4007,30 @@ function handlelVideoClick () {
   const isBpxStateShow = () => controlEntity.querySelector('.bpx-player-control-bottom-right>.bpx-state-show')
 
   const controlTop = controlEntity.querySelector('.bpx-player-control-top')
+  const bottomRight = controlEntity.querySelector('.bpx-player-control-bottom-right')
+
+  // 可以作语句的表达式：需要赋值给变量或者作为函数调用的一部分，能够产生一个可以被丢弃的值
+  // 布尔值不能直接作为语句，因为它们不执行任何动作，也不改变程序的状态
+  // x++ 作语句时执行操作，但是不显式返回值，实际 x 的值隐式地改变了；作表达式时根据前后缀，依次返回 x 的值和执行操作
+  const isShown = () => playerContainter.getAttribute('ctrl-shown') === 'true' // controlWrap 的 mouseleave 事件导致点击非视频部分会隐藏控制栏, 实际已不必要
+
+  // 覆盖原显隐
+  playerContainter.setAttribute('ctrl-shown', 'false')
+
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      if (mutation.addedNodes[0].classList.contains('bpx-player-ctrl-web')) { // 还可以让控制栏显示作为网页全屏按钮加载的标志事件
+        playerContainter.setAttribute('ctrl-shown', 'true')
+        delayHideTimer()
+        observer.disconnect()
+      }
+    })
+  })
+  observer.observe(bottomRight, { childList: true })
 
   function hideControlWrap (isEnd) {
     if ((!video.paused && !isBpxStateShow()) || isEnd) {
-      playerContainter.dataset.ctrlHidden = 'true'
-      controlEntity.dataset.shadowShow = 'true'
+      playerContainter.setAttribute('ctrl-shown', 'false')
       clearTimeout(hideTimer)
     } else {
       delayHideTimer()
@@ -3917,23 +4040,25 @@ function handlelVideoClick () {
   video.addEventListener('ended', () => { hideControlWrap(true) })
 
   function showControlWrap () {
-    playerContainter.dataset.ctrlHidden = 'false'
-    controlEntity.dataset.shadowShow = 'false'
-    hideTimer = setTimeout(hideControlWrap, 3500)
+    playerContainter.setAttribute('ctrl-shown', 'true')
+    delayHideTimer()
   }
 
   function delayHideTimer () {
     clearTimeout(hideTimer)
-    hideTimer = setTimeout(hideControlWrap, 3500)
+    hideTimer = setTimeout(hideControlWrap, 3000)
   }
-
-  // 只剩下初始化显示状态栏, 初次播放 1s 后隐藏控制栏 (再过 2s 又隐藏一次)
 
   // 阻止触摸单击触发 videoArea 的 mousemove 事件而显隐控制栏
   videoWrap.addEventListener('mousemove', event => { event.stopPropagation() })
   controlWrap.addEventListener('mousemove', event => { event.stopPropagation() })
 
-  video.addEventListener('play', delayHideTimer)
+  let isFirstTime = true
+  video.addEventListener('play', () => {
+    if (isFirstTime) { isFirstTime = false; return } // return 语句结束当前函数的执行
+
+    delayHideTimer()
+  })
 
   controlWrap.addEventListener('click', event => {
     event.stopPropagation()
@@ -3994,7 +4119,7 @@ function handleVideoLongPress () {
   let times
 
   video.addEventListener('touchstart', () => {
-    times = GM_getValue('custom-longpress-speed', 2)
+    times = Number(GM_getValue('video-longpress-speed', '2'))
 
     timeoutId = setTimeout(() => {
       video.playbackRate = video.playbackRate * times
@@ -4323,6 +4448,8 @@ function handleActionbar (page) {
           // 移除事件监听器时，回调函数需要与添加事件监听器时使用的回调函数完全一致。内联定义的新箭头函数不是添加事件监听器时使用的原始回调函数
           // 引用回调函数时，形参写在函数声明中，不需要内联一个匿名函数 (匿名内部函数, 无函数名)
           input.addEventListener('keydown', spaceHandleInput)
+
+          // const searchPanel=document.querySelector('.search-panel')
         }, 300)
       })
 

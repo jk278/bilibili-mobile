@@ -1,7 +1,8 @@
 // 控制首页头图函数
 export function handleHeaderImage () {
+  let source
   // eslint-disable-next-line no-undef
-  const source = GM_getValue('custom-header-image-source', 'unsplash')
+  source = GM_getValue('custom-header-image-source', 'unsplash')
 
   const key = 'header-image'
   const formattedDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/-/g, '/')
@@ -11,16 +12,23 @@ export function handleHeaderImage () {
 
   loadImage(key, elementSelector)
 
-  if (source !== 'local') {
-    setTimeout(async () => {
-      try {
-        const img = await getImage(url)
-        const base64Data = imageToBase64(img)
-        storeImage(key, base64Data)
-      } catch (error) {
-        console.error('Failed to get image:', error)
-      }
-    }, 5000)
+  if (source !== 'local') { setTimeout(renewImage, 5000) }
+
+  window.addEventListener('variableChanged', e => {
+    if (e.detail.key === 'header-image-source') {
+      source = e.detail.newValue
+      setTimeout(renewImage, 0)
+    }
+  })
+
+  async function renewImage () {
+    try {
+      const img = await getImage(url)
+      const base64Data = imageToBase64(img)
+      storeImage(key, base64Data)
+    } catch (error) {
+      console.error('Failed to get image:', error)
+    }
   }
 
   function getImage (url) {

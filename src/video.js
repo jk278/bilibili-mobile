@@ -38,16 +38,11 @@ function handlelVideoClick () {
   if (video) { video.playsInline = true }
 
   const oldControlWrap = videoArea.querySelector('.bpx-player-control-wrap')
-  const controlEntity = oldControlWrap.querySelector('.bpx-player-control-entity')
+  const controlEntity = oldControlWrap.querySelector('.bpx-player-control-entity') // 移动后再使用
 
   let clickTimer = null
 
   let hideTimer = null
-
-  // 可以作语句的表达式：需要赋值给变量或者作为函数调用的一部分，能够产生一个可以被丢弃的值
-  // 布尔值不能直接作为语句，因为它们不执行任何动作，也不改变程序的状态
-  // x++ 作语句时执行操作，但是不显式返回值，实际 x 的值隐式地改变了；作表达式时根据前后缀，依次返回 x 的值和执行操作
-  const isShown = () => playerContainter.dataset.ctrlHidden === 'false' // controlWrap 的 mouseleave 事件导致点击非视频部分会隐藏控制栏, 实际已不必要
 
   // 阻止 controlWrap 的 mouseleave 事件隐藏控制栏, mouseleave 事件不会在冒泡阶段和捕获阶段传播
   const controlWrap = Object.assign(document.createElement('div'), {
@@ -62,11 +57,30 @@ function handlelVideoClick () {
   const isBpxStateShow = () => controlEntity.querySelector('.bpx-player-control-bottom-right>.bpx-state-show')
 
   const controlTop = controlEntity.querySelector('.bpx-player-control-top')
+  const bottomRight = controlEntity.querySelector('.bpx-player-control-bottom-right')
+
+  // 可以作语句的表达式：需要赋值给变量或者作为函数调用的一部分，能够产生一个可以被丢弃的值
+  // 布尔值不能直接作为语句，因为它们不执行任何动作，也不改变程序的状态
+  // x++ 作语句时执行操作，但是不显式返回值，实际 x 的值隐式地改变了；作表达式时根据前后缀，依次返回 x 的值和执行操作
+  const isShown = () => playerContainter.getAttribute('ctrl-shown') === 'true' // controlWrap 的 mouseleave 事件导致点击非视频部分会隐藏控制栏, 实际已不必要
+
+  // 覆盖原显隐
+  playerContainter.setAttribute('ctrl-shown', 'false')
+
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      if (mutation.addedNodes[0].classList.contains('bpx-player-ctrl-web')) { // 还可以让控制栏显示作为网页全屏按钮加载的标志事件
+        playerContainter.setAttribute('ctrl-shown', 'true')
+        delayHideTimer()
+        observer.disconnect()
+      }
+    })
+  })
+  observer.observe(bottomRight, { childList: true })
 
   function hideControlWrap (isEnd) {
     if ((!video.paused && !isBpxStateShow()) || isEnd) {
-      playerContainter.dataset.ctrlHidden = 'true'
-      controlEntity.dataset.shadowShow = 'true'
+      playerContainter.setAttribute('ctrl-shown', 'false')
       clearTimeout(hideTimer)
     } else {
       delayHideTimer()
@@ -76,23 +90,25 @@ function handlelVideoClick () {
   video.addEventListener('ended', () => { hideControlWrap(true) })
 
   function showControlWrap () {
-    playerContainter.dataset.ctrlHidden = 'false'
-    controlEntity.dataset.shadowShow = 'false'
-    hideTimer = setTimeout(hideControlWrap, 3500)
+    playerContainter.setAttribute('ctrl-shown', 'true')
+    delayHideTimer()
   }
 
   function delayHideTimer () {
     clearTimeout(hideTimer)
-    hideTimer = setTimeout(hideControlWrap, 3500)
+    hideTimer = setTimeout(hideControlWrap, 3000)
   }
-
-  // 只剩下初始化显示状态栏, 初次播放 1s 后隐藏控制栏 (再过 2s 又隐藏一次)
 
   // 阻止触摸单击触发 videoArea 的 mousemove 事件而显隐控制栏
   videoWrap.addEventListener('mousemove', event => { event.stopPropagation() })
   controlWrap.addEventListener('mousemove', event => { event.stopPropagation() })
 
-  video.addEventListener('play', delayHideTimer)
+  let isFirstTime = true
+  video.addEventListener('play', () => {
+    if (isFirstTime) { isFirstTime = false; return } // return 语句结束当前函数的执行
+
+    delayHideTimer()
+  })
 
   controlWrap.addEventListener('click', event => {
     event.stopPropagation()
@@ -153,7 +169,7 @@ function handleVideoLongPress () {
   let times
 
   video.addEventListener('touchstart', () => {
-    times = GM_getValue('custom-longpress-speed', 2)
+    times = Number(GM_getValue('video-longpress-speed', '2'))
 
     timeoutId = setTimeout(() => {
       video.playbackRate = video.playbackRate * times

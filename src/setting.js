@@ -106,21 +106,18 @@ export function handleScriptPreSetting () {
 
 // 脚本设置
 export function handleScriptSetting () {
-  const keyValue = {
+  // 修改顺序后，更改下面的选项变更操作
+  const keyValues = {
     key1: 'ban-video-click-play',
     key3: 'ban-action-hidden',
-    key4: 'message-sidebar-right',
-    key5: 'menu-dialog-bottom'
+    key4: 'message-sidebar-change-right',
+    key5: 'menu-dialog-move-down'
   }
 
-  // 独立对象？遍历元素？
-  const bottomIndex = 5
-  const speedIndex = 6
-
-  const customKeyValue = {
-    key1: 'custom-menu-dialog-bottom',
-    key2: 'custom-longpress-speed',
-    key3: 'custom-header-image-source'
+  const customKeyValues = {
+    'menu-dialog-down-value': '20',
+    'video-longpress-speed': '2',
+    'header-image-source': 'unsplash'
   }
 
   if (GM_getValue('ban-action-hidden', false)) { banActionHidden() }
@@ -139,11 +136,11 @@ export function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('message-sidebar-right', false)) { messageSidebarRight() }
+  if (GM_getValue('message-sidebar-change-right', false)) { messageSidebarRight() }
 
   function messageSidebarRight () {
     const style = Object.assign(document.createElement('style'), {
-      id: 'message-sidebar-right',
+      id: 'message-sidebar-change-right',
       textContent: `
         .space-left.space-left { left: 100%; }      
         body>.container[sidebar] .space-left.space-left { transform: translateX(-100%); }
@@ -153,18 +150,18 @@ export function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('menu-dialog-bottom', false)) { menuDialogBottom() }
+  if (GM_getValue('menu-dialog-move-down', false)) { menuDialogDown() }
 
-  function menuDialogBottom () {
-    const customBottom = GM_getValue('custom-menu-dialog-bottom', 20)
+  function menuDialogDown () {
+    const downValue = GM_getValue('menu-dialog-move-down-value', '20')
 
     const style = Object.assign(document.createElement('style'), {
-      id: 'menu-dialog-bottom',
+      id: 'menu-dialog-move-down',
       textContent: `
         .v-popover.v-popover {
           top: unset !important;
           bottom: var(--actionbar-height);
-          transform: translate(-50%, -${customBottom}px) !important;
+          transform: translate(-50%, -${downValue}px) !important;
         }
       `
     })
@@ -185,10 +182,10 @@ export function handleScriptSetting () {
           <label><input type="checkbox"><span>禁用点击视频播放/暂停</span></label>
           <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
           <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
-          <label><input type="checkbox" id="menu-dialog-bottom-check"><span>菜单弹窗(收藏、历史等)靠下</span></label>
-          <label><input type="number" value="20" class="label-inner-bottom"><span>自定义菜单弹窗底边距</span></label>
-          <label><input type="number" value="2" class="label-inner-speed"><span>自定义视频长按倍速</span></label>
-          <label><select class="label-inner-source">
+          <label><input type="checkbox" class="menu-dialog-move-down"><span>菜单弹窗(收藏、历史等)靠下</span></label>
+          <label><input type="number" value="20" class="menu-dialog-move-down-value"><span>自定义菜单弹窗底边距</span></label>
+          <label><input type="number" value="2" class="video-longpress-speed"><span>自定义视频长按倍速</span></label>
+          <label><select class="header-image-source">
               <option value="unsplash">unsplash</option>
               <option value="bing">必应每日</option>
               <option value="local">本地图片</option>
@@ -199,54 +196,40 @@ export function handleScriptSetting () {
     })
     document.body.appendChild(settingPanel)
 
-    const values = Object.values(keyValue) // 返回 [v1, v2]
-    const customValues = Object.values(customKeyValue)
+    const values = Object.values(keyValues) // 返回 [v1, v2]
+    const customKeys = Object.keys(customKeyValues)
+    const customValues = Object.values(customKeyValues)
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) { // 返回 [ [1,v1], [2,v2] ]
       checkboxElements[index].checked = GM_getValue(value, false)
     }
 
-    const bottomItem = settingPanel.querySelector('.label-inner-bottom')
-    const speedItem = settingPanel.querySelector('.label-inner-speed')
-    const sourceItem = settingPanel.querySelector('.label-inner-source')
-    bottomItem.value = GM_getValue(customValues[0], 20)
-    speedItem.value = GM_getValue(customValues[1], 2)
-    sourceItem.value = GM_getValue(customValues[2], 'unsplash')
+    const customElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="number"], .setting-checkboxes select')
+    for (const [index, value] of customKeys.entries()) {
+      customElements[index].value = GM_getValue(value, Object.values(customValues)[index])
+    }
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
-      const isBanActionHidden = GM_getValue('ban-action-hidden', false)
-      const ismessageSidebarRight = GM_getValue('message-sidebar-right', false)
-      const isMenuDialogBottom = GM_getValue('menu-dialog-bottom', false)
-      const customMenuDialogBottom = GM_getValue('custom-menu-dialog-bottom', 20)
-
-      for (const [index, value] of values.entries()) {
-        if (index !== bottomIndex && index !== speedIndex) {
-          GM_setValue(value, checkboxElements[index].checked)
-        }
-      }
-      GM_setValue(customValues[0], Number(bottomItem.value))
-      GM_setValue(customValues[1], Number(speedItem.value))
-      GM_setValue(customValues[2], sourceItem.value)
-
       settingPanel.classList.remove('show')
 
-      if (GM_getValue('ban-action-hidden', false) !== isBanActionHidden) {
-        isBanActionHidden ? document.getElementById('ban-action-hidden').remove() : banActionHidden()
+      const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
+      const writenValues = Array.from(customElements).map(elem => elem.value)
+
+      if (selectedValues[1] !== GM_getValue(values[1], false)) { selectedValues[1] ? banActionHidden() : document.getElementById(values[1]).remove() }
+      if (selectedValues[2] !== GM_getValue(values[2], false)) { selectedValues[2] ? messageSidebarRight() : document.getElementById(values[2]).remove() }
+      if (selectedValues[3] !== GM_getValue(values[3], false)) { selectedValues[3] ? menuDialogDown() : document.getElementById(values[3]).remove() }
+
+      if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0]).remove(); menuDialogDown() }
+      if (writenValues[2] !== GM_getValue(customKeys[2], customValues[2])) {
+        writenValues[2] !== 'local' && window.dispatchEvent(new CustomEvent('variableChanged', { detail: { key: customKeys[2], newValue: writenValues[2] } }))
       }
-      if (GM_getValue('message-sidebar-right', false) !== ismessageSidebarRight) {
-        ismessageSidebarRight ? document.getElementById('message-sidebar-right').remove() : messageSidebarRight()
-      }
-      if (GM_getValue('menu-dialog-bottom', false) !== isMenuDialogBottom) {
-        isMenuDialogBottom ? document.getElementById('menu-dialog-bottom').remove() : menuDialogBottom()
-      }
-      if (GM_getValue('custom-menu-dialog-bottom', 20) !== customMenuDialogBottom) {
-        document.getElementById('menu-dialog-bottom').remove()
-        menuDialogBottom()
-      }
+
+      for (const [index, value] of values.entries()) { GM_setValue(value, selectedValues[index]) }
+      for (const [index, value] of customKeys.entries()) { GM_setValue(value, writenValues[index]) }
     })
 
-    sourceItem.addEventListener('change', event => {
-      // unsafeWindow.document.querySelector('.label-inner-source').addEventListener('change', () => { console.log(this.value) })
+    settingPanel.querySelector('.header-image-source').addEventListener('change', event => {
+      // unsafeWindow.document.querySelector('.header-image-source').addEventListener('change', () => { console.log(this.value) })
       if (event.target.value === 'local') {
         const input = document.createElement('input')
         input.type = 'file'
