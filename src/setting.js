@@ -158,7 +158,7 @@ export function handleScriptSetting () {
     const style = Object.assign(document.createElement('style'), {
       id: 'menu-dialog-move-down',
       textContent: `
-        .v-popover.v-popover {
+      .bili-header__bar .v-popover.v-popover {
           top: unset !important;
           bottom: var(--actionbar-height);
           transform: translate(-50%, -${downValue}px) !important;
