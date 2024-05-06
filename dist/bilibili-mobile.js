@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-alpha.7
+// @version            5.0-alpha.8
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -1466,13 +1466,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     max-width: 150px !important;
 }
 
-/* UP头像 */
-/*.up-avatar-wrap .bili-avatar,
-  .up-avatar-wrap {
-    width: 38px !important;
-    height: 38px !important;
-  }*/
-
 /* 推荐视频图块 */
 #reco_list .card-box .pic-box {
     max-width: 50%;
@@ -1523,8 +1516,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     box-shadow: none !important;
 }
 
-/* 不显示原双击全屏层 */
-.bpx-player-video-perch {
+/* 视频页不显示原双击全屏层 */
+#app .bpx-player-video-perch {
     max-height: 0;
 }
 
@@ -1667,6 +1660,13 @@ div.bpx-player-control-entity .bpx-player-pbp.pin {
     }
 }
 
+/* 主控制区: 覆盖宽屏全屏样式 (图标22px，算 margin 37px) */
+div.bpx-player-control-bottom {
+    height: 29px !important;
+    margin-top: 7px !important;
+    padding: 0 7px !important;
+}
+
 /* 进度条 */
 div.bpx-player-control-top {
     bottom: 36px;
@@ -1676,13 +1676,6 @@ div.bpx-player-control-top {
 /* 隐藏颠倒的高能进度条常驻切换提示 */
 .bpx-player-pbp .bpx-player-pbp-pin-tip {
     display: none !important;
-}
-
-/* 主控制区(图标22px，算 margin 37px) */
-div.bpx-player-control-bottom {
-    height: 29px;
-    margin-top: 7px;
-    padding: 0 7px;
 }
 
 /* 左右控制区 */
@@ -4046,11 +4039,14 @@ function handlelVideoClick () {
   // 覆盖原显隐
   playerContainter.setAttribute('ctrl-shown', 'false')
 
+  let isAutoPlay = false
   const observer = new MutationObserver(mutations => {
     mutations.forEach(mutation => {
       if (mutation.addedNodes[0].classList.contains('bpx-player-ctrl-web')) { // 还可以让控制栏显示作为网页全屏按钮加载的标志事件
-        playerContainter.setAttribute('ctrl-shown', 'true')
-        delayHideTimer()
+        if (!isAutoPlay) {
+          playerContainter.setAttribute('ctrl-shown', 'true')
+          delayHideTimer()
+        }
         observer.disconnect()
       }
     })
@@ -4082,12 +4078,7 @@ function handlelVideoClick () {
   videoWrap.addEventListener('mousemove', event => { event.stopPropagation() })
   controlWrap.addEventListener('mousemove', event => { event.stopPropagation() })
 
-  let isFirstTime = true
-  video.addEventListener('play', () => {
-    if (isFirstTime) { isFirstTime = false; return } // return 语句结束当前函数的执行
-
-    delayHideTimer()
-  })
+  video.addEventListener('play', () => { isShown() ? delayHideTimer() : (isAutoPlay = true) })
 
   controlWrap.addEventListener('click', event => {
     event.stopPropagation()
@@ -4424,7 +4415,7 @@ function handleActionbar (page) {
       })
 
       searchFab.addEventListener('dblclick', () => {
-        if (!input) { return }
+        if (!input) { return } // return 语句结束当前函数的执行
 
         clearTimeout(clickTimer)
 

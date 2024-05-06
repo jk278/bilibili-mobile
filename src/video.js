@@ -67,11 +67,14 @@ function handlelVideoClick () {
   // 覆盖原显隐
   playerContainter.setAttribute('ctrl-shown', 'false')
 
+  let isAutoPlay = false
   const observer = new MutationObserver(mutations => {
     mutations.forEach(mutation => {
       if (mutation.addedNodes[0].classList.contains('bpx-player-ctrl-web')) { // 还可以让控制栏显示作为网页全屏按钮加载的标志事件
-        playerContainter.setAttribute('ctrl-shown', 'true')
-        delayHideTimer()
+        if (!isAutoPlay) {
+          playerContainter.setAttribute('ctrl-shown', 'true')
+          delayHideTimer()
+        }
         observer.disconnect()
       }
     })
@@ -103,12 +106,7 @@ function handlelVideoClick () {
   videoWrap.addEventListener('mousemove', event => { event.stopPropagation() })
   controlWrap.addEventListener('mousemove', event => { event.stopPropagation() })
 
-  let isFirstTime = true
-  video.addEventListener('play', () => {
-    if (isFirstTime) { isFirstTime = false; return } // return 语句结束当前函数的执行
-
-    delayHideTimer()
-  })
+  video.addEventListener('play', () => { isShown() ? delayHideTimer() : (isAutoPlay = true) })
 
   controlWrap.addEventListener('click', event => {
     event.stopPropagation()

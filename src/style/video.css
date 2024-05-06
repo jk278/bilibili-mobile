@@ -119,13 +119,6 @@
     max-width: 150px !important;
 }
 
-/* UP头像 */
-/*.up-avatar-wrap .bili-avatar,
-  .up-avatar-wrap {
-    width: 38px !important;
-    height: 38px !important;
-  }*/
-
 /* 推荐视频图块 */
 #reco_list .card-box .pic-box {
     max-width: 50%;
@@ -176,8 +169,8 @@
     box-shadow: none !important;
 }
 
-/* 不显示原双击全屏层 */
-.bpx-player-video-perch {
+/* 视频页不显示原双击全屏层 */
+#app .bpx-player-video-perch {
     max-height: 0;
 }
 
@@ -320,6 +313,13 @@ div.bpx-player-control-entity .bpx-player-pbp.pin {
     }
 }
 
+/* 主控制区: 覆盖宽屏全屏样式 (图标22px，算 margin 37px) */
+div.bpx-player-control-bottom {
+    height: 29px !important;
+    margin-top: 7px !important;
+    padding: 0 7px !important;
+}
+
 /* 进度条 */
 div.bpx-player-control-top {
     bottom: 36px;
@@ -329,13 +329,6 @@ div.bpx-player-control-top {
 /* 隐藏颠倒的高能进度条常驻切换提示 */
 .bpx-player-pbp .bpx-player-pbp-pin-tip {
     display: none !important;
-}
-
-/* 主控制区(图标22px，算 margin 37px) */
-div.bpx-player-control-bottom {
-    height: 29px;
-    margin-top: 7px;
-    padding: 0 7px;
 }
 
 /* 左右控制区 */

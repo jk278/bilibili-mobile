@@ -192,7 +192,7 @@ export function handleActionbar (page) {
       })
 
       searchFab.addEventListener('dblclick', () => {
-        if (!input) { return }
+        if (!input) { return } // return 语句结束当前函数的执行
 
         clearTimeout(clickTimer)
 
