@@ -67,14 +67,10 @@ function handlelVideoClick () {
   // 覆盖原显隐
   playerContainter.setAttribute('ctrl-shown', 'false')
 
-  let isAutoPlay = false
   const observer = new MutationObserver(mutations => {
     mutations.forEach(mutation => {
       if (mutation.addedNodes[0].classList.contains('bpx-player-ctrl-web')) { // 还可以让控制栏显示作为网页全屏按钮加载的标志事件
-        if (!isAutoPlay) {
-          playerContainter.setAttribute('ctrl-shown', 'true')
-          delayHideTimer()
-        }
+        if (video.paused) { showControlWrap() }
         observer.disconnect()
       }
     })
@@ -106,7 +102,7 @@ function handlelVideoClick () {
   videoWrap.addEventListener('mousemove', event => { event.stopPropagation() })
   controlWrap.addEventListener('mousemove', event => { event.stopPropagation() })
 
-  video.addEventListener('play', () => { isShown() ? delayHideTimer() : (isAutoPlay = true) })
+  video.addEventListener('play', delayHideTimer)
 
   controlWrap.addEventListener('click', event => {
     event.stopPropagation()
@@ -189,9 +185,18 @@ function handleVideoLongPress () {
 }
 
 function setEndingContent () {
-  const style = Object.assign(document.createElement('style'), {
-    id: 'ending-content-scale',
-    textContent: `.bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/536*0.9)) !important; }`
+  addEndingScale()
+
+  function addEndingScale () {
+    const style = Object.assign(document.createElement('style'), {
+      id: 'ending-content-scale',
+      textContent: `.bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/536*0.9)) !important; }`
+    })
+    document.head.appendChild(style)
+  }
+
+  window.addEventListener('resize', () => {
+    document.head.querySelector('#ending-content-scale').remove()
+    addEndingScale()
   })
-  document.head.appendChild(style)
 }
