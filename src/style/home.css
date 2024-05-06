@@ -122,11 +122,6 @@ body,
     }
 }
 
-/* 不喜欢: 面板 */
-.bili-video-card__info--no-interest-panel {
-    width: unset !important;
-}
-
 /* 小标 */
 .bili-video-card__info--bottom,
 .bili-live-card__info--uname {
