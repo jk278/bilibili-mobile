@@ -177,7 +177,7 @@ function slideMessageSidebar () {
   sidebarOverlay.addEventListener('touchend', handleTouchEnd)
 }
 
-//
+// 处理space滚动和滑动事件
 function handleSpaceSwipe () {
   const observer = new MutationObserver(mutationsList => {
     mutationsList.forEach(mutation => {

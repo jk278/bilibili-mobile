@@ -115,7 +115,7 @@
  ---------------------- 展开图类 --------------------- 
  --------------------------------------------------- */
 
-.bili-header__bar .v-popover {
+ .bili-header .v-popover {
     position: fixed !important;
     top: 50vh !important;
     transform: translate(-50%, -50%) !important;

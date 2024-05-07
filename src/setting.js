@@ -3,7 +3,7 @@ function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? d
 
 // 脚本预加载设置
 export function handleScriptPreSetting () {
-  const defaultValue = [false, false, false, false, false, false, false]
+  const defaultValue = [false, false, false, false, false, false]
 
   const css = {
     css1: `
@@ -18,8 +18,7 @@ export function handleScriptPreSetting () {
     `,
     css4: '.trending {display:none;}',
     css5: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {display: none;}',
-    css6: '.bpx-player-contextmenu {display:none;}',
-    css7: `
+    css6: `
       .bili-footer {display: none;}
       .vui_pagenation {padding-bottom: var(--actionbar-height);}
     `
@@ -76,7 +75,6 @@ export function handleScriptPreSetting () {
           <label><input type="checkbox"><span>转载声明</span></label>
           <label><input type="checkbox"><span>热搜榜</span></label>
           <label><input type="checkbox"><span>播放器全屏音量键</span></label>
-          <label><input type="checkbox"><span>视频色彩音效调节</span></label>
           <label><input type="checkbox"><span>页脚导航链接</span></label>
         </div>
         <button id="setting-conform-1" class="setting-conform">确认</button>
@@ -109,9 +107,9 @@ export function handleScriptSetting () {
   // 修改顺序后，更改下面的选项变更操作
   const keyValues = {
     key1: 'ban-video-click-play',
-    key3: 'ban-action-hidden',
-    key4: 'message-sidebar-change-right',
-    key5: 'menu-dialog-move-down'
+    key2: 'ban-action-hidden',
+    key3: 'message-sidebar-change-right',
+    key4: 'menu-dialog-move-down'
   }
 
   const customKeyValues = {
@@ -199,6 +197,7 @@ export function handleScriptSetting () {
     const values = Object.values(keyValues) // 返回 [v1, v2]
     const customKeys = Object.keys(customKeyValues)
     const customValues = Object.values(customKeyValues)
+
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
     for (const [index, value] of values.entries()) { // 返回 [ [1,v1], [2,v2] ]
       checkboxElements[index].checked = GM_getValue(value, false)
@@ -219,7 +218,7 @@ export function handleScriptSetting () {
       if (selectedValues[2] !== GM_getValue(values[2], false)) { selectedValues[2] ? messageSidebarRight() : document.getElementById(values[2]).remove() }
       if (selectedValues[3] !== GM_getValue(values[3], false)) { selectedValues[3] ? menuDialogDown() : document.getElementById(values[3]).remove() }
 
-      if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0]).remove(); menuDialogDown() }
+      if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0])?.remove(); menuDialogDown() }
       if (writenValues[2] !== GM_getValue(customKeys[2], customValues[2])) {
         writenValues[2] !== 'local' && window.dispatchEvent(new CustomEvent('variableChanged', { detail: { key: customKeys[2], newValue: writenValues[2] } }))
       }

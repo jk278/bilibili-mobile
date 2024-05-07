@@ -93,10 +93,10 @@ body,
 
 /* 标题 */
 .bili-video-card__info {
-    --title-padding-right: 13px;
+    --title-padding-right: 18px;
     --title-line-height: 20px;
-    --title-font-size: 14px;
-
+    --title-font-size: 13px;
+    --no-interest-entry-size: 22px;
     text-align: justify;
 }
 
@@ -104,22 +104,6 @@ body,
 .bili-video-card__info--right,
 .bili-live-card__info--text {
     padding: 0 5px;
-}
-
-/* 不喜欢按钮 */
-.bili-video-card__info--no-interest {
-    display: flex !important;
-
-}
-
-/* 撤销不喜欢 */
-.bili-video-card__no-interest {
-    --no-interest-module-gap: 5px;
-    --no-interest-btn-horizontal-padding: var(--no-interest-btn-vertical-padding);
-
-    .revert-btn {
-        flex-direction: column;
-    }
 }
 
 /* 小标 */
@@ -147,6 +131,73 @@ body,
 .bili-video-card__info--icon-text {
     --follow-icon-font-size: 11px;
     --follow-icon-line-height: 15px;
+}
+
+/* 标题 - 不喜欢按钮：打开面板添加预览视频选项 */
+div.bili-video-card .bili-video-card__info--no-interest {
+    display: flex !important;
+    top: calc((var(--title-line-height) * 2 - var(--no-interest-entry-size)) / 2);
+}
+
+/* 撤销不喜欢 */
+.bili-video-card__no-interest {
+    --no-interest-module-gap: 5px;
+    --no-interest-btn-horizontal-padding: var(--no-interest-btn-vertical-padding);
+
+    .revert-btn {
+        flex-direction: column;
+    }
+}
+
+/* ------------------- 视频预览 ------------------- */
+
+/* 稍后观看的文字 */
+.bili-watch-later.bili-watch-later--pip span {
+    display: none;
+}
+
+/* 视频预览隐藏信息 (同 :hover) */
+.bili-video-card__image--wrap:has(>.mouse-in)+.bili-video-card__mask {
+    visibility: hidden;
+    opacity: 0;
+}
+
+/* 添加预览进度条 */
+.inline-progress-bar {
+    position: absolute;
+    bottom: 0;
+    height: 10px;
+    left: 0;
+    width: 100%;
+    z-index: 2;
+    background-color: #ddd;
+    display: none;
+}
+
+.v-inline-player.mouse-in+.inline-progress-bar {
+    display: block;
+}
+
+.inline-progress-bar-filled {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: #007bff;
+}
+
+.inline-progress-bar-thumb {
+    position: absolute;
+    top: -5px;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+    touch-action: none;
+    pointer-events: auto;
 }
 
 /* ----------------------------------------------------

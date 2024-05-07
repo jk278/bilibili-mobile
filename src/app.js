@@ -10,11 +10,10 @@ import './style/message.css'
 
 import { preventBeforeUnload, increaseVideoLoadSize, handleScroll } from './window.js'
 import { handleScriptPreSetting, handleScriptSetting } from './setting.js'
-import { handleHeaderImage } from './header-image.js'
-import { videoInteraction } from './video.js'
-import { createUnfoldBtn } from './element.js'
-
 import { handleActionbar } from './actionbar.js'
+import { handleHeaderImage, handleVideoCard } from './home.js'
+import { videoInteraction } from './video.js'
+import { createUnfoldBtn } from './message.js'
 
 (function () {
   // setInterval(() => { debugger }, 100)
@@ -41,6 +40,7 @@ import { handleActionbar } from './actionbar.js'
         waitDOMContentLoaded(() => {
           handleActionbar('home')
           handleScriptSetting()
+          handleVideoCard()
           handleScroll()
         })
       } else if (location.pathname.startsWith('/video')) {
