@@ -150,6 +150,7 @@ export function handleVideoCard () {
             }) // 默认为 false
 
             // 阻止后续捕获阶段监听器执行
+            // 同一事件传播阶段中，监听器的执行顺序按照添加的顺序依次执行。不同事件传播阶段中，捕获阶段的监听器总是先于冒泡阶段的监听器执行。
             video.addEventListener('timeupdate', event => { event.stopImmediatePropagation() }, true)
 
             function onTouchEvent (event) {
