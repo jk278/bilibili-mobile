@@ -190,13 +190,20 @@ function setEndingContent () {
   function addEndingScale () {
     const style = Object.assign(document.createElement('style'), {
       id: 'ending-content-scale',
-      textContent: `.bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/536*0.9)) !important; }`
+      textContent: `
+        .bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/536*0.9)) !important; }
+        .bpx-player-container[data-screen=full] .bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/952*0.9)) !important; }
+      `
     })
     document.head.appendChild(style)
   }
 
-  window.addEventListener('resize', () => {
+  function renewEndingScale () {
     document.head.querySelector('#ending-content-scale').remove()
     addEndingScale()
-  })
+  }
+
+  screen.orientation.addEventListener('change', renewEndingScale)
+  window.addEventListener('resize', renewEndingScale)
+  window.addEventListener('fullscreenchange', renewEndingScale)
 }

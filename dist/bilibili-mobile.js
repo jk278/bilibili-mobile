@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta
+// @version            5.0-beta.2
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -1898,17 +1898,13 @@ div.bpx-player-control-top {
     display: none;
 }
 
-/* ------ 播完预览: 窄屏不隐藏 ( screen-mode=little-screen ) ------ */
+/* ------ 播完预览: 窄屏不隐藏 ------ */
 
 .bpx-player-ending-wrap[hidden] {
     display: block !important;
 }
 
-/* 内容 (scale 动态设置) */
-#app .bpx-player-ending-content {
-    height: 295px;
-    margin-top: -147px;
-}
+/* .bpx-player-ending-content 的 scale 根据 screen-mode 和 data-screen 动态调整 */
 
 /* 关注按钮 */
 .bpx-player-ending-functions-follow {
@@ -4530,7 +4526,6 @@ function handleVideoCard () {
             const progressBarThumb = progressBar.querySelector('.inline-progress-bar-thumb')
 
             const progressBarWidth = progressBar.offsetWidth
-            const duration = video.duration < 300 ? video.duration : 300
 
             function updateProgressBar (progress) {
               progressBarFilled.style.width = `${progress * 100}%`
@@ -4538,28 +4533,27 @@ function handleVideoCard () {
             }
 
             // 为视频元素添加时间更新事件监听器
-            function onTimeUpdate () {
-              const progress = video.currentTime / duration
+            video.addEventListener('timeupdate', () => {
+              const progress = video.currentTime / video.duration
               updateProgressBar(progress)
-            }
+            }) // 默认为 false
 
-            video.addEventListener('timeupdate', onTimeUpdate)
+            // 阻止后续捕获阶段监听器执行
+            video.addEventListener('timeupdate', event => { event.stopImmediatePropagation() }, true)
 
             function onTouchEvent (event) {
               const progress = (event.touches[0].clientX - progressBar.getBoundingClientRect().left) / progressBarWidth // offsetLeft 是相对于父元素的
               updateProgressBar(progress)
 
-              video.currentTime = progress * duration
+              video.currentTime = progress * video.duration
             }
 
             progressBar.addEventListener('touchstart', event => {
-              video.removeEventListener('timeupdate', onTimeUpdate)
               onTouchEvent(event)
               document.addEventListener('touchmove', onTouchEvent)
             })
 
             document.addEventListener('touchend', () => {
-              video.addEventListener('timeupdate', onTimeUpdate)
               document.removeEventListener('touchmove', onTouchEvent)
             })
 
@@ -4788,15 +4782,22 @@ function setEndingContent () {
   function addEndingScale () {
     const style = Object.assign(document.createElement('style'), {
       id: 'ending-content-scale',
-      textContent: `.bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/536*0.9)) !important; }`
+      textContent: `
+        .bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/536*0.9)) !important; }
+        .bpx-player-container[data-screen=full] .bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/952*0.9)) !important; }
+      `
     })
     document.head.appendChild(style)
   }
 
-  window.addEventListener('resize', () => {
+  function renewEndingScale () {
     document.head.querySelector('#ending-content-scale').remove()
     addEndingScale()
-  })
+  }
+
+  screen.orientation.addEventListener('change', renewEndingScale)
+  window.addEventListener('resize', renewEndingScale)
+  window.addEventListener('fullscreenchange', renewEndingScale)
 }
 
 

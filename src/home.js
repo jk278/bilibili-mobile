@@ -137,7 +137,6 @@ export function handleVideoCard () {
             const progressBarThumb = progressBar.querySelector('.inline-progress-bar-thumb')
 
             const progressBarWidth = progressBar.offsetWidth
-            const duration = video.duration < 300 ? video.duration : 300
 
             function updateProgressBar (progress) {
               progressBarFilled.style.width = `${progress * 100}%`
@@ -145,28 +144,27 @@ export function handleVideoCard () {
             }
 
             // 为视频元素添加时间更新事件监听器
-            function onTimeUpdate () {
-              const progress = video.currentTime / duration
+            video.addEventListener('timeupdate', () => {
+              const progress = video.currentTime / video.duration
               updateProgressBar(progress)
-            }
+            }) // 默认为 false
 
-            video.addEventListener('timeupdate', onTimeUpdate)
+            // 阻止后续捕获阶段监听器执行
+            video.addEventListener('timeupdate', event => { event.stopImmediatePropagation() }, true)
 
             function onTouchEvent (event) {
               const progress = (event.touches[0].clientX - progressBar.getBoundingClientRect().left) / progressBarWidth // offsetLeft 是相对于父元素的
               updateProgressBar(progress)
 
-              video.currentTime = progress * duration
+              video.currentTime = progress * video.duration
             }
 
             progressBar.addEventListener('touchstart', event => {
-              video.removeEventListener('timeupdate', onTimeUpdate)
               onTouchEvent(event)
               document.addEventListener('touchmove', onTouchEvent)
             })
 
             document.addEventListener('touchend', () => {
-              video.addEventListener('timeupdate', onTimeUpdate)
               document.removeEventListener('touchmove', onTouchEvent)
             })
 

@@ -505,17 +505,13 @@ div.bpx-player-control-top {
     display: none;
 }
 
-/* ------ 播完预览: 窄屏不隐藏 ( screen-mode=little-screen ) ------ */
+/* ------ 播完预览: 窄屏不隐藏 ------ */
 
 .bpx-player-ending-wrap[hidden] {
     display: block !important;
 }
 
-/* 内容 (scale 动态设置) */
-#app .bpx-player-ending-content {
-    height: 295px;
-    margin-top: -147px;
-}
+/* .bpx-player-ending-content 的 scale 根据 screen-mode 和 data-screen 动态调整 */
 
 /* 关注按钮 */
 .bpx-player-ending-functions-follow {
