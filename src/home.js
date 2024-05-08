@@ -96,7 +96,7 @@ export function handleVideoCard () {
 
         const previewOption = Object.assign(document.createElement('div'), {
           className: 'bili-video-card__info--no-interest-panel--item',
-          textContent: '预览视频(5m)'
+          textContent: '预览此视频'
         })
         panel.insertBefore(previewOption, panel.firstChild)
 
@@ -145,7 +145,8 @@ export function handleVideoCard () {
 
             // 为视频元素添加时间更新事件监听器
             video.addEventListener('timeupdate', () => {
-              const progress = video.currentTime / video.duration
+              const initialProgress = video.currentTime / video.duration
+              const progress = Math.min(Math.max(initialProgress, 0), 1)
               updateProgressBar(progress)
             }) // 默认为 false
 
@@ -154,7 +155,9 @@ export function handleVideoCard () {
             video.addEventListener('timeupdate', event => { event.stopImmediatePropagation() }, true)
 
             function onTouchEvent (event) {
-              const progress = (event.touches[0].clientX - progressBar.getBoundingClientRect().left) / progressBarWidth // offsetLeft 是相对于父元素的
+              const initialProgress = (event.touches[0].clientX - progressBar.getBoundingClientRect().left) / progressBarWidth // offsetLeft 是相对于父元素的
+              const progress = Math.min(Math.max(initialProgress, 0), 1)
+
               updateProgressBar(progress)
 
               video.currentTime = progress * video.duration

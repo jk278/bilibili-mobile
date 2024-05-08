@@ -19,7 +19,10 @@
 
 #app {
     height: 100%;
-    /* 修复 via 滚动条异常 */
+}
+
+/* 修复 via 滚动条异常 */
+[itemprop=video]+body #app {
     overflow: hidden;
 }
 

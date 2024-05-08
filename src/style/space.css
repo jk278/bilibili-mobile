@@ -303,6 +303,16 @@ div.header.space-search-tip {
     height: auto !important;
 }
 
+.small-item .title {
+    text-align: justify;
+    line-break: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    text-overflow: ellipsis;
+    padding: 0 3px;
+}
+
 /* 频道: 更多 */
 #page-index .channel .channel-item .channel-title {
     padding: 0 5px 34px;
