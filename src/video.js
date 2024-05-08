@@ -21,6 +21,13 @@ function handlePortrait () {
     // aspectRatio, resize 前宽高为 0
     if (video.videoHeight / video.videoWidth > 1) { isPortrait = true }
   }, { once: true })
+
+  // 侧边栏跳视频时触发两次
+  new MutationObserver(() => {
+    video.addEventListener('resize', () => {
+      isPortrait = video.videoHeight / video.videoWidth > 1
+    }, { once: true })
+  }).observe(video, { attributes: true, attributeFilter: ['src'] })
 }
 
 // 接管视频点击事件

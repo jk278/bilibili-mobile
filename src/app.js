@@ -9,7 +9,7 @@ import './style/space.css'
 import './style/message.css'
 
 import { preventBeforeUnload, increaseVideoLoadSize, handleScroll } from './window.js'
-import { handleScriptPreSetting, handleScriptSetting } from './setting.js'
+import { handleScriptPreSetting, handleScriptSetting, setScriptHelp } from './setting.js'
 import { handleActionbar } from './actionbar.js'
 import { handleHeaderImage, handleVideoCard } from './home.js'
 import { videoInteraction } from './video.js'
@@ -42,6 +42,7 @@ import { createUnfoldBtn } from './message.js'
           handleScriptSetting()
           handleVideoCard()
           handleScroll()
+          setScriptHelp()
         })
       } else if (location.pathname.startsWith('/video')) {
         handleScriptPreSetting()
@@ -50,6 +51,7 @@ import { createUnfoldBtn } from './message.js'
           handleScriptSetting()
           videoInteraction()
           handleScroll('video')
+          setScriptHelp()
         })
       }
       break
@@ -59,6 +61,7 @@ import { createUnfoldBtn } from './message.js'
         handleActionbar('search')
         handleScriptSetting()
         handleScroll('search')
+        setScriptHelp()
       })
       break
     case 'space':
@@ -67,6 +70,7 @@ import { createUnfoldBtn } from './message.js'
         handleActionbar('space')
         handleScriptSetting()
         handleScroll('space')
+        setScriptHelp()
       })
       break
     case 'message':
@@ -76,6 +80,7 @@ import { createUnfoldBtn } from './message.js'
         handleScriptSetting()
         handleScroll('message')
         createUnfoldBtn()
+        setScriptHelp()
       })
       break
     default:

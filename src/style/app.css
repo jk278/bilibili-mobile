@@ -190,11 +190,9 @@ body #header-in-menu li {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
     background: white;
     z-index: 1;
     border: 1px solid var(--line_regular);
-    display: none;
     flex-direction: column;
     padding: 10px 5px;
     border-radius: 10px;
@@ -203,10 +201,16 @@ body #header-in-menu li {
     width: 260px;
     max-width: calc(100% - 20px);
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
+    
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.9);
+    transition: .4s ease-in;
+    display: none;
 }
 
 .setting-panel.show {
-    display: flex !important;
+    opacity: 1;
+    transform: translate(-50%, -50%);
 }
 
 .setting-title {
@@ -268,4 +272,13 @@ label:has(.menu-dialog-move-down)+label {
 
 label:has(.menu-dialog-move-down:checked)+label {
     display: flex;
+}
+
+/* 帮助 */
+.setting-content {
+    font-size: 14px;
+}
+
+.setting-content a {
+    text-decoration: underline;
 }

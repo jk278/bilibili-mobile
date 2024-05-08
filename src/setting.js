@@ -29,7 +29,11 @@ export function handleScriptPreSetting () {
   waitDOMContentLoaded(() => {
     createSettingPanel()
 
-    GM_registerMenuCommand('元素隐藏设置', () => document.getElementById('setting-panel-style').classList.add('show'))
+    GM_registerMenuCommand('元素隐藏设置', () => {
+      const settingPanel = document.getElementById('setting-panel-style')
+      settingPanel.style.display = 'flex'
+      setTimeout(() => { settingPanel.classList.add('show') }, 10)
+    })
   })
 
   // 形参 diference 隐式声明成 let
@@ -98,6 +102,7 @@ export function handleScriptPreSetting () {
       readScriptSetting(difference)
 
       settingPanel.classList.remove('show')
+      settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
     })
   }
 }
@@ -168,7 +173,11 @@ export function handleScriptSetting () {
 
   createSettingPanel()
 
-  GM_registerMenuCommand('操作偏好设置', () => document.getElementById('setting-panel-preference').classList.add('show'))
+  GM_registerMenuCommand('操作偏好设置', () => {
+    const settingPanel = document.getElementById('setting-panel-preference')
+    settingPanel.style.display = 'flex'
+    setTimeout(() => { settingPanel.classList.add('show') }, 10)
+  })
 
   function createSettingPanel () {
     const settingPanel = Object.assign(document.createElement('div'), {
@@ -210,6 +219,7 @@ export function handleScriptSetting () {
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
       settingPanel.classList.remove('show')
+      settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
 
       const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
       const writenValues = Array.from(customElements).map(elem => elem.value)
@@ -245,5 +255,47 @@ export function handleScriptSetting () {
         input.click()
       }
     })
+  }
+}
+
+// 脚本帮助
+export function setScriptHelp () {
+  createSettingPanel()
+
+  GM_registerMenuCommand('脚本说明', () => {
+    const settingPanel = document.getElementById('setting-panel-help')
+    settingPanel.style.display = 'flex'
+    setTimeout(() => { settingPanel.classList.add('show') }, 10)
+  })
+
+  function createSettingPanel () {
+    const settingPanel = Object.assign(document.createElement('div'), {
+      id: 'setting-panel-help',
+      className: 'setting-panel',
+      innerHTML: `
+        <div class="setting-title">脚本说明</div>
+        <div class="setting-content">
+          <li>视频页：双击全屏按钮竖屏播放，左右滑动切换侧边栏</li>
+          <li>搜索页：双击搜索按钮清空输入框，左右滑动切换分类</li>
+          <li>个人空间：双击搜索按钮全局搜索，左右滑动切换分类</li>
+          <li>作者持续改进和处理反馈，交流群：113980230</li>
+          <li>Firefox 推荐扩展：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/uaswitcher/" target="_blank">User Agent Switcher</a></li>
+          <li>更多自定义功能，请查看脚本设置</li>
+        </div>
+        <button id="setting-conform-3" class="setting-conform">关闭</button>
+      `
+    })
+    document.body.appendChild(settingPanel)
+
+    settingPanel.querySelector('#setting-conform-3').addEventListener('click', () => {
+      settingPanel.classList.remove('show')
+      settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
+    })
+
+    if (GM_getValue('is-first-use', true)) {
+      settingPanel.style.display = 'flex'
+      setTimeout(() => { settingPanel.classList.add('show') }, 10)
+      GM_setValue('is-first-use', false)
+    }
   }
 }

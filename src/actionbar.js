@@ -126,7 +126,7 @@ export function handleActionbar (page) {
 
       searchContainer.style.cssText = 'display: block !important' // 搜索页被隐藏
       // 在同一个执行上下文中修改多个 CSS 属性时，浏览器会将这些属性的变化合并为一个重绘和重排操作
-      setTimeout(() => { searchContainer.setAttribute('show', '') }, 0)
+      setTimeout(() => { searchContainer.setAttribute('show', '') }, 10)
 
       input.focus()
       searchOverlay.classList.add('show')

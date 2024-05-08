@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.2
+// @version            5.0-beta.3
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -521,11 +521,9 @@ body #header-in-menu li {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
     background: white;
     z-index: 1;
     border: 1px solid var(--line_regular);
-    display: none;
     flex-direction: column;
     padding: 10px 5px;
     border-radius: 10px;
@@ -534,10 +532,16 @@ body #header-in-menu li {
     width: 260px;
     max-width: calc(100% - 20px);
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
+    
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.9);
+    transition: .4s ease-in;
+    display: none;
 }
 
 .setting-panel.show {
-    display: flex !important;
+    opacity: 1;
+    transform: translate(-50%, -50%);
 }
 
 .setting-title {
@@ -599,6 +603,15 @@ label:has(.menu-dialog-move-down)+label {
 
 label:has(.menu-dialog-move-down:checked)+label {
     display: flex;
+}
+
+/* 帮助 */
+.setting-content {
+    font-size: 14px;
+}
+
+.setting-content a {
+    text-decoration: underline;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
@@ -3670,7 +3683,8 @@ function handleSpaceSwipe () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   handleScriptPreSetting: () => (/* binding */ handleScriptPreSetting),
-/* harmony export */   handleScriptSetting: () => (/* binding */ handleScriptSetting)
+/* harmony export */   handleScriptSetting: () => (/* binding */ handleScriptSetting),
+/* harmony export */   setScriptHelp: () => (/* binding */ setScriptHelp)
 /* harmony export */ });
 /* global GM_getValue GM_setValue GM_registerMenuCommand */
 function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
@@ -3703,7 +3717,11 @@ function handleScriptPreSetting () {
   waitDOMContentLoaded(() => {
     createSettingPanel()
 
-    GM_registerMenuCommand('元素隐藏设置', () => document.getElementById('setting-panel-style').classList.add('show'))
+    GM_registerMenuCommand('元素隐藏设置', () => {
+      const settingPanel = document.getElementById('setting-panel-style')
+      settingPanel.style.display = 'flex'
+      setTimeout(() => { settingPanel.classList.add('show') }, 10)
+    })
   })
 
   // 形参 diference 隐式声明成 let
@@ -3772,6 +3790,7 @@ function handleScriptPreSetting () {
       readScriptSetting(difference)
 
       settingPanel.classList.remove('show')
+      settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
     })
   }
 }
@@ -3842,7 +3861,11 @@ function handleScriptSetting () {
 
   createSettingPanel()
 
-  GM_registerMenuCommand('操作偏好设置', () => document.getElementById('setting-panel-preference').classList.add('show'))
+  GM_registerMenuCommand('操作偏好设置', () => {
+    const settingPanel = document.getElementById('setting-panel-preference')
+    settingPanel.style.display = 'flex'
+    setTimeout(() => { settingPanel.classList.add('show') }, 10)
+  })
 
   function createSettingPanel () {
     const settingPanel = Object.assign(document.createElement('div'), {
@@ -3884,6 +3907,7 @@ function handleScriptSetting () {
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
       settingPanel.classList.remove('show')
+      settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
 
       const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
       const writenValues = Array.from(customElements).map(elem => elem.value)
@@ -3919,6 +3943,48 @@ function handleScriptSetting () {
         input.click()
       }
     })
+  }
+}
+
+// 脚本帮助
+function setScriptHelp () {
+  createSettingPanel()
+
+  GM_registerMenuCommand('脚本说明', () => {
+    const settingPanel = document.getElementById('setting-panel-help')
+    settingPanel.style.display = 'flex'
+    setTimeout(() => { settingPanel.classList.add('show') }, 10)
+  })
+
+  function createSettingPanel () {
+    const settingPanel = Object.assign(document.createElement('div'), {
+      id: 'setting-panel-help',
+      className: 'setting-panel',
+      innerHTML: `
+        <div class="setting-title">脚本说明</div>
+        <div class="setting-content">
+          <li>视频页：双击全屏按钮竖屏播放，左右滑动切换侧边栏</li>
+          <li>搜索页：双击搜索按钮清空输入框，左右滑动切换分类</li>
+          <li>个人空间：双击搜索按钮全局搜索，左右滑动切换分类</li>
+          <li>作者持续改进和处理反馈，交流群：113980230</li>
+          <li>Firefox 推荐扩展：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/uaswitcher/" target="_blank">User Agent Switcher</a></li>
+          <li>更多自定义功能，请查看脚本设置</li>
+        </div>
+        <button id="setting-conform-3" class="setting-conform">关闭</button>
+      `
+    })
+    document.body.appendChild(settingPanel)
+
+    settingPanel.querySelector('#setting-conform-3').addEventListener('click', () => {
+      settingPanel.classList.remove('show')
+      settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
+    })
+
+    if (GM_getValue('is-first-use', true)) {
+      settingPanel.style.display = 'flex'
+      setTimeout(() => { settingPanel.classList.add('show') }, 10)
+      GM_setValue('is-first-use', false)
+    }
   }
 }
 
@@ -4060,7 +4126,7 @@ function handleActionbar (page) {
 
       searchContainer.style.cssText = 'display: block !important' // 搜索页被隐藏
       // 在同一个执行上下文中修改多个 CSS 属性时，浏览器会将这些属性的变化合并为一个重绘和重排操作
-      setTimeout(() => { searchContainer.setAttribute('show', '') }, 0)
+      setTimeout(() => { searchContainer.setAttribute('show', '') }, 10)
 
       input.focus()
       searchOverlay.classList.add('show')
@@ -4632,6 +4698,13 @@ function handlePortrait () {
     // aspectRatio, resize 前宽高为 0
     if (video.videoHeight / video.videoWidth > 1) { isPortrait = true }
   }, { once: true })
+
+  // 侧边栏跳视频时触发两次
+  new MutationObserver(() => {
+    video.addEventListener('resize', () => {
+      isPortrait = video.videoHeight / video.videoWidth > 1
+    }, { once: true })
+  }).observe(video, { attributes: true, attributeFilter: ['src'] })
 }
 
 // 接管视频点击事件
@@ -4998,6 +5071,7 @@ __webpack_require__.r(__webpack_exports__);
           ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
           ;(0,_home_js__WEBPACK_IMPORTED_MODULE_10__.handleVideoCard)()
           ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)()
+          ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.setScriptHelp)()
         })
       } else if (location.pathname.startsWith('/video')) {
         (0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
@@ -5006,6 +5080,7 @@ __webpack_require__.r(__webpack_exports__);
           ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
           ;(0,_video_js__WEBPACK_IMPORTED_MODULE_11__.videoInteraction)()
           ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('video')
+          ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.setScriptHelp)()
         })
       }
       break
@@ -5015,6 +5090,7 @@ __webpack_require__.r(__webpack_exports__);
         ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_9__.handleActionbar)('search')
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
         ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('search')
+        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.setScriptHelp)()
       })
       break
     case 'space':
@@ -5023,6 +5099,7 @@ __webpack_require__.r(__webpack_exports__);
         ;(0,_actionbar_js__WEBPACK_IMPORTED_MODULE_9__.handleActionbar)('space')
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
         ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('space')
+        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.setScriptHelp)()
       })
       break
     case 'message':
@@ -5032,6 +5109,7 @@ __webpack_require__.r(__webpack_exports__);
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
         ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('message')
         ;(0,_message_js__WEBPACK_IMPORTED_MODULE_12__.createUnfoldBtn)()
+        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.setScriptHelp)()
       })
       break
     default:
