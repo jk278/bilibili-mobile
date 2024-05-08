@@ -17,17 +17,11 @@ let isPortrait = false
 function handlePortrait () {
   const video = document.querySelector('#bilibili-player video')
 
+  // 适配侧边栏切换视频
   video.addEventListener('resize', () => {
     // aspectRatio, resize 前宽高为 0
-    if (video.videoHeight / video.videoWidth > 1) { isPortrait = true }
-  }, { once: true })
-
-  // 侧边栏跳视频时触发两次
-  new MutationObserver(() => {
-    video.addEventListener('resize', () => {
-      isPortrait = video.videoHeight / video.videoWidth > 1
-    }, { once: true })
-  }).observe(video, { attributes: true, attributeFilter: ['src'] })
+    isPortrait = video.videoHeight / video.videoWidth > 1
+  })
 }
 
 // 接管视频点击事件
