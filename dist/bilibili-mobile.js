@@ -2592,6 +2592,8 @@ ul.vui_tabs--nav>* {
     padding-bottom: 0 !important;
 }
 
+/* 搜索页视频预览 */
+
 /* 页数 */
 .search-page .flex_center {
     margin: 5px 0 !important;
@@ -3088,6 +3090,16 @@ div.header.space-search-tip {
 .small-item .cover {
     width: 100% !important;
     height: auto !important;
+}
+
+.small-item .title {
+    text-align: justify;
+    line-break: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    text-overflow: ellipsis;
+    padding: 0 3px;
 }
 
 /* 频道: 更多 */
@@ -4046,7 +4058,7 @@ function handleActionbar (page) {
       // 滑动时 .center-search-container 的 class 会刷新
       const searchContainer = document.querySelector(`${searchContainerSelector}`)
 
-      searchContainer.style.display = 'block'
+      searchContainer.style.cssText = 'display: block !important' // 搜索页被隐藏
       // 在同一个执行上下文中修改多个 CSS 属性时，浏览器会将这些属性的变化合并为一个重绘和重排操作
       setTimeout(() => { searchContainer.setAttribute('show', '') }, 0)
 
@@ -4488,7 +4500,7 @@ function handleVideoCard () {
 
         const previewOption = Object.assign(document.createElement('div'), {
           className: 'bili-video-card__info--no-interest-panel--item',
-          textContent: '预览视频(5m)'
+          textContent: '预览此视频'
         })
         panel.insertBefore(previewOption, panel.firstChild)
 
@@ -4537,7 +4549,8 @@ function handleVideoCard () {
 
             // 为视频元素添加时间更新事件监听器
             video.addEventListener('timeupdate', () => {
-              const progress = video.currentTime / video.duration
+              const initialProgress = video.currentTime / video.duration
+              const progress = Math.min(Math.max(initialProgress, 0), 1)
               updateProgressBar(progress)
             }) // 默认为 false
 
@@ -4546,7 +4559,9 @@ function handleVideoCard () {
             video.addEventListener('timeupdate', event => { event.stopImmediatePropagation() }, true)
 
             function onTouchEvent (event) {
-              const progress = (event.touches[0].clientX - progressBar.getBoundingClientRect().left) / progressBarWidth // offsetLeft 是相对于父元素的
+              const initialProgress = (event.touches[0].clientX - progressBar.getBoundingClientRect().left) / progressBarWidth // offsetLeft 是相对于父元素的
+              const progress = Math.min(Math.max(initialProgress, 0), 1)
+
               updateProgressBar(progress)
 
               video.currentTime = progress * video.duration
