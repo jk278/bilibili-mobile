@@ -124,7 +124,7 @@ export function handleActionbar (page) {
       // 滑动时 .center-search-container 的 class 会刷新
       const searchContainer = document.querySelector(`${searchContainerSelector}`)
 
-      searchContainer.style.cssText = 'display: block !important' // 搜索页被隐藏
+      searchContainer.style.cssText = 'display: block !important' // 修复搜索页优先隐藏
       // 在同一个执行上下文中修改多个 CSS 属性时，浏览器会将这些属性的变化合并为一个重绘和重排操作
       setTimeout(() => { searchContainer.setAttribute('show', '') }, 10)
 

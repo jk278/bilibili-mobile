@@ -539,7 +539,7 @@ body #header-in-menu li {
     display: none;
 }
 
-.setting-panel.show {
+.setting-panel[show] {
     opacity: 1;
     transform: translate(-50%, -50%);
 }
@@ -3720,7 +3720,7 @@ function handleScriptPreSetting () {
     GM_registerMenuCommand('元素隐藏设置', () => {
       const settingPanel = document.getElementById('setting-panel-style')
       settingPanel.style.display = 'flex'
-      setTimeout(() => { settingPanel.classList.add('show') }, 10)
+      setTimeout(() => { settingPanel.setAttribute('show', '') }, 10) // 修复搜索页show类优先块状显示
     })
   })
 
@@ -3789,7 +3789,7 @@ function handleScriptPreSetting () {
 
       readScriptSetting(difference)
 
-      settingPanel.classList.remove('show')
+      settingPanel.removeAttribute('show')
       settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
     })
   }
@@ -3864,7 +3864,7 @@ function handleScriptSetting () {
   GM_registerMenuCommand('操作偏好设置', () => {
     const settingPanel = document.getElementById('setting-panel-preference')
     settingPanel.style.display = 'flex'
-    setTimeout(() => { settingPanel.classList.add('show') }, 10)
+    setTimeout(() => { settingPanel.setAttribute('show', '') }, 10)
   })
 
   function createSettingPanel () {
@@ -3906,7 +3906,7 @@ function handleScriptSetting () {
     }
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
-      settingPanel.classList.remove('show')
+      settingPanel.removeAttribute('show')
       settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
 
       const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
@@ -3953,7 +3953,7 @@ function setScriptHelp () {
   GM_registerMenuCommand('脚本说明', () => {
     const settingPanel = document.getElementById('setting-panel-help')
     settingPanel.style.display = 'flex'
-    setTimeout(() => { settingPanel.classList.add('show') }, 10)
+    setTimeout(() => { settingPanel.setAttribute('show', '') }, 10)
   })
 
   function createSettingPanel () {
@@ -3976,13 +3976,13 @@ function setScriptHelp () {
     document.body.appendChild(settingPanel)
 
     settingPanel.querySelector('#setting-conform-3').addEventListener('click', () => {
-      settingPanel.classList.remove('show')
+      settingPanel.removeAttribute('show')
       settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
     })
 
     if (GM_getValue('is-first-use', true)) {
       settingPanel.style.display = 'flex'
-      setTimeout(() => { settingPanel.classList.add('show') }, 10)
+      setTimeout(() => { settingPanel.setAttribute('show', '') }, 10)
       GM_setValue('is-first-use', false)
     }
   }
@@ -4124,7 +4124,7 @@ function handleActionbar (page) {
       // 滑动时 .center-search-container 的 class 会刷新
       const searchContainer = document.querySelector(`${searchContainerSelector}`)
 
-      searchContainer.style.cssText = 'display: block !important' // 搜索页被隐藏
+      searchContainer.style.cssText = 'display: block !important' // 修复搜索页优先隐藏
       // 在同一个执行上下文中修改多个 CSS 属性时，浏览器会将这些属性的变化合并为一个重绘和重排操作
       setTimeout(() => { searchContainer.setAttribute('show', '') }, 10)
 
@@ -4694,17 +4694,11 @@ let isPortrait = false
 function handlePortrait () {
   const video = document.querySelector('#bilibili-player video')
 
+  // 适配侧边栏切换视频
   video.addEventListener('resize', () => {
     // aspectRatio, resize 前宽高为 0
-    if (video.videoHeight / video.videoWidth > 1) { isPortrait = true }
-  }, { once: true })
-
-  // 侧边栏跳视频时触发两次
-  new MutationObserver(() => {
-    video.addEventListener('resize', () => {
-      isPortrait = video.videoHeight / video.videoWidth > 1
-    }, { once: true })
-  }).observe(video, { attributes: true, attributeFilter: ['src'] })
+    isPortrait = video.videoHeight / video.videoWidth > 1
+  })
 }
 
 // 接管视频点击事件

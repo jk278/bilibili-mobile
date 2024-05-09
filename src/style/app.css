@@ -208,7 +208,7 @@ body #header-in-menu li {
     display: none;
 }
 
-.setting-panel.show {
+.setting-panel[show] {
     opacity: 1;
     transform: translate(-50%, -50%);
 }

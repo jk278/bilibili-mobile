@@ -32,7 +32,7 @@ export function handleScriptPreSetting () {
     GM_registerMenuCommand('元素隐藏设置', () => {
       const settingPanel = document.getElementById('setting-panel-style')
       settingPanel.style.display = 'flex'
-      setTimeout(() => { settingPanel.classList.add('show') }, 10)
+      setTimeout(() => { settingPanel.setAttribute('show', '') }, 10) // 修复搜索页show类优先块状显示
     })
   })
 
@@ -101,7 +101,7 @@ export function handleScriptPreSetting () {
 
       readScriptSetting(difference)
 
-      settingPanel.classList.remove('show')
+      settingPanel.removeAttribute('show')
       settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
     })
   }
@@ -176,7 +176,7 @@ export function handleScriptSetting () {
   GM_registerMenuCommand('操作偏好设置', () => {
     const settingPanel = document.getElementById('setting-panel-preference')
     settingPanel.style.display = 'flex'
-    setTimeout(() => { settingPanel.classList.add('show') }, 10)
+    setTimeout(() => { settingPanel.setAttribute('show', '') }, 10)
   })
 
   function createSettingPanel () {
@@ -218,7 +218,7 @@ export function handleScriptSetting () {
     }
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
-      settingPanel.classList.remove('show')
+      settingPanel.removeAttribute('show')
       settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
 
       const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
@@ -265,7 +265,7 @@ export function setScriptHelp () {
   GM_registerMenuCommand('脚本说明', () => {
     const settingPanel = document.getElementById('setting-panel-help')
     settingPanel.style.display = 'flex'
-    setTimeout(() => { settingPanel.classList.add('show') }, 10)
+    setTimeout(() => { settingPanel.setAttribute('show', '') }, 10)
   })
 
   function createSettingPanel () {
@@ -288,13 +288,13 @@ export function setScriptHelp () {
     document.body.appendChild(settingPanel)
 
     settingPanel.querySelector('#setting-conform-3').addEventListener('click', () => {
-      settingPanel.classList.remove('show')
+      settingPanel.removeAttribute('show')
       settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
     })
 
     if (GM_getValue('is-first-use', true)) {
       settingPanel.style.display = 'flex'
-      setTimeout(() => { settingPanel.classList.add('show') }, 10)
+      setTimeout(() => { settingPanel.setAttribute('show', '') }, 10)
       GM_setValue('is-first-use', false)
     }
   }
