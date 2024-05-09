@@ -196,10 +196,7 @@ export function handleActionbar (page) {
 
         clearTimeout(clickTimer)
 
-        document.querySelector('.center-search-container').toggleAttribute('show')
-        input.focus()
-        searchOverlay.classList.toggle('show')
-        searchFab.classList.toggle('active')
+        handleClick(input)
 
         input.value = ''
         input.dispatchEvent(new Event('input', { bubbles: true }))
