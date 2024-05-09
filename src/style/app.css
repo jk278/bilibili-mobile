@@ -178,6 +178,29 @@ body #header-in-menu li {
     opacity: 1;
 }
 
+#toast {
+    position: fixed;
+    left: 50%;
+    bottom: var(--actionbar-height);
+    transform: translate(-50%, 100%);
+    z-index: 1;
+    font-size: 14px;
+    line-height: 20px;
+    padding: 5px 12px;
+    margin-bottom: 5px;
+    background-color: inherit;
+    border: 1px solid var(--line_regular);
+    border-radius: 16px;
+    opacity: 0;
+    transition: .3s ease-in;
+    display: none;
+}
+
+#toast[show] {
+    transform: translateX(-50%);
+    opacity: 1;
+}
+
 /* --------------------- 其它适配 --------------------- */
 
 /* 扩增载入后产生的骨架空位 */
@@ -201,7 +224,7 @@ body #header-in-menu li {
     width: 260px;
     max-width: calc(100% - 20px);
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
-    
+
     opacity: 0;
     transform: translate(-50%, -50%) scale(.9);
     transition: .4s ease-in;

@@ -153,18 +153,21 @@ export function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('menu-dialog-move-down', false)) { menuDialogDown() }
+  if (GM_getValue('menu-dialog-move-down', false)) { menuDialogMoveDown() }
 
-  function menuDialogDown () {
+  function menuDialogMoveDown () {
     const downValue = GM_getValue('menu-dialog-move-down-value', '20')
 
     const style = Object.assign(document.createElement('style'), {
       id: 'menu-dialog-move-down',
       textContent: `
-      .bili-header__bar .v-popover.v-popover {
+        .bili-header__bar .v-popover.v-popover {
           top: unset !important;
           bottom: var(--actionbar-height);
-          transform: translate(-50%, -${downValue}px) !important;
+          transform: translate(-50%, -${downValue}px);
+        }
+        div.bili-header .v-popover.v-popover[show] {
+          transform: translate(-50%, -${downValue}px);
         }
       `
     })
@@ -226,9 +229,9 @@ export function handleScriptSetting () {
 
       if (selectedValues[1] !== GM_getValue(values[1], false)) { selectedValues[1] ? banActionHidden() : document.getElementById(values[1]).remove() }
       if (selectedValues[2] !== GM_getValue(values[2], false)) { selectedValues[2] ? messageSidebarRight() : document.getElementById(values[2]).remove() }
-      if (selectedValues[3] !== GM_getValue(values[3], false)) { selectedValues[3] ? menuDialogDown() : document.getElementById(values[3]).remove() }
+      if (selectedValues[3] !== GM_getValue(values[3], false)) { selectedValues[3] ? menuDialogMoveDown() : document.getElementById(values[3]).remove() }
 
-      if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0])?.remove(); menuDialogDown() }
+      if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0])?.remove(); menuDialogMoveDown() }
       if (writenValues[2] !== GM_getValue(customKeys[2], customValues[2])) {
         writenValues[2] !== 'local' && window.dispatchEvent(new CustomEvent('variableChanged', { detail: { key: customKeys[2], newValue: writenValues[2] } }))
       }

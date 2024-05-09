@@ -115,14 +115,23 @@
  ---------------------- 展开图类 --------------------- 
  --------------------------------------------------- */
 
- .bili-header .v-popover {
-    position: fixed !important;
+/* 偏好设置中有更改 */
+div.bili-header .v-popover {
+    position: fixed;
     top: 50vh !important;
-    transform: translate(-50%, -50%) !important;
+    transform: translate(-50%, -50%) scale(.9);
     margin: 0 !important;
     max-width: 100%;
     padding: 5px !important;
-    left: 50% !important;
+    left: 50%;
+    opacity: 0;
+    transition: .4s ease-in;
+    display: none;
+}
+
+div.bili-header .v-popover[show] {
+    opacity: 1;
+    transform: translate(-50%, -50%);
 }
 
 /* 复制的分类图外框 */
@@ -181,6 +190,11 @@
     }
 }
 
+/* 查看全部动态按钮 */
+.wnd_bottom .r-l {
+    max-width: calc(100% - 40px);
+}
+
 /* 收藏展开图 */
 .favorite-panel-popover__nav {
     max-width: 25%;
@@ -211,6 +225,11 @@
 /* 历史展开图 */
 .header-history-video {
     padding: 5px 10px !important;
+}
+
+/* 查看全部历史按钮 */
+a.view-all-history-btn {
+    display: none !important;
 }
 
 /* 移除头像大图 */
