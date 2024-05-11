@@ -137,6 +137,11 @@ div.bili-header .v-popover[show] {
 /* 复制的分类图外框 */
 .bili-header.false-header {
     min-height: 0;
+    pointer-events: none;
+}
+
+.bili-header.false-header:has(>[show]) {
+    pointer-events: auto;
 }
 
 /* 复制的分类图 */
@@ -172,6 +177,7 @@ div.bili-header .v-popover[show] {
 
 .header-dynamic-list-item {
     padding: 0 !important;
+    margin: 10px 0 !important;
 }
 
 .header-dynamic__box--center {
@@ -191,8 +197,9 @@ div.bili-header .v-popover[show] {
 }
 
 /* 查看全部动态按钮 */
-.wnd_bottom .r-l {
+.wnd_bottom  {
     max-width: calc(100% - 40px);
+    display: none;
 }
 
 /* 收藏展开图 */

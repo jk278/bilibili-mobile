@@ -430,6 +430,13 @@ div.bpx-player-control-top {
     align-items: center;
 }
 
+/* 弹幕弹窗 */
+div.bpx-player-ctrl-subtitle-box {
+    bottom: 0;
+    right: 0;
+    transform: scale(.8);
+}
+
 /* 设置弹窗 */
 .bpx-player-ctrl-setting-box {
     right: 0 !important;
@@ -520,6 +527,11 @@ div.bpx-player-control-top {
 }
 
 /* .bpx-player-ending-content 的 scale 根据 screen-mode 和 data-screen 动态调整 */
+/* 修改网页全屏样式为竖屏 */
+div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
+    margin-left: -268px;
+    width: 536px;
+}
 
 /* 关注按钮 */
 .bpx-player-ending-functions-follow {
@@ -537,6 +549,21 @@ div.bpx-player-control-top {
 
     .bpx-player-ending-functions-btn {
         margin-left: 10px !important;
+    }
+}
+
+/* 横屏展开顶部按钮 */
+@media screen and (orientation: landscape) {
+    .bpx-player-ending-functions-btn[data-action=restart] {
+        padding-right: 42px !important;
+    }
+
+    .bpx-player-ending-functions-pagecallback {
+        margin-left: 14px !important;
+
+        .bpx-player-ending-functions-btn {
+            margin-left: 28px !important;
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 /* ------------------- 个人主页 ----------------------- */
 
 /* 包裹块、分栏内容 */
-.wrapper,
+div.wrapper,
 .content {
     max-width: 100%;
 }
@@ -410,4 +410,270 @@ h2.article-title {
     span {
         margin-right: 0;
     }
+}
+
+/* 导航 - 动态 */
+
+#page-dynamic .col-1 {
+    max-width: 100%;
+}
+
+div.bili-dyn-item {
+    min-width: 0;
+}
+
+div.bili-dyn-item__main {
+    padding: 0 15px 0 60px;
+}
+
+div.bili-dyn-item__avatar {
+    width: 60px;
+    height: 77px;
+}
+
+/* 内容填充左侧空白 */
+.bili-dyn-item__body {
+    position: relative;
+    left: -45px;
+    width: calc(100% + 45px);
+}
+
+/* 封面尺寸 - 投稿边框 */
+a.bili-dyn-card-video {
+    height: unset;
+    border: 1px solid var(--line_regular);
+    border-radius: 0 6px 6px 0;
+}
+
+/* 封面尺寸 */
+div.bili-dyn-card-video__header {
+    width: 40%;
+    height: fit-content;
+    align-self: center;
+}
+
+/* 投稿边框、内容 */
+div.bili-dyn-card-video__body {
+    border: none;
+    min-height: 85px;
+    padding: 10px 12px 8px;
+}
+
+div.bili-dyn-card-video__title {
+    font-size: 14px;
+}
+
+/* 动态图片 */
+.bili-album__preview__picture {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 点赞评论 */
+div.bili-dyn-action {
+    width: unset;
+}
+
+div.bili-dyn-item__footer {
+    position: relative;
+    left: -45px;
+    width: calc(100% + 45px);
+    padding-right: 0;
+    justify-content: space-around;
+}
+
+/* 导航 - 投稿 */
+
+/* 菜单 */
+div.contribution-sidenav {
+    width: 100%;
+}
+
+div.contribution-sidenav .contribution-list-container {
+    margin-bottom: 10px;
+}
+
+.contribution-list {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+
+.contribution-sidenav li.contribution-item {
+    padding-left: 0;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contribution-sidenav a.text {
+    width: auto;
+}
+
+.contribution-sidenav .num {
+    position: absolute;
+    left: calc(50% + 28px);
+    transform: translateX(-50%);
+}
+
+/* 视频区 */
+.contribution-sidenav~div.main-content {
+    max-width: 100%;
+    padding: 10px;
+}
+
+/* 标题 */
+div.page-head {
+    padding-bottom: 33px;
+}
+
+#page-video .page-head .be-tab {
+    position: absolute;
+    left: 0;
+    transform: translateX(calc(50vw - 10px - 50%));
+    margin: 33px 0 0;
+}
+
+/* 视频列表 */
+#page-video .cube-list {
+    max-width: 100%;
+}
+
+/* 修复向左偏移 */
+#page-video div#submit-video-list {
+    margin-left: 0;
+}
+
+/* 视频分类 */
+#page-video div#submit-video-type-filter a {
+    margin-right: 0;
+    flex: 25%;
+}
+
+/* 导航 - 合集 */
+/* 视频列表 */
+#page-channel .series-item .video-list {
+    flex-flow: wrap;
+}
+
+#page-channel .series-item .video-list li {
+    /* flex-flow: row 则要用 0 0 50% */
+    flex: 50%;
+}
+
+.video-list div.video-card {
+    width: calc(100% - 10px);
+    padding: 5px;
+}
+
+div.video-card.card-item .cover {
+    width: 100%;
+    height: fit-content;
+}
+
+/* 列表标题 */
+#page-channel .series-item .header .btn {
+    font-size: 12px;
+}
+
+/* --- 搜索页 --- */
+
+.s-space .search-page {
+    flex-direction: column;
+    max-width: 100%;
+}
+
+/* 导航 */
+.s-space .search-page .search-nav {
+    display: flex;
+}
+
+div.s-space .search-nav-item {
+    padding-left: 0;
+    flex: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div.s-space .search-nav-item .text {
+    width: unset;
+}
+
+/* 搜索页内容 (padding 影响底部 - 没有更多) */
+.s-space .search-page .feed-dynamic {
+    max-width: 100%;
+    padding: 0 12px;
+}
+
+div.feed-dynamic .feed-card {
+    min-width: 0;
+}
+
+div.feed-card .card {
+    min-width: 0;
+}
+
+/* 动态 */
+div.feed-card .card .main-content {
+    width: calc(100% - 60px);
+    margin-left: 60px;
+}
+
+/* 头像 */
+div.feed-card .card .user-head {
+    left: 0;
+}
+
+/* 动态内容 */
+div.main-content .card-content {
+    position: relative;
+    left: -60px;
+    width: calc(100% + 60px);
+}
+
+div.card-content .imagesbox {
+    max-width: 100%;
+}
+
+/* 投稿 */
+div.card-content .video-container {
+    max-width: 100%;
+    height: unset;
+}
+
+.video-container .video-wrap {
+    display: flex;
+}
+
+div.card-content .video-container .image-area {
+    flex: 40%;
+    height: fit-content;
+    align-self: center;
+}
+
+div.card-content .video-container .text-area {
+    width: unset;
+    margin: 0 8px 0 12px;
+    flex: 60%;
+}
+
+div.card-content .video-container .text-area .content {
+    margin-top: 5px;
+    line-height: 16px;
+    height: unset;
+}
+
+/* 没有更多 */
+div.feed-dynamic-content .div-load-more .no-more {
+    margin-bottom: var(--actionbar-height);
+}
+
+div.feed-dynamic-content .div-load-more .no-more .end-img {
+    position: absolute;
+    /* .feed-dynamic 的左 padding */
+    width: calc(100% + 24px);
+    left: -12px;
+    bottom: 0;
 }

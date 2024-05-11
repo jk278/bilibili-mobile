@@ -72,6 +72,9 @@ function handlelVideoClick () {
     mutations.forEach(mutation => {
       if (mutation.addedNodes[0].classList.contains('bpx-player-ctrl-web')) { // 还可以让控制栏显示作为网页全屏按钮加载的标志事件
         if (video.paused) { showControlWrap() }
+        // 点击视频关闭字幕设置
+        const subtitleBtn = document.querySelector('.bpx-player-ctrl-subtitle')
+        window.addEventListener('click', event => { if (!subtitleBtn.contains(event.target)) { subtitleBtn.dispatchEvent(new MouseEvent('mouseleave')) } })
         observer.disconnect()
       }
     })
@@ -206,5 +209,4 @@ function setEndingContent () {
 
   screen.orientation.addEventListener('change', renewEndingScale)
   window.addEventListener('resize', renewEndingScale)
-  window.addEventListener('fullscreenchange', renewEndingScale)
 }
