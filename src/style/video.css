@@ -527,6 +527,7 @@ div.bpx-player-ctrl-subtitle-box {
 }
 
 /* .bpx-player-ending-content 的 scale 根据 screen-mode 和 data-screen 动态调整 */
+
 /* 修改网页全屏样式为竖屏 */
 div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
     margin-left: -268px;
@@ -577,6 +578,11 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
 .bpx-player-ending-functions-upinfo {
     height: 56px !important;
     margin-top: 0 !important;
+}
+
+/* 适配互动视频 */
+.bui-swiper~.bpx-player-ending-related {
+    height: 109px !important;
 }
 
 /* ----------------------------------------------------

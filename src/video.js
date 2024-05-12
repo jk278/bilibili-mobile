@@ -74,7 +74,11 @@ function handlelVideoClick () {
         if (video.paused) { showControlWrap() }
         // 点击视频关闭字幕设置
         const subtitleBtn = document.querySelector('.bpx-player-ctrl-subtitle')
-        window.addEventListener('click', event => { if (!subtitleBtn.contains(event.target)) { subtitleBtn.dispatchEvent(new MouseEvent('mouseleave')) } })
+        if (subtitleBtn) {
+          window.addEventListener('click', event => {
+            if (!subtitleBtn.contains(event.target)) { subtitleBtn.dispatchEvent(new MouseEvent('mouseleave')) }
+          })
+        }
         observer.disconnect()
       }
     })
@@ -195,7 +199,8 @@ function setEndingContent () {
     const style = Object.assign(document.createElement('style'), {
       id: 'ending-content-scale',
       textContent: `
-        .bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/536*0.9)) !important; }
+        .bpx-player-ending-content[screen-mode=little-screen] { transform: scale(calc(${window.innerWidth}/536*0.9)) !important; }
+        .bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/710*0.9)) !important; }
         .bpx-player-container[data-screen=full] .bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/952*0.9)) !important; }
       `
     })
