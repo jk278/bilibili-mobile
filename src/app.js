@@ -14,6 +14,7 @@ import { handleActionbar } from './actionbar.js'
 import { handleHeaderImage, handleVideoCard } from './home.js'
 import { videoInteraction } from './video.js'
 import { createUnfoldBtn } from './message.js'
+import { aiConclusion } from './ai-conclusion.js';
 
 (function () {
   // setInterval(() => { debugger }, 100)
@@ -43,6 +44,7 @@ import { createUnfoldBtn } from './message.js'
           handleVideoCard()
           handleScroll()
           setScriptHelp()
+          aiConclusion()
         })
       } else if (location.pathname.startsWith('/video')) {
         handleScriptPreSetting()

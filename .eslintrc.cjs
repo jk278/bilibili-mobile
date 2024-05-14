@@ -22,6 +22,12 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
+    camelcase: [
+      'error',
+      {
+        allow: ['^up_mid$']
+      }
+    ]
   },
   ignorePatterns: ['node_modules/**/*.js', 'dist/**/*.js']
 }
