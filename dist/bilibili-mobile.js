@@ -14,7 +14,7 @@
 // @grant              GM_setValue
 // @run-at             document-start
 // @icon               https://www.bilibili.com/favicon.ico
-// @require            https://raw.gitmirror.com/emn178/js-md5/master/src/md5.js
+// @require            https://unpkg.com/js-md5@latest/src/md5.js
 // ==/UserScript==
 
 /******/ (() => { // webpackBootstrap
