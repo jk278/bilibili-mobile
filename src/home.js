@@ -1,3 +1,5 @@
+import { aiConclusion, createAICardElement, genterateAIConclusionCard } from './ai-conclusion.js'
+
 // 控制首页头图函数
 export function handleHeaderImage () {
   let source
@@ -89,7 +91,7 @@ export function handleVideoCard () {
   let lastPreviewCard = null
   // 添加预览视频选项
   new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
+    mutations.forEach(async mutation => {
       const firstChild = mutation.addedNodes[0]?.firstChild // 未添加节点时 addedNodes 返回 []
       if (firstChild && firstChild.className === 'v-popover is-bottom-end') {
         const panel = firstChild.querySelector('.bili-video-card__info--no-interest-panel') // 不能用 document，直接切换不同视频面板时先添加第二个再移除第一个
@@ -100,87 +102,123 @@ export function handleVideoCard () {
         })
         panel.insertBefore(previewOption, panel.firstChild)
 
-        previewOption.addEventListener('click', event => { // 移除父元素时，监听器和观察器均移除
+        previewOption.addEventListener('click', event => { onPreviewOptionClick(event, firstChild) }) // 移除父元素时，监听器和观察器均移除
+
+        const AIOption = Object.assign(document.createElement('div'), {
+          className: 'bili-video-card__info--no-interest-panel--item',
+          textContent: '\u3000\u3000视频总结'
+        })
+        panel.insertBefore(AIOption, previewOption.nextSibling)
+
+        function getCard () {
+          return new Promise(resolve => {
+            setTimeout(() => {
+              const card = document.querySelector('.bili-video-card__info--no-interest.active').closest('.bili-video-card')
+              resolve(card)
+            }, 50) // 等待按钮添加 active 类
+          })
+        }
+
+        const card = await getCard() // 异步函数返回结果，使用 async ... await 暂停执行，或使用 then 等待 promise 对象解析
+        const aiConclusionRes = await aiConclusion(card)
+
+        if (!aiConclusionRes) {
+          AIOption.textContent = '暂无视频总结'
+          return
+        }
+
+        AIOption.textContent = '生成视频总结'
+
+        AIOption.addEventListener('click', event => {
           event.stopPropagation()
           firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })) // 面板或按键的鼠标移入事件均会显示面板，但此时后续事件按键自动鼠标移出
 
-          // 先退出预览，否则切换时跳过前一个卡片
-          window.addEventListener('click', () => {
-            lastPreviewCard?.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
-          }, { once: true })
-
-          const card = document.querySelector('.bili-video-card__info--no-interest.active').closest('.bili-video-card')
-          const cardEventWrap = card.querySelector('.bili-video-card__image--wrap')
-          cardEventWrap.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true })) // 移入移出状态不会叠加
-          lastPreviewCard = cardEventWrap
-
-          if (!cardEventWrap.querySelector('.inline-progress-bar')) {
-            const intervalId = setInterval(() => {
-              if (cardEventWrap.querySelector('video')) {
-                createProgressBar()
-                clearInterval(intervalId)
-              }
-            }, 1000)
-          }
-
-          function createProgressBar () {
-          // 创建进度条
-            const progressBar = Object.assign(document.createElement('div'), {
-              className: 'inline-progress-bar',
-              innerHTML: '<div class="inline-progress-bar-filled"></div><div class="inline-progress-bar-thumb"></div>'
-            })
-            cardEventWrap.appendChild(progressBar)
-
-            // 获取视频元素和进度条元素
-            const video = cardEventWrap.querySelector('video')
-            const progressBarFilled = progressBar.querySelector('.inline-progress-bar-filled')
-            const progressBarThumb = progressBar.querySelector('.inline-progress-bar-thumb')
-
-            const progressBarWidth = progressBar.offsetWidth
-
-            function updateProgressBar (progress) {
-              progressBarFilled.style.width = `${progress * 100}%`
-              progressBarThumb.style.left = `${progress * progressBarWidth}px`
-            }
-
-            // 为视频元素添加时间更新事件监听器
-            video.addEventListener('timeupdate', () => {
-              const initialProgress = video.currentTime / video.duration
-              const progress = Math.min(Math.max(initialProgress, 0), 1)
-              updateProgressBar(progress)
-            }) // 默认为 false
-
-            // 阻止后续捕获阶段监听器执行
-            // 同一事件传播阶段中，监听器的执行顺序按照添加的顺序依次执行。不同事件传播阶段中，捕获阶段的监听器总是先于冒泡阶段的监听器执行。
-            video.addEventListener('timeupdate', event => { event.stopImmediatePropagation() }, true)
-
-            function onTouchEvent (event) {
-              const initialProgress = (event.touches[0].clientX - progressBar.getBoundingClientRect().left) / progressBarWidth // offsetLeft 是相对于父元素的
-              const progress = Math.min(Math.max(initialProgress, 0), 1)
-
-              updateProgressBar(progress)
-
-              video.currentTime = progress * video.duration
-            }
-
-            progressBar.addEventListener('touchstart', event => {
-              onTouchEvent(event)
-              document.addEventListener('touchmove', onTouchEvent)
-            })
-
-            document.addEventListener('touchend', () => {
-              document.removeEventListener('touchmove', onTouchEvent)
-            })
-
-            progressBar.addEventListener('click', event => {
-              event.preventDefault() // a 标签内部元素默认事件
-              event.stopPropagation() // 避免全局点击退出预览
-            })
-          }
+          const aiCardElement = createAICardElement(card.querySelector('.bili-video-card__image--wrap'))
+          const bvid = card.querySelector('.bili-video-card__image--link').dataset.bvid
+          genterateAIConclusionCard(aiConclusionRes, aiCardElement, bvid)
         })
       }
     })
   }).observe(document.body, { childList: true })
+
+  function onPreviewOptionClick (event, firstChild) {
+    event.stopPropagation()
+    firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })) // 面板或按键的鼠标移入事件均会显示面板，但此时后续事件按键自动鼠标移出
+
+    // 先退出预览，否则切换时跳过前一个卡片
+    window.addEventListener('click', () => {
+      lastPreviewCard?.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
+    }, { once: true })
+
+    const card = document.querySelector('.bili-video-card__info--no-interest.active').closest('.bili-video-card')
+    const cardEventWrap = card.querySelector('.bili-video-card__image--wrap')
+    cardEventWrap.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true })) // 移入移出状态不会叠加
+    lastPreviewCard = cardEventWrap
+
+    if (!cardEventWrap.querySelector('.inline-progress-bar')) {
+      const intervalId = setInterval(() => {
+        if (cardEventWrap.querySelector('video')) {
+          createProgressBar()
+          clearInterval(intervalId)
+        }
+      }, 1000)
+    }
+
+    function createProgressBar () {
+      // 创建进度条
+      const progressBar = Object.assign(document.createElement('div'), {
+        className: 'inline-progress-bar',
+        innerHTML: '<div class="inline-progress-bar-filled"></div><div class="inline-progress-bar-thumb"></div>'
+      })
+      cardEventWrap.appendChild(progressBar)
+
+      // 获取视频元素和进度条元素
+      const video = cardEventWrap.querySelector('video')
+      const progressBarFilled = progressBar.querySelector('.inline-progress-bar-filled')
+      const progressBarThumb = progressBar.querySelector('.inline-progress-bar-thumb')
+
+      const progressBarWidth = progressBar.offsetWidth
+
+      function updateProgressBar (progress) {
+        progressBarFilled.style.width = `${progress * 100}%`
+        progressBarThumb.style.left = `${progress * progressBarWidth}px`
+      }
+
+      // 为视频元素添加时间更新事件监听器
+      video.addEventListener('timeupdate', () => {
+        const initialProgress = video.currentTime / video.duration
+        const progress = Math.min(Math.max(initialProgress, 0), 1)
+        updateProgressBar(progress)
+      }, true) // 避免被下面拦截，先执行捕获，再执行冒泡，默认为 false
+
+      // 阻止后续捕获阶段监听器执行
+      // 同一事件传播阶段中，监听器的执行顺序按照添加的顺序依次执行。不同事件传播阶段中，捕获阶段的监听器总是先于冒泡阶段的监听器执行。
+      video.addEventListener('timeupdate', event => { event.stopImmediatePropagation() }, true)
+
+      function onTouchEvent (event) {
+        const initialProgress = (event.touches[0].clientX - progressBar.getBoundingClientRect().left) / progressBarWidth // offsetLeft 是相对于父元素的
+        const progress = Math.min(Math.max(initialProgress, 0), 1)
+
+        updateProgressBar(progress)
+
+        video.currentTime = progress * video.duration
+      }
+
+      progressBar.addEventListener('touchstart', event => {
+        onTouchEvent(event)
+        document.addEventListener('touchmove', onTouchEvent)
+      })
+
+      document.addEventListener('touchend', () => {
+        document.removeEventListener('touchmove', onTouchEvent)
+      })
+
+      progressBar.addEventListener('click', event => {
+        event.preventDefault() // a 标签内部元素默认事件
+        event.stopPropagation() // 避免全局点击退出预览
+      })
+    }
+  }
 
   // 先由外到内冒泡鼠标移入事件，再由内到外冒泡点击事件
   // 添加点击关闭逻辑，展开时才触发

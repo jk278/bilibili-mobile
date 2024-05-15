@@ -155,10 +155,11 @@ body #header-in-menu li {
     transform: translate(-50%, calc(-100% - var(--actionbar-height) - 5px));
 }
 
-/* 底部菜单、侧边栏: layout */
+/* 底部菜单、侧边栏等: overlay */
 #menu-overlay,
 #search-overlay,
-#sidebar-overlay {
+#sidebar-overlay,
+#ai-conclusion-overlay {
     position: fixed;
     bottom: 0;
     /* actionbar 使用 backdrop-filter 导致创建了新的堆叠上下文 */
@@ -173,7 +174,8 @@ body #header-in-menu li {
 
 #menu-overlay.show,
 #search-overlay.show,
-#sidebar-overlay.show {
+#sidebar-overlay.show,
+#ai-conclusion-overlay.show {
     pointer-events: auto;
     opacity: 1;
 }

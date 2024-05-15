@@ -1,3 +1,5 @@
+// fork 自 BiliPlus 项目：https://github.com/0xlau/biliplus
+
 const mixinKeyEncTab = [
   46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,
   33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40,
@@ -107,78 +109,58 @@ async function getAIConclusion (params) {
   return jsonData.data
 }
 
-export function aiConclusion () {
-  const aiData = {}
+/**
+ * 临时缓存 AI 响应
+ */
+const aiData = {}
 
-  const container = document.querySelector('body')
+/**
+ * 获取 AI 总结
+ * @param {object} card 点击视频卡片
+ * @returns AI 响应 data 节点
+ */
+export async function aiConclusion (card) {
+  const cardImageLinkElement = card.querySelector('.bili-video-card__image--link')
+  const match = /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) || /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
+  let bvid = match[1] // 第二个元素才是捕获组
 
-  container.addEventListener('mouseover', async e => {
-    const target = e.target
-    if (target.nodeName === 'IMG' && target.parentElement.classList.contains('bili-video-card__cover')) {
-      const cardImageLinkElement = target.closest('.bili-video-card__image--link')
-      const cardImageWrapElement = target.closest('.bili-video-card__image--wrap')
+  if (aiData[bvid] && aiData[bvid].code === 0) {
+    return aiData[bvid]
+  }
 
-      let bvid = getBvidFromUrl(cardImageLinkElement.dataset.targetUrl)
-      if (aiData[bvid]) {
-        if (aiData[bvid].code === 0) {
-          const aiCardElement = createAICardElement(cardImageWrapElement)
-          genterateAIConclusionCard(aiData[bvid], aiCardElement, bvid)
-        }
-        return
-      }
-      let cid = cardImageLinkElement.getAttribute('data-biliplus-cid')
-      let up_mid = cardImageLinkElement.getAttribute('data-biliplus-upMid')
-      if (cid == null || up_mid == null) {
-        try {
-          const videoInfo = await getVideoInfo(bvid)
-          console.log(videoInfo)
-          cardImageLinkElement.setAttribute('data-biliplus-aid', videoInfo.aid)
-          cardImageLinkElement.setAttribute('data-biliplus-cid', videoInfo.cid)
-          cardImageLinkElement.setAttribute('data-biliplus-bvid', videoInfo.bvid)
-          cardImageLinkElement.setAttribute('data-biliplus-upMid', videoInfo.owner.mid)
-          // aid = videoInfo.aid
-          cid = videoInfo.cid
-          bvid = videoInfo.bvid
-          up_mid = videoInfo.owner.mid
-        } catch (e) {
-          console.error(e)
-          return
-        }
-      }
-      const aiConclusionRes = await getAIConclusion({
-        bvid,
-        cid,
-        up_mid
-      })
-      aiData[bvid] = aiConclusionRes
-      console.log('aiConclusionRes', aiConclusionRes)
-      if (aiConclusionRes.code === 0) {
-        const aiCardElement = createAICardElement(cardImageWrapElement)
-        genterateAIConclusionCard(aiData[bvid], aiCardElement, bvid)
-      }
+  let cid = cardImageLinkElement.dataset.cid
+  let up_mid = cardImageLinkElement.dataset.upMid
+  if (cid == null || up_mid == null) {
+    try {
+      const videoInfo = await getVideoInfo(bvid)
+      // cardImageLinkElement.setAttribute('data-aid', videoInfo.aid)
+      cardImageLinkElement.setAttribute('data-cid', videoInfo.cid)
+      cardImageLinkElement.setAttribute('data-bvid', videoInfo.bvid)
+      cardImageLinkElement.setAttribute('data-upMid', videoInfo.owner.mid)
+      // aid = videoInfo.aid
+      cid = videoInfo.cid
+      bvid = videoInfo.bvid
+      up_mid = videoInfo.owner.mid
+    } catch (e) {
+      console.error(e)
+      return
     }
-  })
 
-  function getBvidFromUrl (url) {
-    const match = /\/video\/([A-Za-z0-9]+)/.exec(url)
-    if (match) {
-      return match[1]
+    const aiConclusionRes = await getAIConclusion({ bvid, cid, up_mid })
+    aiData[bvid] = aiConclusionRes
+    if (aiConclusionRes.code === 0) {
+      return aiData[bvid]
     }
-    return null
   }
 }
 
-const genterateAIConclusionCard = (aiConclusionRes, aiCardElement, bvid) => {
+export const genterateAIConclusionCard = (aiConclusionRes, aiCardElement, bvid) => {
   let aiCard = ''
   const { model_result: modelResult } = aiConclusionRes
-  if (aiConclusionRes.code !== 0) {
-    aiCard = `
-    <div class="biliplus-ai-conclusion-card-header">当前视频暂不支持AI视频总结</div>
-    `
-  } else {
-    aiCard = `
-    <div class="biliplus-ai-conclusion-card-header">
-      <div class="biliplus-ai-conclusion-card-header-left">
+
+  aiCard = `
+    <div class="ai-conclusion-card-header">
+      <div class="ai-conclusion-card-header-left">
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
             xmlns="http://www.w3.org/2000/svg" class="ai-summary-popup-icon" >
             <g clip-path="url(#clip0_8728_3421)">
@@ -243,19 +225,19 @@ const genterateAIConclusionCard = (aiConclusionRes, aiCardElement, bvid) => {
         <span class="tips-text">已为你生成视频总结</span>
       </div>
     </div>
-    <div class="biliplus-ai-conclusion-card-summary">
+    <div class="ai-conclusion-card-summary">
     ${modelResult.summary}
     </div>
     `
-    modelResult.outline.forEach(item => {
-      aiCard += `
-      <div class="biliplus-ai-conclusion-card-selection">
-        <div class="biliplus-ai-conclusion-card-selection-title">${item.title}</div>
+  modelResult.outline.forEach(item => {
+    aiCard += `
+      <div class="ai-conclusion-card-selection">
+        <div class="ai-conclusion-card-selection-title">${item.title}</div>
         ${item.part_outline
           .map(
             s => `
           <a class="bullet" href="https://www.bilibili.com/video/${bvid}/?t=${s.timestamp}s">
-            <span class="biliplus-ai-conclusion-card-selection-timer">${timeNumberToTime(s.timestamp)}</span>
+            <span class="ai-conclusion-card-selection-timer">${timeNumberToTime(s.timestamp)}</span>
             <span>${s.content}</span>
           </a>
         `
@@ -263,32 +245,32 @@ const genterateAIConclusionCard = (aiConclusionRes, aiCardElement, bvid) => {
           .join('')}
       </div>
       `
-    })
-  }
+  })
+
   aiCardElement.innerHTML = aiCard
 }
 
-const createAICardElement = cardElement => {
-  const div = document.createElement('div')
-  div.className = 'biliplus-ai-conclusion-card'
-  div.innerHTML = '<div class="biliplus-ai-conclusion-card-header">正在加载 AI 总结</div>'
-  // 获取屏幕宽度
-  const clientWidth = document.documentElement.clientWidth
-  // 根据cardElement位置判断卡片应该在左边还是右边
-  if (clientWidth - cardElement.getBoundingClientRect().right < 400) {
-    div.style.left = cardElement.getBoundingClientRect().left - 400 + 'px'
-  } else {
-    div.style.left = cardElement.getBoundingClientRect().right + 'px'
-  }
-  // 根据屏幕滚动高度计算卡片位置
-  div.style.top = cardElement.getBoundingClientRect().top + 'px'
-  // div.style.top = (cardElement.getBoundingClientRect().top - 50) + 'px'
-  const videoCard = cardElement.closest('.bili-video-card')
-  videoCard.appendChild(div)
-  // 鼠标移出卡片消失
-  videoCard.addEventListener('mouseleave', () => {
-    div.remove()
+export const createAICardElement = cardElement => {
+  const overlay = Object.assign(document.createElement('div'), {
+    id: 'ai-conclusion-overlay',
+    innerHTML: `
+    <div class="ai-conclusion-card resizable-component">
+      <div class="ai-conclusion-card-header">正在加载 AI 总结</div>
+    </div>
+    `
   })
+
+  cardElement.closest('.bili-video-card').appendChild(overlay)
+  overlay.classList.add('show')
+
+  overlay.addEventListener('click', () => {
+    overlay.classList.remove('show')
+    overlay.addEventListener('transitionend', overlay.remove)
+  }, { once: true }) // 移除元素后监听器不会自动消失 (需要移除父元素)
+
+  const div = overlay.querySelector('.ai-conclusion-card')
+  div.addEventListener('click', event => event.stopPropagation())
+
   return div
 }
 

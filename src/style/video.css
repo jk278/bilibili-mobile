@@ -777,11 +777,12 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
 }
 
 /* AI 总结 */
-.resizable-component.resizable-component {
+.resizable-component {
     width: 100% !important;
     left: 0 !important;
     position: fixed !important;
-    height: 100vw !important;
+    height: fit-content !important;
+    max-height: 100vw;
     top: 50% !important;
     transform: translateY(-50%);
 }
