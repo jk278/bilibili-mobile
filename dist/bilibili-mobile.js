@@ -1166,14 +1166,15 @@ body {
 /* 双列视频 */
 .recommended-container_floor-aside .container {
     grid-template-columns: repeat(2, 1fr) !important;
-    padding: 5px;
-    grid-gap: 5px !important;
+    padding: 8px;
+    grid-gap: 8px !important;
     background-color: #f1f2f3;
 }
 
-/* 头图底色 */
+/* 头图 */
 .bili-header__banner {
     background-color: #f1f2f3 !important;
+    height: 50vw !important;
 }
 
 /* 显示根据屏宽隐藏的 feed */
@@ -1229,7 +1230,7 @@ body,
 /* 封面宽长比 */
 .bili-video-card.is-rcmd,
 .bili-live-card.is-rcmd {
-    --cover-radio: 75% !important;
+    --cover-radio: 66.67% !important;
 }
 
 /* 封面圆角 */
@@ -1249,10 +1250,12 @@ body,
 
 /* 标题 */
 .bili-video-card__info {
-    --title-padding-right: 18px;
+    --title-padding-right: 20px;
     --title-line-height: 20px;
     --title-font-size: 13px;
     --no-interest-entry-size: 22px;
+    --info-margin-top: 5px;
+    padding-bottom: 3px;
     text-align: justify;
 }
 
@@ -1293,6 +1296,9 @@ body,
 div.bili-video-card .bili-video-card__info--no-interest {
     display: flex !important;
     top: calc((var(--title-line-height) * 2 - var(--no-interest-entry-size)) / 2);
+    right: 1px;
+    border: 1px solid var(--line_regular);
+    box-shadow: 0 0 1px rgba(0, 0, 0, .3);
 }
 
 /* 撤销不喜欢 */
@@ -5525,6 +5531,8 @@ async function aiConclusion (card) {
   const cardImageLinkElement = card.querySelector('.bili-video-card__image--link')
   const match = /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) || /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
   let bvid = match[1] // 第二个元素才是捕获组
+
+  console.log(aiData[bvid])
 
   if (aiData[bvid] && aiData[bvid].code === 0) {
     return aiData[bvid]

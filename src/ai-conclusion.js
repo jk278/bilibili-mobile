@@ -124,6 +124,8 @@ export async function aiConclusion (card) {
   const match = /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) || /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
   let bvid = match[1] // 第二个元素才是捕获组
 
+  console.log(aiData[bvid])
+
   if (aiData[bvid] && aiData[bvid].code === 0) {
     return aiData[bvid]
   }
