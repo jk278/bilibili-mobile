@@ -1,4 +1,4 @@
-import { aiConclusion, createAICardElement, genterateAIConclusionCard } from './ai-conclusion.js'
+import { judge, aiConclusion, createAICardElement, genterateAIConclusionCard } from './ai-conclusion.js'
 
 // 控制首页头图函数
 export function handleHeaderImage () {
@@ -88,6 +88,45 @@ export function handleHeaderImage () {
 
 // 处理视频卡片
 export function handleVideoCard () {
+  judgeHasAi()
+
+  let isLoading = false
+  // 获取AI总结
+  new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      if (isLoading) { return }
+
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains('bili-video-card')) {
+          isLoading = true
+          setTimeout(() => {
+            judgeHasAi()
+            isLoading = false
+          }, 2000) // 两秒后获取 AI 总结判断
+        }
+      })
+    })
+  }).observe(document.querySelector('.recommended-container_floor-aside>.container'), { childList: true })
+
+  function judgeHasAi () {
+    const imageLinks = document.querySelectorAll('.bili-video-card__image--link')
+
+    let delay = 0 // 初始化延迟变量
+    imageLinks.forEach(async link => {
+      await new Promise(resolve => setTimeout(resolve, delay)) // 在每次循环前等待当前延迟时间
+
+      const card = link.closest('.bili-video-card:not(:has(.bili-video-card__info--ad))') // 排除广告卡片
+      if (card) {
+        if (!link.dataset.hasJudgedAi) {
+          const aiJudgeRes = await judge(card)
+          if (aiJudgeRes) { card.dataset.hasAi = true }
+          delay += 100 // 将下一次循环的延迟时间往后延长 100 毫秒
+        }
+        link.dataset.hasJudgedAi = true
+      }
+    })
+  }
+
   let lastPreviewCard = null
   // 添加预览视频选项
   new MutationObserver(mutations => {
@@ -104,35 +143,36 @@ export function handleVideoCard () {
 
         previewOption.addEventListener('click', event => { onPreviewOptionClick(event, firstChild) }) // 移除父元素时，监听器和观察器均移除
 
-        const AIOption = Object.assign(document.createElement('div'), {
-          className: 'bili-video-card__info--no-interest-panel--item',
-          textContent: '\u3000\u3000视频总结'
-        })
-        panel.insertBefore(AIOption, previewOption.nextSibling)
-
         function getCard () {
           return new Promise(resolve => {
             setTimeout(() => {
-              const card = document.querySelector('.bili-video-card__info--no-interest.active').closest('.bili-video-card')
+              // 切换时筛选未使用的那一个
+              const btn = document.querySelector('.bili-video-card__info--no-interest.active:not(.use)')
+              const card = btn.closest('.bili-video-card')
+              btn.classList.add('use') // 新按钮添加使用状态
               resolve(card)
-            }, 50) // 等待按钮添加 active 类
+            }, 50) // 等待按钮添加 active 类，切换时旧按钮即移除 active 类需要 200 ms
           })
         }
 
         const card = await getCard() // 异步函数返回结果，使用 async ... await 暂停执行，或使用 then 等待 promise 对象解析
-        const aiConclusionRes = await aiConclusion(card)
 
-        if (!aiConclusionRes) {
-          AIOption.textContent = '暂无视频总结'
+        const hasAi = card.dataset.hasAi
+        if (!hasAi) {
           return
         }
 
-        AIOption.textContent = '生成视频总结'
+        const AIOption = Object.assign(document.createElement('div'), {
+          className: 'bili-video-card__info--no-interest-panel--item',
+          textContent: '生成视频总结'
+        })
+        panel.insertBefore(AIOption, previewOption.nextSibling)
 
-        AIOption.addEventListener('click', event => {
+        AIOption.addEventListener('click', async event => {
           event.stopPropagation()
-          firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })) // 面板或按键的鼠标移入事件均会显示面板，但此时后续事件按键自动鼠标移出
+          firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })) // 面板鼠标移出，面板或按键的鼠标移入事件均会显示面板，此时后续事件按键自动鼠标移出
 
+          const aiConclusionRes = await aiConclusion(card)
           const aiCardElement = createAICardElement(card.querySelector('.bili-video-card__image--wrap'))
           const bvid = card.querySelector('.bili-video-card__image--link').dataset.bvid
           genterateAIConclusionCard(aiConclusionRes, aiCardElement, bvid)
@@ -226,6 +266,7 @@ export function handleVideoCard () {
     const btn = document.querySelector('.bili-video-card__info--no-interest.active')
     if (btn?.contains(event.target)) {
       btn.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
+      btn.classList.remove('use') // 切换完成后才执行，移除旧按钮的使用状态
 
       btn.addEventListener('click', () => {
         btn.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }))

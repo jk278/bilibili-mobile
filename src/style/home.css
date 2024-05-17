@@ -98,8 +98,8 @@ body,
     --title-line-height: 20px;
     --title-font-size: 13px;
     --no-interest-entry-size: 22px;
-    --info-margin-top: 5px;
-    padding-bottom: 3px;
+    --info-margin-top: 7px;
+    padding-bottom: 5px;
     text-align: justify;
 }
 
@@ -136,13 +136,25 @@ body,
     --follow-icon-line-height: 15px;
 }
 
-/* 标题 - 不喜欢按钮：打开面板添加预览视频选项 */
+/* 标题 - 不喜欢按钮：打开面板添加预览视频选项  */
 div.bili-video-card .bili-video-card__info--no-interest {
     display: flex !important;
     top: calc((var(--title-line-height) * 2 - var(--no-interest-entry-size)) / 2);
-    right: 1px;
-    border: 1px solid var(--line_regular);
-    box-shadow: 0 0 1px rgba(0, 0, 0, .3);
+    right: 2px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, .3);
+    opacity: 0;
+    transition: opacity .2s ease-in;
+}
+
+/* 不喜欢按钮: svg 加载完成后再显示边框，修复 svg 动态加载导致边框阴影提前显示 */
+div.bili-video-card .bili-video-card__info--no-interest:has(svg path) {
+    opacity: 1;
+}
+
+/* 不喜欢按钮: 有 ai 总结时 */
+div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest {
+    /* --brand_blue: #00AEEC */
+    box-shadow: 0 0 2px rgba(0, 174, 236, 0.8);
 }
 
 /* 撤销不喜欢 */

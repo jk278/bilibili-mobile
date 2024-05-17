@@ -110,6 +110,49 @@ async function getAIConclusion (params) {
 }
 
 /**
+ * 获取 ai 判断响应
+ * @param {object} params
+ * @returns ai 判断响应 data
+ */
+async function getJudgeAI (params) {
+  const query = await getwts(params)
+  const response = await fetch(`${BILIBILI_API}/x/web-interface/view/conclusion/judge?${query}`)
+  const jsonData = await response.json()
+  if (response.status !== 200 || !jsonData) {
+    throw new Error()
+  }
+  return jsonData.data
+}
+
+/**
+ * 判断是否有 AI 总结
+ * @param {object} card 点击视频卡片
+ * @returns AI 响应 data 节点
+ */
+export async function judge (card) {
+  const cardImageLinkElement = card.querySelector('.bili-video-card__image--link')
+  const match = /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) || /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
+  const bvid = match[1] // 第二个元素才是捕获组
+
+  try {
+    const videoInfo = await getVideoInfo(bvid)
+    cardImageLinkElement.dataset.cid = videoInfo.cid
+    cardImageLinkElement.dataset.bvid = videoInfo.bvid
+    cardImageLinkElement.dataset.upMid = videoInfo.owner.mid
+    const cid = videoInfo.cid
+    const up_mid = videoInfo.owner.mid
+
+    const aiJudgeRes = await getJudgeAI({ bvid, cid, up_mid })
+
+    if (aiJudgeRes.judge === 1) {
+      return true
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
  * 临时缓存 AI 响应
  */
 const aiData = {}
@@ -122,35 +165,22 @@ const aiData = {}
 export async function aiConclusion (card) {
   const cardImageLinkElement = card.querySelector('.bili-video-card__image--link')
   const match = /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) || /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
-  let bvid = match[1] // 第二个元素才是捕获组
-
-  console.log(aiData[bvid])
+  const bvid = match[1] // 第二个元素才是捕获组
 
   if (aiData[bvid] && aiData[bvid].code === 0) {
+    console.log(aiData[bvid])
     return aiData[bvid]
   }
 
-  let cid = cardImageLinkElement.dataset.cid
-  let up_mid = cardImageLinkElement.dataset.upMid
-  if (cid == null || up_mid == null) {
-    try {
-      const videoInfo = await getVideoInfo(bvid)
-      // cardImageLinkElement.setAttribute('data-aid', videoInfo.aid)
-      cardImageLinkElement.setAttribute('data-cid', videoInfo.cid)
-      cardImageLinkElement.setAttribute('data-bvid', videoInfo.bvid)
-      cardImageLinkElement.setAttribute('data-upMid', videoInfo.owner.mid)
-      // aid = videoInfo.aid
-      cid = videoInfo.cid
-      bvid = videoInfo.bvid
-      up_mid = videoInfo.owner.mid
-    } catch (e) {
-      console.error(e)
-      return
-    }
-
+  if (cardImageLinkElement.dataset.hasGotAi === undefined) {
+    const cid = cardImageLinkElement.dataset.cid
+    const up_mid = cardImageLinkElement.dataset.upMid
     const aiConclusionRes = await getAIConclusion({ bvid, cid, up_mid })
+
     aiData[bvid] = aiConclusionRes
+    cardImageLinkElement.dataset.hasGotAi = true
     if (aiConclusionRes.code === 0) {
+      console.log(aiData[bvid])
       return aiData[bvid]
     }
   }

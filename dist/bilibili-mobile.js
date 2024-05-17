@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.8
+// @version            5.0-beta.9
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -1254,8 +1254,8 @@ body,
     --title-line-height: 20px;
     --title-font-size: 13px;
     --no-interest-entry-size: 22px;
-    --info-margin-top: 5px;
-    padding-bottom: 3px;
+    --info-margin-top: 7px;
+    padding-bottom: 5px;
     text-align: justify;
 }
 
@@ -1292,13 +1292,25 @@ body,
     --follow-icon-line-height: 15px;
 }
 
-/* 标题 - 不喜欢按钮：打开面板添加预览视频选项 */
+/* 标题 - 不喜欢按钮：打开面板添加预览视频选项  */
 div.bili-video-card .bili-video-card__info--no-interest {
     display: flex !important;
     top: calc((var(--title-line-height) * 2 - var(--no-interest-entry-size)) / 2);
-    right: 1px;
-    border: 1px solid var(--line_regular);
-    box-shadow: 0 0 1px rgba(0, 0, 0, .3);
+    right: 2px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, .3);
+    opacity: 0;
+    transition: opacity .2s ease-in;
+}
+
+/* 不喜欢按钮: svg 加载完成后再显示边框，修复 svg 动态加载导致边框阴影提前显示 */
+div.bili-video-card .bili-video-card__info--no-interest:has(svg path) {
+    opacity: 1;
+}
+
+/* 不喜欢按钮: 有 ai 总结时 */
+div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest {
+    /* --brand_blue: #00AEEC */
+    box-shadow: 0 0 2px rgba(0, 174, 236, 0.8);
 }
 
 /* 撤销不喜欢 */
@@ -5249,6 +5261,45 @@ function handleHeaderImage () {
 
 // 处理视频卡片
 function handleVideoCard () {
+  judgeHasAi()
+
+  let isLoading = false
+  // 获取AI总结
+  new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      if (isLoading) { return }
+
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains('bili-video-card')) {
+          isLoading = true
+          setTimeout(() => {
+            judgeHasAi()
+            isLoading = false
+          }, 2000) // 两秒后获取 AI 总结判断
+        }
+      })
+    })
+  }).observe(document.querySelector('.recommended-container_floor-aside>.container'), { childList: true })
+
+  function judgeHasAi () {
+    const imageLinks = document.querySelectorAll('.bili-video-card__image--link')
+
+    let delay = 0 // 初始化延迟变量
+    imageLinks.forEach(async link => {
+      await new Promise(resolve => setTimeout(resolve, delay)) // 在每次循环前等待当前延迟时间
+
+      const card = link.closest('.bili-video-card:not(:has(.bili-video-card__info--ad))') // 排除广告卡片
+      if (card) {
+        if (!link.dataset.hasJudgedAi) {
+          const aiJudgeRes = await (0,_ai_conclusion_js__WEBPACK_IMPORTED_MODULE_0__.judge)(card)
+          if (aiJudgeRes) { card.dataset.hasAi = true }
+          delay += 100 // 将下一次循环的延迟时间往后延长 100 毫秒
+        }
+        link.dataset.hasJudgedAi = true
+      }
+    })
+  }
+
   let lastPreviewCard = null
   // 添加预览视频选项
   new MutationObserver(mutations => {
@@ -5265,35 +5316,36 @@ function handleVideoCard () {
 
         previewOption.addEventListener('click', event => { onPreviewOptionClick(event, firstChild) }) // 移除父元素时，监听器和观察器均移除
 
-        const AIOption = Object.assign(document.createElement('div'), {
-          className: 'bili-video-card__info--no-interest-panel--item',
-          textContent: '\u3000\u3000视频总结'
-        })
-        panel.insertBefore(AIOption, previewOption.nextSibling)
-
         function getCard () {
           return new Promise(resolve => {
             setTimeout(() => {
-              const card = document.querySelector('.bili-video-card__info--no-interest.active').closest('.bili-video-card')
+              // 切换时筛选未使用的那一个
+              const btn = document.querySelector('.bili-video-card__info--no-interest.active:not(.use)')
+              const card = btn.closest('.bili-video-card')
+              btn.classList.add('use') // 新按钮添加使用状态
               resolve(card)
-            }, 50) // 等待按钮添加 active 类
+            }, 50) // 等待按钮添加 active 类，切换时旧按钮即移除 active 类需要 200 ms
           })
         }
 
         const card = await getCard() // 异步函数返回结果，使用 async ... await 暂停执行，或使用 then 等待 promise 对象解析
-        const aiConclusionRes = await (0,_ai_conclusion_js__WEBPACK_IMPORTED_MODULE_0__.aiConclusion)(card)
 
-        if (!aiConclusionRes) {
-          AIOption.textContent = '暂无视频总结'
+        const hasAi = card.dataset.hasAi
+        if (!hasAi) {
           return
         }
 
-        AIOption.textContent = '生成视频总结'
+        const AIOption = Object.assign(document.createElement('div'), {
+          className: 'bili-video-card__info--no-interest-panel--item',
+          textContent: '生成视频总结'
+        })
+        panel.insertBefore(AIOption, previewOption.nextSibling)
 
-        AIOption.addEventListener('click', event => {
+        AIOption.addEventListener('click', async event => {
           event.stopPropagation()
-          firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })) // 面板或按键的鼠标移入事件均会显示面板，但此时后续事件按键自动鼠标移出
+          firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })) // 面板鼠标移出，面板或按键的鼠标移入事件均会显示面板，此时后续事件按键自动鼠标移出
 
+          const aiConclusionRes = await (0,_ai_conclusion_js__WEBPACK_IMPORTED_MODULE_0__.aiConclusion)(card)
           const aiCardElement = (0,_ai_conclusion_js__WEBPACK_IMPORTED_MODULE_0__.createAICardElement)(card.querySelector('.bili-video-card__image--wrap'))
           const bvid = card.querySelector('.bili-video-card__image--link').dataset.bvid
           ;(0,_ai_conclusion_js__WEBPACK_IMPORTED_MODULE_0__.genterateAIConclusionCard)(aiConclusionRes, aiCardElement, bvid)
@@ -5387,6 +5439,7 @@ function handleVideoCard () {
     const btn = document.querySelector('.bili-video-card__info--no-interest.active')
     if (btn?.contains(event.target)) {
       btn.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
+      btn.classList.remove('use') // 切换完成后才执行，移除旧按钮的使用状态
 
       btn.addEventListener('click', () => {
         btn.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }))
@@ -5404,7 +5457,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   aiConclusion: () => (/* binding */ aiConclusion),
 /* harmony export */   createAICardElement: () => (/* binding */ createAICardElement),
-/* harmony export */   genterateAIConclusionCard: () => (/* binding */ genterateAIConclusionCard)
+/* harmony export */   genterateAIConclusionCard: () => (/* binding */ genterateAIConclusionCard),
+/* harmony export */   judge: () => (/* binding */ judge)
 /* harmony export */ });
 // fork 自 BiliPlus 项目：https://github.com/0xlau/biliplus
 
@@ -5518,6 +5572,49 @@ async function getAIConclusion (params) {
 }
 
 /**
+ * 获取 ai 判断响应
+ * @param {object} params
+ * @returns ai 判断响应 data
+ */
+async function getJudgeAI (params) {
+  const query = await getwts(params)
+  const response = await fetch(`${BILIBILI_API}/x/web-interface/view/conclusion/judge?${query}`)
+  const jsonData = await response.json()
+  if (response.status !== 200 || !jsonData) {
+    throw new Error()
+  }
+  return jsonData.data
+}
+
+/**
+ * 判断是否有 AI 总结
+ * @param {object} card 点击视频卡片
+ * @returns AI 响应 data 节点
+ */
+async function judge (card) {
+  const cardImageLinkElement = card.querySelector('.bili-video-card__image--link')
+  const match = /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) || /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
+  const bvid = match[1] // 第二个元素才是捕获组
+
+  try {
+    const videoInfo = await getVideoInfo(bvid)
+    cardImageLinkElement.dataset.cid = videoInfo.cid
+    cardImageLinkElement.dataset.bvid = videoInfo.bvid
+    cardImageLinkElement.dataset.upMid = videoInfo.owner.mid
+    const cid = videoInfo.cid
+    const up_mid = videoInfo.owner.mid
+
+    const aiJudgeRes = await getJudgeAI({ bvid, cid, up_mid })
+
+    if (aiJudgeRes.judge === 1) {
+      return true
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/**
  * 临时缓存 AI 响应
  */
 const aiData = {}
@@ -5530,35 +5627,22 @@ const aiData = {}
 async function aiConclusion (card) {
   const cardImageLinkElement = card.querySelector('.bili-video-card__image--link')
   const match = /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) || /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
-  let bvid = match[1] // 第二个元素才是捕获组
-
-  console.log(aiData[bvid])
+  const bvid = match[1] // 第二个元素才是捕获组
 
   if (aiData[bvid] && aiData[bvid].code === 0) {
+    console.log(aiData[bvid])
     return aiData[bvid]
   }
 
-  let cid = cardImageLinkElement.dataset.cid
-  let up_mid = cardImageLinkElement.dataset.upMid
-  if (cid == null || up_mid == null) {
-    try {
-      const videoInfo = await getVideoInfo(bvid)
-      // cardImageLinkElement.setAttribute('data-aid', videoInfo.aid)
-      cardImageLinkElement.setAttribute('data-cid', videoInfo.cid)
-      cardImageLinkElement.setAttribute('data-bvid', videoInfo.bvid)
-      cardImageLinkElement.setAttribute('data-upMid', videoInfo.owner.mid)
-      // aid = videoInfo.aid
-      cid = videoInfo.cid
-      bvid = videoInfo.bvid
-      up_mid = videoInfo.owner.mid
-    } catch (e) {
-      console.error(e)
-      return
-    }
-
+  if (cardImageLinkElement.dataset.hasGotAi === undefined) {
+    const cid = cardImageLinkElement.dataset.cid
+    const up_mid = cardImageLinkElement.dataset.upMid
     const aiConclusionRes = await getAIConclusion({ bvid, cid, up_mid })
+
     aiData[bvid] = aiConclusionRes
+    cardImageLinkElement.dataset.hasGotAi = true
     if (aiConclusionRes.code === 0) {
+      console.log(aiData[bvid])
       return aiData[bvid]
     }
   }
