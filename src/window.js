@@ -1,4 +1,4 @@
-/* global GM_getValue unsafeWindow */
+/* global GM_getValue GM_setValue unsafeWindow */
 
 export function preventBeforeUnload () {
   const originalAddEventListener = window.addEventListener
@@ -21,6 +21,48 @@ export function increaseVideoLoadSize () {
       input = input.replace('&ps=12&', '&ps=30&')
     }
     return originalFetch(input, init)
+  }
+}
+
+export function countViewTime () {
+  window.onload = function () {
+    let storedTime = GM_getValue('view-time', undefined)
+    let storedTimestamp = GM_getValue('timestamp', undefined)
+
+    if (storedTime && storedTimestamp) {
+      const diff = Math.floor((Date.now() - storedTimestamp) / 1000 / 60)
+      storedTime = diff < 2 ? storedTime + diff : 0
+    } else {
+      storedTime = 0
+    }
+    storedTimestamp = Date.now()
+
+    GM_setValue('view-time', storedTime)
+    GM_setValue('timestamp', storedTimestamp)
+
+    setInterval(function () {
+      storedTime++
+      GM_setValue('view-time', storedTime)
+      GM_setValue('timestamp', Date.now())
+      if (storedTime % 120 === 0) {
+        const fullscreenElem = document.fullscreenElement
+        if (fullscreenElem && !fullscreenElem.querySelector(':scope>#toast')) {
+          fullscreenElem.appendChild(document.querySelector('#toast').cloneNode())
+        }
+        const toasts = document.querySelectorAll('#toast')
+
+        toasts.forEach(toast => {
+          toast.textContent = `您已连续浏览 ${storedTime / 60} 小时，请注意休息`
+          toast.style.display = 'block'
+          setTimeout(() => { toast.setAttribute('show', '') }, 10)
+
+          setTimeout(() => {
+            toast.removeAttribute('show')
+            toast.addEventListener('transitionend', () => { toast.style.cssText = '' }, { once: true })
+          }, 5000)
+        })
+      }
+    }, 60000)
   }
 }
 

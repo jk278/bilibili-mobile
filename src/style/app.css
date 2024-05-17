@@ -180,11 +180,12 @@ body #header-in-menu li {
     opacity: 1;
 }
 
+/* 底部提示 */
 #toast {
     position: fixed;
-    left: 50%;
+    left: 0;
     bottom: var(--actionbar-height);
-    transform: translate(-50%, 100%);
+    transform: translate(calc(50vw - 50%), 100%);
     z-index: 1;
     font-size: 14px;
     line-height: 20px;
@@ -199,8 +200,13 @@ body #header-in-menu li {
 }
 
 #toast[show] {
-    transform: translateX(-50%);
+    transform: translateX(calc(50vw - 50%));
     opacity: 1;
+}
+
+.bpx-player-container #toast {
+    color: var(--text4);
+    background-color: rgba(0, 0, 0, .4);
 }
 
 /* --------------------- 其它适配 --------------------- */

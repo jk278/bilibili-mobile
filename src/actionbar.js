@@ -489,7 +489,7 @@ export function handleActionbar (page) {
       }
     }
 
-    // 设置历史自动展开
+    // 设置动态自动展开
     function handleDynamicShowMore () {
       let offset = ''
 

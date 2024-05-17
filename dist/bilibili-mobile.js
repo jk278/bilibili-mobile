@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.9
+// @version            5.0-beta.10
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -512,11 +512,12 @@ body #header-in-menu li {
     opacity: 1;
 }
 
+/* 底部提示 */
 #toast {
     position: fixed;
-    left: 50%;
+    left: 0;
     bottom: var(--actionbar-height);
-    transform: translate(-50%, 100%);
+    transform: translate(calc(50vw - 50%), 100%);
     z-index: 1;
     font-size: 14px;
     line-height: 20px;
@@ -531,8 +532,13 @@ body #header-in-menu li {
 }
 
 #toast[show] {
-    transform: translateX(-50%);
+    transform: translateX(calc(50vw - 50%));
     opacity: 1;
+}
+
+.bpx-player-container #toast {
+    color: var(--text4);
+    background-color: rgba(0, 0, 0, .4);
 }
 
 /* --------------------- 其它适配 --------------------- */
@@ -1250,7 +1256,7 @@ body,
 
 /* 标题 */
 .bili-video-card__info {
-    --title-padding-right: 20px;
+    --title-padding-right: 22px;
     --title-line-height: 20px;
     --title-font-size: 13px;
     --no-interest-entry-size: 22px;
@@ -2355,7 +2361,7 @@ div.resizable-component.resizable-component {
 }
 
 /* 总结内容继承高度限制 */
-.ai-summary-popup {
+div.ai-summary-popup {
     max-height: inherit;
     border-radius: 12px;
 }
@@ -3448,7 +3454,6 @@ div.bili-dyn-item__avatar {
 
 /* 封面尺寸 - 投稿边框 */
 a.bili-dyn-card-video {
-    height: unset;
     border: 1px solid var(--line_regular);
     border-radius: 0 6px 6px 0;
 }
@@ -3475,6 +3480,11 @@ div.bili-dyn-card-video__title {
 .bili-album__preview__picture {
     width: 100% !important;
     height: 100% !important;
+}
+
+/* 动态图片 */
+div.bili-album__preview.grid6 {
+    width: unset;
 }
 
 /* 点赞评论 */
@@ -3908,11 +3918,12 @@ body>.container[sidebar] .space-left {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   countViewTime: () => (/* binding */ countViewTime),
 /* harmony export */   handleScroll: () => (/* binding */ handleScroll),
 /* harmony export */   increaseVideoLoadSize: () => (/* binding */ increaseVideoLoadSize),
 /* harmony export */   preventBeforeUnload: () => (/* binding */ preventBeforeUnload)
 /* harmony export */ });
-/* global GM_getValue unsafeWindow */
+/* global GM_getValue GM_setValue unsafeWindow */
 
 function preventBeforeUnload () {
   const originalAddEventListener = window.addEventListener
@@ -3935,6 +3946,48 @@ function increaseVideoLoadSize () {
       input = input.replace('&ps=12&', '&ps=30&')
     }
     return originalFetch(input, init)
+  }
+}
+
+function countViewTime () {
+  window.onload = function () {
+    let storedTime = GM_getValue('view-time', undefined)
+    let storedTimestamp = GM_getValue('timestamp', undefined)
+
+    if (storedTime && storedTimestamp) {
+      const diff = Math.floor((Date.now() - storedTimestamp) / 1000 / 60)
+      storedTime = diff < 2 ? storedTime + diff : 0
+    } else {
+      storedTime = 0
+    }
+    storedTimestamp = Date.now()
+
+    GM_setValue('view-time', storedTime)
+    GM_setValue('timestamp', storedTimestamp)
+
+    setInterval(function () {
+      storedTime++
+      GM_setValue('view-time', storedTime)
+      GM_setValue('timestamp', Date.now())
+      if (storedTime % 120 === 0) {
+        const fullscreenElem = document.fullscreenElement
+        if (fullscreenElem && !fullscreenElem.querySelector(':scope>#toast')) {
+          fullscreenElem.appendChild(document.querySelector('#toast').cloneNode())
+        }
+        const toasts = document.querySelectorAll('#toast')
+
+        toasts.forEach(toast => {
+          toast.textContent = `您已连续浏览 ${storedTime / 60} 小时，请注意休息`
+          toast.style.display = 'block'
+          setTimeout(() => { toast.setAttribute('show', '') }, 10)
+
+          setTimeout(() => {
+            toast.removeAttribute('show')
+            toast.addEventListener('transitionend', () => { toast.style.cssText = '' }, { once: true })
+          }, 5000)
+        })
+      }
+    }, 60000)
   }
 }
 
@@ -4969,7 +5022,7 @@ function handleActionbar (page) {
       }
     }
 
-    // 设置历史自动展开
+    // 设置动态自动展开
     function handleDynamicShowMore () {
       let offset = ''
 
@@ -6200,6 +6253,7 @@ __webpack_require__.r(__webpack_exports__);
   /* initViewport */ document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'viewport', content: 'width=device-width, initial-scale=1' }))
 
   ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.preventBeforeUnload)()
+  ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.countViewTime)()
 
   console.log('Bilibili mobile execute!')
 

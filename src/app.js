@@ -8,7 +8,7 @@ import './style/search.css'
 import './style/space.css'
 import './style/message.css'
 
-import { preventBeforeUnload, increaseVideoLoadSize, handleScroll } from './window.js'
+import { preventBeforeUnload, countViewTime, increaseVideoLoadSize, handleScroll } from './window.js'
 import { handleScriptPreSetting, handleScriptSetting, setScriptHelp } from './setting.js'
 import { handleActionbar } from './actionbar.js'
 import { handleHeaderImage, handleVideoCard } from './home.js'
@@ -25,6 +25,7 @@ import { createUnfoldBtn } from './message.js'
   /* initViewport */ document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'viewport', content: 'width=device-width, initial-scale=1' }))
 
   preventBeforeUnload()
+  countViewTime()
 
   console.log('Bilibili mobile execute!')
 
