@@ -2344,14 +2344,20 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
 }
 
 /* AI 总结 */
-.resizable-component {
+div.resizable-component.resizable-component {
     width: 100% !important;
     left: 0 !important;
-    position: fixed !important;
     height: fit-content !important;
     max-height: 100vw;
     top: 50% !important;
     transform: translateY(-50%);
+    border-radius: 12px !important;
+}
+
+/* 总结内容继承高度限制 */
+.ai-summary-popup {
+    max-height: inherit;
+    border-radius: 12px;
 }
 
 /* 简介 */
@@ -5345,8 +5351,8 @@ function handleVideoCard () {
           event.stopPropagation()
           firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })) // 面板鼠标移出，面板或按键的鼠标移入事件均会显示面板，此时后续事件按键自动鼠标移出
 
-          const aiConclusionRes = await (0,_ai_conclusion_js__WEBPACK_IMPORTED_MODULE_0__.aiConclusion)(card)
           const aiCardElement = (0,_ai_conclusion_js__WEBPACK_IMPORTED_MODULE_0__.createAICardElement)(card.querySelector('.bili-video-card__image--wrap'))
+          const aiConclusionRes = await (0,_ai_conclusion_js__WEBPACK_IMPORTED_MODULE_0__.aiConclusion)(card)
           const bvid = card.querySelector('.bili-video-card__image--link').dataset.bvid
           ;(0,_ai_conclusion_js__WEBPACK_IMPORTED_MODULE_0__.genterateAIConclusionCard)(aiConclusionRes, aiCardElement, bvid)
         })

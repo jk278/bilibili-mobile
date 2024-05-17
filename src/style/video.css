@@ -777,14 +777,20 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
 }
 
 /* AI 总结 */
-.resizable-component {
+div.resizable-component.resizable-component {
     width: 100% !important;
     left: 0 !important;
-    position: fixed !important;
     height: fit-content !important;
     max-height: 100vw;
     top: 50% !important;
     transform: translateY(-50%);
+    border-radius: 12px !important;
+}
+
+/* 总结内容继承高度限制 */
+div.ai-summary-popup {
+    max-height: inherit;
+    border-radius: 12px;
 }
 
 /* 简介 */

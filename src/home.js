@@ -172,8 +172,8 @@ export function handleVideoCard () {
           event.stopPropagation()
           firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })) // 面板鼠标移出，面板或按键的鼠标移入事件均会显示面板，此时后续事件按键自动鼠标移出
 
-          const aiConclusionRes = await aiConclusion(card)
           const aiCardElement = createAICardElement(card.querySelector('.bili-video-card__image--wrap'))
+          const aiConclusionRes = await aiConclusion(card)
           const bvid = card.querySelector('.bili-video-card__image--link').dataset.bvid
           genterateAIConclusionCard(aiConclusionRes, aiCardElement, bvid)
         })
