@@ -2585,6 +2585,33 @@ div.ai-summary-popup {
     max-width: calc(100% - 10px);
 }
 
+/* 点击展开的评论详情 */
+[itemprop=video]+body .dynamic-card {
+    left: 0;
+    max-width: 100%;
+    /* 百分比以父元素为基准 */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 内框 (在 iframe 内) */
+div.bili-dyn-item-draw {
+    min-width: 0;
+    width: 100%;
+}
+
+/* 评论详情 - 头像 */
+div.bili-dyn-item-draw__avatar {
+    height: 62px;
+}
+
+/* 内容 */
+.bili-dyn-item-draw__body {
+    transform: translateX(-68px);
+    /* 子元素的宽度会减去父元素的 padding (左间距=88px-68px=20px=右间距) */
+    width: calc(100% + 68px);
+}
+
 /* ----------------------------------------------------
  ------------------------- 按钮 -----------------------
  ----------------------------------------------------- */
@@ -2602,7 +2629,8 @@ div.ai-summary-popup {
     transition: transform .5s ease-in-out;
 }
 
-.back-to-top.visible {
+/* 替代原 visible 类 */
+.left-container[back-to-top]~.fixed-sidenav-storage .back-to-top {
     transform: none;
 }
 
@@ -4027,7 +4055,9 @@ function scrollToHidden (page) {
       const currentScrollY = window.scrollY
       const offsetY = currentScrollY - lastScrollY
 
-      if (Math.abs(offsetY) > scrollThreshold || currentScrollY < scrollThreshold) {
+      if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
+
+      if (Math.abs(offsetY) > scrollThreshold) {
         offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
         lastScrollY = currentScrollY
       }
@@ -4039,10 +4069,15 @@ function scrollToHidden (page) {
       const currentScrollY = leftContainer.scrollTop // change
       const offsetY = currentScrollY - lastScrollY
 
-      if (Math.abs(offsetY) > scrollThreshold || currentScrollY < scrollThreshold) {
+      if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
+
+      if (Math.abs(offsetY) > scrollThreshold) {
         offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
         lastScrollY = currentScrollY
       }
+
+      // 修复更改滚动区后的置顶按钮不显示
+      currentScrollY > leftContainer.clientHeight ? leftContainer.setAttribute('back-to-top', '') : leftContainer.removeAttribute('back-to-top')
     })
   }
 }

@@ -102,7 +102,9 @@ function scrollToHidden (page) {
       const currentScrollY = window.scrollY
       const offsetY = currentScrollY - lastScrollY
 
-      if (Math.abs(offsetY) > scrollThreshold || currentScrollY < scrollThreshold) {
+      if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
+
+      if (Math.abs(offsetY) > scrollThreshold) {
         offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
         lastScrollY = currentScrollY
       }
@@ -114,10 +116,15 @@ function scrollToHidden (page) {
       const currentScrollY = leftContainer.scrollTop // change
       const offsetY = currentScrollY - lastScrollY
 
-      if (Math.abs(offsetY) > scrollThreshold || currentScrollY < scrollThreshold) {
+      if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
+
+      if (Math.abs(offsetY) > scrollThreshold) {
         offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
         lastScrollY = currentScrollY
       }
+
+      // 修复更改滚动区后的置顶按钮不显示
+      currentScrollY > leftContainer.clientHeight ? leftContainer.setAttribute('back-to-top', '') : leftContainer.removeAttribute('back-to-top')
     })
   }
 }
