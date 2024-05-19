@@ -2093,8 +2093,9 @@ div.bpx-player-ctrl-subtitle-box {
     display: none;
 }
 
-/* ------ 播完预览: 窄屏不隐藏 ------ */
+/* --------- 播完预览 --------- */
 
+/* 窄屏不隐藏 */
 .bpx-player-ending-wrap[hidden] {
     display: block !important;
 }
@@ -2109,6 +2110,7 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
 
 /* 关注按钮 */
 .bpx-player-ending-functions-follow {
+    width: auto !important;
     padding: 0 15px !important;
 }
 
@@ -2912,30 +2914,110 @@ span.vui_pagenation--extend {
     padding: 0 !important;
 }
 
-/* 用户 */
-.media-list .col_6 {
+/* 用户和直播 */
+.media-list .col_6,
+.live-user-cards .col_6 {
     max-width: 100% !important;
     flex: none !important;
+
+    --avatar-scale: 56px;
+}
+
+.media-list .col_6 {
     margin-bottom: 10px !important;
 }
 
-/* 直播 */
-.live-user-cards .col_6 {
-    max-width: 100%;
-
-    .live-user-card {
-        margin-bottom: 10px !important;
-    }
+/* 用户布局层 */
+div.b-user-info-card {
+    align-items: start;
 }
 
 /* 用户头像(用户, 直播) */
 .col_6 .bili-avatar {
-    height: 66px !important;
-    width: 66px !important;
-    margin-left: 10px;
-    margin-top: 10px;
+    height: var(--avatar-scale) !important;
+    width: var(--avatar-scale) !important;
 }
 
+/* 头像外框 */
+.search-user-avatar {
+    width: var(--avatar-scale) !important;
+    min-width: var(--avatar-scale) !important;
+}
+
+.avatar-wrap {
+    height: var(--avatar-scale) !important;
+}
+
+/* 用户和直播内容 */
+div.user-content,
+div.live-content {
+    width: 100% !important;
+    padding-right: 0 !important;
+}
+
+div.user-content {
+    height: 85px;
+}
+
+/* 用户名 */
+.i_card_title {
+    height: 20px;
+}
+
+h2.i_card_title>a {
+    font-size: 16px;
+}
+
+/* 用户简介 */
+.user-content span {
+    position: absolute;
+    left: calc(var(--avatar-scale) + 20px);
+    top: 50px;
+    white-space: wrap !important;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+/* 关注按钮 */
+.user-actions,
+.live-actions {
+    position: absolute;
+    right: 10px;
+    top: 20px;
+}
+
+.user-actions button,
+.live-actions button {
+    height: 26px !important;
+    width: 70px !important;
+    border-radius: 13px !important;
+}
+
+/* 直播的其它样式 */
+.live-user-card {
+    margin-bottom: 10px !important;
+}
+
+/* 直播标签 */
+.live-tags {
+    position: absolute;
+    left: calc(var(--avatar-scale) + 15px);
+    top: 50px;
+    max-width: calc(100% - var(--avatar-scale) - 30px) !important;
+}
+
+/* 直播内容 */
+div.live-content {
+    height: 65px;
+}
+
+/* 标签 - 直播中 */
+.search-user-avatar .live-tab {
+    bottom: -16px !important;
+}
+
+/* 综合里的影视、番剧 */
 .show-more-text {
     margin: 10px 0 20px !important;
     z-index: 1 !important;

@@ -520,8 +520,9 @@ div.bpx-player-ctrl-subtitle-box {
     display: none;
 }
 
-/* ------ 播完预览: 窄屏不隐藏 ------ */
+/* --------- 播完预览 --------- */
 
+/* 窄屏不隐藏 */
 .bpx-player-ending-wrap[hidden] {
     display: block !important;
 }
@@ -536,6 +537,7 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
 
 /* 关注按钮 */
 .bpx-player-ending-functions-follow {
+    width: auto !important;
     padding: 0 15px !important;
 }
 
