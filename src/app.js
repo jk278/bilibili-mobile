@@ -27,6 +27,8 @@ import { createUnfoldBtn } from './message.js'
   preventBeforeUnload()
   countViewTime()
 
+  /* iconfont */document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://s1.hdslb.com/bfs/static/jinkela/space/css/space.8.22c06a62b42dec796d083a84f5a769f44a97b325.css' }))
+
   console.log('Bilibili mobile execute!')
 
   // 简单表达式: 常量折叠，解析引擎优化为只计算一次，然后缓存入临时变量。函数调用、对象属性访问等不适用。

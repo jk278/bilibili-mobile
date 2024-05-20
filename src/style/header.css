@@ -197,7 +197,7 @@ div.bili-header .v-popover[show] {
 }
 
 /* 查看全部动态按钮 */
-.wnd_bottom  {
+.wnd_bottom {
     max-width: calc(100% - 40px);
     display: none;
 }

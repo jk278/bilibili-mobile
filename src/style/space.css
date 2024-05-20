@@ -277,22 +277,7 @@ div.header.space-search-tip {
     max-height: unset !important;
 }
 
-/* ------ TA的收藏夹 ------ */
-
-/* ... */
-
-/* ------ 合集 ------ */
-
-/* ... */
-
-/* ------ TA的专栏 ------ */
-
-/* ... */
-
-/* ------ 最近点赞 ------ */
-
-/* ... */
-
+/* 某块视频 */
 .small-item {
     width: calc(50% - 10px) !important;
     padding: 0 5px 5px !important;
@@ -680,4 +665,73 @@ div.feed-dynamic-content .div-load-more .no-more .end-img {
     width: calc(100% + 24px);
     left: -12px;
     bottom: 0;
+}
+
+/* 我的信息 */
+.h .h-basic {
+    max-width: calc(100% - 22px - 60px);
+}
+
+/* 个性签名 */
+.h #h-sign {
+    max-width: 100%;
+}
+
+/* 订阅番剧 */
+.large-item {
+    max-width: 100%;
+}
+
+/* 空上传视频 */
+div.sec-empty-hint {
+    left: 104px;
+    top: 3px;
+}
+
+/* ------ 我的关注 ------ */
+
+#page-follows div.follow-main {
+    max-width: 100%;
+    border: none;
+}
+
+/* 关注用户 */
+#page-follows .list-item {
+    padding: 10px 0 8px;
+}
+
+/* 关注用户内容 */
+#page-follows .list-item div.content {
+    padding-right: 0;
+    margin-left: 75px;
+}
+
+/* 关注用户操作块 */
+#page-follows .list-item .fans-action {
+    top: 0;
+}
+
+/* 关注用户描述 */
+#page-follows .follow-main .list-item p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: unset;
+    font-size: 13px;
+    line-height: 16px;
+    height: 32px;
+    line-break: anywhere;
+    padding: 3px 20px 0 0;
+    width: calc(100% - 20px);
+}
+
+/* 设置分组 */
+div.follow-dialog-wrap .follow-dialog-window {
+    max-width: 100%;
+    margin-left: 0;
+    transform: translate(-50%, -50%);
+}
+
+div.follow-dialog-wrap .follow-dialog-window .content {
+    padding: 0 10px;
 }

@@ -1,4 +1,5 @@
 import categoryInnerHTML from './html/category.html'
+import { followUser, getDynamicList, getFollowList } from './api.js'
 
 /**
  * 管理操作栏的函数 (DOMContentLoaded 之后)
@@ -317,12 +318,14 @@ export function handleActionbar (page) {
       innerHTML: `
     <div id="header-in-menu">
       <ul>
-        <li data-refer=".right-entry__outside[copy]">分类</li>
+        <li data-refer=".right-entry__outside.copy-category">分类</li>
+        <li><a target="_blank" href="https://www.bilibili.com/v/popular/all/">热门</a></li>
         <li data-refer=".right-entry__outside[href='//message.bilibili.com']">消息</li>
         <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
         <li data-refer=".header-favorite-container">收藏</li>
         <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
         <li data-refer=".header-avatar-wrap--container">主页</li>
+        <li data-refer=".right-entry__outside.follow-list">关注</li>
       </li>
     </div>
     `
@@ -348,10 +351,12 @@ export function handleActionbar (page) {
 
         const refer = item.dataset.refer
 
+        if (!refer) { return } // 热门
+
         const referElement = document.querySelector(`${refer}+.v-popover`)
         if (!referElement) {
           const toast = document.querySelector('#toast')
-          toast.textContent = '请稍后，网页菜单加载中'
+          toast.textContent = '网页菜单加载中，请稍后重试'
           toast.style.display = 'block'
           setTimeout(() => { toast.setAttribute('show', '') }, 10)
 
@@ -390,11 +395,38 @@ export function handleActionbar (page) {
     menuOverlay.addEventListener('touchstart', () => menuOverlay.addEventListener('touchmove', handleTouchMove, { once: true }))
     menuOverlay.addEventListener('touchend', () => menuOverlay.removeEventListener('touchmove', handleTouchMove))
 
-    const falseHeader = Object.assign(document.createElement('div'), {
-      className: 'bili-header false-header',
-      innerHTML: categoryInnerHTML
-    })
-    document.body.appendChild(falseHeader)
+    createExtraDialog()
+
+    // 添加分类和关注弹窗
+    function createExtraDialog () {
+      const falseHeader = Object.assign(document.createElement('div'), {
+        className: 'bili-header false-header',
+        innerHTML: categoryInnerHTML
+      })
+      document.body.appendChild(falseHeader)
+
+      const followOutside = document.createElement('div')
+      followOutside.className = 'right-entry__outside follow-list'
+      falseHeader.appendChild(followOutside)
+
+      const followDialog = Object.assign(document.createElement('div'), {
+        className: 'v-popover is-bottom',
+        id: 'follow-list-dialog',
+        // /* html */
+        innerHTML: `
+        <div class="v-popover-content"><div class="history-panel-popover">
+          <div class="header-tabs-panel">
+            <div class="header-tabs-panel__item--active header-tabs-panel__item">最常访问</div>
+            <div class="header-tabs-panel__item">最近添加</div>
+          </div>
+          <ul class="follow-list-content"></ul>
+        </div></div>
+        `
+      })
+      falseHeader.appendChild(followDialog)
+
+      loadFollowList(1)
+    }
 
     // 设置历史自动展开
     function handleHistoryShowMore () {
@@ -432,7 +464,7 @@ export function handleActionbar (page) {
           'data-mod': 'top_right_bar_window_history',
           'data-idx': 'content',
           'data-ext': 'click',
-          /* html */
+          // /* html */
           innerHTML: `
           <div class="header-history-video__image">
             <picture class="v-img">
@@ -496,9 +528,8 @@ export function handleActionbar (page) {
       let i = 0
       async function getLoadedData () {
         try {
-          const response = await fetch(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/nav?offset=${offset}`, { credentials: 'include' })
-          const data = await response.json()
-          offset = data.data.offset
+          const data = await getDynamicList(offset)
+          offset = data.offset
           if (i < 2) { getLoadedData(); i++ }
         } catch (error) {
           console.error(error)
@@ -510,21 +541,17 @@ export function handleActionbar (page) {
       const dynamicAll = dynamicContent.querySelector('.dynamic-all')
 
       let loadedTitle = []
-      function onScroll () {
+
+      async function onScroll () {
         const { scrollTop, scrollHeight, clientHeight } = dynamicContent
         if (Math.abs(scrollTop + clientHeight - scrollHeight) > 1) { return }
 
         dynamicContent.removeEventListener('scroll', onScroll) // 内容加载后再重新监听滚动
         setTimeout(() => { dynamicContent.addEventListener('scroll', onScroll) }, 2000)
 
-        console.log('Scroll to bottom')
-        fetch(`https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/nav?offset=${offset}`, { credentials: 'include' })
-          .then(response => response.json())
-          .then(data => {
-            offset = data.data.offset
-            data.data.items.forEach(checkIsLoaded) // 简写形式有时需绑定 this
-          })
-          .catch(error => console.error(error))
+        const data = await getDynamicList(offset)
+        offset = data.offset
+        data.items.forEach(checkIsLoaded) // 简写形式有时需绑定 this
 
         const dynamics = dynamicAll.querySelectorAll(':scope>a')
         loadedTitle = Array.from(dynamics).map(a => a.title)
@@ -541,7 +568,7 @@ export function handleActionbar (page) {
           'data-mod': 'top_right_bar_window_dynamic',
           'data-idx': 'content',
           'data-ext': 'click',
-          /* html */
+          // /* html */
           innerHTML: `
           <div data-v-16c69722="" data-v-0290fa94="" class="header-dynamic-list-item" title="${item.title}" target="_blank">
             <div data-v-16c69722="" class="header-dynamic-container">
@@ -579,6 +606,144 @@ export function handleActionbar (page) {
       }
 
       const formatUrl = url => url.slice(url.indexOf(':') + 1)
+    }
+
+    /**
+     * 加载关注列表
+     * @param {number} orderType 排序方式，1: 最常访问，2: 最近关注
+     */
+    async function loadFollowList (orderType) {
+      const content = document.querySelector('#follow-list-dialog .follow-list-content')
+
+      let pageNumber = 1
+      let pageSize = 20
+      const data = await getFollowList(pageNumber, pageSize, orderType)
+
+      const list = data.list
+      list.forEach(addElementByItem)
+
+      const total = data.total
+
+      async function onScroll () {
+        const { scrollTop, scrollHeight, clientHeight } = content
+        if (Math.abs(scrollTop + clientHeight - scrollHeight) > 1) { return }
+
+        content.removeEventListener('scroll', onScroll)
+
+        const remainingData = total - pageNumber * pageSize
+        if (remainingData <= pageSize) {
+          pageSize = remainingData
+        } else {
+          setTimeout(() => { content.addEventListener('scroll', onScroll) }, 2000)
+        }
+
+        const data = await getFollowList(++pageNumber, pageSize, 1)
+
+        const list = data.list
+        list.forEach(addElementByItem)
+      }
+      content.addEventListener('scroll', onScroll)
+
+      const tabsPanel = document.querySelector('#follow-list-dialog .header-tabs-panel')
+      const firstItem = tabsPanel.firstElementChild
+      const secondItem = firstItem.nextElementSibling
+
+      firstItem.addEventListener('click', () => {
+        if (firstItem.classList.contains('header-tabs-panel__item--active')) { return }
+
+        firstItem.classList.add('header-tabs-panel__item--active')
+        secondItem.classList.remove('header-tabs-panel__item--active')
+
+        content.innerHTML = ''
+        content.removeEventListener('scroll', onScroll)
+        loadFollowList(1)
+      })
+
+      secondItem.addEventListener('click', () => {
+        if (secondItem.classList.contains('header-tabs-panel__item--active')) { return }
+
+        secondItem.classList.add('header-tabs-panel__item--active')
+        firstItem.classList.remove('header-tabs-panel__item--active')
+
+        content.innerHTML = ''
+        content.removeEventListener('scroll', onScroll)
+        loadFollowList(2)
+      })
+
+      function addElementByItem (item) {
+        const up = Object.assign(document.createElement('li'), {
+          className: 'list-item clearfix',
+          /* html */
+          innerHTML: `
+          <div class="cover-container"><a href="//space.bilibili.com/${item.mid}" target="_blank" class="up-cover-components">
+            <div class="bili-avatar" style="width: 100%;height:100%;">
+              <img class="bili-avatar-img bili-avatar-face bili-avatar-img-radius" data-src="${formatUrl(item.face)}@96w_96h_1c_1s_!web-avatar-space-list.avif" alt="" src="${formatUrl(item.face)}@96w_96h_1c_1s_!web-avatar-space-list.avif">
+            </div>
+          </a></div>
+          <div class="content">
+            <a href="//space.bilibili.com/${item.mid}/" target="_blank" class="title"><span class="fans-name" style="color: rgb(251, 114, 153);">${item.uname}</span></a>
+            <p title="${desc(item)}" class="auth-description">${desc(item)}</p>
+            <div class="fans-action">
+              <div class="be-dropdown fans-action-btn fans-action-follow">
+                <i class="iconfont video-commonmenu"></i><span class="fans-action-text">已关注</span>
+                <!--ul class="be-dropdown-menu" style="display: none;">
+                  <li class="be-dropdown-item">设置分组</li>
+                  <li class="be-dropdown-item">取消关注</li>
+                </ul-->
+              </div>
+              <div class="be-dropdown">
+                <div class="be-dropdown-trigger"><i title="更多操作" class="iconfont icon-ic_more"></i></div>
+                <ul class="be-dropdown-menu" style="display: none;">
+                  <li class="be-dropdown-item"><a target="_blank" href="//message.bilibili.com/#whisper/mid${item.mid}">发消息</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          `
+        })
+        content.appendChild(up)
+
+        const fansAction = up.querySelector('.fans-action')
+        const follow = fansAction.firstElementChild
+        const more = follow.nextElementSibling
+
+        follow.addEventListener('click', async () => {
+          if (!follow.classList.contains('follow')) {
+            const followRes = await followUser(item.mid, false)
+            if (followRes.code === 0) {
+              follow.className = 'fans-action-btn follow'
+              follow.innerHTML = '<span class="fans-action-text">+&nbsp;&nbsp;关注</span>'
+              follow.style.backgroundColor = '#00a1d6'
+              follow.style.color = 'white'
+            }
+          } else {
+            const followRes = await followUser(item.mid, true)
+            if (followRes.code === 0) {
+              follow.className = 'be-dropdown fans-action-btn fans-action-follow'
+              follow.innerHTML = '<i class="iconfont video-commonmenu"></i><span class="fans-action-text">已关注</span>'
+              follow.style.backgroundColor = ''
+              follow.style.color = ''
+            }
+          }
+        })
+
+        more.addEventListener('mouseenter', () => {
+          const dropdownMenu = more.querySelector('.be-dropdown-menu')
+          dropdownMenu.style.display = ''
+          fansAction.style.zIndex = 2
+          more.style.color = '#00a1d6'
+        })
+        more.addEventListener('mouseleave', () => {
+          const dropdownMenu = more.querySelector('.be-dropdown-menu')
+          dropdownMenu.style.display = 'none'
+          fansAction.style.zIndex = 1
+          more.style.color = ''
+        })
+      }
+
+      // 若为函数表达式，则不能在声明前调用
+      function formatUrl (url) { return url.slice(url.indexOf(':') + 1) }
+      function desc (item) { return item.official_verify.desc || item.sign }
     }
   }
 

@@ -244,6 +244,19 @@ body #header-in-menu li {
     transform: translate(-50%, -50%);
 }
 
+/* 自定义菜单选项 */
+.setting-panel.mini {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+    display: flex;
+    width: 150px;
+}
+
+.mini .setting-checkboxes label {
+    height: 16px;
+}
+
+/* 顶部标题 */
 .setting-title {
     margin: 0 5px 5px;
     padding-bottom: 5px;
@@ -312,4 +325,138 @@ label:has(.menu-dialog-move-down:checked)+label {
 
 .setting-content a {
     text-decoration: underline;
+}
+
+/* ------ 关注菜单视图 ------ */
+
+/* 添加的关注窗口 (历史弹窗外框 + 空间关注列表) */
+#follow-list-dialog {
+    z-index: 2;
+}
+
+/* 列表项 */
+#follow-list-dialog .list-item {
+    border-bottom: 1px solid #eee;
+    padding: 10px 0 8px;
+}
+
+/* 列表框 */
+ul.follow-list-content {
+    height: 480px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+/* 头像 */
+#follow-list-dialog .cover-container {
+    position: static;
+    width: 60px;
+    height: 60px;
+    float: left;
+}
+
+/* 内容 */
+#follow-list-dialog .content {
+    margin: 10px 0 8px 75px;
+}
+
+/* 用户名 */
+.list-item a.title {
+    font-size: 16px;
+    line-height: 20px;
+    height: 20px;
+    margin-bottom: 6px;
+    display: inline-block;
+}
+
+/* 用户描述 */
+.list-item .auth-description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 15px;
+    height: 30px;
+    line-break: anywhere;
+}
+
+/* 粉丝操作 */
+.follow-list-content .list-item .fans-action {
+    position: absolute;
+    right: 0;
+    top: unset;
+    transform: translateY(-58px);
+    /* 遮盖用户描述 */
+    z-index: 1;
+}
+
+/* 按钮 */
+.list-item .be-dropdown {
+    display: inline-block;
+}
+
+/* 关注按钮 */
+.list-item .fans-action-btn {
+    padding: 4px 9px 4px 7px;
+    margin-right: 4px;
+    background-color: #e5e9ef;
+    border-radius: 4px;
+    color: #6d757a;
+    float: left;
+    line-height: 16px;
+    /* 去除空格导致的高度增加 */
+    font-size: 0;
+}
+
+/* 关注字体图标 */
+.fans-action-btn .video-commonmenu {
+    vertical-align: middle;
+    margin-right: 2px;
+}
+
+/* 取关后 */
+div.fans-action-btn.follow {
+    line-height: 16px;
+    height: 24px;
+    border: none;
+    width: 70px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* 关注按钮文字 */
+.fans-action-text {
+    line-height: 16px;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+/* 操作按钮展开 */
+.follow-list-content ul.be-dropdown-menu {
+    top: 30px;
+    border: 1px solid #e5e9ef;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .14);
+}
+
+/* 关注按钮展开 (暂不使用) */
+/* .follow-list-content .fans-action-text+.be-dropdown-menu {
+    left: 0;
+    padding: 5px 10px;
+    z-index: 1;
+    background-color: #fff;
+} */
+
+/* 操作选项 */
+.follow-list-content li.be-dropdown-item {
+    height: 28px;
+    line-height: 28px;
+    padding: 0;
+}
+
+/* 更多按钮展开 */
+.follow-list-content .be-dropdown-trigger+.be-dropdown-menu {
+    right: 0;
+    padding: 3px 10px;
 }

@@ -3,7 +3,7 @@ function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? d
 
 // 脚本预加载设置
 export function handleScriptPreSetting () {
-  const defaultValue = [false, false, false, false, false, false]
+  const defaultValue = Array(6).fill(false)
 
   const css = {
     css1: `
@@ -123,6 +123,11 @@ export function handleScriptSetting () {
     'header-image-source': 'unsplash'
   }
 
+  const menuOptions = {
+    key: 'modify-menu-options',
+    value: Array(8).fill(false)
+  }
+
   if (GM_getValue('ban-action-hidden', false)) { banActionHidden() }
 
   function banActionHidden () {
@@ -174,6 +179,22 @@ export function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
+  if (!GM_getValue(menuOptions.key, menuOptions.value).every(item => item === false)) { modifyMenuOptions() }
+
+  function modifyMenuOptions () {
+    const options = GM_getValue(menuOptions.key, menuOptions.value)
+
+    let selector = ''
+    options.forEach((value, index) => {
+      if (value) { selector = selector + `#header-in-menu ul li:nth-of-type(${index + 1}), ` }
+    })
+    const style = Object.assign(document.createElement('style'), {
+      id: 'modify-menu-options',
+      textContent: `${selector.slice(0, -2)} { display: none; }`
+    })
+    document.head.appendChild(style)
+  }
+
   createSettingPanel()
 
   GM_registerMenuCommand('操作偏好设置', () => {
@@ -199,9 +220,10 @@ export function handleScriptSetting () {
               <option value="unsplash">unsplash</option>
               <option value="bing">必应每日</option>
               <option value="local">本地图片</option>
-            </select><details><summary>主页头图换源</summary>本地图片限制大小</details></label>
-          </div>
-          <button id="setting-conform-2" class="setting-conform">确认</button>
+          </select><details><summary>主页头图换源</summary>本地图片限制大小</details></label>
+          <label class="modify-menu-options"><span>修改菜单显示选项</span></label>
+        </div>
+        <button id="setting-conform-2" class="setting-conform">确认</button>
         `
     })
     document.body.appendChild(settingPanel)
@@ -257,6 +279,45 @@ export function handleScriptSetting () {
         })
         input.click()
       }
+    })
+
+    settingPanel.querySelector('.modify-menu-options').addEventListener('click', () => {
+      const settingPanel = Object.assign(document.createElement('div'), {
+        id: 'setting-panel-modify-menu-options',
+        className: 'setting-panel mini',
+        innerHTML: `
+          <div class="setting-title">隐藏选项</div>
+          <div class="setting-checkboxes">
+            <label><input type="checkbox"><span>分类</span></label>
+            <label><input type="checkbox"><span>热门</span></label>
+            <label><input type="checkbox"><span>消息</span></label>
+            <label><input type="checkbox"><span>动态</span></label>
+            <label><input type="checkbox"><span>收藏</span></label>
+            <label><input type="checkbox"><span>历史</span></label>
+            <label><input type="checkbox"><span>主页</span></label>
+            <label><input type="checkbox"><span>关注</span></label>
+          </div>
+          <button id="setting-conform-3" class="setting-conform">确认</button>
+          `
+      })
+      document.body.appendChild(settingPanel)
+
+      const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
+      const oldValues = GM_getValue(menuOptions.key, menuOptions.value)
+
+      for (const [index, element] of checkboxElements.entries()) { element.checked = oldValues[index] }
+
+      settingPanel.querySelector('#setting-conform-3').addEventListener('click', () => {
+        const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
+
+        if (selectedValues !== oldValues) {
+          GM_setValue('modify-menu-options', selectedValues)
+          document.head.querySelector('#modify-menu-options')?.remove()
+          modifyMenuOptions()
+        }
+
+        settingPanel.remove()
+      })
     })
   }
 }
