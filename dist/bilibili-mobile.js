@@ -334,6 +334,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 操作栏 --
 
 body {
     --overlay-time: .4s;
+    --actionbar-time: .5s;
 }
 
 /* 操作栏 */
@@ -348,7 +349,7 @@ body {
     align-items: center;
     background-color: rgba(255, 255, 255, .8);
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
-    transition: .5s transform ease-in;
+    transition: var(--actionbar-time) transform ease-in;
 
     opacity: 0;
     animation: actionbarFadeIn .4s ease-in forwards;
@@ -2574,7 +2575,7 @@ div.ai-summary-popup {
     border-top: 1px solid var(--line_regular);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
-    transition: .75s transform ease-in;
+    transition: calc(var(--actionbar-time)*1.40) ease-in;
     display: block !important;
 }
 
@@ -2949,12 +2950,16 @@ ul.vui_tabs--nav>* {
     background: white;
     padding: 5px !important;
     opacity: 0;
-    transition: .4s ease-in;
+    transition: calc(var(--actionbar-time)*1.62) ease-in;
 }
 
 .search-conditions.show {
     bottom: var(--actionbar-height);
     opacity: 1;
+}
+
+[scroll-hidden] .search-conditions {
+    transform: translateY(calc(100% + var(--actionbar-height)));
 }
 
 /* 排序按钮 */
@@ -3414,12 +3419,17 @@ div.header.space-search-tip {
     justify-content: space-evenly;
     align-items: center;
     opacity: 0;
-    transition: .4s ease-in;
+    /* easi-in 距离与时间的平方成正比 */
+    transition: calc(var(--actionbar-time)*1.44) ease-in;
 }
 
 #app .h .h-action.show {
     bottom: var(--actionbar-height) !important;
     opacity: 1;
+}
+
+[scroll-hidden] #app .h .h-action {
+    transform: translateY(calc(100% + var(--actionbar-height)));
 }
 
 .h .h-action .h-f-btn {
@@ -5694,11 +5704,17 @@ function handleActionbar (page) {
 
         if (searchConditions) {
           if (sessionStorage.getItem('show-conditions') !== 'true') {
+            searchConditions.style.transition = '.4s ease-in'
             searchConditions.classList.add('show')
+            searchConditions.addEventListener('transitionend', () => { searchConditions.style.transition = '' }, { once: true })
+
             showMoreFab.classList.add('reverse')
             sessionStorage.setItem('show-conditions', 'true')
           } else {
+            searchConditions.style.transition = '.4s ease-in'
             searchConditions.classList.remove('show')
+            searchConditions.addEventListener('transitionend', () => { searchConditions.style.transition = '' }, { once: true })
+
             showMoreFab.classList.remove('reverse')
             sessionStorage.setItem('show-conditions', '')
           }
@@ -5706,7 +5722,10 @@ function handleActionbar (page) {
       } else if (page === 'space') {
         const followRow = document.querySelector('.h .h-action')
 
+        followRow.style.transition = '.4s ease-in'
         followRow?.classList.toggle('show')
+        followRow.addEventListener('transitionend', () => { followRow.style.transition = '' }, { once: true })
+
         showMoreFab.classList.toggle('reverse')
       }
     }

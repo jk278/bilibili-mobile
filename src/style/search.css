@@ -74,12 +74,16 @@ ul.vui_tabs--nav>* {
     background: white;
     padding: 5px !important;
     opacity: 0;
-    transition: .4s ease-in;
+    transition: calc(var(--actionbar-time)*1.62) ease-in;
 }
 
 .search-conditions.show {
     bottom: var(--actionbar-height);
     opacity: 1;
+}
+
+[scroll-hidden] .search-conditions {
+    transform: translateY(calc(100% + var(--actionbar-height)));
 }
 
 /* 排序按钮 */

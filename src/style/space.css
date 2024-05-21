@@ -132,12 +132,17 @@ div.header.space-search-tip {
     justify-content: space-evenly;
     align-items: center;
     opacity: 0;
-    transition: .4s ease-in;
+    /* easi-in 距离与时间的平方成正比 */
+    transition: calc(var(--actionbar-time)*1.44) ease-in;
 }
 
 #app .h .h-action.show {
     bottom: var(--actionbar-height) !important;
     opacity: 1;
+}
+
+[scroll-hidden] #app .h .h-action {
+    transform: translateY(calc(100% + var(--actionbar-height)));
 }
 
 .h .h-action .h-f-btn {

@@ -853,7 +853,7 @@ div.ai-summary-popup {
     border-top: 1px solid var(--line_regular);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
-    transition: .75s transform ease-in;
+    transition: calc(var(--actionbar-time)*1.40) ease-in;
     display: block !important;
 }
 

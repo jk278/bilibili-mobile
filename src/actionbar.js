@@ -763,11 +763,17 @@ export function handleActionbar (page) {
 
         if (searchConditions) {
           if (sessionStorage.getItem('show-conditions') !== 'true') {
+            searchConditions.style.transition = '.4s ease-in'
             searchConditions.classList.add('show')
+            searchConditions.addEventListener('transitionend', () => { searchConditions.style.transition = '' }, { once: true })
+
             showMoreFab.classList.add('reverse')
             sessionStorage.setItem('show-conditions', 'true')
           } else {
+            searchConditions.style.transition = '.4s ease-in'
             searchConditions.classList.remove('show')
+            searchConditions.addEventListener('transitionend', () => { searchConditions.style.transition = '' }, { once: true })
+
             showMoreFab.classList.remove('reverse')
             sessionStorage.setItem('show-conditions', '')
           }
@@ -775,7 +781,10 @@ export function handleActionbar (page) {
       } else if (page === 'space') {
         const followRow = document.querySelector('.h .h-action')
 
+        followRow.style.transition = '.4s ease-in'
         followRow?.classList.toggle('show')
+        followRow.addEventListener('transitionend', () => { followRow.style.transition = '' }, { once: true })
+
         showMoreFab.classList.toggle('reverse')
       }
     }

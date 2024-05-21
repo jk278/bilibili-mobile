@@ -2,6 +2,7 @@
 
 body {
     --overlay-time: .4s;
+    --actionbar-time: .5s;
 }
 
 /* 操作栏 */
@@ -16,7 +17,7 @@ body {
     align-items: center;
     background-color: rgba(255, 255, 255, .8);
     box-shadow: 0 0 3px rgba(0, 0, 0, .3);
-    transition: .5s transform ease-in;
+    transition: var(--actionbar-time) transform ease-in;
 
     opacity: 0;
     animation: actionbarFadeIn .4s ease-in forwards;
