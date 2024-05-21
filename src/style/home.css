@@ -157,6 +157,17 @@ div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest {
     box-shadow: 0 0 2px rgba(0, 174, 236, 0.8);
 }
 
+/* 操作按钮阴影框: 暗色 (媒体查询不必要) */
+@media (prefers-color-scheme: dark) {
+    #i_cecream[dark-mode] div.bili-video-card .bili-video-card__info--no-interest {
+        box-shadow: 0 0 2px rgba(127, 127, 127, .6);
+    }
+
+    #i_cecream[dark-mode] div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest {
+        box-shadow: 0 0 2px rgb(0, 174, 236);
+    }
+}
+
 /* 撤销不喜欢 */
 .bili-video-card__no-interest {
     --no-interest-module-gap: 5px;

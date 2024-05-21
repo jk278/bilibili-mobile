@@ -1059,8 +1059,17 @@ div.bili-dyn-item-draw__avatar {
 }
 
 /* 替代原 visible 类 */
-.left-container[back-to-top]~.fixed-sidenav-storage .back-to-top {
+.fixed-sidenav-storage .back-to-top[show] {
     transform: none;
+}
+
+/* 覆盖鼠标悬浮样式 */
+#app .fixed-sidenav-storage .fixed-sidenav-storage-item:hover {
+    background: white;
+}
+
+#app .fixed-sidenav-storage div.fixed-sidenav-storage-item.touch-active {
+    background: var(--graph_bg_thick);
 }
 
 /* 回顶按钮的位置 */

@@ -1467,6 +1467,17 @@ div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest {
     box-shadow: 0 0 2px rgba(0, 174, 236, 0.8);
 }
 
+/* 操作按钮阴影框: 暗色 (媒体查询不必要) */
+@media (prefers-color-scheme: dark) {
+    #i_cecream[dark-mode] div.bili-video-card .bili-video-card__info--no-interest {
+        box-shadow: 0 0 2px rgba(127, 127, 127, .6);
+    }
+
+    #i_cecream[dark-mode] div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest {
+        box-shadow: 0 0 2px rgb(0, 174, 236);
+    }
+}
+
 /* 撤销不喜欢 */
 .bili-video-card__no-interest {
     --no-interest-module-gap: 5px;
@@ -2780,8 +2791,17 @@ div.bili-dyn-item-draw__avatar {
 }
 
 /* 替代原 visible 类 */
-.left-container[back-to-top]~.fixed-sidenav-storage .back-to-top {
+.fixed-sidenav-storage .back-to-top[show] {
     transform: none;
+}
+
+/* 覆盖鼠标悬浮样式 */
+#app .fixed-sidenav-storage .fixed-sidenav-storage-item:hover {
+    background: white;
+}
+
+#app .fixed-sidenav-storage div.fixed-sidenav-storage-item.touch-active {
+    background: var(--graph_bg_thick);
 }
 
 /* 回顶按钮的位置 */
@@ -4349,6 +4369,7 @@ function scrollToHidden (page) {
     })
   } else {
     const leftContainer = document.body.querySelector('.left-container')
+    const backToTop = document.getElementsByClassName('back-to-top')[0]
 
     leftContainer.addEventListener('scroll', () => { // change
       const currentScrollY = leftContainer.scrollTop // change
@@ -4362,7 +4383,13 @@ function scrollToHidden (page) {
       }
 
       // 修复更改滚动区后的置顶按钮不显示
-      currentScrollY > leftContainer.clientHeight ? leftContainer.setAttribute('back-to-top', '') : leftContainer.removeAttribute('back-to-top')
+      currentScrollY > leftContainer.clientHeight ? backToTop?.setAttribute('show', '') : backToTop?.removeAttribute('show')
+    })
+
+    backToTop.addEventListener('click', () => {
+      leftContainer.scrollTo({ top: 0 })
+      backToTop.classList.add('touch-active')
+      backToTop.addEventListener('transitionend', () => { backToTop.classList.remove('touch-active') }, { once: true })
     })
   }
 }
@@ -6090,6 +6117,12 @@ function handleHeaderImage () {
 
 // 处理视频卡片
 function handleVideoCard () {
+  // 避免浏览器未适配深色时修改操作按钮阴影框颜色
+  const cecreamElem = document.body.querySelector('#i_cecream')
+  const rgbString = window.getComputedStyle(cecreamElem).getPropertyValue('background-color')
+  const numbers = rgbString.match(/\d+/g)
+  if (parseInt(numbers[0]) + parseInt(numbers[1]) + parseInt(numbers[2]) <= 127 * 3) { cecreamElem.setAttribute('dark-mode', '') }
+
   judgeHasAi()
 
   let isLoading = false

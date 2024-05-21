@@ -111,6 +111,7 @@ function scrollToHidden (page) {
     })
   } else {
     const leftContainer = document.body.querySelector('.left-container')
+    const backToTop = document.getElementsByClassName('back-to-top')[0]
 
     leftContainer.addEventListener('scroll', () => { // change
       const currentScrollY = leftContainer.scrollTop // change
@@ -124,7 +125,13 @@ function scrollToHidden (page) {
       }
 
       // 修复更改滚动区后的置顶按钮不显示
-      currentScrollY > leftContainer.clientHeight ? leftContainer.setAttribute('back-to-top', '') : leftContainer.removeAttribute('back-to-top')
+      currentScrollY > leftContainer.clientHeight ? backToTop?.setAttribute('show', '') : backToTop?.removeAttribute('show')
+    })
+
+    backToTop.addEventListener('click', () => {
+      leftContainer.scrollTo({ top: 0 })
+      backToTop.classList.add('touch-active')
+      backToTop.addEventListener('transitionend', () => { backToTop.classList.remove('touch-active') }, { once: true })
     })
   }
 }
