@@ -88,12 +88,6 @@ export function handleHeaderImage () {
 
 // 处理视频卡片
 export function handleVideoCard () {
-  // 避免浏览器未适配深色时修改操作按钮阴影框颜色
-  const cecreamElem = document.body.querySelector('#i_cecream')
-  const rgbString = window.getComputedStyle(cecreamElem).getPropertyValue('background-color')
-  const numbers = rgbString.match(/\d+/g)
-  if (parseInt(numbers[0]) + parseInt(numbers[1]) + parseInt(numbers[2]) <= 127 * 3) { cecreamElem.setAttribute('dark-mode', '') }
-
   judgeHasAi()
 
   let isLoading = false

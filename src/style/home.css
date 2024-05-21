@@ -141,7 +141,7 @@ div.bili-video-card .bili-video-card__info--no-interest {
     display: flex !important;
     top: calc((var(--title-line-height) * 2 - var(--no-interest-entry-size)) / 2);
     right: 2px;
-    box-shadow: 0 0 2px rgba(0, 0, 0, .3);
+    box-shadow: 0 0 2px rgba(127, 127, 127, .6);
     opacity: 0;
     transition: opacity .2s ease-in;
 }
@@ -154,18 +154,7 @@ div.bili-video-card .bili-video-card__info--no-interest:has(svg path) {
 /* 不喜欢按钮: 有 ai 总结时 */
 div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest {
     /* --brand_blue: #00AEEC */
-    box-shadow: 0 0 2px rgba(0, 174, 236, 0.8);
-}
-
-/* 操作按钮阴影框: 暗色 (媒体查询不必要) */
-@media (prefers-color-scheme: dark) {
-    #i_cecream[dark-mode] div.bili-video-card .bili-video-card__info--no-interest {
-        box-shadow: 0 0 2px rgba(127, 127, 127, .6);
-    }
-
-    #i_cecream[dark-mode] div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest {
-        box-shadow: 0 0 2px rgb(0, 174, 236);
-    }
+    box-shadow: 0 0 2px rgba(0, 174, 236, 0.9);
 }
 
 /* 撤销不喜欢 */
