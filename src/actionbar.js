@@ -293,7 +293,7 @@ export function handleActionbar (page) {
     // 覆盖显隐，初始化加载动态、收藏、历史、主页
     const preloadeditems = [
       '.v-popover-wrap:has(>.right-entry__outside[href="//t.bilibili.com/"])',
-      '.v-popover-wrap:has(>.header-favorite-container)',
+      '.v-popover-wrap:has(>.right-entry__outside[data-header-fav-entry])',
       '.right-entry__outside[href="//www.bilibili.com/account/history"]',
       '.header-avatar-wrap']
 
@@ -304,7 +304,9 @@ export function handleActionbar (page) {
 
     function tryPreload () {
       if (document.querySelector(preloadeditems[2])) {
-        preloadeditems.forEach(item => { document.querySelector(item).dispatchEvent(new MouseEvent('mouseenter')) })
+        preloadeditems.forEach(item => {
+          document.querySelector(item).dispatchEvent(new MouseEvent('mouseenter'))
+        })
         setTimeout(handleHistoryShowMore, 50)
         setTimeout(handleDynamicShowMore, 60)
       } else setTimeout(tryPreload, 1000)
@@ -322,7 +324,7 @@ export function handleActionbar (page) {
         <li><a target="_blank" href="https://www.bilibili.com/v/popular/all/">热门</a></li>
         <li data-refer=".right-entry__outside[href='//message.bilibili.com']">消息</li>
         <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
-        <li data-refer=".header-favorite-container">收藏</li>
+        <li data-refer=".right-entry__outside[data-header-fav-entry]">收藏</li>
         <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
         <li data-refer=".header-avatar-wrap--container">主页</li>
         <li data-refer=".right-entry__outside.follow-list">关注</li>
@@ -818,11 +820,12 @@ export function handleActionbar (page) {
 
       recommendLiist.addEventListener('click', event => {
         const nextPlay = document.querySelector('.rec-title')
-        const recommendFooter = document.querySelector('.rec-footer') // 自动点击
-        if (!nextPlay.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+        const recommendFooter = document.querySelector('.rec-footer') // 自动收起侧边栏
+        if (!nextPlay?.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
       })
     }
 
+    // 自动展开侧边栏
     function showMoreRecommend () {
       const recommendFooter = document.querySelector('.rec-footer')
       setTimeout(() => { recommendFooter?.click() }, 2000) // 直接传递 recommendFooter?.click: 可选链操作符前的 recommendFooter 条件判断将会立即执行

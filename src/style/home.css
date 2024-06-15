@@ -93,7 +93,8 @@ body,
 }
 
 /* 标题 */
-.bili-video-card__info {
+.bili-video-card__info,
+.bili-live-card__info {
     --title-padding-right: 22px;
     --title-line-height: 20px;
     --title-font-size: 13px;
@@ -136,8 +137,14 @@ body,
     --follow-icon-line-height: 15px;
 }
 
+/* 小标 - 直播中 */
+div.bili-live-card .bili-live-card__info--living {
+    font-size: 11px;
+}
+
 /* 标题 - 不喜欢按钮：打开面板添加预览视频选项  */
-div.bili-video-card .bili-video-card__info--no-interest {
+div.bili-video-card .bili-video-card__info--no-interest,
+div.bili-live-card .bili-live-card__info--no-interest {
     display: flex !important;
     top: calc((var(--title-line-height) * 2 - var(--no-interest-entry-size)) / 2);
     right: 2px;
@@ -147,7 +154,8 @@ div.bili-video-card .bili-video-card__info--no-interest {
 }
 
 /* 不喜欢按钮: svg 加载完成后再显示边框，修复 svg 动态加载导致边框阴影提前显示 */
-div.bili-video-card .bili-video-card__info--no-interest:has(svg path) {
+.bili-video-card .bili-video-card__info--no-interest:has(svg path),
+.bili-live-card .bili-live-card__info--no-interest:has(svg path) {
     opacity: 1;
 }
 

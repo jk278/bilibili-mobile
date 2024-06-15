@@ -192,7 +192,7 @@ body #header-in-menu li {
     line-height: 20px;
     padding: 5px 12px;
     margin-bottom: 5px;
-    background-color: inherit;
+    background-color: white;
     border: 1px solid var(--line_regular);
     border-radius: 16px;
     opacity: 0;
@@ -207,7 +207,7 @@ body #header-in-menu li {
 
 .bpx-player-container #toast {
     color: var(--text4);
-    background-color: rgba(0, 0, 0, .4);
+    background-color: rgba(0, 0, 0, .5);
 }
 
 /* --------------------- 其它适配 --------------------- */
