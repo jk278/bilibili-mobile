@@ -282,6 +282,15 @@ div.header.space-search-tip {
     max-height: unset !important;
 }
 
+/* 代表作 */
+#i-masterpiece .i-mp-multi {
+    height: unset;
+}
+
+#i-masterpiece .i-mp-multi .small-item {
+    height: unset;
+}
+
 /* 某块视频 */
 .small-item {
     width: calc(50% - 10px) !important;
