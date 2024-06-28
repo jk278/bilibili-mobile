@@ -114,7 +114,8 @@ export function handleScriptSetting () {
     key1: 'ban-video-click-play',
     key2: 'ban-action-hidden',
     key3: 'message-sidebar-change-right',
-    key4: 'menu-dialog-move-down'
+    key4: 'menu-dialog-move-down',
+    key5: 'home-single-column'
   }
 
   const customKeyValues = {
@@ -179,6 +180,30 @@ export function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
+  if (GM_getValue('home-single-column', false)) { homeSingleColumn() }
+
+  function homeSingleColumn () {
+    const style = Object.assign(document.createElement('style'), {
+      id: 'home-single-column',
+      textContent: `
+      div.recommended-container_floor-aside .container {
+          grid-template-columns: repeat(1, 1fr) !important;
+      }
+
+      div.bili-video-card.is-rcmd,
+      div.bili-live-card.is-rcmd {
+          --cover-radio: 56.25% !important;
+      }
+
+      /* 修复直播info占位高度变窄 */
+      .bili-live-card__skeleton--right {
+        height: 70px;
+      }
+      `
+    })
+    document.head.appendChild(style)
+  }
+
   if (!GM_getValue(menuOptions.key, menuOptions.value).every(item => item === false)) { modifyMenuOptions() }
 
   function modifyMenuOptions () {
@@ -222,6 +247,7 @@ export function handleScriptSetting () {
               <option value="local">本地图片</option>
           </select><details><summary>主页头图换源</summary>本地图片限制大小</details></label>
           <label class="modify-menu-options"><span>修改菜单显示选项</span></label>
+          <label><input type="checkbox"><span>首页单列推荐</span></label>
         </div>
         <button id="setting-conform-2" class="setting-conform">确认</button>
         `
@@ -252,6 +278,7 @@ export function handleScriptSetting () {
       if (selectedValues[1] !== GM_getValue(values[1], false)) { selectedValues[1] ? banActionHidden() : document.getElementById(values[1]).remove() }
       if (selectedValues[2] !== GM_getValue(values[2], false)) { selectedValues[2] ? messageSidebarRight() : document.getElementById(values[2]).remove() }
       if (selectedValues[3] !== GM_getValue(values[3], false)) { selectedValues[3] ? menuDialogMoveDown() : document.getElementById(values[3]).remove() }
+      if (selectedValues[4] !== GM_getValue(values[4], false)) { selectedValues[4] ? homeSingleColumn() : document.getElementById(values[4]).remove() }
 
       if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0])?.remove(); menuDialogMoveDown() }
       if (writenValues[2] !== GM_getValue(customKeys[2], customValues[2])) {
