@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.13
+// @version            5.0-beta.14
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -4607,6 +4607,8 @@ function handleScriptPreSetting () {
 
   readScriptSetting()
 
+  if (GM_getValue('home-single-column', false)) { homeSingleColumn() }
+
   waitDOMContentLoaded(() => {
     createSettingPanel()
 
@@ -4646,6 +4648,28 @@ function handleScriptPreSetting () {
         }
       }
     }
+  }
+
+  function homeSingleColumn () {
+    const style = Object.assign(document.createElement('style'), {
+      id: 'home-single-column',
+      textContent: `
+      div.recommended-container_floor-aside .container {
+          grid-template-columns: repeat(1, 1fr) !important;
+      }
+
+      div.bili-video-card.is-rcmd,
+      div.bili-live-card.is-rcmd {
+          --cover-radio: 56.25% !important;
+      }
+
+      /* 修复直播info占位高度变窄 */
+      .bili-live-card__skeleton--right {
+        height: 70px;
+      }
+      `
+    })
+    document.head.appendChild(style)
   }
 
   function createSettingPanel () {
@@ -4761,7 +4785,7 @@ function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('home-single-column', false)) { homeSingleColumn() }
+  // 初始化添加移至脚本预加载设置
 
   function homeSingleColumn () {
     const style = Object.assign(document.createElement('style'), {

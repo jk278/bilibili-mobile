@@ -26,6 +26,8 @@ export function handleScriptPreSetting () {
 
   readScriptSetting()
 
+  if (GM_getValue('home-single-column', false)) { homeSingleColumn() }
+
   waitDOMContentLoaded(() => {
     createSettingPanel()
 
@@ -65,6 +67,28 @@ export function handleScriptPreSetting () {
         }
       }
     }
+  }
+
+  function homeSingleColumn () {
+    const style = Object.assign(document.createElement('style'), {
+      id: 'home-single-column',
+      textContent: `
+      div.recommended-container_floor-aside .container {
+          grid-template-columns: repeat(1, 1fr) !important;
+      }
+
+      div.bili-video-card.is-rcmd,
+      div.bili-live-card.is-rcmd {
+          --cover-radio: 56.25% !important;
+      }
+
+      /* 修复直播info占位高度变窄 */
+      .bili-live-card__skeleton--right {
+        height: 70px;
+      }
+      `
+    })
+    document.head.appendChild(style)
   }
 
   function createSettingPanel () {
@@ -180,7 +204,7 @@ export function handleScriptSetting () {
     document.head.appendChild(style)
   }
 
-  if (GM_getValue('home-single-column', false)) { homeSingleColumn() }
+  // 初始化添加移至脚本预加载设置
 
   function homeSingleColumn () {
     const style = Object.assign(document.createElement('style'), {
