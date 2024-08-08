@@ -145,7 +145,7 @@ export function handleScriptSetting () {
   const customKeyValues = {
     'menu-dialog-down-value': '20',
     'video-longpress-speed': '2',
-    'header-image-source': 'unsplash'
+    'header-image-source': 'bing'
   }
 
   const menuOptions = {
@@ -266,9 +266,14 @@ export function handleScriptSetting () {
           <label><input type="number" value="20" class="menu-dialog-move-down-value"><span>自定义菜单弹窗底边距</span></label>
           <label><input type="number" value="2" class="video-longpress-speed"><span>自定义视频长按倍速</span></label>
           <label><select class="header-image-source">
-              <option value="unsplash">unsplash</option>
-              <option value="bing">必应每日</option>
               <option value="local">本地图片</option>
+              <option value="bing">必应每日</option>
+              <option value="unsplash">Unsplash</option>
+              <option value="picsum">Picsum</option>
+              <option value="meizi">妹子⏳</option>
+              <option value="dongman">动漫⏳</option>
+              <option value="fengjing">风景⏳</option>
+              <option value="suiji">随机⏳</option>
           </select><details><summary>主页头图换源</summary>本地图片限制大小</details></label>
           <label class="modify-menu-options"><span>修改菜单显示选项</span></label>
           <label><input type="checkbox"><span>首页单列推荐</span></label>

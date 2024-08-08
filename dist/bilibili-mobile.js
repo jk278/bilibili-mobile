@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.14
+// @version            5.0-beta.16
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -1852,6 +1852,11 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     max-width: 150px !important;
 }
 
+/* 视频选集 */
+div.multi-page-v1 .cur-list {
+    overflow-y: auto;
+}
+
 /* 推荐视频图块 */
 #reco_list .card-box .pic-box {
     max-width: 50%;
@@ -2572,7 +2577,7 @@ div.ai-summary-popup {
    ----------------------------------------------------- */
 
 /* 固定评论栏 */
-.main-reply-box {
+#commentbox {
     position: fixed;
     left: 0;
     bottom: var(--actionbar-height);
@@ -2588,13 +2593,8 @@ div.ai-summary-popup {
 }
 
 /* 评论行滚动隐藏 */
-[scroll-hidden] .main-reply-box {
+[scroll-hidden] #commentbox {
     transform: translateY(calc(100% + var(--actionbar-height)))
-}
-
-/* 移除原底部评论栏 */
-.fixed-reply-box {
-    display: none !important;
 }
 
 /* 移除评论头像 */
@@ -4726,7 +4726,7 @@ function handleScriptSetting () {
   const customKeyValues = {
     'menu-dialog-down-value': '20',
     'video-longpress-speed': '2',
-    'header-image-source': 'unsplash'
+    'header-image-source': 'bing'
   }
 
   const menuOptions = {
@@ -4847,9 +4847,14 @@ function handleScriptSetting () {
           <label><input type="number" value="20" class="menu-dialog-move-down-value"><span>自定义菜单弹窗底边距</span></label>
           <label><input type="number" value="2" class="video-longpress-speed"><span>自定义视频长按倍速</span></label>
           <label><select class="header-image-source">
-              <option value="unsplash">unsplash</option>
-              <option value="bing">必应每日</option>
               <option value="local">本地图片</option>
+              <option value="bing">必应每日</option>
+              <option value="unsplash">Unsplash</option>
+              <option value="picsum">Picsum</option>
+              <option value="meizi">妹子⏳</option>
+              <option value="dongman">动漫⏳</option>
+              <option value="fengjing">风景⏳</option>
+              <option value="suiji">随机⏳</option>
           </select><details><summary>主页头图换源</summary>本地图片限制大小</details></label>
           <label class="modify-menu-options"><span>修改菜单显示选项</span></label>
           <label><input type="checkbox"><span>首页单列推荐</span></label>
@@ -6110,32 +6115,48 @@ __webpack_require__.r(__webpack_exports__);
 
 // 控制首页头图函数
 function handleHeaderImage () {
-  let source
   // eslint-disable-next-line no-undef
-  source = GM_getValue('custom-header-image-source', 'unsplash')
+  const source = GM_getValue('header-image-source', 'unsplash')
 
-  const key = 'header-image'
-  const formattedDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/-/g, '/')
-  const url = source === 'unsplash' ? 'https://source.unsplash.com/random/840x400' : `https://api.ee123.net/img/bingimg/${formattedDate}.jpg`
+  // const formattedDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/-/g, '/')
+  // https://api.ee123.net/img/bingimg/${formattedDate}.jpg
+
+  const mapping = {
+    bing: 'https://api.suyanw.cn/api/bing.php', // https://api.paugram.com/bing
+    unsplash: 'https://unsplash.it/1600/900?random',
+    picsum: 'https://picsum.photos/1600/900',
+    meizi: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=meizi', // 素颜API
+    dongman: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=dongman',
+    fengjing: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=fengjing',
+    suiji: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=suiji'
+  }
+
+  let url
+  url = mapping[source]
 
   const elementSelector = '.bili-header__banner'
 
+  const key = 'header-image'
   loadImage(key, elementSelector)
 
   if (source !== 'local') { setTimeout(renewImage, 5000) }
 
+  // 触发事件前已判断 value !== 'local'
   window.addEventListener('variableChanged', e => {
     if (e.detail.key === 'header-image-source') {
-      source = e.detail.newValue
-      setTimeout(renewImage, 0)
+      const newSource = e.detail.newValue
+      url = mapping[newSource]
+      setTimeout(() => renewImage(true), 0)
     }
   })
 
-  async function renewImage () {
+  async function renewImage (loadImmediately) {
     try {
       const img = await getImage(url)
       const base64Data = imageToBase64(img)
       storeImage(key, base64Data)
+
+      if (loadImmediately) loadImage(key, elementSelector)
     } catch (error) {
       console.error('Failed to get image:', error)
     }

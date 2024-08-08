@@ -122,6 +122,11 @@
     max-width: 150px !important;
 }
 
+/* 视频选集 */
+div.multi-page-v1 .cur-list {
+    overflow-y: auto;
+}
+
 /* 推荐视频图块 */
 #reco_list .card-box .pic-box {
     max-width: 50%;
@@ -842,7 +847,7 @@ div.ai-summary-popup {
    ----------------------------------------------------- */
 
 /* 固定评论栏 */
-.main-reply-box {
+#commentbox {
     position: fixed;
     left: 0;
     bottom: var(--actionbar-height);
@@ -858,13 +863,8 @@ div.ai-summary-popup {
 }
 
 /* 评论行滚动隐藏 */
-[scroll-hidden] .main-reply-box {
+[scroll-hidden] #commentbox {
     transform: translateY(calc(100% + var(--actionbar-height)))
-}
-
-/* 移除原底部评论栏 */
-.fixed-reply-box {
-    display: none !important;
 }
 
 /* 移除评论头像 */

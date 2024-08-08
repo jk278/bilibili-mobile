@@ -2,32 +2,48 @@ import { getVideoInfo, getJudgeAI, getAIConclusion } from './api.js'
 
 // 控制首页头图函数
 export function handleHeaderImage () {
-  let source
   // eslint-disable-next-line no-undef
-  source = GM_getValue('custom-header-image-source', 'unsplash')
+  const source = GM_getValue('header-image-source', 'unsplash')
 
-  const key = 'header-image'
-  const formattedDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/-/g, '/')
-  const url = source === 'unsplash' ? 'https://source.unsplash.com/random/840x400' : `https://api.ee123.net/img/bingimg/${formattedDate}.jpg`
+  // const formattedDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/-/g, '/')
+  // https://api.ee123.net/img/bingimg/${formattedDate}.jpg
+
+  const mapping = {
+    bing: 'https://api.suyanw.cn/api/bing.php', // https://api.paugram.com/bing
+    unsplash: 'https://unsplash.it/1600/900?random',
+    picsum: 'https://picsum.photos/1600/900',
+    meizi: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=meizi', // 素颜API
+    dongman: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=dongman',
+    fengjing: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=fengjing',
+    suiji: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=suiji'
+  }
+
+  let url
+  url = mapping[source]
 
   const elementSelector = '.bili-header__banner'
 
+  const key = 'header-image'
   loadImage(key, elementSelector)
 
   if (source !== 'local') { setTimeout(renewImage, 5000) }
 
+  // 触发事件前已判断 value !== 'local'
   window.addEventListener('variableChanged', e => {
     if (e.detail.key === 'header-image-source') {
-      source = e.detail.newValue
-      setTimeout(renewImage, 0)
+      const newSource = e.detail.newValue
+      url = mapping[newSource]
+      setTimeout(() => renewImage(true), 0)
     }
   })
 
-  async function renewImage () {
+  async function renewImage (loadImmediately) {
     try {
       const img = await getImage(url)
       const base64Data = imageToBase64(img)
       storeImage(key, base64Data)
+
+      if (loadImmediately) loadImage(key, elementSelector)
     } catch (error) {
       console.error('Failed to get image:', error)
     }
