@@ -14,6 +14,7 @@
 // @grant              GM_setValue
 // @run-at             document-start
 // @icon               https://www.bilibili.com/favicon.ico
+// @homepageURL        https://github.com/jk278/bilibili-mobile
 // @require            https://unpkg.com/js-md5@latest/src/md5.js
 // ==/UserScript==
 
