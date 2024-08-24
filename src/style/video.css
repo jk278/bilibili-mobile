@@ -1,5 +1,15 @@
 /* ---------------------- 视频详情页 ------------------- */
 
+/* 适配 shadowDOM 的评论行滚动隐藏 */
+body {
+    --shadow-transform: none;
+    --commentbox-display: block;
+}
+
+body[scroll-hidden] {
+    --shadow-transform: translateY(calc(100% + var(--actionbar-height)));
+}
+
 /* 主应用块 */
 #app {
     --sidebar-time: .6s;
@@ -12,28 +22,12 @@
     margin-top: 56.25vw;
 }
 
-/* 视频页主滚动条下移 */
-[itemprop=video]+body {
-    overflow: hidden !important;
-}
-
 #app {
     height: 100%;
 }
 
-/* 修复 via 滚动条异常 */
-[itemprop=video]+body #app {
-    overflow: hidden;
-}
-
 #mirror-vdcon {
     height: 100%;
-}
-
-.left-container {
-    overflow: auto;
-    /* 同 .right-container */
-    height: calc(100% - 56.25vw) !important;
 }
 
 /* ----------------------------------------------------
@@ -52,7 +46,7 @@
     /* 移动 Safari 百分比宽高自动考虑边框和填充 */
     box-sizing: border-box;
     width: 100% !important;
-    padding: calc(var(--dm-row-height) + 5px) 10px 0;
+    padding: calc(var(--dm-row-height) + 5px) 10px 10px;
 }
 
 .left-container::after {
@@ -698,7 +692,7 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
     white-space: wrap !important;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
 
     /* 去除折叠时的 show-more 按钮 margin */
     margin-right: 0 !important;

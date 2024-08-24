@@ -97,43 +97,43 @@ function scrollToHidden (page) {
   let lastScrollY = 0
   const scrollThreshold = 75
 
-  if (page !== 'video') {
-    window.addEventListener('scroll', () => {
-      const currentScrollY = window.scrollY
-      const offsetY = currentScrollY - lastScrollY
+  // if (page !== 'video') {
+  window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY
+    const offsetY = currentScrollY - lastScrollY
 
-      if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
+    if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
 
-      if (Math.abs(offsetY) > scrollThreshold) {
-        offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
-        lastScrollY = currentScrollY
-      }
-    })
-  } else {
-    const leftContainer = document.body.querySelector('.left-container')
-    const backToTop = document.getElementsByClassName('back-to-top')[0]
+    if (Math.abs(offsetY) > scrollThreshold) {
+      offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
+      lastScrollY = currentScrollY
+    }
+  })
+  // } else {
+  //   const leftContainer = document.body.querySelector('.left-container')
+  //   const backToTop = document.getElementsByClassName('back-to-top')[0]
 
-    leftContainer.addEventListener('scroll', () => { // change
-      const currentScrollY = leftContainer.scrollTop // change
-      const offsetY = currentScrollY - lastScrollY
+  //   leftContainer.addEventListener('scroll', () => { // change
+  //     const currentScrollY = leftContainer.scrollTop // change
+  //     const offsetY = currentScrollY - lastScrollY
 
-      if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
+  //     if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
 
-      if (Math.abs(offsetY) > scrollThreshold) {
-        offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
-        lastScrollY = currentScrollY
-      }
+  //     if (Math.abs(offsetY) > scrollThreshold) {
+  //       offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
+  //       lastScrollY = currentScrollY
+  //     }
 
-      // 修复更改滚动区后的置顶按钮不显示
-      currentScrollY > leftContainer.clientHeight ? backToTop?.setAttribute('show', '') : backToTop?.removeAttribute('show')
-    })
+  //     // 修复更改滚动区后的置顶按钮不显示
+  //     currentScrollY > leftContainer.clientHeight ? backToTop?.setAttribute('show', '') : backToTop?.removeAttribute('show')
+  //   })
 
-    backToTop.addEventListener('click', () => {
-      leftContainer.scrollTo({ top: 0 })
-      backToTop.classList.add('touch-active')
-      backToTop.addEventListener('transitionend', () => { backToTop.classList.remove('touch-active') }, { once: true })
-    })
-  }
+  //   backToTop.addEventListener('click', () => {
+  //     leftContainer.scrollTo({ top: 0 })
+  //     backToTop.classList.add('touch-active')
+  //     backToTop.addEventListener('transitionend', () => { backToTop.classList.remove('touch-active') }, { once: true })
+  //   })
+  // }
 }
 
 function slideSearchSort () {

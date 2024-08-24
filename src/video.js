@@ -10,6 +10,8 @@ export function videoInteraction () {
   closeMiniPlayer()
 
   setEndingContent()
+
+  modifyShadowDOMLate()
 }
 
 let isPortrait = false
@@ -214,4 +216,104 @@ function setEndingContent () {
 
   screen.orientation.addEventListener('change', renewEndingScale)
   window.addEventListener('resize', renewEndingScale)
+}
+
+// 动态修改播放组件样式
+function modifyShadowDOMLate () {
+  let commentsShadow
+  let commentsHeaderShadow
+  A()
+
+  function A () {
+    commentsShadow = document.querySelector('bili-comments')?.shadowRoot
+
+    if (!commentsShadow) {
+      setTimeout(A, 2000)
+      return
+    }
+
+    const style1 = Object.assign(document.createElement('style'), {
+      textContent: `
+      div#contents {
+        padding-top: 0;
+        left: -30px;
+        width: calc(100% + 30px);
+      }`
+    })
+    commentsShadow.appendChild(style1)
+
+    B()
+  }
+
+  function B () {
+    commentsHeaderShadow = commentsShadow.querySelector('bili-comments-header-renderer')?.shadowRoot
+
+    if (!commentsHeaderShadow) {
+      setTimeout(B, 2000)
+      return
+    }
+
+    // 固定评论栏
+    const style2 = Object.assign(document.createElement('style'), {
+      textContent: `
+      div#commentbox {
+        position: fixed;
+        left: 0;
+        bottom: var(--actionbar-height);
+        z-index: 10;
+        background: white;
+        width: 100%;
+        padding: 8px 12px;
+        border-top: 1px solid var(--line_regular);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        transition: calc(var(--actionbar-time)*1.40) ease-in;
+        display: var(--commentbox-display);
+
+        /* 由全局变量控制滚动隐藏 */
+        transform: var(--shadow-transform)
+      }
+
+      /* 评论导航 */
+      div#navbar {
+        margin-bottom: 0;
+      }`
+    })
+    commentsHeaderShadow.appendChild(style2)
+
+    C()
+  }
+
+  function C () {
+    const commentBoxShadow = commentsHeaderShadow.querySelector('bili-comment-box')?.shadowRoot
+
+    if (!commentBoxShadow) {
+      setTimeout(C, 2000)
+      return
+    }
+
+    const style3 = Object.assign(document.createElement('style'), {
+      textContent: `
+      :host {
+        display: var(--commentbox-display) !important;
+      }
+
+      /* 移除评论头像 */
+      div#user-avatar {
+          display: none;
+      }
+
+      /* 输入块 */
+      div#comment-area {
+        width: calc(100% - 24px);
+      }
+
+      /* 输入块内 */
+      div#editor {
+        border-radius: 13px;
+        padding: 0;
+      }`
+    })
+    commentBoxShadow.appendChild(style3)
+  }
 }

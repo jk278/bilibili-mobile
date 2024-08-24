@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.16
+// @version            5.0-beta.17
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -706,7 +706,7 @@ ul.follow-list-content {
 .list-item .auth-description {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
     overflow: hidden;
     font-size: 13px;
     line-height: 15px;
@@ -1730,6 +1730,16 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情页 ------------------- */
 
+/* 适配 shadowDOM 的评论行滚动隐藏 */
+body {
+    --shadow-transform: none;
+    --commentbox-display: block;
+}
+
+body[scroll-hidden] {
+    --shadow-transform: translateY(calc(100% + var(--actionbar-height)));
+}
+
 /* 主应用块 */
 #app {
     --sidebar-time: .6s;
@@ -1742,28 +1752,12 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     margin-top: 56.25vw;
 }
 
-/* 视频页主滚动条下移 */
-[itemprop=video]+body {
-    overflow: hidden !important;
-}
-
 #app {
     height: 100%;
 }
 
-/* 修复 via 滚动条异常 */
-[itemprop=video]+body #app {
-    overflow: hidden;
-}
-
 #mirror-vdcon {
     height: 100%;
-}
-
-.left-container {
-    overflow: auto;
-    /* 同 .right-container */
-    height: calc(100% - 56.25vw) !important;
 }
 
 /* ----------------------------------------------------
@@ -1782,7 +1776,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情
     /* 移动 Safari 百分比宽高自动考虑边框和填充 */
     box-sizing: border-box;
     width: 100% !important;
-    padding: calc(var(--dm-row-height) + 5px) 10px 0;
+    padding: calc(var(--dm-row-height) + 5px) 10px 10px;
 }
 
 .left-container::after {
@@ -2428,7 +2422,7 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
     white-space: wrap !important;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
 
     /* 去除折叠时的 show-more 按钮 margin */
     margin-right: 0 !important;
@@ -4371,43 +4365,43 @@ function scrollToHidden (page) {
   let lastScrollY = 0
   const scrollThreshold = 75
 
-  if (page !== 'video') {
-    window.addEventListener('scroll', () => {
-      const currentScrollY = window.scrollY
-      const offsetY = currentScrollY - lastScrollY
+  // if (page !== 'video') {
+  window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY
+    const offsetY = currentScrollY - lastScrollY
 
-      if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
+    if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
 
-      if (Math.abs(offsetY) > scrollThreshold) {
-        offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
-        lastScrollY = currentScrollY
-      }
-    })
-  } else {
-    const leftContainer = document.body.querySelector('.left-container')
-    const backToTop = document.getElementsByClassName('back-to-top')[0]
+    if (Math.abs(offsetY) > scrollThreshold) {
+      offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
+      lastScrollY = currentScrollY
+    }
+  })
+  // } else {
+  //   const leftContainer = document.body.querySelector('.left-container')
+  //   const backToTop = document.getElementsByClassName('back-to-top')[0]
 
-    leftContainer.addEventListener('scroll', () => { // change
-      const currentScrollY = leftContainer.scrollTop // change
-      const offsetY = currentScrollY - lastScrollY
+  //   leftContainer.addEventListener('scroll', () => { // change
+  //     const currentScrollY = leftContainer.scrollTop // change
+  //     const offsetY = currentScrollY - lastScrollY
 
-      if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
+  //     if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
 
-      if (Math.abs(offsetY) > scrollThreshold) {
-        offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
-        lastScrollY = currentScrollY
-      }
+  //     if (Math.abs(offsetY) > scrollThreshold) {
+  //       offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
+  //       lastScrollY = currentScrollY
+  //     }
 
-      // 修复更改滚动区后的置顶按钮不显示
-      currentScrollY > leftContainer.clientHeight ? backToTop?.setAttribute('show', '') : backToTop?.removeAttribute('show')
-    })
+  //     // 修复更改滚动区后的置顶按钮不显示
+  //     currentScrollY > leftContainer.clientHeight ? backToTop?.setAttribute('show', '') : backToTop?.removeAttribute('show')
+  //   })
 
-    backToTop.addEventListener('click', () => {
-      leftContainer.scrollTo({ top: 0 })
-      backToTop.classList.add('touch-active')
-      backToTop.addEventListener('transitionend', () => { backToTop.classList.remove('touch-active') }, { once: true })
-    })
-  }
+  //   backToTop.addEventListener('click', () => {
+  //     leftContainer.scrollTo({ top: 0 })
+  //     backToTop.classList.add('touch-active')
+  //     backToTop.addEventListener('transitionend', () => { backToTop.classList.remove('touch-active') }, { once: true })
+  //   })
+  // }
 }
 
 function slideSearchSort () {
@@ -4589,8 +4583,8 @@ function handleScriptPreSetting () {
   const css = {
     css1: `
       .bpx-player-sending-area.bpx-player-sending-area {display:none !important;}
-      .left-container.left-container {padding:5px 10px 0;}
-      .main-reply-box.main-reply-box {display:none !important;}
+      .left-container.left-container {padding:5px 10px 10px;}
+      html body {--commentbox-display: none;}
     `,
     css2: '#v_tag {display:none !important;}',
     css3: `
@@ -6567,6 +6561,8 @@ function videoInteraction () {
   closeMiniPlayer()
 
   setEndingContent()
+
+  modifyShadowDOMLate()
 }
 
 let isPortrait = false
@@ -6771,6 +6767,106 @@ function setEndingContent () {
 
   screen.orientation.addEventListener('change', renewEndingScale)
   window.addEventListener('resize', renewEndingScale)
+}
+
+// 动态修改播放组件样式
+function modifyShadowDOMLate () {
+  let commentsShadow
+  let commentsHeaderShadow
+  A()
+
+  function A () {
+    commentsShadow = document.querySelector('bili-comments')?.shadowRoot
+
+    if (!commentsShadow) {
+      setTimeout(A, 2000)
+      return
+    }
+
+    const style1 = Object.assign(document.createElement('style'), {
+      textContent: `
+      div#contents {
+        padding-top: 0;
+        left: -30px;
+        width: calc(100% + 30px);
+      }`
+    })
+    commentsShadow.appendChild(style1)
+
+    B()
+  }
+
+  function B () {
+    commentsHeaderShadow = commentsShadow.querySelector('bili-comments-header-renderer')?.shadowRoot
+
+    if (!commentsHeaderShadow) {
+      setTimeout(B, 2000)
+      return
+    }
+
+    // 固定评论栏
+    const style2 = Object.assign(document.createElement('style'), {
+      textContent: `
+      div#commentbox {
+        position: fixed;
+        left: 0;
+        bottom: var(--actionbar-height);
+        z-index: 10;
+        background: white;
+        width: 100%;
+        padding: 8px 12px;
+        border-top: 1px solid var(--line_regular);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        transition: calc(var(--actionbar-time)*1.40) ease-in;
+        display: var(--commentbox-display);
+
+        /* 由全局变量控制滚动隐藏 */
+        transform: var(--shadow-transform)
+      }
+
+      /* 评论导航 */
+      div#navbar {
+        margin-bottom: 0;
+      }`
+    })
+    commentsHeaderShadow.appendChild(style2)
+
+    C()
+  }
+
+  function C () {
+    const commentBoxShadow = commentsHeaderShadow.querySelector('bili-comment-box')?.shadowRoot
+
+    if (!commentBoxShadow) {
+      setTimeout(C, 2000)
+      return
+    }
+
+    const style3 = Object.assign(document.createElement('style'), {
+      textContent: `
+      :host {
+        display: var(--commentbox-display) !important;
+      }
+
+      /* 移除评论头像 */
+      div#user-avatar {
+          display: none;
+      }
+
+      /* 输入块 */
+      div#comment-area {
+        width: calc(100% - 24px);
+      }
+
+      /* 输入块内 */
+      div#editor {
+        border-radius: 13px;
+        padding: 0;
+      }`
+    })
+    commentBoxShadow.appendChild(style3)
+  }
 }
 
 

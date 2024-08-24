@@ -8,8 +8,8 @@ export function handleScriptPreSetting () {
   const css = {
     css1: `
       .bpx-player-sending-area.bpx-player-sending-area {display:none !important;}
-      .left-container.left-container {padding:5px 10px 0;}
-      .main-reply-box.main-reply-box {display:none !important;}
+      .left-container.left-container {padding:5px 10px 10px;}
+      html body {--commentbox-display: none;}
     `,
     css2: '#v_tag {display:none !important;}',
     css3: `

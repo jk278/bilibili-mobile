@@ -374,7 +374,7 @@ ul.follow-list-content {
 .list-item .auth-description {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
     overflow: hidden;
     font-size: 13px;
     line-height: 15px;
