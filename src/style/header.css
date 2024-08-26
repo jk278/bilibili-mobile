@@ -118,8 +118,6 @@
 /* 偏好设置中有更改 */
 div.bili-header .v-popover {
     position: fixed;
-    top: 50vh !important;
-    transform: translate(-50%, -50%) scale(.9);
     margin: 0 !important;
     max-width: 100%;
     padding: 5px !important;
@@ -127,6 +125,8 @@ div.bili-header .v-popover {
     opacity: 0;
     transition: .4s ease-in;
     display: none;
+    top: unset;
+    bottom: var(--actionbar-height);
 }
 
 div.bili-header .v-popover[show] {

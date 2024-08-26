@@ -143,14 +143,14 @@ export function handleScriptSetting () {
   }
 
   const customKeyValues = {
-    'menu-dialog-down-value': '20',
+    'menu-dialog-move-down-value': '20',
     'video-longpress-speed': '2',
     'header-image-source': 'bing'
   }
 
   const menuOptions = {
     key: 'modify-menu-options',
-    value: Array(8).fill(false)
+    value: [true, true, ...Array(6).fill(false)]
   }
 
   if (GM_getValue('ban-action-hidden', false)) { banActionHidden() }
@@ -185,11 +185,11 @@ export function handleScriptSetting () {
 
   if (GM_getValue('menu-dialog-move-down', false)) { menuDialogMoveDown() }
 
-  function menuDialogMoveDown () {
-    const downValue = GM_getValue('menu-dialog-move-down-value', '20')
+  function menuDialogMoveDown (valueToChange) {
+    const downValue = valueToChange || GM_getValue('menu-dialog-move-down-value', '20')
 
     const style = Object.assign(document.createElement('style'), {
-      id: 'menu-dialog-move-down',
+      id: 'menu-dialog-move-down-value',
       textContent: `
         .bili-header__bar .v-popover.v-popover {
           top: unset !important;
@@ -309,7 +309,7 @@ export function handleScriptSetting () {
       if (selectedValues[3] !== GM_getValue(values[3], false)) { selectedValues[3] ? menuDialogMoveDown() : document.getElementById(values[3]).remove() }
       if (selectedValues[4] !== GM_getValue(values[4], false)) { selectedValues[4] ? homeSingleColumn() : document.getElementById(values[4]).remove() }
 
-      if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0])?.remove(); menuDialogMoveDown() }
+      if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0])?.remove(); menuDialogMoveDown(writenValues[0]) }
       if (writenValues[2] !== GM_getValue(customKeys[2], customValues[2])) {
         writenValues[2] !== 'local' && window.dispatchEvent(new CustomEvent('variableChanged', { detail: { key: customKeys[2], newValue: writenValues[2] } }))
       }

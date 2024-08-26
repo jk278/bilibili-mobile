@@ -219,18 +219,31 @@ function setEndingContent () {
 }
 
 // 动态修改播放组件样式
-function modifyShadowDOMLate () {
+export function modifyShadowDOMLate () {
   let commentsShadow
   let commentsHeaderShadow
-  A()
+
+  // 初始化动态要获胜 #comment，第一次变化删除.comment增加.comment，第二次添加bili-comments
+  const comment = document.getElementById('comment')
+  // console.log(comment)
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      // console.log(mutation.addedNodes, mutation.removedNodes)
+      mutation.addedNodes.forEach(node => {
+        // console.log(node.nodeType, node.nodeName)
+        if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'bili-comments') {
+          A()
+          observer.disconnect()
+        }
+      })
+    })
+  })
+
+  // 开始观察目标元素
+  observer.observe(comment, { childList: true, subtree: true })
 
   function A () {
-    commentsShadow = document.querySelector('bili-comments')?.shadowRoot
-
-    if (!commentsShadow) {
-      setTimeout(A, 2000)
-      return
-    }
+    commentsShadow = document.querySelector('bili-comments').shadowRoot
 
     const style1 = Object.assign(document.createElement('style'), {
       textContent: `
@@ -242,16 +255,25 @@ function modifyShadowDOMLate () {
     })
     commentsShadow.appendChild(style1)
 
-    B()
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        // console.log(mutation.addedNodes, mutation.removedNodes)
+        mutation.addedNodes.forEach(node => {
+          // console.log(node.nodeType, node.nodeName)
+          if (node.nodeType === Node.ELEMENT_NODE && node.id === 'header') {
+            B()
+            observer.disconnect()
+          }
+        })
+      })
+    })
+
+    // 开始观察目标元素
+    observer.observe(commentsShadow, { childList: true, subtree: true })
   }
 
   function B () {
-    commentsHeaderShadow = commentsShadow.querySelector('bili-comments-header-renderer')?.shadowRoot
-
-    if (!commentsHeaderShadow) {
-      setTimeout(B, 2000)
-      return
-    }
+    commentsHeaderShadow = commentsShadow.querySelector('bili-comments-header-renderer').shadowRoot
 
     // 固定评论栏
     const style2 = Object.assign(document.createElement('style'), {
@@ -277,20 +299,33 @@ function modifyShadowDOMLate () {
       /* 评论导航 */
       div#navbar {
         margin-bottom: 0;
+      }
+
+      /* 评论顶部广告横条 */
+      #notice {
+        display: none;
       }`
     })
     commentsHeaderShadow.appendChild(style2)
 
-    C()
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        // console.log(mutation.addedNodes, mutation.removedNodes)
+        mutation.addedNodes.forEach(node => {
+          // console.log(node.nodeType, node.nodeName)
+          if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'div' && node.classList.contains('bili-comments-bottom-fixed-wrapper')) {
+            C()
+            observer.disconnect()
+          }
+        })
+      })
+    })
+
+    observer.observe(commentsHeaderShadow, { childList: true, subtree: true })
   }
 
   function C () {
     const commentBoxShadow = commentsHeaderShadow.querySelector('bili-comment-box')?.shadowRoot
-
-    if (!commentBoxShadow) {
-      setTimeout(C, 2000)
-      return
-    }
 
     const style3 = Object.assign(document.createElement('style'), {
       textContent: `

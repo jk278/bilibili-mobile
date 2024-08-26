@@ -1,5 +1,6 @@
 import categoryInnerHTML from './html/category.html'
 import { followUser, getDynamicList, getFollowList } from './api.js'
+import { modifyShadowDOMLate } from './video.js'
 
 /**
  * 管理操作栏的函数 (DOMContentLoaded 之后)
@@ -816,12 +817,21 @@ export function handleActionbar (page) {
         videoContainer.removeAttribute('sidebar')
       }
 
+      const rightContainer = videoContainer.querySelector('.right-container')
       const recommendLiist = document.getElementById('reco_list')
 
       recommendLiist.addEventListener('click', event => {
         const nextPlay = document.querySelector('.rec-title')
         const recommendFooter = document.querySelector('.rec-footer') // 自动收起侧边栏
-        if (!nextPlay?.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+        if (!nextPlay?.contains(event.target) && !recommendFooter.contains(event.target)) {
+          closeSidebar()
+          rightContainer.addEventListener('transitionend', event => {
+            if (event.propertyName === 'transform') { rightContainer.scrollTop = 0 }
+          }, { once: true })
+
+          // 此处不要使用监听器，否则会干扰原函数执行
+          modifyShadowDOMLate()
+        }
       })
     }
 

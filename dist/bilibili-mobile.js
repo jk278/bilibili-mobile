@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.17
+// @version            5.0-beta.18
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -1086,8 +1086,6 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------------ 顶栏 ---
 /* 偏好设置中有更改 */
 div.bili-header .v-popover {
     position: fixed;
-    top: 50vh !important;
-    transform: translate(-50%, -50%) scale(.9);
     margin: 0 !important;
     max-width: 100%;
     padding: 5px !important;
@@ -1095,6 +1093,8 @@ div.bili-header .v-popover {
     opacity: 0;
     transition: .4s ease-in;
     display: none;
+    top: unset;
+    bottom: var(--actionbar-height);
 }
 
 div.bili-header .v-popover[show] {
@@ -4719,14 +4719,14 @@ function handleScriptSetting () {
   }
 
   const customKeyValues = {
-    'menu-dialog-down-value': '20',
+    'menu-dialog-move-down-value': '20',
     'video-longpress-speed': '2',
     'header-image-source': 'bing'
   }
 
   const menuOptions = {
     key: 'modify-menu-options',
-    value: Array(8).fill(false)
+    value: [true, true, ...Array(6).fill(false)]
   }
 
   if (GM_getValue('ban-action-hidden', false)) { banActionHidden() }
@@ -4761,11 +4761,11 @@ function handleScriptSetting () {
 
   if (GM_getValue('menu-dialog-move-down', false)) { menuDialogMoveDown() }
 
-  function menuDialogMoveDown () {
-    const downValue = GM_getValue('menu-dialog-move-down-value', '20')
+  function menuDialogMoveDown (valueToChange) {
+    const downValue = valueToChange || GM_getValue('menu-dialog-move-down-value', '20')
 
     const style = Object.assign(document.createElement('style'), {
-      id: 'menu-dialog-move-down',
+      id: 'menu-dialog-move-down-value',
       textContent: `
         .bili-header__bar .v-popover.v-popover {
           top: unset !important;
@@ -4885,7 +4885,7 @@ function handleScriptSetting () {
       if (selectedValues[3] !== GM_getValue(values[3], false)) { selectedValues[3] ? menuDialogMoveDown() : document.getElementById(values[3]).remove() }
       if (selectedValues[4] !== GM_getValue(values[4], false)) { selectedValues[4] ? homeSingleColumn() : document.getElementById(values[4]).remove() }
 
-      if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0])?.remove(); menuDialogMoveDown() }
+      if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0])?.remove(); menuDialogMoveDown(writenValues[0]) }
       if (writenValues[2] !== GM_getValue(customKeys[2], customValues[2])) {
         writenValues[2] !== 'local' && window.dispatchEvent(new CustomEvent('variableChanged', { detail: { key: customKeys[2], newValue: writenValues[2] } }))
       }
@@ -5007,6 +5007,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _html_category_html__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(28);
 /* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(29);
+/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(30);
+
 
 
 
@@ -5825,12 +5827,21 @@ function handleActionbar (page) {
         videoContainer.removeAttribute('sidebar')
       }
 
+      const rightContainer = videoContainer.querySelector('.right-container')
       const recommendLiist = document.getElementById('reco_list')
 
       recommendLiist.addEventListener('click', event => {
         const nextPlay = document.querySelector('.rec-title')
         const recommendFooter = document.querySelector('.rec-footer') // 自动收起侧边栏
-        if (!nextPlay?.contains(event.target) && !recommendFooter.contains(event.target)) { closeSidebar() }
+        if (!nextPlay?.contains(event.target) && !recommendFooter.contains(event.target)) {
+          closeSidebar()
+          rightContainer.addEventListener('transitionend', event => {
+            if (event.propertyName === 'transform') { rightContainer.scrollTop = 0 }
+          }, { once: true })
+
+          // 此处不要使用监听器，否则会干扰原函数执行
+          ;(0,_video_js__WEBPACK_IMPORTED_MODULE_2__.modifyShadowDOMLate)()
+        }
       })
     }
 
@@ -6098,6 +6109,371 @@ async function followUser (mid, isFollow) {
 
 /***/ }),
 /* 30 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   modifyShadowDOMLate: () => (/* binding */ modifyShadowDOMLate),
+/* harmony export */   videoInteraction: () => (/* binding */ videoInteraction)
+/* harmony export */ });
+/* global GM_getValue */
+
+function videoInteraction () {
+  handlePortrait()
+
+  handlelVideoClick()
+
+  handleVideoLongPress()
+
+  closeMiniPlayer()
+
+  setEndingContent()
+
+  modifyShadowDOMLate()
+}
+
+let isPortrait = false
+
+function handlePortrait () {
+  const video = document.querySelector('#bilibili-player video')
+
+  // 适配侧边栏切换视频
+  video.addEventListener('resize', () => {
+    // aspectRatio, resize 前宽高为 0
+    isPortrait = video.videoHeight / video.videoWidth > 1
+  })
+}
+
+// 接管视频点击事件
+function handlelVideoClick () {
+  const playerContainter = document.querySelector('.bpx-player-container')
+  const videoArea = playerContainter.querySelector('.bpx-player-video-area')
+  const videoPerch = videoArea.querySelector('.bpx-player-video-perch')
+  const videoWrap = videoPerch.querySelector('.bpx-player-video-wrap')
+  const video = videoWrap.querySelector('video')
+
+  // 架空双击全屏层以适应竖屏
+  videoArea.insertBefore(videoWrap, videoPerch)
+
+  // safari 内联播放
+  if (video) { video.playsInline = true }
+
+  const oldControlWrap = videoArea.querySelector('.bpx-player-control-wrap')
+  const controlEntity = oldControlWrap.querySelector('.bpx-player-control-entity') // 移动后再使用
+
+  let clickTimer = null
+
+  let hideTimer = null
+
+  // 阻止 controlWrap 的 mouseleave 事件隐藏控制栏, mouseleave 事件不会在冒泡阶段和捕获阶段传播
+  const controlWrap = Object.assign(document.createElement('div'), {
+    className: 'bpx-player-control-wrap new',
+    innerHTML: '<div class="bpx-player-control-mask"></div>'
+  })
+  videoArea.insertBefore(controlWrap, oldControlWrap)
+  controlWrap.appendChild(controlEntity)
+
+  // 观察控制栏按键弹窗, 元素发生移动后, 之前的 querySelector 会失效 (无法找到该元素)
+  // 当箭头函数的函数体只有一条语句时，如果使用了花括号，则该语句会被解释为函数体，而不是返回值。因此，当使用了花括号时，isBpxStateShow 的返回值为 undefined。
+  const isBpxStateShow = () => controlEntity.querySelector('.bpx-player-control-bottom-right>.bpx-state-show')
+
+  const controlTop = controlEntity.querySelector('.bpx-player-control-top')
+  const bottomRight = controlEntity.querySelector('.bpx-player-control-bottom-right')
+
+  // 可以作语句的表达式：需要赋值给变量或者作为函数调用的一部分，能够产生一个可以被丢弃的值
+  // 布尔值不能直接作为语句，因为它们不执行任何动作，也不改变程序的状态
+  // x++ 作语句时执行操作，但是不显式返回值，实际 x 的值隐式地改变了；作表达式时根据前后缀，依次返回 x 的值和执行操作
+  const isShown = () => playerContainter.getAttribute('ctrl-shown') === 'true' // controlWrap 的 mouseleave 事件导致点击非视频部分会隐藏控制栏, 实际已不必要
+
+  // 覆盖原显隐
+  playerContainter.setAttribute('ctrl-shown', 'false')
+
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      if (mutation.addedNodes[0].classList.contains('bpx-player-ctrl-web')) { // 还可以让控制栏显示作为网页全屏按钮加载的标志事件
+        if (video.paused) { showControlWrap() }
+        // 点击视频关闭字幕设置
+        const subtitleBtn = document.querySelector('.bpx-player-ctrl-subtitle')
+        if (subtitleBtn) {
+          window.addEventListener('click', event => {
+            if (!subtitleBtn.contains(event.target)) { subtitleBtn.dispatchEvent(new MouseEvent('mouseleave')) }
+          })
+        }
+        observer.disconnect()
+      }
+    })
+  })
+  observer.observe(bottomRight, { childList: true })
+
+  function hideControlWrap (isEnd) {
+    if ((!video.paused && !isBpxStateShow()) || isEnd) {
+      playerContainter.setAttribute('ctrl-shown', 'false')
+      clearTimeout(hideTimer)
+    } else {
+      delayHideTimer()
+    }
+  }
+
+  video.addEventListener('ended', () => { hideControlWrap(true) })
+
+  function showControlWrap () {
+    playerContainter.setAttribute('ctrl-shown', 'true')
+    delayHideTimer()
+  }
+
+  function delayHideTimer () {
+    clearTimeout(hideTimer)
+    hideTimer = setTimeout(hideControlWrap, 3000)
+  }
+
+  // 阻止触摸单击触发 videoArea 的 mousemove 事件而显隐控制栏
+  videoWrap.addEventListener('mousemove', event => { event.stopPropagation() })
+  controlWrap.addEventListener('mousemove', event => { event.stopPropagation() })
+
+  video.addEventListener('play', delayHideTimer)
+
+  controlWrap.addEventListener('click', event => {
+    event.stopPropagation()
+    delayHideTimer()
+  })
+
+  controlTop.addEventListener('touchstart', delayHideTimer)
+
+  // 单击监听
+  videoWrap.addEventListener('click', () => {
+    clearTimeout(clickTimer)
+
+    clickTimer = setTimeout(() => {
+      isShown() ? hideControlWrap() : showControlWrap()
+
+      if (!GM_getValue('ban-video-click-play', false)) { video.paused ? video.play() : video.pause() } // videoPerch.click()
+    }, 250)
+  })
+
+  // 双击监听
+  videoWrap.addEventListener('dblclick', () => {
+    clearTimeout(clickTimer)
+
+    // 双击打开声音
+    video.muted = false
+    if (video.volume === 0) { document.querySelector('.bpx-player-ctrl-muted-icon').click() }
+
+    isPortrait
+      ? document.querySelector('.bpx-player-ctrl-web').click()
+      // view 省略时指向当前窗口
+      : videoPerch.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
+  })
+
+  // 阻止视频响应滑动侧边栏
+  // 阻止冒泡只对当前监听器生效，禁止全屏滑动和拖动进度条触发侧边栏。要传递参数或用形参，就要用函数而非引用
+  videoArea.addEventListener('touchstart', event => { event.stopPropagation() })
+}
+
+function closeMiniPlayer () {
+  // 关闭小窗: getElement 提前使用在元素加载后能获取到, querySelector 在元素加载后使用才能获取到
+  if (!localStorage.getItem('is-mini-player-closed')) {
+    const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
+    new MutationObserver(mutations =>
+      mutations.forEach(mutation => {
+        if (mutation.target.classList.contains('on')) {
+          miniPlayerBtn.click()
+          localStorage.setItem('is-mini-player-closed', true)
+        }
+      })
+    ).observe(miniPlayerBtn, { attributes: true, attributeFilter: ['class'] })
+  }
+}
+
+function handleVideoLongPress () {
+  const video = document.querySelector('video')
+  let isLongPress = false
+  let timeoutId
+  let times
+
+  video.addEventListener('touchstart', () => {
+    times = Number(GM_getValue('video-longpress-speed', '2'))
+
+    timeoutId = setTimeout(() => {
+      video.playbackRate = video.playbackRate * times
+      isLongPress = true
+    }, 500)
+  })
+
+  video.addEventListener('touchmove', cancelLongPress)
+  video.addEventListener('touchend', cancelLongPress)
+
+  function cancelLongPress () {
+    clearTimeout(timeoutId)
+
+    if (isLongPress) {
+      video.playbackRate = video.playbackRate / times
+      isLongPress = false
+    }
+  }
+}
+
+function setEndingContent () {
+  addEndingScale()
+
+  function addEndingScale () {
+    const style = Object.assign(document.createElement('style'), {
+      id: 'ending-content-scale',
+      textContent: `
+        .bpx-player-ending-content[screen-mode=little-screen] { transform: scale(calc(${window.innerWidth}/536*0.9)) !important; }
+        .bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/710*0.9)) !important; }
+        .bpx-player-container[data-screen=full] .bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/952*0.9)) !important; }
+      `
+    })
+    document.head.appendChild(style)
+  }
+
+  function renewEndingScale () {
+    document.head.querySelector('#ending-content-scale').remove()
+    addEndingScale()
+  }
+
+  screen.orientation.addEventListener('change', renewEndingScale)
+  window.addEventListener('resize', renewEndingScale)
+}
+
+// 动态修改播放组件样式
+function modifyShadowDOMLate () {
+  let commentsShadow
+  let commentsHeaderShadow
+
+  // 初始化动态要获胜 #comment，第一次变化删除.comment增加.comment，第二次添加bili-comments
+  const comment = document.getElementById('comment')
+  // console.log(comment)
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      // console.log(mutation.addedNodes, mutation.removedNodes)
+      mutation.addedNodes.forEach(node => {
+        // console.log(node.nodeType, node.nodeName)
+        if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'bili-comments') {
+          A()
+          observer.disconnect()
+        }
+      })
+    })
+  })
+
+  // 开始观察目标元素
+  observer.observe(comment, { childList: true, subtree: true })
+
+  function A () {
+    commentsShadow = document.querySelector('bili-comments').shadowRoot
+
+    const style1 = Object.assign(document.createElement('style'), {
+      textContent: `
+      div#contents {
+        padding-top: 0;
+        left: -30px;
+        width: calc(100% + 30px);
+      }`
+    })
+    commentsShadow.appendChild(style1)
+
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        // console.log(mutation.addedNodes, mutation.removedNodes)
+        mutation.addedNodes.forEach(node => {
+          // console.log(node.nodeType, node.nodeName)
+          if (node.nodeType === Node.ELEMENT_NODE && node.id === 'header') {
+            B()
+            observer.disconnect()
+          }
+        })
+      })
+    })
+
+    // 开始观察目标元素
+    observer.observe(commentsShadow, { childList: true, subtree: true })
+  }
+
+  function B () {
+    commentsHeaderShadow = commentsShadow.querySelector('bili-comments-header-renderer').shadowRoot
+
+    // 固定评论栏
+    const style2 = Object.assign(document.createElement('style'), {
+      textContent: `
+      div#commentbox {
+        position: fixed;
+        left: 0;
+        bottom: var(--actionbar-height);
+        z-index: 10;
+        background: white;
+        width: 100%;
+        padding: 8px 12px;
+        border-top: 1px solid var(--line_regular);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        transition: calc(var(--actionbar-time)*1.40) ease-in;
+        display: var(--commentbox-display);
+
+        /* 由全局变量控制滚动隐藏 */
+        transform: var(--shadow-transform)
+      }
+
+      /* 评论导航 */
+      div#navbar {
+        margin-bottom: 0;
+      }
+
+      /* 评论顶部广告横条 */
+      #notice {
+        display: none;
+      }`
+    })
+    commentsHeaderShadow.appendChild(style2)
+
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        // console.log(mutation.addedNodes, mutation.removedNodes)
+        mutation.addedNodes.forEach(node => {
+          // console.log(node.nodeType, node.nodeName)
+          if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'div' && node.classList.contains('bili-comments-bottom-fixed-wrapper')) {
+            C()
+            observer.disconnect()
+          }
+        })
+      })
+    })
+
+    observer.observe(commentsHeaderShadow, { childList: true, subtree: true })
+  }
+
+  function C () {
+    const commentBoxShadow = commentsHeaderShadow.querySelector('bili-comment-box')?.shadowRoot
+
+    const style3 = Object.assign(document.createElement('style'), {
+      textContent: `
+      :host {
+        display: var(--commentbox-display) !important;
+      }
+
+      /* 移除评论头像 */
+      div#user-avatar {
+          display: none;
+      }
+
+      /* 输入块 */
+      div#comment-area {
+        width: calc(100% - 24px);
+      }
+
+      /* 输入块内 */
+      div#editor {
+        border-radius: 13px;
+        padding: 0;
+      }`
+    })
+    commentBoxShadow.appendChild(style3)
+  }
+}
+
+
+/***/ }),
+/* 31 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -6543,335 +6919,6 @@ function handleVideoCard () {
 
 
 /***/ }),
-/* 31 */
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   videoInteraction: () => (/* binding */ videoInteraction)
-/* harmony export */ });
-/* global GM_getValue */
-
-function videoInteraction () {
-  handlePortrait()
-
-  handlelVideoClick()
-
-  handleVideoLongPress()
-
-  closeMiniPlayer()
-
-  setEndingContent()
-
-  modifyShadowDOMLate()
-}
-
-let isPortrait = false
-
-function handlePortrait () {
-  const video = document.querySelector('#bilibili-player video')
-
-  // 适配侧边栏切换视频
-  video.addEventListener('resize', () => {
-    // aspectRatio, resize 前宽高为 0
-    isPortrait = video.videoHeight / video.videoWidth > 1
-  })
-}
-
-// 接管视频点击事件
-function handlelVideoClick () {
-  const playerContainter = document.querySelector('.bpx-player-container')
-  const videoArea = playerContainter.querySelector('.bpx-player-video-area')
-  const videoPerch = videoArea.querySelector('.bpx-player-video-perch')
-  const videoWrap = videoPerch.querySelector('.bpx-player-video-wrap')
-  const video = videoWrap.querySelector('video')
-
-  // 架空双击全屏层以适应竖屏
-  videoArea.insertBefore(videoWrap, videoPerch)
-
-  // safari 内联播放
-  if (video) { video.playsInline = true }
-
-  const oldControlWrap = videoArea.querySelector('.bpx-player-control-wrap')
-  const controlEntity = oldControlWrap.querySelector('.bpx-player-control-entity') // 移动后再使用
-
-  let clickTimer = null
-
-  let hideTimer = null
-
-  // 阻止 controlWrap 的 mouseleave 事件隐藏控制栏, mouseleave 事件不会在冒泡阶段和捕获阶段传播
-  const controlWrap = Object.assign(document.createElement('div'), {
-    className: 'bpx-player-control-wrap new',
-    innerHTML: '<div class="bpx-player-control-mask"></div>'
-  })
-  videoArea.insertBefore(controlWrap, oldControlWrap)
-  controlWrap.appendChild(controlEntity)
-
-  // 观察控制栏按键弹窗, 元素发生移动后, 之前的 querySelector 会失效 (无法找到该元素)
-  // 当箭头函数的函数体只有一条语句时，如果使用了花括号，则该语句会被解释为函数体，而不是返回值。因此，当使用了花括号时，isBpxStateShow 的返回值为 undefined。
-  const isBpxStateShow = () => controlEntity.querySelector('.bpx-player-control-bottom-right>.bpx-state-show')
-
-  const controlTop = controlEntity.querySelector('.bpx-player-control-top')
-  const bottomRight = controlEntity.querySelector('.bpx-player-control-bottom-right')
-
-  // 可以作语句的表达式：需要赋值给变量或者作为函数调用的一部分，能够产生一个可以被丢弃的值
-  // 布尔值不能直接作为语句，因为它们不执行任何动作，也不改变程序的状态
-  // x++ 作语句时执行操作，但是不显式返回值，实际 x 的值隐式地改变了；作表达式时根据前后缀，依次返回 x 的值和执行操作
-  const isShown = () => playerContainter.getAttribute('ctrl-shown') === 'true' // controlWrap 的 mouseleave 事件导致点击非视频部分会隐藏控制栏, 实际已不必要
-
-  // 覆盖原显隐
-  playerContainter.setAttribute('ctrl-shown', 'false')
-
-  const observer = new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-      if (mutation.addedNodes[0].classList.contains('bpx-player-ctrl-web')) { // 还可以让控制栏显示作为网页全屏按钮加载的标志事件
-        if (video.paused) { showControlWrap() }
-        // 点击视频关闭字幕设置
-        const subtitleBtn = document.querySelector('.bpx-player-ctrl-subtitle')
-        if (subtitleBtn) {
-          window.addEventListener('click', event => {
-            if (!subtitleBtn.contains(event.target)) { subtitleBtn.dispatchEvent(new MouseEvent('mouseleave')) }
-          })
-        }
-        observer.disconnect()
-      }
-    })
-  })
-  observer.observe(bottomRight, { childList: true })
-
-  function hideControlWrap (isEnd) {
-    if ((!video.paused && !isBpxStateShow()) || isEnd) {
-      playerContainter.setAttribute('ctrl-shown', 'false')
-      clearTimeout(hideTimer)
-    } else {
-      delayHideTimer()
-    }
-  }
-
-  video.addEventListener('ended', () => { hideControlWrap(true) })
-
-  function showControlWrap () {
-    playerContainter.setAttribute('ctrl-shown', 'true')
-    delayHideTimer()
-  }
-
-  function delayHideTimer () {
-    clearTimeout(hideTimer)
-    hideTimer = setTimeout(hideControlWrap, 3000)
-  }
-
-  // 阻止触摸单击触发 videoArea 的 mousemove 事件而显隐控制栏
-  videoWrap.addEventListener('mousemove', event => { event.stopPropagation() })
-  controlWrap.addEventListener('mousemove', event => { event.stopPropagation() })
-
-  video.addEventListener('play', delayHideTimer)
-
-  controlWrap.addEventListener('click', event => {
-    event.stopPropagation()
-    delayHideTimer()
-  })
-
-  controlTop.addEventListener('touchstart', delayHideTimer)
-
-  // 单击监听
-  videoWrap.addEventListener('click', () => {
-    clearTimeout(clickTimer)
-
-    clickTimer = setTimeout(() => {
-      isShown() ? hideControlWrap() : showControlWrap()
-
-      if (!GM_getValue('ban-video-click-play', false)) { video.paused ? video.play() : video.pause() } // videoPerch.click()
-    }, 250)
-  })
-
-  // 双击监听
-  videoWrap.addEventListener('dblclick', () => {
-    clearTimeout(clickTimer)
-
-    // 双击打开声音
-    video.muted = false
-    if (video.volume === 0) { document.querySelector('.bpx-player-ctrl-muted-icon').click() }
-
-    isPortrait
-      ? document.querySelector('.bpx-player-ctrl-web').click()
-      // view 省略时指向当前窗口
-      : videoPerch.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
-  })
-
-  // 阻止视频响应滑动侧边栏
-  // 阻止冒泡只对当前监听器生效，禁止全屏滑动和拖动进度条触发侧边栏。要传递参数或用形参，就要用函数而非引用
-  videoArea.addEventListener('touchstart', event => { event.stopPropagation() })
-}
-
-function closeMiniPlayer () {
-  // 关闭小窗: getElement 提前使用在元素加载后能获取到, querySelector 在元素加载后使用才能获取到
-  if (!localStorage.getItem('is-mini-player-closed')) {
-    const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
-    new MutationObserver(mutations =>
-      mutations.forEach(mutation => {
-        if (mutation.target.classList.contains('on')) {
-          miniPlayerBtn.click()
-          localStorage.setItem('is-mini-player-closed', true)
-        }
-      })
-    ).observe(miniPlayerBtn, { attributes: true, attributeFilter: ['class'] })
-  }
-}
-
-function handleVideoLongPress () {
-  const video = document.querySelector('video')
-  let isLongPress = false
-  let timeoutId
-  let times
-
-  video.addEventListener('touchstart', () => {
-    times = Number(GM_getValue('video-longpress-speed', '2'))
-
-    timeoutId = setTimeout(() => {
-      video.playbackRate = video.playbackRate * times
-      isLongPress = true
-    }, 500)
-  })
-
-  video.addEventListener('touchmove', cancelLongPress)
-  video.addEventListener('touchend', cancelLongPress)
-
-  function cancelLongPress () {
-    clearTimeout(timeoutId)
-
-    if (isLongPress) {
-      video.playbackRate = video.playbackRate / times
-      isLongPress = false
-    }
-  }
-}
-
-function setEndingContent () {
-  addEndingScale()
-
-  function addEndingScale () {
-    const style = Object.assign(document.createElement('style'), {
-      id: 'ending-content-scale',
-      textContent: `
-        .bpx-player-ending-content[screen-mode=little-screen] { transform: scale(calc(${window.innerWidth}/536*0.9)) !important; }
-        .bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/710*0.9)) !important; }
-        .bpx-player-container[data-screen=full] .bpx-player-ending-content { transform: scale(calc(${window.innerWidth}/952*0.9)) !important; }
-      `
-    })
-    document.head.appendChild(style)
-  }
-
-  function renewEndingScale () {
-    document.head.querySelector('#ending-content-scale').remove()
-    addEndingScale()
-  }
-
-  screen.orientation.addEventListener('change', renewEndingScale)
-  window.addEventListener('resize', renewEndingScale)
-}
-
-// 动态修改播放组件样式
-function modifyShadowDOMLate () {
-  let commentsShadow
-  let commentsHeaderShadow
-  A()
-
-  function A () {
-    commentsShadow = document.querySelector('bili-comments')?.shadowRoot
-
-    if (!commentsShadow) {
-      setTimeout(A, 2000)
-      return
-    }
-
-    const style1 = Object.assign(document.createElement('style'), {
-      textContent: `
-      div#contents {
-        padding-top: 0;
-        left: -30px;
-        width: calc(100% + 30px);
-      }`
-    })
-    commentsShadow.appendChild(style1)
-
-    B()
-  }
-
-  function B () {
-    commentsHeaderShadow = commentsShadow.querySelector('bili-comments-header-renderer')?.shadowRoot
-
-    if (!commentsHeaderShadow) {
-      setTimeout(B, 2000)
-      return
-    }
-
-    // 固定评论栏
-    const style2 = Object.assign(document.createElement('style'), {
-      textContent: `
-      div#commentbox {
-        position: fixed;
-        left: 0;
-        bottom: var(--actionbar-height);
-        z-index: 10;
-        background: white;
-        width: 100%;
-        padding: 8px 12px;
-        border-top: 1px solid var(--line_regular);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-
-        transition: calc(var(--actionbar-time)*1.40) ease-in;
-        display: var(--commentbox-display);
-
-        /* 由全局变量控制滚动隐藏 */
-        transform: var(--shadow-transform)
-      }
-
-      /* 评论导航 */
-      div#navbar {
-        margin-bottom: 0;
-      }`
-    })
-    commentsHeaderShadow.appendChild(style2)
-
-    C()
-  }
-
-  function C () {
-    const commentBoxShadow = commentsHeaderShadow.querySelector('bili-comment-box')?.shadowRoot
-
-    if (!commentBoxShadow) {
-      setTimeout(C, 2000)
-      return
-    }
-
-    const style3 = Object.assign(document.createElement('style'), {
-      textContent: `
-      :host {
-        display: var(--commentbox-display) !important;
-      }
-
-      /* 移除评论头像 */
-      div#user-avatar {
-          display: none;
-      }
-
-      /* 输入块 */
-      div#comment-area {
-        width: calc(100% - 24px);
-      }
-
-      /* 输入块内 */
-      div#editor {
-        border-radius: 13px;
-        padding: 0;
-      }`
-    })
-    commentBoxShadow.appendChild(style3)
-  }
-}
-
-
-/***/ }),
 /* 32 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
@@ -7031,8 +7078,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _window_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(25);
 /* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(26);
 /* harmony import */ var _actionbar_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(27);
-/* harmony import */ var _home_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(30);
-/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(31);
+/* harmony import */ var _home_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(31);
+/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(30);
 /* harmony import */ var _message_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(32);
 // @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
 
