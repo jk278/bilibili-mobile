@@ -47,6 +47,8 @@ body[scroll-hidden] {
     box-sizing: border-box;
     width: 100% !important;
     padding: calc(var(--dm-row-height) + 5px) 10px 10px;
+    
+    background: white;
 }
 
 .left-container::after {

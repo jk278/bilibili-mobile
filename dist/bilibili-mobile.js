@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.18
+// @version            5.0-beta.19
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -1778,6 +1778,8 @@ body[scroll-hidden] {
     box-sizing: border-box;
     width: 100% !important;
     padding: calc(var(--dm-row-height) + 5px) 10px 10px;
+    
+    background: white;
 }
 
 .left-container::after {
@@ -6336,65 +6338,76 @@ function setEndingContent () {
   window.addEventListener('resize', renewEndingScale)
 }
 
-// 动态修改播放组件样式
-function modifyShadowDOMLate () {
+/**
+ * 动态修改播放组件样式
+ * @param {boolean} isDynamicRefresh - 是否动态刷新
+ */
+function modifyShadowDOMLate (isDynamicFresh) {
   let commentsShadow
   let commentsHeaderShadow
+  let headerBoxShadow
 
   // 初始化动态要获胜 #comment，第一次变化删除.comment增加.comment，第二次添加bili-comments
   const comment = document.getElementById('comment')
-  // console.log(comment)
   const observer = new MutationObserver(mutations => {
     mutations.forEach(mutation => {
       // console.log(mutation.addedNodes, mutation.removedNodes)
       mutation.addedNodes.forEach(node => {
-        // console.log(node.nodeType, node.nodeName)
         if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'bili-comments') {
-          A()
+          observeComments()
           observer.disconnect()
         }
       })
     })
   })
-
-  // 开始观察目标元素
   observer.observe(comment, { childList: true, subtree: true })
 
-  function A () {
+  function observeComments () {
     commentsShadow = document.querySelector('bili-comments').shadowRoot
-
-    const style1 = Object.assign(document.createElement('style'), {
-      textContent: `
-      div#contents {
-        padding-top: 0;
-        left: -30px;
-        width: calc(100% + 30px);
-      }`
-    })
-    commentsShadow.appendChild(style1)
 
     const observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
         // console.log(mutation.addedNodes, mutation.removedNodes)
         mutation.addedNodes.forEach(node => {
-          // console.log(node.nodeType, node.nodeName)
-          if (node.nodeType === Node.ELEMENT_NODE && node.id === 'header') {
-            B()
+          if (node.nodeType === Node.ELEMENT_NODE && node.id === 'contents') {
+            observeHeader()
+            observeContent()
             observer.disconnect()
           }
         })
       })
     })
-
-    // 开始观察目标元素
     observer.observe(commentsShadow, { childList: true, subtree: true })
+
+    const style = Object.assign(document.createElement('style'), {
+      textContent: `
+      div#contents {
+        padding-top: 0;
+      }`
+    })
+    commentsShadow.appendChild(style)
   }
 
-  function B () {
+  // --------------------
+  // header
+  function observeHeader () {
     commentsHeaderShadow = commentsShadow.querySelector('bili-comments-header-renderer').shadowRoot
 
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        // console.log(mutation.addedNodes, mutation.removedNodes)
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'div' && node.id === 'commentbox') {
+            observeHeader2()
+            observer.disconnect()
+          }
+        })
+      })
+    })
+    observer.observe(commentsHeaderShadow, { childList: true, subtree: true })
+
     // 固定评论栏
-    const style2 = Object.assign(document.createElement('style'), {
+    const style = Object.assign(document.createElement('style'), {
       textContent: `
       div#commentbox {
         position: fixed;
@@ -6424,28 +6437,26 @@ function modifyShadowDOMLate () {
         display: none;
       }`
     })
-    commentsHeaderShadow.appendChild(style2)
+    commentsHeaderShadow.appendChild(style)
+  }
+
+  function observeHeader2 () {
+    headerBoxShadow = commentsHeaderShadow.querySelector('bili-comment-box').shadowRoot
 
     const observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
         // console.log(mutation.addedNodes, mutation.removedNodes)
         mutation.addedNodes.forEach(node => {
-          // console.log(node.nodeType, node.nodeName)
-          if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'div' && node.classList.contains('bili-comments-bottom-fixed-wrapper')) {
-            C()
+          if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'div' && node.id === 'comment-area') {
+            observeHeader3()
             observer.disconnect()
           }
         })
       })
     })
+    observer.observe(headerBoxShadow, { childList: true, subtree: true })
 
-    observer.observe(commentsHeaderShadow, { childList: true, subtree: true })
-  }
-
-  function C () {
-    const commentBoxShadow = commentsHeaderShadow.querySelector('bili-comment-box')?.shadowRoot
-
-    const style3 = Object.assign(document.createElement('style'), {
+    const style = Object.assign(document.createElement('style'), {
       textContent: `
       :host {
         display: var(--commentbox-display) !important;
@@ -6467,8 +6478,146 @@ function modifyShadowDOMLate () {
         padding: 0;
       }`
     })
-    commentBoxShadow.appendChild(style3)
+    headerBoxShadow.appendChild(style)
   }
+
+  function observeHeader3 () {
+    const textareaShadow = headerBoxShadow.querySelector('bili-comment-textarea').shadowRoot
+
+    const style = Object.assign(document.createElement('style'), {
+      textContent: `
+      textarea#input {
+        line-height: 26px;
+        min-height: 26px;
+        height: 26px !important;
+      }`
+    })
+    textareaShadow.appendChild(style)
+  }
+
+  // --------------------
+  // content
+  function observeContent () {
+    const commentThreads = commentsShadow.querySelectorAll('bili-comment-thread-renderer')
+
+    commentThreads.forEach(thread => {
+      const threadShadow = thread.shadowRoot
+
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          // console.log(mutation.addedNodes, mutation.removedNodes)
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'div' && node.id === 'replies') {
+              observeContent2(threadShadow)
+              observer.disconnect()
+            }
+          })
+        })
+      })
+      observer.observe(threadShadow, { childList: true, subtree: true })
+    })
+  }
+
+  function observeContent2 (threadShadow) {
+    const commentShadow = threadShadow.querySelector('bili-comment-renderer').shadowRoot
+    const repliesShadow = threadShadow.querySelector('bili-comment-replies-renderer').shadowRoot
+
+    const style1 = Object.assign(document.createElement('style'), {
+      textContent: `
+      div#body {
+        padding-left: 45px;
+        --bili-comment-hover-more-display: block;
+      }
+      
+      a#user-avatar {
+        left: 0;
+      }
+      `
+    })
+    commentShadow.appendChild(style1)
+
+    const style2 = Object.assign(document.createElement('style'), {
+      textContent: `
+      div#expander {
+        padding-left: 40px;
+      }`
+    })
+    repliesShadow.appendChild(style2)
+
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        // console.log(mutation.addedNodes, mutation.removedNodes)
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'div' && node.id === 'body') {
+            const avatarShadow = commentShadow.querySelector('bili-avatar').shadowRoot
+
+            const style3 = Object.assign(document.createElement('style'), {
+              textContent: `
+              .layer.center {
+                width: 48px !important;
+                height: 48px !important;
+              }`
+            })
+            avatarShadow.appendChild(style3)
+            observer.disconnect()
+          }
+        })
+      })
+    })
+    observer.observe(commentShadow, { childList: true, subtree: true })
+
+    const observer2 = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        // console.log(mutation.addedNodes, mutation.removedNodes)
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'div' && node.id === 'expander') {
+            const replies = repliesShadow.querySelectorAll('bili-comment-reply-renderer')
+            replies.forEach(reply => {
+              const replyShadow = reply.shadowRoot
+
+              const style3 = Object.assign(document.createElement('style'), {
+                textContent: `
+                div#body {
+                  padding: 4px 0 4px 29px;
+                  --bili-comment-hover-more-display: block;
+                }`
+              })
+              replyShadow.appendChild(style3)
+              observer.disconnect()
+            })
+          }
+        })
+      })
+    })
+    observer2.observe(repliesShadow, { childList: true, subtree: true })
+  }
+
+  if (isDynamicFresh) { return }
+
+  // 评论区图片
+  new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      // console.log(mutation.addedNodes, mutation.removedNodes)
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'bili-photoswipe') {
+          const photoShadow = node.shadowRoot
+
+          const style = Object.assign(document.createElement('style'), {
+            textContent: `
+            #prev, #next, #close {
+              top: 90% !important;
+            }
+
+            #close {
+              right: 50% !important;
+              transform: translate(50%, -50%);
+            }`
+          })
+          photoShadow.appendChild(style)
+        }
+      })
+    })
+  }).observe(document.body, { childList: true })
 }
 
 
