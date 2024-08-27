@@ -5,7 +5,7 @@ const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = {
   mode: 'none',
-  entry: './src/app.js',
+  entry: './src/main.js',
   output: {
     filename: 'bilibili-mobile.js',
     path: path.resolve(__dirname, 'dist')
@@ -18,10 +18,6 @@ module.exports = {
           'style-loader',
           'css-loader'
         ]
-      },
-      {
-        test: /\.html$/,
-        use: 'html-loader'
       }
     ]
   },

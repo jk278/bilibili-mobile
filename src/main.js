@@ -10,7 +10,7 @@ import './style/message.css'
 
 import { preventBeforeUnload, countViewTime, increaseVideoLoadSize, handleScroll } from './window.js'
 import { handleScriptPreSetting, handleScriptSetting, setScriptHelp } from './setting.js'
-import { handleActionbar } from './actionbar.js'
+import { handleActionbar } from './actionbar/actionbar.js'
 import { handleHeaderImage, handleVideoCard } from './home.js'
 import { videoInteraction } from './video.js'
 import { createUnfoldBtn } from './message.js'

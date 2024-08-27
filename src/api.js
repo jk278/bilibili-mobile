@@ -1,4 +1,5 @@
 // fork 自 BiliPlus 项目：https://github.com/0xlau/biliplus
+import { BILIBILI_API } from './constant.js'
 
 const mixinKeyEncTab = [
   46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,
@@ -8,11 +9,20 @@ const mixinKeyEncTab = [
 ]
 
 // 对 imgKey 和 subKey 进行字符顺序打乱编码
-const getMixinKey = (orig) =>
-  mixinKeyEncTab
+// 使用缓存机制减少重复计算
+const mixinKeyCache = new Map()
+
+const getMixinKey = (orig) => {
+  if (mixinKeyCache.has(orig)) {
+    return mixinKeyCache.get(orig)
+  }
+  const mixinKey = mixinKeyEncTab
     .map((n) => orig[n])
     .join('')
     .slice(0, 32)
+  mixinKeyCache.set(orig, mixinKey)
+  return mixinKey
+}
 
 // 为请求参数进行 wbi 签名
 function encWbi (params, imgKey, subKey) {
@@ -65,59 +75,62 @@ async function getwts (params) {
   return query
 }
 
-const BILIBILI_API = 'https://api.bilibili.com'
+/**
+ * 提取公共的 fetch 逻辑
+ */
+async function fetchAPI (url, options = {}) {
+  try {
+    const response = await fetch(url, options)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const jsonData = await response.json()
+    return jsonData.data
+  } catch (error) {
+    console.error('Error fetching data:', error)
+    throw error
+  }
+}
 
 /**
  * 获取导航栏用户信息
- * @returns 用户信息data
+ * @returns {Promise<Object>} 用户信息数据
+ * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 async function getNavUserInfo () {
-  const response = await fetch(`${BILIBILI_API}/x/web-interface/nav`, { credentials: 'include' })
-
-  const jsonData = await response.json()
-  if (response.status !== 200 || !jsonData) { throw new Error() }
-  return jsonData.data
+  return fetchAPI(`${BILIBILI_API}/x/web-interface/nav`, { credentials: 'include' })
 }
 
 /**
  * 获取B站视频 aid、cid 等信息
- * @param {string} 视频 bvid
- * @returns 视频data
+ * @param {string} bvid 视频 bvid
+ * @returns {Promise<Object>} 视频信息数据
+ * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getVideoInfo (bvid) {
-  const response = await fetch(`${BILIBILI_API}/x/web-interface/view?bvid=${bvid}`)
-
-  const jsonData = await response.json()
-  if (response.status !== 200 || !jsonData) { throw new Error() }
-  return jsonData.data
+  return fetchAPI(`${BILIBILI_API}/x/web-interface/view?bvid=${bvid}`)
 }
 
 /**
  * 获取 AI判断 响应
- * @param {object} params
- * @returns response.json().data
+ * @param {object} params 请求参数
+ * @returns {Promise<Object>} 响应数据
+ * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getJudgeAI (params) {
   const query = await getwts(params)
-  const response = await fetch(`${BILIBILI_API}/x/web-interface/view/conclusion/judge?${query}`)
-
-  const jsonData = await response.json()
-  if (response.status !== 200 || !jsonData) { throw new Error() }
-  return jsonData.data
+  return fetchAPI(`${BILIBILI_API}/x/web-interface/view/conclusion/judge?${query}`)
 }
 
 /**
  * 获取 AI 总结
  * @param {object} params { bvid, cid, up_mid }
- * @returns response.json().data
+ * @returns {Promise<Object>} 响应数据
+ * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getAIConclusion (params) {
   const query = await getwts(params)
-  const response = await fetch(`${BILIBILI_API}/x/web-interface/view/conclusion/get?${query}`)
-
-  const jsonData = await response.json()
-  if (response.status !== 200 || !jsonData) { throw new Error() }
-  return jsonData.data
+  return fetchAPI(`${BILIBILI_API}/x/web-interface/view/conclusion/get?${query}`)
 }
 
 /**
@@ -157,36 +170,31 @@ function getCSRF () {
  * @param {number} pageNumber 页码
  * @param {number} pageSize 每页显示的数据条数
  * @param {number} orderType 排序方式，1: 最常访问，2: 最近关注
- * @returns {object} response.json().data
+ * @returns {Promise<Object>} 响应数据
+ * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getFollowList (pageNumber, pageSize, orderType) {
   const vmid = getUserID()
   const query = await getwts({})
-  const response = await fetch(`${BILIBILI_API}/x/relation/followings?vmid=${vmid}&pn=${pageNumber}&ps=${pageSize}&order=desc&order_type=${orderType === 1 ? 'attention' : ''}&gaia_source=main_web&web_location=333.999&${query}`, { credentials: 'include' })
-
-  const jsonData = await response.json()
-  if (response.status !== 200 || !jsonData) { throw new Error() }
-  return jsonData.data
+  return fetchAPI(`${BILIBILI_API}/x/relation/followings?vmid=${vmid}&pn=${pageNumber}&ps=${pageSize}&order=desc&order_type=${orderType === 1 ? 'attention' : ''}&gaia_source=main_web&web_location=333.999&${query}`, { credentials: 'include' })
 }
 
 /**
  * 获取动态列表
  * @param {string} offset the data.offset of last response
- * @returns {object} response.json().data
+ * @returns {Promise<Object>} 响应数据
+ * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getDynamicList (offset) {
-  const response = await fetch(`${BILIBILI_API}/x/polymer/web-dynamic/v1/feed/nav?offset=${offset}`, { credentials: 'include' })
-
-  const jsonData = await response.json()
-  if (response.status !== 200 || !jsonData) { throw new Error() }
-  return jsonData.data
+  return fetchAPI(`${BILIBILI_API}/x/polymer/web-dynamic/v1/feed/nav?offset=${offset}`, { credentials: 'include' })
 }
 
 /**
  * 关注用户
- * @param {string} mid  user id
- * @param {boolean} isFollow  关注/取关
- * @returns response.json()
+ * @param {string} mid 用户 id
+ * @param {boolean} isFollow 关注/取关
+ * @returns {Promise<Object>} 响应数据
+ * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function followUser (mid, isFollow) {
   const response = await fetch('https://api.bilibili.com/x/relation/modify', {
@@ -199,10 +207,11 @@ export async function followUser (mid, isFollow) {
       re_src: '11',
       csrf: getCSRF()
     }).toString(),
-    credentials: 'include' // 发送Cookie
+    credentials: 'include'
   })
 
-  const jsonData = await response.json()
-  if (response.status !== 200 || !jsonData) { throw new Error() }
-  return jsonData
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
 }
