@@ -133,13 +133,20 @@ export function handleScriptPreSetting () {
 
 // 脚本设置
 export function handleScriptSetting () {
-  // 修改顺序后，更改下面的选项变更操作
   const keyValues = {
     key1: 'ban-video-click-play',
     key2: 'ban-action-hidden',
     key3: 'message-sidebar-change-right',
-    key4: 'menu-dialog-move-down',
-    key5: 'home-single-column'
+    key4: 'home-single-column',
+    key5: 'menu-dialog-move-down'
+  }
+
+  const keyNames = {
+    'ban-video-click-play': '禁用点击视频播放/暂停',
+    'ban-action-hidden': '禁止底栏滚动时隐藏',
+    'message-sidebar-change-right': '消息页侧边栏靠右',
+    'home-single-column': '首页单列推荐',
+    'menu-dialog-move-down': '菜单弹窗(收藏、历史等)靠下'
   }
 
   const customKeyValues = {
@@ -148,109 +155,98 @@ export function handleScriptSetting () {
     'header-image-source': 'bing'
   }
 
+  const customKeyNames = {
+    'menu-dialog-move-down-value': '自定义菜单弹窗底边距',
+    'video-longpress-speed': '自定义视频长按倍速',
+    'header-image-source': '主页头图换源'
+  }
+
   const menuOptions = {
     key: 'modify-menu-options',
-    value: [true, true, ...Array(6).fill(false)]
+    value: [true, ...Array(6).fill(false)],
+    names: ['热门', '消息', '动态', '收藏', '历史', '主页', '关注']
   }
 
-  if (GM_getValue('ban-action-hidden', false)) { banActionHidden() }
+  // 初始化设置
+  initSettings()
 
-  function banActionHidden () {
-    const style = Object.assign(document.createElement('style'), {
-      id: 'ban-action-hidden',
-      textContent: `
-        [scroll-hidden] #actionbar,
-        [scroll-hidden] .flexible-roll-btn-inner,
-        [scroll-hidden] .top-btn {
-          transform: none !important;
-        }
-      `
-    })
-    document.head.appendChild(style)
-  }
-
-  if (GM_getValue('message-sidebar-change-right', false)) { messageSidebarRight() }
-
-  function messageSidebarRight () {
-    const style = Object.assign(document.createElement('style'), {
-      id: 'message-sidebar-change-right',
-      textContent: `
-        .space-left.space-left { left: 100%; }      
-        body>.container[sidebar] .space-left.space-left { transform: translateX(-100%); }
-
-      `
-    })
-    document.head.appendChild(style)
-  }
-
-  if (GM_getValue('menu-dialog-move-down', false)) { menuDialogMoveDown() }
-
-  function menuDialogMoveDown (valueToChange) {
-    const downValue = valueToChange || GM_getValue('menu-dialog-move-down-value', '20')
-
-    const style = Object.assign(document.createElement('style'), {
-      id: 'menu-dialog-move-down-value',
-      textContent: `
-        .bili-header__bar .v-popover.v-popover {
-          top: unset !important;
-          bottom: var(--actionbar-height);
-          transform: translate(-50%, -${downValue}px);
-        }
-        div.bili-header .v-popover.v-popover[show] {
-          transform: translate(-50%, -${downValue}px);
-        }
-      `
-    })
-    document.head.appendChild(style)
-  }
-
-  // 初始化添加移至脚本预加载设置
-
-  function homeSingleColumn () {
-    const style = Object.assign(document.createElement('style'), {
-      id: 'home-single-column',
-      textContent: `
-      div.recommended-container_floor-aside .container {
-          grid-template-columns: repeat(1, 1fr) !important;
-      }
-
-      div.bili-video-card.is-rcmd,
-      div.bili-live-card.is-rcmd {
-          --cover-radio: 56.25% !important;
-      }
-
-      /* 修复直播info占位高度变窄 */
-      .bili-live-card__skeleton--right {
-        height: 70px;
-      }
-      `
-    })
-    document.head.appendChild(style)
-  }
-
-  if (!GM_getValue(menuOptions.key, menuOptions.value).every(item => item === false)) { modifyMenuOptions() }
-
-  function modifyMenuOptions () {
-    const options = GM_getValue(menuOptions.key, menuOptions.value)
-
-    let selector = ''
-    options.forEach((value, index) => {
-      if (value) { selector = selector + `#header-in-menu ul li:nth-of-type(${index + 1}), ` }
-    })
-    const style = Object.assign(document.createElement('style'), {
-      id: 'modify-menu-options',
-      textContent: `${selector.slice(0, -2)} { display: none; }`
-    })
-    document.head.appendChild(style)
-  }
-
+  // 创建设置面板
   createSettingPanel()
 
+  // 注册菜单命令
   GM_registerMenuCommand('操作偏好设置', () => {
     const settingPanel = document.getElementById('setting-panel-preference')
     settingPanel.style.display = 'flex'
     setTimeout(() => { settingPanel.setAttribute('show', '') }, 10)
   })
+
+  function initSettings () {
+    if (GM_getValue('ban-action-hidden', false)) { banActionHidden() }
+    if (GM_getValue('message-sidebar-change-right', false)) { messageSidebarRight() }
+    if (GM_getValue('menu-dialog-move-down', false)) { menuDialogMoveDown() }
+    if (GM_getValue('home-single-column', false)) { homeSingleColumn() }
+    if (!GM_getValue(menuOptions.key, menuOptions.value).every(item => item === false)) { modifyMenuOptions() }
+  }
+
+  function banActionHidden () {
+    appendStyle('ban-action-hidden', `
+      [scroll-hidden] #actionbar,
+      [scroll-hidden] .flexible-roll-btn-inner,
+      [scroll-hidden] .top-btn {
+        transform: none !important;
+      }
+    `)
+  }
+
+  function messageSidebarRight () {
+    appendStyle('message-sidebar-change-right', `
+      .space-left.space-left { left: 100%; }      
+      body>.container[sidebar] .space-left.space-left { transform: translateX(-100%); }
+    `)
+  }
+
+  function menuDialogMoveDown () {
+    const downValue = GM_getValue('menu-dialog-move-down-value', '20')
+    appendStyle('menu-dialog-move-down-value', `
+      div.bili-header .v-popover.v-popover {
+        top: unset !important;
+        bottom: var(--actionbar-height);
+        transform: translate(-50%, -${downValue}px) scale(.9);
+      }
+      div.bili-header .v-popover.v-popover[show] {
+        transform: translate(-50%, -${downValue}px) !important;
+      }
+    `)
+  }
+
+  function homeSingleColumn () {
+    appendStyle('home-single-column', `
+      div.recommended-container_floor-aside .container {
+        grid-template-columns: repeat(1, 1fr) !important;
+      }
+      div.bili-video-card.is-rcmd,
+      div.bili-live-card.is-rcmd {
+        --cover-radio: 56.25% !important;
+      }
+      .bili-live-card__skeleton--right {
+        height: 70px;
+      }
+    `)
+  }
+
+  function modifyMenuOptions () {
+    const options = GM_getValue(menuOptions.key, menuOptions.value)
+    let selector = ''
+    options.forEach((value, index) => {
+      if (value) { selector += `#header-in-menu ul li:nth-of-type(${index + 1}), ` }
+    })
+    appendStyle('modify-menu-options', `${selector.slice(0, -2)} { display: none; }`)
+  }
+
+  function appendStyle (id, textContent) {
+    const style = Object.assign(document.createElement('style'), { id, textContent })
+    document.head.appendChild(style)
+  }
 
   function createSettingPanel () {
     const settingPanel = Object.assign(document.createElement('div'), {
@@ -259,13 +255,13 @@ export function handleScriptSetting () {
       innerHTML: `
         <div class="setting-title">操作偏好</div>
         <div class="setting-checkboxes">
-          <label><input type="checkbox"><span>禁用点击视频播放/暂停</span></label>
-          <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
-          <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
-          <label><input type="checkbox" class="menu-dialog-move-down"><span>菜单弹窗(收藏、历史等)靠下</span></label>
-          <label><input type="number" value="20" class="menu-dialog-move-down-value"><span>自定义菜单弹窗底边距</span></label>
-          <label><input type="number" value="2" class="video-longpress-speed"><span>自定义视频长按倍速</span></label>
-          <label><select class="header-image-source">
+        ${Object.values(keyValues).map((key) => `
+          <label><input type="checkbox" data-key="${key}"><span>${keyNames[key]}</span></label>
+        `).join('')}
+        ${Object.entries(customKeyValues).filter(([key]) => key !== 'header-image-source').map(([key, value]) => `
+          <label><input type="number" value="${value}" data-key="${key}"><span>${customKeyNames[key]}</span></label>
+        `).join('')}
+          <label><select class="header-image-source" data-key="header-image-source">
               <option value="local">本地图片</option>
               <option value="bing">必应每日</option>
               <option value="unsplash">Unsplash</option>
@@ -276,50 +272,58 @@ export function handleScriptSetting () {
               <option value="suiji">随机⏳</option>
           </select><details><summary>主页头图换源</summary>本地图片限制大小</details></label>
           <label class="modify-menu-options"><span>修改菜单显示选项</span></label>
-          <label><input type="checkbox"><span>首页单列推荐</span></label>
         </div>
         <button id="setting-conform-2" class="setting-conform">确认</button>
-        `
+      `
     })
     document.body.appendChild(settingPanel)
 
-    const values = Object.values(keyValues) // 返回 [v1, v2]
-    const customKeys = Object.keys(customKeyValues)
-    const customValues = Object.values(customKeyValues)
-
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
-    for (const [index, value] of values.entries()) { // 返回 [ [1,v1], [2,v2] ]
-      checkboxElements[index].checked = GM_getValue(value, false)
-    }
-
     const customElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="number"], .setting-checkboxes select')
-    for (const [index, value] of customKeys.entries()) {
-      customElements[index].value = GM_getValue(value, Object.values(customValues)[index])
-    }
+
+    checkboxElements.forEach((checkbox, index) => {
+      checkbox.checked = GM_getValue(Object.values(keyValues)[index], false)
+    })
+
+    customElements.forEach((elem, index) => {
+      elem.value = GM_getValue(Object.keys(customKeyValues)[index], Object.values(customKeyValues)[index])
+    })
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
-      settingPanel.removeAttribute('show')
-      settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
-
       const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
       const writenValues = Array.from(customElements).map(elem => elem.value)
 
-      if (selectedValues[1] !== GM_getValue(values[1], false)) { selectedValues[1] ? banActionHidden() : document.getElementById(values[1]).remove() }
-      if (selectedValues[2] !== GM_getValue(values[2], false)) { selectedValues[2] ? messageSidebarRight() : document.getElementById(values[2]).remove() }
-      if (selectedValues[3] !== GM_getValue(values[3], false)) { selectedValues[3] ? menuDialogMoveDown() : document.getElementById(values[3]).remove() }
-      if (selectedValues[4] !== GM_getValue(values[4], false)) { selectedValues[4] ? homeSingleColumn() : document.getElementById(values[4]).remove() }
+      selectedValues.forEach((value, index) => {
+        const key = Object.values(keyValues)[index]
+        if (value !== GM_getValue(key, false)) {
+          GM_setValue(key, value)
+          switch (key) {
+            case 'ban-action-hidden': value ? banActionHidden() : document.getElementById(key).remove(); break
+            case 'message-sidebar-change-right': value ? messageSidebarRight() : document.getElementById(key).remove(); break
+            case 'menu-dialog-move-down': value ? menuDialogMoveDown() : document.getElementById(key + '-value').remove(); break
+            case 'home-single-column': value ? homeSingleColumn() : document.getElementById(key).remove(); break
+          }
+        }
+      })
 
-      if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0])?.remove(); menuDialogMoveDown(writenValues[0]) }
-      if (writenValues[2] !== GM_getValue(customKeys[2], customValues[2])) {
-        writenValues[2] !== 'local' && window.dispatchEvent(new CustomEvent('variableChanged', { detail: { key: customKeys[2], newValue: writenValues[2] } }))
-      }
+      writenValues.forEach((value, index) => {
+        const key = Object.keys(customKeyValues)[index]
+        if (value !== GM_getValue(key, Object.values(customKeyValues)[index])) {
+          GM_setValue(key, value)
+          if (key === 'menu-dialog-move-down-value') {
+            document.getElementById(key)?.remove()
+            menuDialogMoveDown()
+          } else if (key === 'header-image-source' && value !== 'local') {
+            window.dispatchEvent(new CustomEvent('variableChanged', { detail: { key, newValue: value } }))
+          }
+        }
+      })
 
-      for (const [index, value] of values.entries()) { GM_setValue(value, selectedValues[index]) }
-      for (const [index, value] of customKeys.entries()) { GM_setValue(value, writenValues[index]) }
+      settingPanel.removeAttribute('show')
+      settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
     })
 
     settingPanel.querySelector('.header-image-source').addEventListener('change', event => {
-      // unsafeWindow.document.querySelector('.header-image-source').addEventListener('change', () => { console.log(this.value) })
       if (event.target.value === 'local') {
         const input = document.createElement('input')
         input.type = 'file'
@@ -344,30 +348,27 @@ export function handleScriptSetting () {
         innerHTML: `
           <div class="setting-title">隐藏选项</div>
           <div class="setting-checkboxes">
-            <label><input type="checkbox"><span>分类</span></label>
-            <label><input type="checkbox"><span>热门</span></label>
-            <label><input type="checkbox"><span>消息</span></label>
-            <label><input type="checkbox"><span>动态</span></label>
-            <label><input type="checkbox"><span>收藏</span></label>
-            <label><input type="checkbox"><span>历史</span></label>
-            <label><input type="checkbox"><span>主页</span></label>
-            <label><input type="checkbox"><span>关注</span></label>
+            ${menuOptions.names.map((name, index) => `
+              <label><input type="checkbox" data-index="${index}"><span>${name}</span></label>
+            `).join('')}
           </div>
           <button id="setting-conform-3" class="setting-conform">确认</button>
-          `
+        `
       })
       document.body.appendChild(settingPanel)
 
       const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
       const oldValues = GM_getValue(menuOptions.key, menuOptions.value)
 
-      for (const [index, element] of checkboxElements.entries()) { element.checked = oldValues[index] }
+      checkboxElements.forEach((element, index) => {
+        element.checked = oldValues[index]
+      })
 
       settingPanel.querySelector('#setting-conform-3').addEventListener('click', () => {
         const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
 
         if (selectedValues !== oldValues) {
-          GM_setValue('modify-menu-options', selectedValues)
+          GM_setValue(menuOptions.key, selectedValues)
           document.head.querySelector('#modify-menu-options')?.remove()
           modifyMenuOptions()
         }

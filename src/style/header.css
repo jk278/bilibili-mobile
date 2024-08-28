@@ -125,13 +125,20 @@ div.bili-header .v-popover {
     opacity: 0;
     transition: .4s ease-in;
     display: none;
-    top: unset;
-    bottom: var(--actionbar-height);
+    
+    top: 50vh !important;
+    transform: translate(-50%, -50%) scale(.9);
+}
+
+/* 修复鼠标移动导致的隐藏 */
+div.bili-header .v-popover[display] {
+    display: block !important;
 }
 
 div.bili-header .v-popover[show] {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    /* 修复鼠标移动导致的隐藏时的位移 */
+    transform: translate(-50%, -50%) !important;
 }
 
 /* 复制的分类图外框 */

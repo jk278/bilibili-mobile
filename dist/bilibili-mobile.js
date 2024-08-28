@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.19
+// @version            5.0-beta.20
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -644,11 +644,11 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 /* 自定义菜单弹窗边距放在选项下面,选中才显示 */
-label:has(.menu-dialog-move-down)+label {
+label:has([data-key=menu-dialog-move-down])+label {
     display: none;
 }
 
-label:has(.menu-dialog-move-down:checked)+label {
+label:has([data-key=menu-dialog-move-down]:checked)+label {
     display: flex;
 }
 
@@ -1093,13 +1093,20 @@ div.bili-header .v-popover {
     opacity: 0;
     transition: .4s ease-in;
     display: none;
-    top: unset;
-    bottom: var(--actionbar-height);
+    
+    top: 50vh !important;
+    transform: translate(-50%, -50%) scale(.9);
+}
+
+/* 修复鼠标移动导致的隐藏 */
+div.bili-header .v-popover[display] {
+    display: block !important;
 }
 
 div.bili-header .v-popover[show] {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    /* 修复鼠标移动导致的隐藏时的位移 */
+    transform: translate(-50%, -50%) !important;
 }
 
 /* 复制的分类图外框 */
@@ -4579,13 +4586,20 @@ function handleScriptPreSetting () {
 
 // 脚本设置
 function handleScriptSetting () {
-  // 修改顺序后，更改下面的选项变更操作
   const keyValues = {
     key1: 'ban-video-click-play',
     key2: 'ban-action-hidden',
     key3: 'message-sidebar-change-right',
-    key4: 'menu-dialog-move-down',
-    key5: 'home-single-column'
+    key4: 'home-single-column',
+    key5: 'menu-dialog-move-down'
+  }
+
+  const keyNames = {
+    'ban-video-click-play': '禁用点击视频播放/暂停',
+    'ban-action-hidden': '禁止底栏滚动时隐藏',
+    'message-sidebar-change-right': '消息页侧边栏靠右',
+    'home-single-column': '首页单列推荐',
+    'menu-dialog-move-down': '菜单弹窗(收藏、历史等)靠下'
   }
 
   const customKeyValues = {
@@ -4594,109 +4608,98 @@ function handleScriptSetting () {
     'header-image-source': 'bing'
   }
 
+  const customKeyNames = {
+    'menu-dialog-move-down-value': '自定义菜单弹窗底边距',
+    'video-longpress-speed': '自定义视频长按倍速',
+    'header-image-source': '主页头图换源'
+  }
+
   const menuOptions = {
     key: 'modify-menu-options',
-    value: [true, true, ...Array(6).fill(false)]
+    value: [true, ...Array(6).fill(false)],
+    names: ['热门', '消息', '动态', '收藏', '历史', '主页', '关注']
   }
 
-  if (GM_getValue('ban-action-hidden', false)) { banActionHidden() }
+  // 初始化设置
+  initSettings()
 
-  function banActionHidden () {
-    const style = Object.assign(document.createElement('style'), {
-      id: 'ban-action-hidden',
-      textContent: `
-        [scroll-hidden] #actionbar,
-        [scroll-hidden] .flexible-roll-btn-inner,
-        [scroll-hidden] .top-btn {
-          transform: none !important;
-        }
-      `
-    })
-    document.head.appendChild(style)
-  }
-
-  if (GM_getValue('message-sidebar-change-right', false)) { messageSidebarRight() }
-
-  function messageSidebarRight () {
-    const style = Object.assign(document.createElement('style'), {
-      id: 'message-sidebar-change-right',
-      textContent: `
-        .space-left.space-left { left: 100%; }      
-        body>.container[sidebar] .space-left.space-left { transform: translateX(-100%); }
-
-      `
-    })
-    document.head.appendChild(style)
-  }
-
-  if (GM_getValue('menu-dialog-move-down', false)) { menuDialogMoveDown() }
-
-  function menuDialogMoveDown (valueToChange) {
-    const downValue = valueToChange || GM_getValue('menu-dialog-move-down-value', '20')
-
-    const style = Object.assign(document.createElement('style'), {
-      id: 'menu-dialog-move-down-value',
-      textContent: `
-        .bili-header__bar .v-popover.v-popover {
-          top: unset !important;
-          bottom: var(--actionbar-height);
-          transform: translate(-50%, -${downValue}px);
-        }
-        div.bili-header .v-popover.v-popover[show] {
-          transform: translate(-50%, -${downValue}px);
-        }
-      `
-    })
-    document.head.appendChild(style)
-  }
-
-  // 初始化添加移至脚本预加载设置
-
-  function homeSingleColumn () {
-    const style = Object.assign(document.createElement('style'), {
-      id: 'home-single-column',
-      textContent: `
-      div.recommended-container_floor-aside .container {
-          grid-template-columns: repeat(1, 1fr) !important;
-      }
-
-      div.bili-video-card.is-rcmd,
-      div.bili-live-card.is-rcmd {
-          --cover-radio: 56.25% !important;
-      }
-
-      /* 修复直播info占位高度变窄 */
-      .bili-live-card__skeleton--right {
-        height: 70px;
-      }
-      `
-    })
-    document.head.appendChild(style)
-  }
-
-  if (!GM_getValue(menuOptions.key, menuOptions.value).every(item => item === false)) { modifyMenuOptions() }
-
-  function modifyMenuOptions () {
-    const options = GM_getValue(menuOptions.key, menuOptions.value)
-
-    let selector = ''
-    options.forEach((value, index) => {
-      if (value) { selector = selector + `#header-in-menu ul li:nth-of-type(${index + 1}), ` }
-    })
-    const style = Object.assign(document.createElement('style'), {
-      id: 'modify-menu-options',
-      textContent: `${selector.slice(0, -2)} { display: none; }`
-    })
-    document.head.appendChild(style)
-  }
-
+  // 创建设置面板
   createSettingPanel()
 
+  // 注册菜单命令
   GM_registerMenuCommand('操作偏好设置', () => {
     const settingPanel = document.getElementById('setting-panel-preference')
     settingPanel.style.display = 'flex'
     setTimeout(() => { settingPanel.setAttribute('show', '') }, 10)
   })
+
+  function initSettings () {
+    if (GM_getValue('ban-action-hidden', false)) { banActionHidden() }
+    if (GM_getValue('message-sidebar-change-right', false)) { messageSidebarRight() }
+    if (GM_getValue('menu-dialog-move-down', false)) { menuDialogMoveDown() }
+    if (GM_getValue('home-single-column', false)) { homeSingleColumn() }
+    if (!GM_getValue(menuOptions.key, menuOptions.value).every(item => item === false)) { modifyMenuOptions() }
+  }
+
+  function banActionHidden () {
+    appendStyle('ban-action-hidden', `
+      [scroll-hidden] #actionbar,
+      [scroll-hidden] .flexible-roll-btn-inner,
+      [scroll-hidden] .top-btn {
+        transform: none !important;
+      }
+    `)
+  }
+
+  function messageSidebarRight () {
+    appendStyle('message-sidebar-change-right', `
+      .space-left.space-left { left: 100%; }      
+      body>.container[sidebar] .space-left.space-left { transform: translateX(-100%); }
+    `)
+  }
+
+  function menuDialogMoveDown () {
+    const downValue = GM_getValue('menu-dialog-move-down-value', '20')
+    appendStyle('menu-dialog-move-down-value', `
+      div.bili-header .v-popover.v-popover {
+        top: unset !important;
+        bottom: var(--actionbar-height);
+        transform: translate(-50%, -${downValue}px) scale(.9);
+      }
+      div.bili-header .v-popover.v-popover[show] {
+        transform: translate(-50%, -${downValue}px) !important;
+      }
+    `)
+  }
+
+  function homeSingleColumn () {
+    appendStyle('home-single-column', `
+      div.recommended-container_floor-aside .container {
+        grid-template-columns: repeat(1, 1fr) !important;
+      }
+      div.bili-video-card.is-rcmd,
+      div.bili-live-card.is-rcmd {
+        --cover-radio: 56.25% !important;
+      }
+      .bili-live-card__skeleton--right {
+        height: 70px;
+      }
+    `)
+  }
+
+  function modifyMenuOptions () {
+    const options = GM_getValue(menuOptions.key, menuOptions.value)
+    let selector = ''
+    options.forEach((value, index) => {
+      if (value) { selector += `#header-in-menu ul li:nth-of-type(${index + 1}), ` }
+    })
+    appendStyle('modify-menu-options', `${selector.slice(0, -2)} { display: none; }`)
+  }
+
+  function appendStyle (id, textContent) {
+    const style = Object.assign(document.createElement('style'), { id, textContent })
+    document.head.appendChild(style)
+  }
 
   function createSettingPanel () {
     const settingPanel = Object.assign(document.createElement('div'), {
@@ -4705,13 +4708,13 @@ function handleScriptSetting () {
       innerHTML: `
         <div class="setting-title">操作偏好</div>
         <div class="setting-checkboxes">
-          <label><input type="checkbox"><span>禁用点击视频播放/暂停</span></label>
-          <label><input type="checkbox"><span>禁止底栏滚动时隐藏</span></label>
-          <label><input type="checkbox"><span>消息页侧边栏靠右</span></label>
-          <label><input type="checkbox" class="menu-dialog-move-down"><span>菜单弹窗(收藏、历史等)靠下</span></label>
-          <label><input type="number" value="20" class="menu-dialog-move-down-value"><span>自定义菜单弹窗底边距</span></label>
-          <label><input type="number" value="2" class="video-longpress-speed"><span>自定义视频长按倍速</span></label>
-          <label><select class="header-image-source">
+        ${Object.values(keyValues).map((key) => `
+          <label><input type="checkbox" data-key="${key}"><span>${keyNames[key]}</span></label>
+        `).join('')}
+        ${Object.entries(customKeyValues).filter(([key]) => key !== 'header-image-source').map(([key, value]) => `
+          <label><input type="number" value="${value}" data-key="${key}"><span>${customKeyNames[key]}</span></label>
+        `).join('')}
+          <label><select class="header-image-source" data-key="header-image-source">
               <option value="local">本地图片</option>
               <option value="bing">必应每日</option>
               <option value="unsplash">Unsplash</option>
@@ -4722,50 +4725,58 @@ function handleScriptSetting () {
               <option value="suiji">随机⏳</option>
           </select><details><summary>主页头图换源</summary>本地图片限制大小</details></label>
           <label class="modify-menu-options"><span>修改菜单显示选项</span></label>
-          <label><input type="checkbox"><span>首页单列推荐</span></label>
         </div>
         <button id="setting-conform-2" class="setting-conform">确认</button>
-        `
+      `
     })
     document.body.appendChild(settingPanel)
 
-    const values = Object.values(keyValues) // 返回 [v1, v2]
-    const customKeys = Object.keys(customKeyValues)
-    const customValues = Object.values(customKeyValues)
-
     const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
-    for (const [index, value] of values.entries()) { // 返回 [ [1,v1], [2,v2] ]
-      checkboxElements[index].checked = GM_getValue(value, false)
-    }
-
     const customElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="number"], .setting-checkboxes select')
-    for (const [index, value] of customKeys.entries()) {
-      customElements[index].value = GM_getValue(value, Object.values(customValues)[index])
-    }
+
+    checkboxElements.forEach((checkbox, index) => {
+      checkbox.checked = GM_getValue(Object.values(keyValues)[index], false)
+    })
+
+    customElements.forEach((elem, index) => {
+      elem.value = GM_getValue(Object.keys(customKeyValues)[index], Object.values(customKeyValues)[index])
+    })
 
     settingPanel.querySelector('#setting-conform-2').addEventListener('click', () => {
-      settingPanel.removeAttribute('show')
-      settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
-
       const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
       const writenValues = Array.from(customElements).map(elem => elem.value)
 
-      if (selectedValues[1] !== GM_getValue(values[1], false)) { selectedValues[1] ? banActionHidden() : document.getElementById(values[1]).remove() }
-      if (selectedValues[2] !== GM_getValue(values[2], false)) { selectedValues[2] ? messageSidebarRight() : document.getElementById(values[2]).remove() }
-      if (selectedValues[3] !== GM_getValue(values[3], false)) { selectedValues[3] ? menuDialogMoveDown() : document.getElementById(values[3]).remove() }
-      if (selectedValues[4] !== GM_getValue(values[4], false)) { selectedValues[4] ? homeSingleColumn() : document.getElementById(values[4]).remove() }
+      selectedValues.forEach((value, index) => {
+        const key = Object.values(keyValues)[index]
+        if (value !== GM_getValue(key, false)) {
+          GM_setValue(key, value)
+          switch (key) {
+            case 'ban-action-hidden': value ? banActionHidden() : document.getElementById(key).remove(); break
+            case 'message-sidebar-change-right': value ? messageSidebarRight() : document.getElementById(key).remove(); break
+            case 'menu-dialog-move-down': value ? menuDialogMoveDown() : document.getElementById(key + '-value').remove(); break
+            case 'home-single-column': value ? homeSingleColumn() : document.getElementById(key).remove(); break
+          }
+        }
+      })
 
-      if (writenValues[0] !== GM_getValue(customKeys[0], customValues[0])) { document.getElementById(customKeys[0])?.remove(); menuDialogMoveDown(writenValues[0]) }
-      if (writenValues[2] !== GM_getValue(customKeys[2], customValues[2])) {
-        writenValues[2] !== 'local' && window.dispatchEvent(new CustomEvent('variableChanged', { detail: { key: customKeys[2], newValue: writenValues[2] } }))
-      }
+      writenValues.forEach((value, index) => {
+        const key = Object.keys(customKeyValues)[index]
+        if (value !== GM_getValue(key, Object.values(customKeyValues)[index])) {
+          GM_setValue(key, value)
+          if (key === 'menu-dialog-move-down-value') {
+            document.getElementById(key)?.remove()
+            menuDialogMoveDown()
+          } else if (key === 'header-image-source' && value !== 'local') {
+            window.dispatchEvent(new CustomEvent('variableChanged', { detail: { key, newValue: value } }))
+          }
+        }
+      })
 
-      for (const [index, value] of values.entries()) { GM_setValue(value, selectedValues[index]) }
-      for (const [index, value] of customKeys.entries()) { GM_setValue(value, writenValues[index]) }
+      settingPanel.removeAttribute('show')
+      settingPanel.addEventListener('transitionend', () => { settingPanel.style.cssText = '' }, { once: true })
     })
 
     settingPanel.querySelector('.header-image-source').addEventListener('change', event => {
-      // unsafeWindow.document.querySelector('.header-image-source').addEventListener('change', () => { console.log(this.value) })
       if (event.target.value === 'local') {
         const input = document.createElement('input')
         input.type = 'file'
@@ -4790,30 +4801,27 @@ function handleScriptSetting () {
         innerHTML: `
           <div class="setting-title">隐藏选项</div>
           <div class="setting-checkboxes">
-            <label><input type="checkbox"><span>分类</span></label>
-            <label><input type="checkbox"><span>热门</span></label>
-            <label><input type="checkbox"><span>消息</span></label>
-            <label><input type="checkbox"><span>动态</span></label>
-            <label><input type="checkbox"><span>收藏</span></label>
-            <label><input type="checkbox"><span>历史</span></label>
-            <label><input type="checkbox"><span>主页</span></label>
-            <label><input type="checkbox"><span>关注</span></label>
+            ${menuOptions.names.map((name, index) => `
+              <label><input type="checkbox" data-index="${index}"><span>${name}</span></label>
+            `).join('')}
           </div>
           <button id="setting-conform-3" class="setting-conform">确认</button>
-          `
+        `
       })
       document.body.appendChild(settingPanel)
 
       const checkboxElements = settingPanel.querySelectorAll('.setting-checkboxes input[type="checkbox"]')
       const oldValues = GM_getValue(menuOptions.key, menuOptions.value)
 
-      for (const [index, element] of checkboxElements.entries()) { element.checked = oldValues[index] }
+      checkboxElements.forEach((element, index) => {
+        element.checked = oldValues[index]
+      })
 
       settingPanel.querySelector('#setting-conform-3').addEventListener('click', () => {
         const selectedValues = Array.from(checkboxElements).map(checkbox => checkbox.checked)
 
         if (selectedValues !== oldValues) {
-          GM_setValue('modify-menu-options', selectedValues)
+          GM_setValue(menuOptions.key, selectedValues)
           document.head.querySelector('#modify-menu-options')?.remove()
           modifyMenuOptions()
         }
@@ -4877,7 +4885,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _search_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(28);
 /* harmony import */ var _menu_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(29);
-/* harmony import */ var _sidebar_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(33);
+/* harmony import */ var _sidebar_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(35);
 
 
 
@@ -5233,8 +5241,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   setMenuBtn: () => (/* binding */ setMenuBtn)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
-/* harmony import */ var _menu_follow_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(32);
+/* harmony import */ var _menu_follow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
+/* harmony import */ var _menu_history_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(33);
+/* harmony import */ var _menu_dynamic_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(34);
+
 
 
 
@@ -5256,8 +5266,8 @@ function setMenuBtn () {
       preloadeditems.forEach(item => {
         document.querySelector(item).dispatchEvent(new MouseEvent('mouseenter'))
       })
-      setTimeout(handleHistoryShowMore, 50)
-      setTimeout(handleDynamicShowMore, 60)
+      setTimeout(_menu_history_js__WEBPACK_IMPORTED_MODULE_1__.handleHistoryShowMore, 70)
+      setTimeout(_menu_dynamic_js__WEBPACK_IMPORTED_MODULE_2__.handleDynamicShowMore, 60)
     } else setTimeout(tryPreload, 1000)
   }
 
@@ -5322,7 +5332,7 @@ function setMenuBtn () {
 
       openedDialog = refer
 
-      referElement.style.display = 'block'
+      referElement.setAttribute('display', '')
       setTimeout(() => { referElement.setAttribute('show', '') }, 10)
     })
   )
@@ -5338,7 +5348,7 @@ function setMenuBtn () {
 
     const referElement = document.querySelector(`${openedDialog}+.v-popover`)
     referElement.removeAttribute('show')
-    referElement.addEventListener('transitionend', () => { referElement.style.cssText = '' }, { once: true }) // 鼠标一动就会触发 mouseleave
+    referElement.addEventListener('transitionend', () => { referElement.removeAttribute('display') }, { once: true }) // 鼠标一动就会触发 mouseleave
   })
 
   function handleTouchMove () { menuOverlay.click() }
@@ -5374,187 +5384,7 @@ function setMenuBtn () {
     })
     falseHeader.appendChild(followDialog)
 
-    ;(0,_menu_follow_js__WEBPACK_IMPORTED_MODULE_1__.loadFollowList)(1)
-  }
-
-  // 设置历史自动展开
-  function handleHistoryShowMore () {
-    let cursor = {}
-    fetch('https://api.bilibili.com/x/web-interface/history/cursor?max=0&view_at=0&business=', { credentials: 'include' })
-      .then(response => response.json())
-      .then(data => { cursor = data.data.cursor })
-      .catch(error => console.error(error))
-
-    const historyContent = document.querySelector('.history-panel-popover>.header-tabs-panel__content')
-
-    function onScroll () {
-      const { scrollTop, scrollHeight, clientHeight } = historyContent
-      if (Math.abs(scrollTop + clientHeight - scrollHeight) > 1) { return }
-
-      historyContent.removeEventListener('scroll', onScroll) // 内容加载后再重新监听滚动
-      setTimeout(() => { historyContent.addEventListener('scroll', onScroll) }, 2000)
-
-      console.log('Scroll to bottom')
-      fetch(`https://api.bilibili.com/x/web-interface/history/cursor?max=${cursor.max}&view_at=${cursor.view_at}&business=archive`, { credentials: 'include' })
-        .then(response => response.json())
-        .then(data => {
-          cursor = data.data.cursor
-          data.data.list.forEach(addElementByItem) // 简写形式有时需绑定 this
-        })
-        .catch(error => console.error(error))
-    }
-    historyContent.addEventListener('scroll', onScroll)
-
-    function addElementByItem (item) {
-      const record = Object.assign(document.createElement('a'), {
-        href: `//www.bilibili.com/video/${item.history.bvid}/?`,
-        className: 'header-history-card header-history-video',
-        target: '_blank',
-        'data-mod': 'top_right_bar_window_history',
-        'data-idx': 'content',
-        'data-ext': 'click',
-        // /* html */
-        innerHTML: `
-          <div class="header-history-video__image">
-            <picture class="v-img">
-              <source srcset="${formatUrl(item.cover)}@256w_144h_1c.avif" type="image/avif">
-              <source srcset="${formatUrl(item.cover)}@256w_144h_1c.webp" type="image/webp">
-              <img src="${formatUrl(item.cover)}@256w_144h_1c" alt="" loading="lazy" onload="" onerror="typeof window.imgOnError === 'function' &amp;&amp; window.imgOnError(this)">
-            </picture>
-            <div class="header-history-video__duration"><span class="header-history-video__duration--text">${formatProgressTime(item.progress) + '/' + formatProgressTime(item.duration)}</span></div>
-            <div class="header-history-video__progress"><div class="header-history-video__progress--inner" style="width: ${item.progress / item.duration * 100}%; border-radius: 0px;"></div></div>
-          </div>
-          <div class="header-history-card__info">
-            <div title="${item.title}" class="header-history-card__info--title">${item.title}</div>
-            <div class="header-history-card__info--date">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="device-icon"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.55 13C10.8262 13 11.05 13.2239 11.05 13.5C11.05 13.7761 10.8262 14 10.55 14H5.55005C5.27391 14 5.05005 13.7761 5.05005 13.5C5.05005 13.2239 5.27391 13 5.55005 13H10.55ZM13.05 2C14.1546 2 15.05 2.89543 15.05 4V10C15.05 11.1046 14.1546 12 13.05 12H3.05005C1.94548 12 1.05005 11.1046 1.05005 10V4C1.05005 2.89543 1.94548 2 3.05005 2H13.05ZM13.05 3H3.05005C2.53721 3 2.11454 3.38604 2.05678 3.88338L2.05005 4V10C2.05005 10.5128 2.43609 10.9355 2.93343 10.9933L3.05005 11H13.05C13.5629 11 13.9856 10.614 14.0433 10.1166L14.05 10V4C14.05 3.44772 13.6023 3 13.05 3Z" fill="#999999"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M7 11H9L10 14H6L7 11Z" fill="#999999"></path></svg>
-              <span>${formatViewTime(item.view_at)}</span>
-            </div>
-            <div class="header-history-card__info--name" title="${item.author_name}">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="up-icon"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.33334 5.16669C1.33334 3.78597 2.45263 2.66669 3.83334 2.66669H12.1667C13.5474 2.66669 14.6667 3.78597 14.6667 5.16669V10.8334C14.6667 12.2141 13.5474 13.3334 12.1667 13.3334H3.83334C2.45263 13.3334 1.33334 12.2141 1.33334 10.8334V5.16669ZM3.83334 3.66669C3.00492 3.66669 2.33334 4.33826 2.33334 5.16669V10.8334C2.33334 11.6618 3.00492 12.3334 3.83334 12.3334H12.1667C12.9951 12.3334 13.6667 11.6618 13.6667 10.8334V5.16669C13.6667 4.33826 12.9951 3.66669 12.1667 3.66669H3.83334ZM4.33334 5.50002C4.60949 5.50002 4.83334 5.72388 4.83334 6.00002V8.50002C4.83334 9.05231 5.28106 9.50002 5.83334 9.50002C6.38563 9.50002 6.83334 9.05231 6.83334 8.50002V6.00002C6.83334 5.72388 7.0572 5.50002 7.33334 5.50002C7.60949 5.50002 7.83334 5.72388 7.83334 6.00002V8.50002C7.83334 9.60459 6.93791 10.5 5.83334 10.5C4.72877 10.5 3.83334 9.60459 3.83334 8.50002V6.00002C3.83334 5.72388 4.0572 5.50002 4.33334 5.50002ZM9.00001 5.50002C8.72387 5.50002 8.50001 5.72388 8.50001 6.00002V10C8.50001 10.2762 8.72387 10.5 9.00001 10.5C9.27615 10.5 9.50001 10.2762 9.50001 10V9.33335H10.5833C11.6419 9.33335 12.5 8.47523 12.5 7.41669C12.5 6.35814 11.6419 5.50002 10.5833 5.50002H9.00001ZM10.5833 8.33335H9.50001V6.50002H10.5833C11.0896 6.50002 11.5 6.91043 11.5 7.41669C11.5 7.92295 11.0896 8.33335 10.5833 8.33335Z" fill="#999999"></path></svg>
-              <span>${item.author_name}</span>
-            </div>
-          </div>
-          `
-      })
-      historyContent.appendChild(record)
-    }
-
-    const formatUrl = url => url.slice(url.indexOf(':') + 1)
-
-    function formatProgressTime (seconds) {
-      const hrs = Math.floor(seconds / 3600) // Math.floor() 向下取整
-      const mins = Math.floor((seconds % 3600) / 60)
-      const secs = seconds % 60
-
-      return `${hrs ? (hrs + ':') : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-    }
-
-    function formatViewTime (timestamp) {
-      const days = Math.floor(timestamp / 86400)
-      const hrs = Math.floor((timestamp % 86400) / 3600)
-      const mins = Math.floor((timestamp % 3600) / 60)
-
-      const now = Math.floor(Date.now() / 1000)
-      const today = Math.floor(now / 86400)
-
-      const dayTextMap = {
-        0: '今天',
-        1: '昨天',
-        2: '前天'
-      }
-
-      const dayText = dayTextMap[today - days] || (today - days) + '天前'
-
-      return `${dayText} ${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
-    }
-  }
-
-  // 设置动态自动展开
-  function handleDynamicShowMore () {
-    let offset = ''
-
-    let i = 0
-    async function getLoadedData () {
-      try {
-        const data = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getDynamicList)(offset)
-        offset = data.offset
-        if (i < 2) { getLoadedData(); i++ }
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    getLoadedData()
-
-    const dynamicContent = document.querySelector('.dynamic-panel-popover>.header-tabs-panel__content')
-    const dynamicAll = dynamicContent.querySelector('.dynamic-all')
-
-    let loadedTitle = []
-
-    async function onScroll () {
-      const { scrollTop, scrollHeight, clientHeight } = dynamicContent
-      if (Math.abs(scrollTop + clientHeight - scrollHeight) > 1) { return }
-
-      dynamicContent.removeEventListener('scroll', onScroll) // 内容加载后再重新监听滚动
-      setTimeout(() => { dynamicContent.addEventListener('scroll', onScroll) }, 2000)
-
-      const data = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getDynamicList)(offset)
-      offset = data.offset
-      data.items.forEach(checkIsLoaded) // 简写形式有时需绑定 this
-
-      const dynamics = dynamicAll.querySelectorAll(':scope>a')
-      loadedTitle = Array.from(dynamics).map(a => a.title)
-    }
-    dynamicContent.addEventListener('scroll', onScroll)
-
-    function checkIsLoaded (item) { if (!loadedTitle.includes(item.title)) { addElementByItem(item) } }
-
-    function addElementByItem (item) {
-      const record = Object.assign(document.createElement('a'), {
-        href: `${item.jump_url}`,
-        title: `${item.title}`,
-        target: '_blank',
-        'data-mod': 'top_right_bar_window_dynamic',
-        'data-idx': 'content',
-        'data-ext': 'click',
-        // /* html */
-        innerHTML: `
-          <div data-v-16c69722="" data-v-0290fa94="" class="header-dynamic-list-item" title="${item.title}" target="_blank">
-            <div data-v-16c69722="" class="header-dynamic-container">
-              <div data-v-16c69722="" class="header-dynamic__box--left"><a data-v-16c69722="" class="header-dynamic-avatar" href="${item.author.jump_url}" title="${item.author.name}" target="_blank">
-                <div class="bili-avatar" style="width: 100%;height:100%;">
-                  <img class="bili-avatar-img bili-avatar-face bili-avatar-img-radius" data-src="${formatUrl(item.author.face)}@96w_96h_1c_1s_!web-avatar.avif" alt="" src="${formatUrl(item.author.face)}@96w_96h_1c_1s_!web-avatar.avif">
-                </div>
-              </a></div>
-              <div data-v-16c69722="" class="header-dynamic__box--center">
-                <div data-v-16c69722="" class="dynamic-name-line">
-                  <div data-v-16c69722="" class="user-name">
-                    <a data-v-16c69722="" href="${item.author.jump_url}" title="${item.author.name}" target="_blank">${item.author.name}</a>
-                  </div>
-                </div>
-                <div data-v-16c69722="" class="dynamic-info-content" title="">
-                  <div data-v-0290fa94="" class="all-in-one-article-title">${item.title}</div>
-                </div>
-                <span data-v-0290fa94="" class="publish-time">${item.pub_time}</span>
-              </div>
-              <a data-v-16c69722="" class="header-dynamic__box--right" href="${item.jump_url}" target="_blank">
-                <div data-v-0290fa94="" class="cover">
-                  <picture data-v-0290fa94="" class="v-img">
-                    <source srcset="${formatUrl(item.cover)}@164w_92h_1c.avif" type="image/avif">
-                    <source srcset="${formatUrl(item.cover)}@164w_92h_1c.webp" type="image/webp">
-                    <img src="${formatUrl(item.cover)}@164w_92h_1c" alt="" loading="lazy" onload="" onerror="typeof window.imgOnError === 'function' &amp;&amp; window.imgOnError(this)">
-                  </picture>
-                  <div data-v-0290fa94="" class="watch-later"><svg data-v-0290fa94="" class="bili-watch-later__icon"><use xlink:href="#widget-watch-later"></use></svg></div>
-                </div>
-              </a>
-            </div>
-          </div>
-          `
-      })
-      dynamicAll.appendChild(record)
-    }
-
-    const formatUrl = url => url.slice(url.indexOf(':') + 1)
+    ;(0,_menu_follow_js__WEBPACK_IMPORTED_MODULE_0__.loadFollowList)(1)
   }
 }
 
@@ -5565,253 +5395,9 @@ function setMenuBtn () {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   followUser: () => (/* binding */ followUser),
-/* harmony export */   getAIConclusion: () => (/* binding */ getAIConclusion),
-/* harmony export */   getDynamicList: () => (/* binding */ getDynamicList),
-/* harmony export */   getFollowList: () => (/* binding */ getFollowList),
-/* harmony export */   getJudgeAI: () => (/* binding */ getJudgeAI),
-/* harmony export */   getVideoInfo: () => (/* binding */ getVideoInfo)
-/* harmony export */ });
-/* harmony import */ var _constant_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
-// fork 自 BiliPlus 项目：https://github.com/0xlau/biliplus
-
-
-const mixinKeyEncTab = [
-  46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,
-  33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40,
-  61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11,
-  36, 20, 34, 44, 52
-]
-
-// 对 imgKey 和 subKey 进行字符顺序打乱编码
-// 使用缓存机制减少重复计算
-const mixinKeyCache = new Map()
-
-const getMixinKey = (orig) => {
-  if (mixinKeyCache.has(orig)) {
-    return mixinKeyCache.get(orig)
-  }
-  const mixinKey = mixinKeyEncTab
-    .map((n) => orig[n])
-    .join('')
-    .slice(0, 32)
-  mixinKeyCache.set(orig, mixinKey)
-  return mixinKey
-}
-
-// 为请求参数进行 wbi 签名
-function encWbi (params, imgKey, subKey) {
-  const mixinKey = getMixinKey(imgKey + subKey)
-  const currTime = Math.round(Date.now() / 1000)
-  const chrFilter = /[!'()*]/g
-
-  Object.assign(params, { wts: currTime }) // 添加 wts 字段
-  // 按照 key 重排参数
-  const query = Object.keys(params)
-    .sort()
-    .map((key) => {
-      // 过滤 value 中的 "!'()*" 字符
-      const value = params[key].toString().replace(chrFilter, '')
-      return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
-    })
-    .join('&')
-
-  // 在脚本 metadata 中引用 AI 总结使用的 md5 算法
-  // eslint-disable-next-line no-undef
-  const wbiSign = md5(query + mixinKey) // 计算 w_rid
-
-  return query + '&w_rid=' + wbiSign
-}
-
-// 获取最新的 imgKey 和 subKey
-async function getWbiKeys () {
-  const {
-    wbi_img: { img_url: imgUrl, sub_url: subUrl }
-  } = await getNavUserInfo()
-
-  return {
-    imgKey: imgUrl.slice(
-      imgUrl.lastIndexOf('/') + 1,
-      imgUrl.lastIndexOf('.')
-    ),
-    subKey: subUrl.slice(
-      subUrl.lastIndexOf('/') + 1,
-      subUrl.lastIndexOf('.')
-    )
-  }
-}
-
-// 刷新 wts 和 wrid
-async function getwts (params) {
-  const webKeys = await getWbiKeys()
-  const imgKey = webKeys.imgKey
-  const subKey = webKeys.subKey
-  const query = encWbi(params, imgKey, subKey)
-  return query
-}
-
-/**
- * 提取公共的 fetch 逻辑
- */
-async function fetchAPI (url, options = {}) {
-  try {
-    const response = await fetch(url, options)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    const jsonData = await response.json()
-    return jsonData.data
-  } catch (error) {
-    console.error('Error fetching data:', error)
-    throw error
-  }
-}
-
-/**
- * 获取导航栏用户信息
- * @returns {Promise<Object>} 用户信息数据
- * @throws {Error} 如果请求失败或响应状态码不是 200
- */
-async function getNavUserInfo () {
-  return fetchAPI(`${_constant_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/web-interface/nav`, { credentials: 'include' })
-}
-
-/**
- * 获取B站视频 aid、cid 等信息
- * @param {string} bvid 视频 bvid
- * @returns {Promise<Object>} 视频信息数据
- * @throws {Error} 如果请求失败或响应状态码不是 200
- */
-async function getVideoInfo (bvid) {
-  return fetchAPI(`${_constant_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/web-interface/view?bvid=${bvid}`)
-}
-
-/**
- * 获取 AI判断 响应
- * @param {object} params 请求参数
- * @returns {Promise<Object>} 响应数据
- * @throws {Error} 如果请求失败或响应状态码不是 200
- */
-async function getJudgeAI (params) {
-  const query = await getwts(params)
-  return fetchAPI(`${_constant_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/web-interface/view/conclusion/judge?${query}`)
-}
-
-/**
- * 获取 AI 总结
- * @param {object} params { bvid, cid, up_mid }
- * @returns {Promise<Object>} 响应数据
- * @throws {Error} 如果请求失败或响应状态码不是 200
- */
-async function getAIConclusion (params) {
-  const query = await getwts(params)
-  return fetchAPI(`${_constant_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/web-interface/view/conclusion/get?${query}`)
-}
-
-/**
- * 获取用户ID
- * @returns cookie: DedeUserID
- */
-function getUserID () {
-  const cookies = document.cookie
-  const cookieArray = cookies.split('; ')
-  for (let i = 0; i < cookieArray.length; i++) {
-    const cookie = cookieArray[i].split('=')
-    if (cookie[0] === 'DedeUserID') {
-      return cookie[1]
-    }
-  }
-  return null // 如果不返回 null，那么函数就会返回 undefined，这可能会导致一些意想不到的问题。
-}
-
-/**
- * 获取 CSRF
- * @returns cookie: bili_jct
- */
-function getCSRF () {
-  const cookies = document.cookie
-  const cookieArray = cookies.split('; ')
-  for (let i = 0; i < cookieArray.length; i++) {
-    const cookie = cookieArray[i].split('=')
-    if (cookie[0] === 'bili_jct') {
-      return cookie[1]
-    }
-  }
-  return null // 如果不返回 null，那么函数就会返回 undefined，这可能会导致一些意想不到的问题。
-}
-
-/**
- * 获取关注列表
- * @param {number} pageNumber 页码
- * @param {number} pageSize 每页显示的数据条数
- * @param {number} orderType 排序方式，1: 最常访问，2: 最近关注
- * @returns {Promise<Object>} 响应数据
- * @throws {Error} 如果请求失败或响应状态码不是 200
- */
-async function getFollowList (pageNumber, pageSize, orderType) {
-  const vmid = getUserID()
-  const query = await getwts({})
-  return fetchAPI(`${_constant_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/relation/followings?vmid=${vmid}&pn=${pageNumber}&ps=${pageSize}&order=desc&order_type=${orderType === 1 ? 'attention' : ''}&gaia_source=main_web&web_location=333.999&${query}`, { credentials: 'include' })
-}
-
-/**
- * 获取动态列表
- * @param {string} offset the data.offset of last response
- * @returns {Promise<Object>} 响应数据
- * @throws {Error} 如果请求失败或响应状态码不是 200
- */
-async function getDynamicList (offset) {
-  return fetchAPI(`${_constant_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/polymer/web-dynamic/v1/feed/nav?offset=${offset}`, { credentials: 'include' })
-}
-
-/**
- * 关注用户
- * @param {string} mid 用户 id
- * @param {boolean} isFollow 关注/取关
- * @returns {Promise<Object>} 响应数据
- * @throws {Error} 如果请求失败或响应状态码不是 200
- */
-async function followUser (mid, isFollow) {
-  const response = await fetch('https://api.bilibili.com/x/relation/modify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      fid: mid,
-      act: isFollow ? '1' : '2',
-      // eslint-disable-next-line camelcase
-      re_src: '11',
-      csrf: getCSRF()
-    }).toString(),
-    credentials: 'include'
-  })
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
-  }
-  return response.json()
-}
-
-
-/***/ }),
-/* 31 */
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   BILIBILI_API: () => (/* binding */ BILIBILI_API)
-/* harmony export */ });
-const BILIBILI_API = 'https://api.bilibili.com'
-
-
-/***/ }),
-/* 32 */
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   loadFollowList: () => (/* binding */ loadFollowList)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
 
 
 /**
@@ -5841,6 +5427,7 @@ async function loadFollowList (orderType) {
       pageSize = remainingData
     } else {
       setTimeout(() => { content.addEventListener('scroll', onScroll) }, 2000)
+      console.log('Scroll to bottom')
     }
 
     const data = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getFollowList)(++pageNumber, pageSize, 1)
@@ -5954,14 +5541,478 @@ async function loadFollowList (orderType) {
 
 
 /***/ }),
+/* 31 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   followUser: () => (/* binding */ followUser),
+/* harmony export */   getAIConclusion: () => (/* binding */ getAIConclusion),
+/* harmony export */   getDynamicList: () => (/* binding */ getDynamicList),
+/* harmony export */   getFollowList: () => (/* binding */ getFollowList),
+/* harmony export */   getHistoryList: () => (/* binding */ getHistoryList),
+/* harmony export */   getJudgeAI: () => (/* binding */ getJudgeAI),
+/* harmony export */   getVideoInfo: () => (/* binding */ getVideoInfo)
+/* harmony export */ });
+/* harmony import */ var _values_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(32);
+// fork 自 BiliPlus 项目：https://github.com/0xlau/biliplus
+
+
+const mixinKeyEncTab = [
+  46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,
+  33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40,
+  61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11,
+  36, 20, 34, 44, 52
+]
+
+// 对 imgKey 和 subKey 进行字符顺序打乱编码
+// 使用缓存机制减少重复计算
+const mixinKeyCache = new Map()
+
+const getMixinKey = (orig) => {
+  if (mixinKeyCache.has(orig)) {
+    return mixinKeyCache.get(orig)
+  }
+  const mixinKey = mixinKeyEncTab
+    .map((n) => orig[n])
+    .join('')
+    .slice(0, 32)
+  mixinKeyCache.set(orig, mixinKey)
+  return mixinKey
+}
+
+// 为请求参数进行 wbi 签名
+function encWbi (params, imgKey, subKey) {
+  const mixinKey = getMixinKey(imgKey + subKey)
+  const currTime = Math.round(Date.now() / 1000)
+  const chrFilter = /[!'()*]/g
+
+  Object.assign(params, { wts: currTime }) // 添加 wts 字段
+  // 按照 key 重排参数
+  const query = Object.keys(params)
+    .sort()
+    .map((key) => {
+      // 过滤 value 中的 "!'()*" 字符
+      const value = params[key].toString().replace(chrFilter, '')
+      return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+    })
+    .join('&')
+
+  // 在脚本 metadata 中引用 AI 总结使用的 md5 算法
+  // eslint-disable-next-line no-undef
+  const wbiSign = md5(query + mixinKey) // 计算 w_rid
+
+  return query + '&w_rid=' + wbiSign
+}
+
+// 获取最新的 imgKey 和 subKey
+async function getWbiKeys () {
+  const {
+    wbi_img: { img_url: imgUrl, sub_url: subUrl }
+  } = await getNavUserInfo()
+
+  return {
+    imgKey: imgUrl.slice(
+      imgUrl.lastIndexOf('/') + 1,
+      imgUrl.lastIndexOf('.')
+    ),
+    subKey: subUrl.slice(
+      subUrl.lastIndexOf('/') + 1,
+      subUrl.lastIndexOf('.')
+    )
+  }
+}
+
+// 刷新 wts 和 wrid
+async function getwts (params) {
+  const webKeys = await getWbiKeys()
+  const imgKey = webKeys.imgKey
+  const subKey = webKeys.subKey
+  const query = encWbi(params, imgKey, subKey)
+  return query
+}
+
+/**
+ * 提取公共的 fetch 逻辑
+ * @param {string} url 请求的 URL
+ * @param {Object} options 请求的配置对象
+ * @returns {Promise<Object>} 响应主体 response.json().data
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+async function fetchAPI (url, options = {}) {
+  try {
+    const response = await fetch(url, options)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const jsonData = await response.json()
+    return jsonData.data
+  } catch (error) {
+    console.error('Error fetching data:', error)
+    throw error
+  }
+}
+
+/**
+ * 获取导航栏用户信息
+ * @returns {Promise<Object>} 用户信息数据
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+async function getNavUserInfo () {
+  return fetchAPI(`${_values_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/web-interface/nav`, { credentials: 'include' })
+}
+
+/**
+ * 获取B站视频 aid、cid 等信息
+ * @param {string} bvid 视频 bvid
+ * @returns {Promise<Object>} 视频信息数据
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+async function getVideoInfo (bvid) {
+  return fetchAPI(`${_values_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/web-interface/view?bvid=${bvid}`)
+}
+
+/**
+ * 获取 AI判断 响应
+ * @param {object} params 请求参数
+ * @returns {Promise<Object>} 响应主体 data
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+async function getJudgeAI (params) {
+  const query = await getwts(params)
+  return fetchAPI(`${_values_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/web-interface/view/conclusion/judge?${query}`)
+}
+
+/**
+ * 获取 AI 总结
+ * @param {object} params { bvid, cid, up_mid }
+ * @returns {Promise<Object>} 响应主体 data
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+async function getAIConclusion (params) {
+  const query = await getwts(params)
+  return fetchAPI(`${_values_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/web-interface/view/conclusion/get?${query}`)
+}
+
+/**
+ * 获取用户ID
+ * @returns cookie: DedeUserID
+ */
+function getUserID () {
+  const cookies = document.cookie
+  const cookieArray = cookies.split('; ')
+  for (let i = 0; i < cookieArray.length; i++) {
+    const cookie = cookieArray[i].split('=')
+    if (cookie[0] === 'DedeUserID') {
+      return cookie[1]
+    }
+  }
+  return null // 如果不返回 null，那么函数就会返回 undefined，这可能会导致一些意想不到的问题。
+}
+
+/**
+ * 获取 CSRF
+ * @returns cookie: bili_jct
+ */
+function getCSRF () {
+  const cookies = document.cookie
+  const cookieArray = cookies.split('; ')
+  for (let i = 0; i < cookieArray.length; i++) {
+    const cookie = cookieArray[i].split('=')
+    if (cookie[0] === 'bili_jct') {
+      return cookie[1]
+    }
+  }
+  return null // 如果不返回 null，那么函数就会返回 undefined，这可能会导致一些意想不到的问题。
+}
+
+/**
+ * 获取关注列表
+ * @param {number} pageNumber 页码
+ * @param {number} pageSize 每页显示的数据条数
+ * @param {number} orderType 排序方式，1: 最常访问，2: 最近关注
+ * @returns {Promise<Object>} 响应主体 data
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+async function getFollowList (pageNumber, pageSize, orderType) {
+  const vmid = getUserID()
+  const query = await getwts({})
+  return fetchAPI(`${_values_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/relation/followings?vmid=${vmid}&pn=${pageNumber}&ps=${pageSize}&order=desc&order_type=${orderType === 1 ? 'attention' : ''}&gaia_source=main_web&web_location=333.999&${query}`, { credentials: 'include' })
+}
+
+/**
+ * 获取动态列表
+ * @param {string} offset the data.offset of last response
+ * @returns {Promise<Object>} 响应主体 data
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+async function getDynamicList (offset) {
+  return fetchAPI(`${_values_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/polymer/web-dynamic/v1/feed/nav?offset=${offset}`, { credentials: 'include' })
+}
+
+/**
+ * 获取历史记录列表
+ * @param {Object} cursor the data.cursor of last response
+ * @returns {Promise<Object>} 响应主体 data
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+async function getHistoryList (cursor) {
+  const url = `https://api.bilibili.com/x/web-interface/history/cursor?max=${cursor.max}&view_at=${cursor.view_at}&business=archive`
+  const options = { credentials: 'include' }
+  return fetchAPI(url, options)
+}
+
+/**
+ * 关注用户
+ * @param {string} mid 用户 id
+ * @param {boolean} isFollow 关注/取关
+ * @returns {Promise<Object>} 响应数据
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+async function followUser (mid, isFollow) {
+  const response = await fetch('https://api.bilibili.com/x/relation/modify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      fid: mid,
+      act: isFollow ? '1' : '2',
+      // eslint-disable-next-line camelcase
+      re_src: '11',
+      csrf: getCSRF()
+    }).toString(),
+    credentials: 'include'
+  })
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+
+/***/ }),
+/* 32 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BILIBILI_API: () => (/* binding */ BILIBILI_API),
+/* harmony export */   aiData: () => (/* binding */ aiData)
+/* harmony export */ });
+const BILIBILI_API = 'https://api.bilibili.com'
+
+const aiData = {}
+
+
+/***/ }),
 /* 33 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   handleHistoryShowMore: () => (/* binding */ handleHistoryShowMore)
+/* harmony export */ });
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
+
+
+// 设置历史自动展开
+async function handleHistoryShowMore () {
+  let cursor = {
+    max: 0,
+    // eslint-disable-next-line camelcase
+    view_at: 0
+  }
+
+  const data = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getHistoryList)(cursor)
+  cursor = data.cursor
+
+  const historyContent = document.querySelector('.history-panel-popover>.header-tabs-panel__content')
+
+  async function onScroll () {
+    const { scrollTop, scrollHeight, clientHeight } = historyContent
+    if (Math.abs(scrollTop + clientHeight - scrollHeight) > 1) { return }
+
+    historyContent.removeEventListener('scroll', onScroll) // 内容加载后再重新监听滚动
+    setTimeout(() => { historyContent.addEventListener('scroll', onScroll) }, 2000)
+    console.log('Scroll to bottom')
+
+    const data = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getHistoryList)(cursor)
+    cursor = data.cursor
+    data.list.forEach(addElementByItem) // 简写形式有时需绑定 this
+  }
+  historyContent.addEventListener('scroll', onScroll)
+
+  function addElementByItem (item) {
+    const record = Object.assign(document.createElement('a'), {
+      href: `//www.bilibili.com/video/${item.history.bvid}/?`,
+      className: 'header-history-card header-history-video',
+      target: '_blank',
+      'data-mod': 'top_right_bar_window_history',
+      'data-idx': 'content',
+      'data-ext': 'click',
+      // /* html */
+      innerHTML: `
+          <div class="header-history-video__image">
+            <picture class="v-img">
+              <source srcset="${formatUrl(item.cover)}@256w_144h_1c.avif" type="image/avif">
+              <source srcset="${formatUrl(item.cover)}@256w_144h_1c.webp" type="image/webp">
+              <img src="${formatUrl(item.cover)}@256w_144h_1c" alt="" loading="lazy" onload="" onerror="typeof window.imgOnError === 'function' &amp;&amp; window.imgOnError(this)">
+            </picture>
+            <div class="header-history-video__duration"><span class="header-history-video__duration--text">${formatProgressTime(item.progress) + '/' + formatProgressTime(item.duration)}</span></div>
+            <div class="header-history-video__progress"><div class="header-history-video__progress--inner" style="width: ${item.progress / item.duration * 100}%; border-radius: 0px;"></div></div>
+          </div>
+          <div class="header-history-card__info">
+            <div title="${item.title}" class="header-history-card__info--title">${item.title}</div>
+            <div class="header-history-card__info--date">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="device-icon"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.55 13C10.8262 13 11.05 13.2239 11.05 13.5C11.05 13.7761 10.8262 14 10.55 14H5.55005C5.27391 14 5.05005 13.7761 5.05005 13.5C5.05005 13.2239 5.27391 13 5.55005 13H10.55ZM13.05 2C14.1546 2 15.05 2.89543 15.05 4V10C15.05 11.1046 14.1546 12 13.05 12H3.05005C1.94548 12 1.05005 11.1046 1.05005 10V4C1.05005 2.89543 1.94548 2 3.05005 2H13.05ZM13.05 3H3.05005C2.53721 3 2.11454 3.38604 2.05678 3.88338L2.05005 4V10C2.05005 10.5128 2.43609 10.9355 2.93343 10.9933L3.05005 11H13.05C13.5629 11 13.9856 10.614 14.0433 10.1166L14.05 10V4C14.05 3.44772 13.6023 3 13.05 3Z" fill="#999999"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M7 11H9L10 14H6L7 11Z" fill="#999999"></path></svg>
+              <span>${formatViewTime(item.view_at)}</span>
+            </div>
+            <div class="header-history-card__info--name" title="${item.author_name}">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="up-icon"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.33334 5.16669C1.33334 3.78597 2.45263 2.66669 3.83334 2.66669H12.1667C13.5474 2.66669 14.6667 3.78597 14.6667 5.16669V10.8334C14.6667 12.2141 13.5474 13.3334 12.1667 13.3334H3.83334C2.45263 13.3334 1.33334 12.2141 1.33334 10.8334V5.16669ZM3.83334 3.66669C3.00492 3.66669 2.33334 4.33826 2.33334 5.16669V10.8334C2.33334 11.6618 3.00492 12.3334 3.83334 12.3334H12.1667C12.9951 12.3334 13.6667 11.6618 13.6667 10.8334V5.16669C13.6667 4.33826 12.9951 3.66669 12.1667 3.66669H3.83334ZM4.33334 5.50002C4.60949 5.50002 4.83334 5.72388 4.83334 6.00002V8.50002C4.83334 9.05231 5.28106 9.50002 5.83334 9.50002C6.38563 9.50002 6.83334 9.05231 6.83334 8.50002V6.00002C6.83334 5.72388 7.0572 5.50002 7.33334 5.50002C7.60949 5.50002 7.83334 5.72388 7.83334 6.00002V8.50002C7.83334 9.60459 6.93791 10.5 5.83334 10.5C4.72877 10.5 3.83334 9.60459 3.83334 8.50002V6.00002C3.83334 5.72388 4.0572 5.50002 4.33334 5.50002ZM9.00001 5.50002C8.72387 5.50002 8.50001 5.72388 8.50001 6.00002V10C8.50001 10.2762 8.72387 10.5 9.00001 10.5C9.27615 10.5 9.50001 10.2762 9.50001 10V9.33335H10.5833C11.6419 9.33335 12.5 8.47523 12.5 7.41669C12.5 6.35814 11.6419 5.50002 10.5833 5.50002H9.00001ZM10.5833 8.33335H9.50001V6.50002H10.5833C11.0896 6.50002 11.5 6.91043 11.5 7.41669C11.5 7.92295 11.0896 8.33335 10.5833 8.33335Z" fill="#999999"></path></svg>
+              <span>${item.author_name}</span>
+            </div>
+          </div>
+          `
+    })
+    historyContent.appendChild(record)
+  }
+
+  const formatUrl = url => url.slice(url.indexOf(':') + 1)
+
+  function formatProgressTime (seconds) {
+    const hrs = Math.floor(seconds / 3600) // Math.floor() 向下取整
+    const mins = Math.floor((seconds % 3600) / 60)
+    const secs = seconds % 60
+
+    return `${hrs ? (hrs + ':') : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+
+  function formatViewTime (timestamp) {
+    const days = Math.floor(timestamp / 86400)
+    const hrs = Math.floor((timestamp % 86400) / 3600)
+    const mins = Math.floor((timestamp % 3600) / 60)
+
+    const now = Math.floor(Date.now() / 1000)
+    const today = Math.floor(now / 86400)
+
+    const dayTextMap = {
+      0: '今天',
+      1: '昨天',
+      2: '前天'
+    }
+
+    const dayText = dayTextMap[today - days] || (today - days) + '天前'
+
+    return `${dayText} ${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
+  }
+}
+
+
+/***/ }),
+/* 34 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   handleDynamicShowMore: () => (/* binding */ handleDynamicShowMore)
+/* harmony export */ });
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
+
+
+// 设置动态自动展开
+function handleDynamicShowMore () {
+  let offset = ''
+
+  let i = 0
+  async function getLoadedData () {
+    const data = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getDynamicList)(offset)
+    offset = data.offset
+    if (i < 2) { getLoadedData(); i++ }
+  }
+  getLoadedData()
+
+  const dynamicContent = document.querySelector('.dynamic-panel-popover>.header-tabs-panel__content')
+  const dynamicAll = dynamicContent.querySelector('.dynamic-all')
+
+  let loadedTitle = []
+
+  async function onScroll () {
+    const { scrollTop, scrollHeight, clientHeight } = dynamicContent
+    if (Math.abs(scrollTop + clientHeight - scrollHeight) > 1) { return }
+
+    dynamicContent.removeEventListener('scroll', onScroll) // 内容加载后再重新监听滚动
+    setTimeout(() => { dynamicContent.addEventListener('scroll', onScroll) }, 2000)
+    console.log('Scroll to bottom')
+
+    const data = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getDynamicList)(offset)
+    offset = data.offset
+    data.items.forEach(checkIsLoaded) // 简写形式有时需绑定 this
+
+    const dynamics = dynamicAll.querySelectorAll(':scope>a')
+    loadedTitle = Array.from(dynamics).map(a => a.title)
+  }
+  dynamicContent.addEventListener('scroll', onScroll)
+
+  function checkIsLoaded (item) { if (!loadedTitle.includes(item.title)) { addElementByItem(item) } }
+
+  function addElementByItem (item) {
+    const record = Object.assign(document.createElement('a'), {
+      href: `${item.jump_url}`,
+      title: `${item.title}`,
+      target: '_blank',
+      'data-mod': 'top_right_bar_window_dynamic',
+      'data-idx': 'content',
+      'data-ext': 'click',
+      // /* html */
+      innerHTML: `
+          <div data-v-16c69722="" data-v-0290fa94="" class="header-dynamic-list-item" title="${item.title}" target="_blank">
+            <div data-v-16c69722="" class="header-dynamic-container">
+              <div data-v-16c69722="" class="header-dynamic__box--left"><a data-v-16c69722="" class="header-dynamic-avatar" href="${item.author.jump_url}" title="${item.author.name}" target="_blank">
+                <div class="bili-avatar" style="width: 100%;height:100%;">
+                  <img class="bili-avatar-img bili-avatar-face bili-avatar-img-radius" data-src="${formatUrl(item.author.face)}@96w_96h_1c_1s_!web-avatar.avif" alt="" src="${formatUrl(item.author.face)}@96w_96h_1c_1s_!web-avatar.avif">
+                </div>
+              </a></div>
+              <div data-v-16c69722="" class="header-dynamic__box--center">
+                <div data-v-16c69722="" class="dynamic-name-line">
+                  <div data-v-16c69722="" class="user-name">
+                    <a data-v-16c69722="" href="${item.author.jump_url}" title="${item.author.name}" target="_blank">${item.author.name}</a>
+                  </div>
+                </div>
+                <div data-v-16c69722="" class="dynamic-info-content" title="">
+                  <div data-v-0290fa94="" class="all-in-one-article-title">${item.title}</div>
+                </div>
+                <span data-v-0290fa94="" class="publish-time">${item.pub_time}</span>
+              </div>
+              <a data-v-16c69722="" class="header-dynamic__box--right" href="${item.jump_url}" target="_blank">
+                <div data-v-0290fa94="" class="cover">
+                  <picture data-v-0290fa94="" class="v-img">
+                    <source srcset="${formatUrl(item.cover)}@164w_92h_1c.avif" type="image/avif">
+                    <source srcset="${formatUrl(item.cover)}@164w_92h_1c.webp" type="image/webp">
+                    <img src="${formatUrl(item.cover)}@164w_92h_1c" alt="" loading="lazy" onload="" onerror="typeof window.imgOnError === 'function' &amp;&amp; window.imgOnError(this)">
+                  </picture>
+                  <div data-v-0290fa94="" class="watch-later"><svg data-v-0290fa94="" class="bili-watch-later__icon"><use xlink:href="#widget-watch-later"></use></svg></div>
+                </div>
+              </a>
+            </div>
+          </div>
+          `
+    })
+    dynamicAll.appendChild(record)
+  }
+
+  const formatUrl = url => url.slice(url.indexOf(':') + 1)
+}
+
+
+/***/ }),
+/* 35 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   setSidebarBtn: () => (/* binding */ setSidebarBtn)
 /* harmony export */ });
-/* harmony import */ var _comment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(34);
+/* harmony import */ var _comment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(36);
 
 
 /* 使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。
@@ -6032,7 +6083,7 @@ function setSidebarBtn (page) {
 
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -6284,7 +6335,7 @@ function modifyShadowDOMLate (isDynamicRefresh) {
 
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -6292,42 +6343,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   handleHeaderImage: () => (/* binding */ handleHeaderImage),
 /* harmony export */   handleVideoCard: () => (/* binding */ handleVideoCard)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
+/* harmony import */ var _ai_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(38);
+
 
 
 // 控制首页头图函数
 function handleHeaderImage () {
   // eslint-disable-next-line no-undef
   const source = GM_getValue('header-image-source', 'unsplash')
-
-  // const formattedDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/-/g, '/')
-  // https://api.ee123.net/img/bingimg/${formattedDate}.jpg
-
   const mapping = {
-    bing: 'https://api.suyanw.cn/api/bing.php', // https://api.paugram.com/bing
+    bing: 'https://api.suyanw.cn/api/bing.php',
     unsplash: 'https://unsplash.it/1600/900?random',
     picsum: 'https://picsum.photos/1600/900',
-    meizi: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=meizi', // 素颜API
+    meizi: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=meizi',
     dongman: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=dongman',
     fengjing: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=fengjing',
     suiji: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=suiji'
   }
 
-  let url
-  url = mapping[source]
-
+  let url = mapping[source]
   const elementSelector = '.bili-header__banner'
-
   const key = 'header-image'
+
   loadImage(key, elementSelector)
 
-  if (source !== 'local') { setTimeout(renewImage, 5000) }
+  if (source !== 'local') {
+    setTimeout(renewImage, 5000)
+  }
 
-  // 触发事件前已判断 value !== 'local'
   window.addEventListener('variableChanged', e => {
     if (e.detail.key === 'header-image-source') {
-      const newSource = e.detail.newValue
-      url = mapping[newSource]
+      url = mapping[e.detail.newValue]
       setTimeout(() => renewImage(true), 0)
     }
   })
@@ -6337,7 +6384,6 @@ function handleHeaderImage () {
       const img = await getImage(url)
       const base64Data = imageToBase64(img)
       storeImage(key, base64Data)
-
       if (loadImmediately) loadImage(key, elementSelector)
     } catch (error) {
       console.error('Failed to get image:', error)
@@ -6370,9 +6416,20 @@ function handleHeaderImage () {
   function loadImage (key, elementSelector) {
     const base64Data = localStorage.getItem(key)
     if (base64Data) {
-      const style = document.createElement('style')
-      style.innerHTML = `
-        ${elementSelector}::after {
+      applyStyle(elementSelector, base64Data)
+    } else {
+      getImage(url).then(img => {
+        const base64Data = imageToBase64(img)
+        storeImage(key, base64Data)
+        applyStyle(elementSelector, base64Data)
+      }).catch(error => console.error('Failed to get image:', error))
+    }
+  }
+
+  function applyStyle (elementSelector, base64Data) {
+    const style = document.createElement('style')
+    style.innerHTML = `
+      ${elementSelector}::after {
         content: '';
         position: absolute;
         top: 0;
@@ -6383,17 +6440,9 @@ function handleHeaderImage () {
         background-image: url(${base64Data});
         background-size: cover;
         background-position: center;
-        }
-      `
-      document.head.appendChild(style)
-    } else {
-      // 如果本地存储中不存在图片数据，则从 URL 中获取图片
-      getImage(url).then((img) => {
-        const base64Data = imageToBase64(img)
-        storeImage(key, base64Data)
-        loadImage(key, elementSelector)
-      }).catch(error => console.error('Failed to get image:', error))
-    }
+      }
+    `
+    document.head.appendChild(style)
   }
 }
 
@@ -6402,18 +6451,16 @@ function handleVideoCard () {
   judgeHasAi()
 
   let isLoading = false
-  // 获取AI总结
   new MutationObserver(mutations => {
     mutations.forEach(mutation => {
-      if (isLoading) { return }
-
+      if (isLoading) return
       mutation.addedNodes.forEach(node => {
         if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains('bili-video-card')) {
           isLoading = true
           setTimeout(() => {
             judgeHasAi()
             isLoading = false
-          }, 2000) // 两秒后获取 AI 总结判断
+          }, 2000)
         }
       })
     })
@@ -6421,188 +6468,127 @@ function handleVideoCard () {
 
   function judgeHasAi () {
     const imageLinks = document.querySelectorAll('.bili-video-card__image--link')
-
-    let delay = 0 // 初始化延迟变量
+    let delay = 0
     imageLinks.forEach(async link => {
-      await new Promise(resolve => setTimeout(resolve, delay)) // 在每次循环前等待当前延迟时间
-
-      const card = link.closest('.bili-video-card:not(:has(.bili-video-card__info--ad))') // 排除广告卡片
-      if (card) {
-        if (!link.dataset.hasJudgedAi) {
-          const aiJudgeRes = await judge(card)
-          if (aiJudgeRes) { card.dataset.hasAi = true }
-          delay += 100 // 将下一次循环的延迟时间往后延长 100 毫秒
-        }
-        link.dataset.hasJudgedAi = true
+      await new Promise(resolve => setTimeout(resolve, delay))
+      const card = link.closest('.bili-video-card:not(:has(.bili-video-card__info--ad))')
+      if (card && !link.dataset.hasJudgedAi) {
+        const aiJudgeRes = await judge(card)
+        if (aiJudgeRes) card.dataset.hasAi = true
+        delay += 100
       }
+      link.dataset.hasJudgedAi = true
     })
   }
 
-  /**
-   * 存储已点击卡片
-   */
   let lastPreviewCard = null
-
-  // 添加预览视频选项
   new MutationObserver(mutations => {
     mutations.forEach(async mutation => {
-      const firstChild = mutation.addedNodes[0]?.firstChild // 未添加节点时 addedNodes 返回 []
+      const firstChild = mutation.addedNodes[0]?.firstChild
       if (firstChild && firstChild.className === 'v-popover is-bottom-end') {
-        const panel = firstChild.querySelector('.bili-video-card__info--no-interest-panel') // 不能用 document，直接切换不同视频面板时先添加第二个再移除第一个
-
-        const previewOption = Object.assign(document.createElement('div'), {
-          className: 'bili-video-card__info--no-interest-panel--item',
-          textContent: '预览此视频'
-        })
+        const panel = firstChild.querySelector('.bili-video-card__info--no-interest-panel')
+        const previewOption = createOption('预览此视频')
         panel.insertBefore(previewOption, panel.firstChild)
+        previewOption.addEventListener('click', event => onPreviewOptionClick(event, firstChild))
 
-        previewOption.addEventListener('click', event => { onPreviewOptionClick(event, firstChild) }) // 移除父元素时，监听器和观察器均移除
-
-        function getCard () {
-          return new Promise(resolve => {
-            setTimeout(() => {
-              // 切换时筛选未使用的那一个
-              const btn = document.querySelector('.bili-video-card__info--no-interest.active:not(.use)')
-              const card = btn.closest('.bili-video-card')
-              btn.classList.add('use') // 新按钮添加使用状态
-              resolve(card)
-            }, 50) // 等待按钮添加 active 类，切换时旧按钮即移除 active 类需要 200 ms
-          })
-        }
-
-        const card = await getCard() // 异步函数返回结果，使用 async ... await 暂停执行，或使用 then 等待 promise 对象解析
+        const card = await getCard()
+        if (!card) return // 如果 card 为空，直接返回
 
         const hasAi = card.dataset.hasAi
-        if (!hasAi) {
-          return
-        }
+        if (!hasAi) return
 
-        const AIOption = Object.assign(document.createElement('div'), {
-          className: 'bili-video-card__info--no-interest-panel--item',
-          textContent: '生成视频总结'
-        })
+        const AIOption = createOption('生成视频总结')
         panel.insertBefore(AIOption, previewOption.nextSibling)
-
         AIOption.addEventListener('click', async event => {
           event.stopPropagation()
-          firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })) // 面板鼠标移出，面板或按键的鼠标移入事件均会显示面板，此时后续事件按键自动鼠标移出
-
-          const aiCardElement = createAICardElement(card.querySelector('.bili-video-card__image--wrap'))
-          const aiConclusionRes = await aiConclusion(card)
-          const bvid = card.querySelector('.bili-video-card__image--link').dataset.bvid
-          genterateAIConclusionCard(aiConclusionRes, aiCardElement, bvid)
+          firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
+          ;(0,_ai_js__WEBPACK_IMPORTED_MODULE_1__.loadAI)(card)
         })
       }
     })
   }).observe(document.body, { childList: true })
 
-  // 先由外到内冒泡鼠标移入事件，再由内到外冒泡点击事件
-  // 添加点击关闭逻辑，展开时才触发
   window.addEventListener('click', event => {
     const btn = document.querySelector('.bili-video-card__info--no-interest.active')
     if (btn?.contains(event.target)) {
       btn.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
-      btn.classList.remove('use') // 切换完成后才执行，移除旧按钮的使用状态
-
+      btn.classList.remove('use')
       btn.addEventListener('click', () => {
         btn.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }))
       }, { once: true })
     }
   })
 
-  /**
-   * 预览按钮点击回调
-   * @param {MouseEvent} event
-   * @param {ChildNode} firstChild
-   */
   function onPreviewOptionClick (event, firstChild) {
     event.stopPropagation()
-    firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true })) // 面板或按键的鼠标移入事件均会显示面板，但此时后续事件按键自动鼠标移出
-
-    // 先退出预览，否则切换时跳过前一个卡片
+    firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
     window.addEventListener('click', () => {
       lastPreviewCard?.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
     }, { once: true })
 
     const card = document.querySelector('.bili-video-card__info--no-interest.active').closest('.bili-video-card')
     const cardEventWrap = card.querySelector('.bili-video-card__image--wrap')
-    cardEventWrap.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true })) // 移入移出状态不会叠加
+    cardEventWrap.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }))
     lastPreviewCard = cardEventWrap
 
     if (!cardEventWrap.querySelector('.inline-progress-bar')) {
       const intervalId = setInterval(() => {
         if (cardEventWrap.querySelector('video')) {
-          createProgressBar()
+          createProgressBar(cardEventWrap)
           clearInterval(intervalId)
         }
       }, 1000)
     }
-
-    function createProgressBar () {
-      // 创建进度条
-      const progressBar = Object.assign(document.createElement('div'), {
-        className: 'inline-progress-bar',
-        innerHTML: '<div class="inline-progress-bar-filled"></div><div class="inline-progress-bar-thumb"></div>'
-      })
-      cardEventWrap.appendChild(progressBar)
-
-      // 获取视频元素和进度条元素
-      const video = cardEventWrap.querySelector('video')
-      const progressBarFilled = progressBar.querySelector('.inline-progress-bar-filled')
-      const progressBarThumb = progressBar.querySelector('.inline-progress-bar-thumb')
-
-      const progressBarWidth = progressBar.offsetWidth
-
-      function updateProgressBar (progress) {
-        progressBarFilled.style.width = `${progress * 100}%`
-        progressBarThumb.style.left = `${progress * progressBarWidth}px`
-      }
-
-      // 为视频元素添加时间更新事件监听器
-      video.addEventListener('timeupdate', () => {
-        const initialProgress = video.currentTime / video.duration
-        const progress = Math.min(Math.max(initialProgress, 0), 1)
-        updateProgressBar(progress)
-      }, true) // 避免被下面拦截，先执行捕获，再执行冒泡，默认为 false
-
-      // 阻止后续捕获阶段监听器执行
-      // 同一事件传播阶段中，监听器的执行顺序按照添加的顺序依次执行。不同事件传播阶段中，捕获阶段的监听器总是先于冒泡阶段的监听器执行。
-      video.addEventListener('timeupdate', event => { event.stopImmediatePropagation() }, true)
-
-      function onTouchEvent (event) {
-        const initialProgress = (event.touches[0].clientX - progressBar.getBoundingClientRect().left) / progressBarWidth // offsetLeft 是相对于父元素的
-        const progress = Math.min(Math.max(initialProgress, 0), 1)
-
-        updateProgressBar(progress)
-
-        video.currentTime = progress * video.duration
-      }
-
-      progressBar.addEventListener('touchstart', event => {
-        onTouchEvent(event)
-        document.addEventListener('touchmove', onTouchEvent)
-      })
-
-      document.addEventListener('touchend', () => {
-        document.removeEventListener('touchmove', onTouchEvent)
-      })
-
-      progressBar.addEventListener('click', event => {
-        event.preventDefault() // a 标签内部元素默认事件
-        event.stopPropagation() // 避免全局点击退出预览
-      })
-    }
   }
 
-  /**
-   * 判断是否有 AI 总结
-   * @param {object} card 点击视频卡片
-   * @returns AI 响应 data 节点
-   */
+  function createProgressBar (cardEventWrap) {
+    const progressBar = document.createElement('div')
+    progressBar.className = 'inline-progress-bar'
+    progressBar.innerHTML = '<div class="inline-progress-bar-filled"></div><div class="inline-progress-bar-thumb"></div>'
+    cardEventWrap.appendChild(progressBar)
+
+    const video = cardEventWrap.querySelector('video')
+    const progressBarFilled = progressBar.querySelector('.inline-progress-bar-filled')
+    const progressBarThumb = progressBar.querySelector('.inline-progress-bar-thumb')
+    const progressBarWidth = progressBar.offsetWidth
+
+    function updateProgressBar (progress) {
+      progressBarFilled.style.width = `${progress * 100}%`
+      progressBarThumb.style.left = `${progress * progressBarWidth}px`
+    }
+
+    video.addEventListener('timeupdate', () => {
+      const progress = Math.min(Math.max(video.currentTime / video.duration, 0), 1)
+      updateProgressBar(progress)
+    }, true)
+
+    video.addEventListener('timeupdate', event => event.stopImmediatePropagation(), true)
+
+    function onTouchEvent (event) {
+      const progress = (event.touches[0].clientX - progressBar.getBoundingClientRect().left) / progressBarWidth
+      updateProgressBar(progress)
+      video.currentTime = progress * video.duration
+    }
+
+    progressBar.addEventListener('touchstart', event => {
+      onTouchEvent(event)
+      document.addEventListener('touchmove', onTouchEvent)
+    })
+
+    document.addEventListener('touchend', () => {
+      document.removeEventListener('touchmove', onTouchEvent)
+    })
+
+    progressBar.addEventListener('click', event => {
+      event.preventDefault()
+      event.stopPropagation()
+    })
+  }
+
   async function judge (card) {
     const cardImageLinkElement = card.querySelector('.bili-video-card__image--link')
     const match = /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) || /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
-    const bvid = match[1] // 第二个元素才是捕获组
+    const bvid = match[1]
 
     try {
       const videoInfo = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getVideoInfo)(bvid)
@@ -6613,131 +6599,201 @@ function handleVideoCard () {
       const up_mid = videoInfo.owner.mid
 
       const aiJudgeRes = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getJudgeAI)({ bvid, cid, up_mid })
-
-      if (aiJudgeRes.judge === 1) {
-        return true
-      }
+      return aiJudgeRes.judge === 1
     } catch (error) {
       console.error(error)
     }
   }
 
-  /**
-   * 临时缓存 AI 响应
-   */
-  const aiData = {}
-
-  /**
- * 获取 AI 总结
- * @param {object} card 点击视频卡片
- * @returns AI 响应 data 节点
- */
-  async function aiConclusion (card) {
-    const cardImageLinkElement = card.querySelector('.bili-video-card__image--link')
-    const match = /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) || /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
-    const bvid = match[1] // 第二个元素才是捕获组
-
-    if (aiData[bvid] && aiData[bvid].code === 0) {
-      return aiData[bvid]
-    }
-
-    if (cardImageLinkElement.dataset.hasGotAi === undefined) {
-      const cid = cardImageLinkElement.dataset.cid
-      const up_mid = cardImageLinkElement.dataset.upMid
-      const aiConclusionRes = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getAIConclusion)({ bvid, cid, up_mid })
-
-      aiData[bvid] = aiConclusionRes
-      cardImageLinkElement.dataset.hasGotAi = true
-      if (aiConclusionRes.code === 0) {
-        return aiData[bvid]
-      }
-    }
+  function createOption (text) {
+    return Object.assign(document.createElement('div'), {
+      className: 'bili-video-card__info--no-interest-panel--item',
+      textContent: text
+    })
   }
 
-  /**
-   * 创建AI卡片
-   */
-  const createAICardElement = cardElement => {
-    const overlay = Object.assign(document.createElement('div'), {
-      id: 'ai-conclusion-overlay',
-      innerHTML: `
-    <div class="ai-conclusion-card resizable-component">
-      <div class="ai-conclusion-card-header">正在加载 AI 总结</div>
-    </div>
-    `
+  async function getCard () {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        const btn = document.querySelector('.bili-video-card__info--no-interest.active:not(.use)')
+        if (!btn) {
+          resolve(null) // 如果 btn 为空，返回 null
+          console.log('疑似弹窗动作被打断：未获取到激活的视频更多选项按钮')
+          return
+        }
+        const card = btn.closest('.bili-video-card')
+        btn.classList.add('use')
+        resolve(card)
+      }, 50)
     })
-
-    cardElement.closest('.bili-video-card').appendChild(overlay)
-    overlay.classList.add('show')
-
-    overlay.addEventListener('click', () => {
-      overlay.classList.remove('show')
-      overlay.addEventListener('transitionend', overlay.remove)
-    }, { once: true }) // 移除元素后监听器不会自动消失 (需要移除父元素)
-
-    const div = overlay.querySelector('.ai-conclusion-card')
-    div.addEventListener('click', event => event.stopPropagation())
-
-    return div
-  }
-
-  /**
-   * 生成AI总结
-   */
-  const genterateAIConclusionCard = (aiConclusionRes, aiCardElement, bvid) => {
-    let aiCard = ''
-    const { model_result: modelResult } = aiConclusionRes
-
-    aiCard = `
-    <div class="ai-conclusion-card-header">
-      <div class="ai-conclusion-card-header-left">
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="ai-summary-popup-icon"><g clip-path="url(#clip0_8728_3421)"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.54 2.348a1.5 1.5 0 0 1 2.112.192l2.5 3a1.5 1.5 0 0 1-2.304 1.92l-2.5-3a1.5 1.5 0 0 1 .192-2.112z" fill="url(#paint0_linear_8728_3421)"/><path fill-rule="evenodd" clip-rule="evenodd" d="M21.96 2.348a1.5 1.5 0 0 0-2.112.192l-2.5 3a1.5 1.5 0 0 0 2.304 1.92l2.5-3a1.5 1.5 0 0 0-.192-2.112z" fill="url(#paint1_linear_8728_3421)"/><path d="M27 18.253C27 25.021 21.627 27 15 27S3 25.02 3 18.253C3 11.486 3.923 6 15 6c11.538 0 12 5.486 12 12.253z" fill="#D9D9D9" opacity=".2" filter="url(#filter0_d_8728_3421)"/><path d="M28 18.949C28 26.656 22.18 28 15 28S2 26.656 2 18.949C2 10 3 6 15 6c12.5 0 13 4 13 12.949z" fill="url(#paint2_linear_8728_3421)" filter="url(#filter1_ii_8728_3421)"/><path d="M4.786 14.21c0-2.284 1.659-4.248 3.925-4.52 4.496-.539 8.057-.559 12.602-.01 2.257.274 3.902 2.234 3.902 4.507v5.005c0 2.14-1.46 4.034-3.57 4.396-4.742.815-8.474.658-13.086-.074-2.197-.35-3.773-2.282-3.773-4.506v-4.799z" fill="#191924"/><path d="M19.643 15.313v2.785" stroke="#2CFFFF" stroke-width="2.4" stroke-linecap="round"/><path d="M10.357 14.852l1.858 1.857-1.858 1.857" stroke="#2CFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g><defs><filter id="filter0_d_8728_3421" x="1" y="4" width="30" height="27" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dx="1" dy="1"/><feGaussianBlur stdDeviation="1.5"/><feComposite in2="hardAlpha" operator="out"/><feColorMatrix values="0 0 0 0 0.039545 0 0 0 0 0.0845023 0 0 0 0 0.200107 0 0 0 0.85 0"/><feBlend in2="BackgroundImageFix" result="effect1_dropShadow_8728_3421"/><feBlend in="SourceGraphic" in2="effect1_dropShadow_8728_3421" result="shape"/></filter><filter id="filter1_ii_8728_3421" x="0" y="4.143" width="30.786" height="26.643" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dx="2.786" dy="3.714"/><feGaussianBlur stdDeviation="1.393"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.25 0"/><feBlend in2="shape" result="effect1_innerShadow_8728_3421"/><feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset dx="-2" dy="-1.857"/><feGaussianBlur stdDeviation="1.857"/><feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0.15445 0 0 0 0 0.454264 0 0 0 0.11 0"/><feBlend in2="effect1_innerShadow_8728_3421" result="effect2_innerShadow_8728_3421"/></filter><linearGradient id="paint0_linear_8728_3421" x1="6.804" y1="2.849" x2="9.019" y2="8.297" gradientUnits="userSpaceOnUse"><stop stop-color="#393946"/><stop offset=".401" stop-color="#23232E"/><stop offset="1" stop-color="#191924"/></linearGradient><linearGradient id="paint1_linear_8728_3421" x1="22.696" y1="2.849" x2="20.481" y2="8.297" gradientUnits="userSpaceOnUse"><stop stop-color="#393946"/><stop offset=".401" stop-color="#23232E"/><stop offset="1" stop-color="#191924"/></linearGradient><linearGradient id="paint2_linear_8728_3421" x1="7.671" y1="10.807" x2="19.931" y2="29.088" gradientUnits="userSpaceOnUse"><stop stop-color="#F4FCFF"/><stop offset="1" stop-color="#EAF5F9"/></linearGradient><clipPath id="clip0_8728_3421"><path fill="#fff" d="M0 0h30v30H0z"/></clipPath></defs></svg>
-        <span class="tips-text">已为你生成视频总结</span>
-      </div>
-    </div>
-    <div class="ai-conclusion-card-summary">
-    ${modelResult.summary}
-    </div>
-    `
-    modelResult.outline.forEach(item => {
-      aiCard += `
-      <div class="ai-conclusion-card-selection">
-        <div class="ai-conclusion-card-selection-title">${item.title}</div>
-        ${item.part_outline
-          .map(
-            s => `
-          <a class="bullet" href="https://www.bilibili.com/video/${bvid}/?t=${s.timestamp}s">
-            <span class="ai-conclusion-card-selection-timer">${timeNumberToTime(s.timestamp)}</span>
-            <span>${s.content}</span>
-          </a>
-        `
-          )
-          .join('')}
-      </div>
-      `
-    })
-
-    // 函数表达式 ( const timeNumberToTime = time => {...} ) 不会被提升（Hoisted）到当前作用域的顶部，必须在声明函数之后才能调用
-    function timeNumberToTime (time) {
-      const min = Math.floor(time / 60)
-      const sec = time % 60
-      return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
-    }
-
-    aiCardElement.innerHTML = aiCard
   }
 }
 
 
 /***/ }),
-/* 36 */
+/* 38 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   loadAI: () => (/* binding */ loadAI)
+/* harmony export */ });
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
+/* harmony import */ var _values_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(32);
+
+
+
+async function loadAI (card) {
+  const aiCardElement = createAICardElement(card.querySelector('.bili-video-card__image--wrap'))
+
+  const aiConclusionRes = await aiConclusion(card)
+  const bvid = card.querySelector('.bili-video-card__image--link').dataset.bvid
+  genterateAIConclusionCard(aiConclusionRes, aiCardElement, bvid)
+}
+
+async function aiConclusion (card) {
+  const cardImageLinkElement = card.querySelector('.bili-video-card__image--link')
+  const match = /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) || /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
+  const bvid = match[1]
+
+  if (_values_js__WEBPACK_IMPORTED_MODULE_1__.aiData[bvid] && _values_js__WEBPACK_IMPORTED_MODULE_1__.aiData[bvid].code === 0) {
+    return _values_js__WEBPACK_IMPORTED_MODULE_1__.aiData[bvid]
+  }
+
+  if (cardImageLinkElement.dataset.hasGotAi === undefined) {
+    const cid = cardImageLinkElement.dataset.cid
+    const up_mid = cardImageLinkElement.dataset.upMid
+    const aiConclusionRes = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getAIConclusion)({ bvid, cid, up_mid })
+    _values_js__WEBPACK_IMPORTED_MODULE_1__.aiData[bvid] = aiConclusionRes
+    cardImageLinkElement.dataset.hasGotAi = true
+    if (aiConclusionRes.code === 0) {
+      return _values_js__WEBPACK_IMPORTED_MODULE_1__.aiData[bvid]
+    }
+  }
+}
+
+function createAICardElement (cardElement) {
+  const overlay = document.createElement('div')
+  overlay.id = 'ai-conclusion-overlay'
+  overlay.innerHTML = `
+      <div class="ai-conclusion-card resizable-component">
+        <div class="ai-conclusion-card-header">正在加载 AI 总结</div>
+      </div>
+    `
+  cardElement.closest('.bili-video-card').appendChild(overlay)
+  overlay.classList.add('show')
+
+  overlay.addEventListener('click', () => {
+    overlay.classList.remove('show')
+    overlay.addEventListener('transitionend', overlay.remove)
+  }, { once: true })
+
+  const div = overlay.querySelector('.ai-conclusion-card')
+  div.addEventListener('click', event => event.stopPropagation())
+
+  return div
+}
+
+function genterateAIConclusionCard (aiConclusionRes, aiCardElement, bvid) {
+  let aiCard = `
+      <div class="ai-conclusion-card-header">
+        <div class="ai-conclusion-card-header-left">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="ai-summary-popup-icon">
+            <g clip-path="url(#clip0_8728_3421)">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M7.54 2.348a1.5 1.5 0 0 1 2.112.192l2.5 3a1.5 1.5 0 0 1-2.304 1.92l-2.5-3a1.5 1.5 0 0 1 .192-2.112z" fill="url(#paint0_linear_8728_3421)"/>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M21.96 2.348a1.5 1.5 0 0 0-2.112.192l-2.5 3a1.5 1.5 0 0 0 2.304 1.92l2.5-3a1.5 1.5 0 0 0-.192-2.112z" fill="url(#paint1_linear_8728_3421)"/>
+              <path d="M27 18.253C27 25.021 21.627 27 15 27S3 25.02 3 18.253C3 11.486 3.923 6 15 6c11.538 0 12 5.486 12 12.253z" fill="#D9D9D9" opacity=".2" filter="url(#filter0_d_8728_3421)"/>
+              <path d="M28 18.949C28 26.656 22.18 28 15 28S2 26.656 2 18.949C2 10 3 6 15 6c12.5 0 13 4 13 12.949z" fill="url(#paint2_linear_8728_3421)" filter="url(#filter1_ii_8728_3421)"/>
+              <path d="M4.786 14.21c0-2.284 1.659-4.248 3.925-4.52 4.496-.539 8.057-.559 12.602-.01 2.257.274 3.902 2.234 3.902 4.507v5.005c0 2.14-1.46 4.034-3.57 4.396-4.742.815-8.474.658-13.086-.074-2.197-.35-3.773-2.282-3.773-4.506v-4.799z" fill="#191924"/>
+              <path d="M19.643 15.313v2.785" stroke="#2CFFFF" stroke-width="2.4" stroke-linecap="round"/>
+              <path d="M10.357 14.852l1.858 1.857-1.858 1.857" stroke="#2CFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <defs>
+              <filter id="filter0_d_8728_3421" x="1" y="4" width="30" height="27" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                <feOffset dx="1" dy="1"/>
+                <feGaussianBlur stdDeviation="1.5"/>
+                <feComposite in2="hardAlpha" operator="out"/>
+                <feColorMatrix values="0 0 0 0 0.039545 0 0 0 0 0.0845023 0 0 0 0 0.200107 0 0 0 0.85 0"/>
+                <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_8728_3421"/>
+                <feBlend in="SourceGraphic" in2="effect1_dropShadow_8728_3421" result="shape"/>
+              </filter>
+              <filter id="filter1_ii_8728_3421" x="0" y="4.143" width="30.786" height="26.643" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+                <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                <feOffset dx="2.786" dy="3.714"/>
+                <feGaussianBlur stdDeviation="1.393"/>
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+                <feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.25 0"/>
+                <feBlend in2="shape" result="effect1_innerShadow_8728_3421"/>
+                <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                <feOffset dx="-2" dy="-1.857"/>
+                <feGaussianBlur stdDeviation="1.857"/>
+                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+                <feColorMatrix values="0 0 0 0 0 0 0 0 0 0.15445 0 0 0 0 0.454264 0 0 0 0.11 0"/>
+                <feBlend in2="effect1_innerShadow_8728_3421" result="effect2_innerShadow_8728_3421"/>
+              </filter>
+              <linearGradient id="paint0_linear_8728_3421" x1="6.804" y1="2.849" x2="9.019" y2="8.297" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#393946"/>
+                <stop offset=".401" stop-color="#23232E"/>
+                <stop offset="1" stop-color="#191924"/>
+              </linearGradient>
+              <linearGradient id="paint1_linear_8728_3421" x1="22.696" y1="2.849" x2="20.481" y2="8.297" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#393946"/>
+                <stop offset=".401" stop-color="#23232E"/>
+                <stop offset="1" stop-color="#191924"/>
+              </linearGradient>
+              <linearGradient id="paint2_linear_8728_3421" x1="7.671" y1="10.807" x2="19.931" y2="29.088" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#F4FCFF"/>
+                <stop offset="1" stop-color="#EAF5F9"/>
+              </linearGradient>
+              <clipPath id="clip0_8728_3421">
+                <path fill="#fff" d="M0 0h30v30H0z"/>
+              </clipPath>
+            </defs>
+          </svg>
+          <span class="tips-text">已为你生成视频总结</span>
+        </div>
+      </div>
+      <div class="ai-conclusion-card-summary">
+        ${aiConclusionRes.model_result.summary}
+      </div>
+    `
+  aiConclusionRes.model_result.outline.forEach(item => {
+    aiCard += `
+        <div class="ai-conclusion-card-selection">
+          <div class="ai-conclusion-card-selection-title">${item.title}</div>
+          ${item.part_outline.map(s => `
+            <a class="bullet" href="https://www.bilibili.com/video/${bvid}/?t=${s.timestamp}s">
+              <span class="ai-conclusion-card-selection-timer">${timeNumberToTime(s.timestamp)}</span>
+              <span>${s.content}</span>
+            </a>
+          `).join('')}
+        </div>
+      `
+  })
+
+  function timeNumberToTime (time) {
+    const min = Math.floor(time / 60)
+    const sec = time % 60
+    return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
+  }
+
+  aiCardElement.innerHTML = aiCard
+}
+
+
+/***/ }),
+/* 39 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   videoInteraction: () => (/* binding */ videoInteraction)
 /* harmony export */ });
-/* harmony import */ var _comment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(34);
+/* harmony import */ var _comment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(36);
 /* global GM_getValue */
 
 
@@ -6962,7 +7018,7 @@ function setEndingContent () {
 
 
 /***/ }),
-/* 37 */
+/* 40 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -7121,9 +7177,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _window_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(25);
 /* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(26);
 /* harmony import */ var _actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(27);
-/* harmony import */ var _home_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(35);
-/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(36);
-/* harmony import */ var _message_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(37);
+/* harmony import */ var _home_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(37);
+/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(39);
+/* harmony import */ var _message_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(40);
 // @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
 
 

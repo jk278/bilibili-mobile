@@ -1,5 +1,5 @@
 // fork 自 BiliPlus 项目：https://github.com/0xlau/biliplus
-import { BILIBILI_API } from './constant.js'
+import { BILIBILI_API } from './values.js'
 
 const mixinKeyEncTab = [
   46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,
@@ -77,6 +77,10 @@ async function getwts (params) {
 
 /**
  * 提取公共的 fetch 逻辑
+ * @param {string} url 请求的 URL
+ * @param {Object} options 请求的配置对象
+ * @returns {Promise<Object>} 响应主体 response.json().data
+ * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 async function fetchAPI (url, options = {}) {
   try {
@@ -114,7 +118,7 @@ export async function getVideoInfo (bvid) {
 /**
  * 获取 AI判断 响应
  * @param {object} params 请求参数
- * @returns {Promise<Object>} 响应数据
+ * @returns {Promise<Object>} 响应主体 data
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getJudgeAI (params) {
@@ -125,7 +129,7 @@ export async function getJudgeAI (params) {
 /**
  * 获取 AI 总结
  * @param {object} params { bvid, cid, up_mid }
- * @returns {Promise<Object>} 响应数据
+ * @returns {Promise<Object>} 响应主体 data
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getAIConclusion (params) {
@@ -170,7 +174,7 @@ function getCSRF () {
  * @param {number} pageNumber 页码
  * @param {number} pageSize 每页显示的数据条数
  * @param {number} orderType 排序方式，1: 最常访问，2: 最近关注
- * @returns {Promise<Object>} 响应数据
+ * @returns {Promise<Object>} 响应主体 data
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getFollowList (pageNumber, pageSize, orderType) {
@@ -182,11 +186,23 @@ export async function getFollowList (pageNumber, pageSize, orderType) {
 /**
  * 获取动态列表
  * @param {string} offset the data.offset of last response
- * @returns {Promise<Object>} 响应数据
+ * @returns {Promise<Object>} 响应主体 data
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getDynamicList (offset) {
   return fetchAPI(`${BILIBILI_API}/x/polymer/web-dynamic/v1/feed/nav?offset=${offset}`, { credentials: 'include' })
+}
+
+/**
+ * 获取历史记录列表
+ * @param {Object} cursor the data.cursor of last response
+ * @returns {Promise<Object>} 响应主体 data
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+export async function getHistoryList (cursor) {
+  const url = `https://api.bilibili.com/x/web-interface/history/cursor?max=${cursor.max}&view_at=${cursor.view_at}&business=archive`
+  const options = { credentials: 'include' }
+  return fetchAPI(url, options)
 }
 
 /**

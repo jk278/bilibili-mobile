@@ -27,6 +27,7 @@ export async function loadFollowList (orderType) {
       pageSize = remainingData
     } else {
       setTimeout(() => { content.addEventListener('scroll', onScroll) }, 2000)
+      console.log('Scroll to bottom')
     }
 
     const data = await getFollowList(++pageNumber, pageSize, 1)
