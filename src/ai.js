@@ -56,63 +56,7 @@ function genterateAIConclusionCard (aiConclusionRes, aiCardElement, bvid) {
   let aiCard = `
       <div class="ai-conclusion-card-header">
         <div class="ai-conclusion-card-header-left">
-          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="ai-summary-popup-icon">
-            <g clip-path="url(#clip0_8728_3421)">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M7.54 2.348a1.5 1.5 0 0 1 2.112.192l2.5 3a1.5 1.5 0 0 1-2.304 1.92l-2.5-3a1.5 1.5 0 0 1 .192-2.112z" fill="url(#paint0_linear_8728_3421)"/>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M21.96 2.348a1.5 1.5 0 0 0-2.112.192l-2.5 3a1.5 1.5 0 0 0 2.304 1.92l2.5-3a1.5 1.5 0 0 0-.192-2.112z" fill="url(#paint1_linear_8728_3421)"/>
-              <path d="M27 18.253C27 25.021 21.627 27 15 27S3 25.02 3 18.253C3 11.486 3.923 6 15 6c11.538 0 12 5.486 12 12.253z" fill="#D9D9D9" opacity=".2" filter="url(#filter0_d_8728_3421)"/>
-              <path d="M28 18.949C28 26.656 22.18 28 15 28S2 26.656 2 18.949C2 10 3 6 15 6c12.5 0 13 4 13 12.949z" fill="url(#paint2_linear_8728_3421)" filter="url(#filter1_ii_8728_3421)"/>
-              <path d="M4.786 14.21c0-2.284 1.659-4.248 3.925-4.52 4.496-.539 8.057-.559 12.602-.01 2.257.274 3.902 2.234 3.902 4.507v5.005c0 2.14-1.46 4.034-3.57 4.396-4.742.815-8.474.658-13.086-.074-2.197-.35-3.773-2.282-3.773-4.506v-4.799z" fill="#191924"/>
-              <path d="M19.643 15.313v2.785" stroke="#2CFFFF" stroke-width="2.4" stroke-linecap="round"/>
-              <path d="M10.357 14.852l1.858 1.857-1.858 1.857" stroke="#2CFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </g>
-            <defs>
-              <filter id="filter0_d_8728_3421" x="1" y="4" width="30" height="27" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-                <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                <feOffset dx="1" dy="1"/>
-                <feGaussianBlur stdDeviation="1.5"/>
-                <feComposite in2="hardAlpha" operator="out"/>
-                <feColorMatrix values="0 0 0 0 0.039545 0 0 0 0 0.0845023 0 0 0 0 0.200107 0 0 0 0.85 0"/>
-                <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_8728_3421"/>
-                <feBlend in="SourceGraphic" in2="effect1_dropShadow_8728_3421" result="shape"/>
-              </filter>
-              <filter id="filter1_ii_8728_3421" x="0" y="4.143" width="30.786" height="26.643" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-                <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-                <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                <feOffset dx="2.786" dy="3.714"/>
-                <feGaussianBlur stdDeviation="1.393"/>
-                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
-                <feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.25 0"/>
-                <feBlend in2="shape" result="effect1_innerShadow_8728_3421"/>
-                <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                <feOffset dx="-2" dy="-1.857"/>
-                <feGaussianBlur stdDeviation="1.857"/>
-                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
-                <feColorMatrix values="0 0 0 0 0 0 0 0 0 0.15445 0 0 0 0 0.454264 0 0 0 0.11 0"/>
-                <feBlend in2="effect1_innerShadow_8728_3421" result="effect2_innerShadow_8728_3421"/>
-              </filter>
-              <linearGradient id="paint0_linear_8728_3421" x1="6.804" y1="2.849" x2="9.019" y2="8.297" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#393946"/>
-                <stop offset=".401" stop-color="#23232E"/>
-                <stop offset="1" stop-color="#191924"/>
-              </linearGradient>
-              <linearGradient id="paint1_linear_8728_3421" x1="22.696" y1="2.849" x2="20.481" y2="8.297" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#393946"/>
-                <stop offset=".401" stop-color="#23232E"/>
-                <stop offset="1" stop-color="#191924"/>
-              </linearGradient>
-              <linearGradient id="paint2_linear_8728_3421" x1="7.671" y1="10.807" x2="19.931" y2="29.088" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#F4FCFF"/>
-                <stop offset="1" stop-color="#EAF5F9"/>
-              </linearGradient>
-              <clipPath id="clip0_8728_3421">
-                <path fill="#fff" d="M0 0h30v30H0z"/>
-              </clipPath>
-            </defs>
-          </svg>
-          <span class="tips-text">已为你生成视频总结</span>
+          <svg class=ai-summary-popup-icon fill=none height=30 viewBox="0 0 30 30"width=30 xmlns=http://www.w3.org/2000/svg><g clip-path=url(#clip0_8728_3421)><path d="M7.54 2.348a1.5 1.5 0 0 1 2.112.192l2.5 3a1.5 1.5 0 0 1-2.304 1.92l-2.5-3a1.5 1.5 0 0 1 .192-2.112z"fill=url(#paint0_linear_8728_3421) clip-rule=evenodd fill-rule=evenodd /><path d="M21.96 2.348a1.5 1.5 0 0 0-2.112.192l-2.5 3a1.5 1.5 0 0 0 2.304 1.92l2.5-3a1.5 1.5 0 0 0-.192-2.112z"fill=url(#paint1_linear_8728_3421) clip-rule=evenodd fill-rule=evenodd /><path d="M27 18.253C27 25.021 21.627 27 15 27S3 25.02 3 18.253C3 11.486 3.923 6 15 6c11.538 0 12 5.486 12 12.253z"fill=#D9D9D9 filter=url(#filter0_d_8728_3421) opacity=.2 /><path d="M28 18.949C28 26.656 22.18 28 15 28S2 26.656 2 18.949C2 10 3 6 15 6c12.5 0 13 4 13 12.949z"fill=url(#paint2_linear_8728_3421) filter=url(#filter1_ii_8728_3421) /><path d="M4.786 14.21c0-2.284 1.659-4.248 3.925-4.52 4.496-.539 8.057-.559 12.602-.01 2.257.274 3.902 2.234 3.902 4.507v5.005c0 2.14-1.46 4.034-3.57 4.396-4.742.815-8.474.658-13.086-.074-2.197-.35-3.773-2.282-3.773-4.506v-4.799z"fill=#191924 /><path d="M19.643 15.313v2.785"stroke=#2CFFFF stroke-linecap=round stroke-width=2.4 /><path d="M10.357 14.852l1.858 1.857-1.858 1.857"stroke=#2CFFFF stroke-linecap=round stroke-width=1.8 stroke-linejoin=round /></g><defs><filter color-interpolation-filters=sRGB filterUnits=userSpaceOnUse height=27 id=filter0_d_8728_3421 width=30 x=1 y=4><feFlood flood-opacity=0 result=BackgroundImageFix /><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"in=SourceAlpha result=hardAlpha /><feOffset dx=1 dy=1 /><feGaussianBlur stdDeviation=1.5 /><feComposite in2=hardAlpha operator=out /><feColorMatrix values="0 0 0 0 0.039545 0 0 0 0 0.0845023 0 0 0 0 0.200107 0 0 0 0.85 0"/><feBlend in2=BackgroundImageFix result=effect1_dropShadow_8728_3421 /><feBlend in2=effect1_dropShadow_8728_3421 result=shape in=SourceGraphic /></filter><filter color-interpolation-filters=sRGB filterUnits=userSpaceOnUse height=26.643 id=filter1_ii_8728_3421 width=30.786 x=0 y=4.143><feFlood flood-opacity=0 result=BackgroundImageFix /><feBlend in2=BackgroundImageFix result=shape in=SourceGraphic /><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"in=SourceAlpha result=hardAlpha /><feOffset dx=2.786 dy=3.714 /><feGaussianBlur stdDeviation=1.393 /><feComposite in2=hardAlpha operator=arithmetic k2=-1 k3=1 /><feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.25 0"/><feBlend in2=shape result=effect1_innerShadow_8728_3421 /><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"in=SourceAlpha result=hardAlpha /><feOffset dx=-2 dy=-1.857 /><feGaussianBlur stdDeviation=1.857 /><feComposite in2=hardAlpha operator=arithmetic k2=-1 k3=1 /><feColorMatrix values="0 0 0 0 0 0 0 0 0 0.15445 0 0 0 0 0.454264 0 0 0 0.11 0"/><feBlend in2=effect1_innerShadow_8728_3421 result=effect2_innerShadow_8728_3421 /></filter><linearGradient gradientUnits=userSpaceOnUse id=paint0_linear_8728_3421 x1=6.804 x2=9.019 y1=2.849 y2=8.297><stop stop-color=#393946 /><stop stop-color=#23232E offset=.401 /><stop stop-color=#191924 offset=1 /></linearGradient><linearGradient gradientUnits=userSpaceOnUse id=paint1_linear_8728_3421 x1=22.696 x2=20.481 y1=2.849 y2=8.297><stop stop-color=#393946 /><stop stop-color=#23232E offset=.401 /><stop stop-color=#191924 offset=1 /></linearGradient><linearGradient gradientUnits=userSpaceOnUse id=paint2_linear_8728_3421 x1=7.671 x2=19.931 y1=10.807 y2=29.088><stop stop-color=#F4FCFF /><stop stop-color=#EAF5F9 offset=1 /></linearGradient><clipPath id=clip0_8728_3421><path d="M0 0h30v30H0z"fill=#fff /></clipPath></defs></svg>          <span class="tips-text">已为你生成视频总结</span>
         </div>
       </div>
       <div class="ai-conclusion-card-summary">
