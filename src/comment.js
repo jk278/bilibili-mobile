@@ -63,7 +63,6 @@ export function modifyShadowDOMLate (isDynamicRefresh) {
           width: 100%;
           padding: 8px 12px;
           border-top: 1px solid var(--line_regular);
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
           transition: calc(var(--actionbar-time)*1.40) ease-in;
           display: var(--commentbox-display);
           transform: var(--shadow-transform);
@@ -144,7 +143,7 @@ export function modifyShadowDOMLate (isDynamicRefresh) {
     mutations.forEach(mutation => {
       mutation.addedNodes.forEach(node => {
         if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'div' && node.id === 'replies') {
-          observeContent2(mutation.target.parentNode.shadowRoot)
+          observeContent2(mutation.target)
           observer.disconnect()
         }
       })

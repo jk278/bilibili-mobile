@@ -138,7 +138,8 @@ export function handleScriptSetting () {
     key2: 'ban-action-hidden',
     key3: 'message-sidebar-change-right',
     key4: 'home-single-column',
-    key5: 'menu-dialog-move-down'
+    key5: 'allow-video-slid',
+    key6: 'menu-dialog-move-down'
   }
 
   const keyNames = {
@@ -146,6 +147,7 @@ export function handleScriptSetting () {
     'ban-action-hidden': '禁止底栏滚动时隐藏',
     'message-sidebar-change-right': '消息页侧边栏靠右',
     'home-single-column': '首页单列推荐',
+    'allow-video-slid': '视频滑动调整进度',
     'menu-dialog-move-down': '菜单弹窗(收藏、历史等)靠下'
   }
 

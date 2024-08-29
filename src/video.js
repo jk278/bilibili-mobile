@@ -7,7 +7,7 @@ export function videoInteraction () {
 
   handlelVideoClick()
 
-  handleVideoLongPress()
+  handleVideoInteraction()
 
   closeMiniPlayer()
 
@@ -168,31 +168,98 @@ function closeMiniPlayer () {
   }
 }
 
-function handleVideoLongPress () {
+function handleVideoInteraction () {
   const video = document.querySelector('video')
+  let startX, startY, startTime
+  const threshold = 10 // 滑动阈值
+  const initialCheckDuration = 300 // 前 x 秒，例如 300 毫秒
   let isLongPress = false
+  let isSliding = false
   let timeoutId
   let times
+  let isSlideAllowed
+  let progressInfo
+  let progressInfoCreated = false // 标志是否已创建 progressInfo 元素
+  let isCreatingProgressInfo = false // 避免 progressInfo 创建完成前被重复创建
 
-  video.addEventListener('touchstart', () => {
+  video.addEventListener('touchstart', (event) => {
+    startX = event.touches[0].clientX
+    startY = event.touches[0].clientY
+    startTime = video.currentTime
     times = Number(GM_getValue('video-longpress-speed', '2'))
+    isSlideAllowed = GM_getValue('allow-video-slid', false)
 
+    // 设置初始检测定时器
     timeoutId = setTimeout(() => {
+      // 如果前 x 秒内没有超出阈值，则认为是长按
       video.playbackRate = video.playbackRate * times
       isLongPress = true
-    }, 500)
+    }, initialCheckDuration)
   })
 
-  video.addEventListener('touchmove', cancelLongPress)
-  video.addEventListener('touchend', cancelLongPress)
+  video.addEventListener('touchmove', (event) => {
+    if (!isSlideAllowed) return
 
-  function cancelLongPress () {
+    const moveX = event.touches[0].clientX
+    const moveY = event.touches[0].clientY
+    const deltaX = moveX - startX
+    const deltaY = moveY - startY
+
+    if (Math.abs(deltaX) > threshold || Math.abs(deltaY) > threshold) {
+      if (!isLongPress) {
+        // 如果前 x 秒内超出阈值，则取消长按和初始检测
+        clearTimeout(timeoutId)
+        isSliding = true
+      } else {
+        // 如果已经是长按状态，则不处理超出阈值的移动
+        return
+      }
+
+      if (isSliding) {
+        // 第一次滑动时创建 progressInfo 元素
+        if (!progressInfoCreated && !isCreatingProgressInfo) {
+          isCreatingProgressInfo = true
+          progressInfo = document.createElement('div')
+          progressInfo.id = 'progress-info'
+          video.parentNode.insertBefore(progressInfo, video.nextSibling)
+          progressInfoCreated = true
+          isCreatingProgressInfo = false
+        }
+
+        video.pause()
+        const progressChange = deltaX / video.clientWidth * video.duration
+        video.currentTime = startTime + progressChange
+
+        if (progressInfoCreated) {
+          // 显示进度信息
+          progressInfo.textContent = `进度: ${formatTime(video.currentTime)} / ${formatTime(video.duration)}`
+          progressInfo.style.display = 'block'
+        }
+      }
+    }
+  })
+
+  video.addEventListener('touchend', () => {
     clearTimeout(timeoutId)
 
     if (isLongPress) {
       video.playbackRate = video.playbackRate / times
       isLongPress = false
     }
+
+    if (isSliding) {
+      video.play()
+      // 隐藏进度信息
+      progressInfo.style.display = ''
+      isSliding = false
+    }
+  })
+
+  function formatTime (seconds) {
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
   }
 }
 
