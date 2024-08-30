@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.21
+// @version            5.0-beta.22
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -1070,33 +1070,6 @@ div.mini-header {
 }
 
 /* 使用 controlHeaderImage 获取随机头图 */
-
-/* -------------------------------------------------- 
- --------------------- 菜单消息数 --------------------
- --------------------------------------------------- */
-
-.red-num--message,
-.red-num--dynamic {
-    position: fixed !important;
-    bottom: calc(var(--actionbar-height) + 138px);
-    left: calc((200vw + 70px) / 3) !important;
-    top: unset !important;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(calc(160px + var(--actionbar-height) + 5px));
-    transition: var(--overlay-time) ease-in;
-}
-
-.red-num--dynamic.red-num--dynamic {
-    bottom: calc(var(--actionbar-height) + 108px);
-}
-
-[menu] .red-num--message,
-[menu] .red-num--dynamic {
-    opacity: 1;
-    pointer-events: auto;
-    transform: none;
-}
 
 /* -------------------------------------------------- 
  ---------------------- 展开图类 --------------------- 
@@ -2349,10 +2322,10 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
 }
 
 /* 弹幕行高度、背景色 */
-.bpx-player-sending-bar {
-    height: var(--dm-row-height) !important;
+div.bpx-player-sending-bar {
+    height: var(--dm-row-height);
     /* 适配 dark reader 全局变量值更改延后，否则临时白块 */
-    background-color: white !important;
+    background-color: white;
 }
 
 .bpx-player-dm-input {
@@ -5300,12 +5273,9 @@ function setMenuBtn () {
   menuFab.appendChild(menuOverlay)
   const menu = menuOverlay.querySelector('#header-in-menu')
 
-  menuFab.addEventListener('click', () => {
-    menu.classList.add('show')
-    document.body.setAttribute('menu', '') // 显示消息数
-    menuOverlay.classList.add('show')
-    menuFab.classList.add('active')
-  })
+  // 消息数
+  // https://api.bilibili.com/x/web-interface/dynamic/entrance?alltype_offset=971363530378838016&video_offset=0&article_offset=0
+  // https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0
 
   let openedDialog = '' // sessionStorage 刷新网页不变
 

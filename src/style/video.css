@@ -626,10 +626,10 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
 }
 
 /* 弹幕行高度、背景色 */
-.bpx-player-sending-bar {
-    height: var(--dm-row-height) !important;
+div.bpx-player-sending-bar {
+    height: var(--dm-row-height);
     /* 适配 dark reader 全局变量值更改延后，否则临时白块 */
-    background-color: white !important;
+    background-color: white;
 }
 
 .bpx-player-dm-input {
