@@ -22,7 +22,7 @@ import { waitDOMContentLoaded } from './utils.js'
   if (window.top !== window.self) { return } // 检查当前执行环境是否为顶级窗口
 
   /* initViewport */ document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'viewport', content: 'width=device-width, initial-scale=1' }))
-  /* initScrollY */ waitDOMContentLoaded(() => window.scrollTo(0, 0))
+  /* initScrollY */ window.addEventListener('load', () => window.scrollTo(0, 0))
 
   preventBeforeUnload()
   countViewTime()
