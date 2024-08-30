@@ -2641,8 +2641,8 @@ div.bili-dyn-item-draw__avatar {
     transition: transform .5s ease-in-out;
 }
 
-/* 替代原 visible 类 */
-.fixed-sidenav-storage .back-to-top[show] {
+/* 使用原 visible 类 */
+.back-to-top.visible {
     transform: none;
 }
 
@@ -2651,7 +2651,8 @@ div.bili-dyn-item-draw__avatar {
     background: white;
 }
 
-#app .fixed-sidenav-storage div.fixed-sidenav-storage-item.touch-active {
+/* 类名会自动直接修改 (而非classList) */
+#app .fixed-sidenav-storage div.fixed-sidenav-storage-item[touch-active] {
     background: var(--graph_bg_thick);
 }
 
@@ -4125,7 +4126,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   increaseVideoLoadSize: () => (/* binding */ increaseVideoLoadSize),
 /* harmony export */   preventBeforeUnload: () => (/* binding */ preventBeforeUnload)
 /* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(24);
 /* global GM_getValue GM_setValue unsafeWindow */
+
 
 function preventBeforeUnload () {
   const originalAddEventListener = window.addEventListener
@@ -4224,7 +4227,6 @@ function scrollToHidden (page) {
   let lastScrollY = 0
   const scrollThreshold = 75
 
-  // if (page !== 'video') {
   window.addEventListener('scroll', () => {
     const currentScrollY = window.scrollY
     const offsetY = currentScrollY - lastScrollY
@@ -4236,31 +4238,15 @@ function scrollToHidden (page) {
       lastScrollY = currentScrollY
     }
   })
-  // } else {
-  //   const leftContainer = document.body.querySelector('.left-container')
-  //   const backToTop = document.getElementsByClassName('back-to-top')[0]
 
-  //   leftContainer.addEventListener('scroll', () => { // change
-  //     const currentScrollY = leftContainer.scrollTop // change
-  //     const offsetY = currentScrollY - lastScrollY
+  if (page === 'video') {
+    const backToTop = document.getElementsByClassName('back-to-top')[0]
 
-  //     if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
-
-  //     if (Math.abs(offsetY) > scrollThreshold) {
-  //       offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
-  //       lastScrollY = currentScrollY
-  //     }
-
-  //     // 修复更改滚动区后的置顶按钮不显示
-  //     currentScrollY > leftContainer.clientHeight ? backToTop?.setAttribute('show', '') : backToTop?.removeAttribute('show')
-  //   })
-
-  //   backToTop.addEventListener('click', () => {
-  //     leftContainer.scrollTo({ top: 0 })
-  //     backToTop.classList.add('touch-active')
-  //     backToTop.addEventListener('transitionend', () => { backToTop.classList.remove('touch-active') }, { once: true })
-  //   })
-  // }
+    backToTop.addEventListener('click', () => {
+      backToTop.setAttribute('touch-active', '')
+      ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_0__.handleTransitionEndOnce)(backToTop, 'transform', () => backToTop.removeAttribute('touch-active'))
+    })
+  }
 }
 
 function slideSearchSort () {
@@ -4428,12 +4414,38 @@ function handleSpaceSwipe () {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   handleTransitionEndOnce: () => (/* binding */ handleTransitionEndOnce),
+/* harmony export */   waitDOMContentLoaded: () => (/* binding */ waitDOMContentLoaded)
+/* harmony export */ });
+function waitDOMContentLoaded (callback) {
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback()
+}
+
+const handleTransitionEndOnce = (element, propertyName, callback) => {
+  const handleTransitionEnd = ({ propertyName: prop }) => {
+    if (prop === propertyName) {
+      callback()
+      element.removeEventListener('transitionend', handleTransitionEnd)
+    }
+  }
+
+  element.addEventListener('transitionend', handleTransitionEnd)
+}
+
+
+/***/ }),
+/* 25 */
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   handleScriptPreSetting: () => (/* binding */ handleScriptPreSetting),
 /* harmony export */   handleScriptSetting: () => (/* binding */ handleScriptSetting),
 /* harmony export */   setScriptHelp: () => (/* binding */ setScriptHelp)
 /* harmony export */ });
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(24);
 /* global GM_getValue GM_setValue GM_registerMenuCommand */
-function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
+
 
 // 脚本预加载设置
 function handleScriptPreSetting () {
@@ -4462,7 +4474,7 @@ function handleScriptPreSetting () {
 
   if (GM_getValue('home-single-column', false)) { homeSingleColumn() }
 
-  waitDOMContentLoaded(() => {
+  (0,_utils_js__WEBPACK_IMPORTED_MODULE_0__.waitDOMContentLoaded)(() => {
     createSettingPanel()
 
     GM_registerMenuCommand('元素隐藏设置', () => {
@@ -4859,16 +4871,16 @@ function setScriptHelp () {
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   handleActionbar: () => (/* binding */ handleActionbar)
 /* harmony export */ });
-/* harmony import */ var _search_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(26);
-/* harmony import */ var _menu_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(27);
-/* harmony import */ var _sidebar_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(33);
+/* harmony import */ var _search_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(27);
+/* harmony import */ var _menu_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(28);
+/* harmony import */ var _sidebar_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(34);
 
 
 
@@ -5027,7 +5039,7 @@ function handleActionbar (page) {
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -5217,16 +5229,16 @@ function setSearchBtn (page) {
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   setMenuBtn: () => (/* binding */ setMenuBtn)
 /* harmony export */ });
-/* harmony import */ var _menu_follow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(28);
-/* harmony import */ var _menu_history_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(31);
-/* harmony import */ var _menu_dynamic_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(32);
+/* harmony import */ var _menu_follow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(29);
+/* harmony import */ var _menu_history_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(32);
+/* harmony import */ var _menu_dynamic_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(33);
 
 
 
@@ -5373,14 +5385,14 @@ function setMenuBtn () {
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   loadFollowList: () => (/* binding */ loadFollowList)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(29);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
 
 
 /**
@@ -5524,7 +5536,7 @@ async function loadFollowList (orderType) {
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -5537,7 +5549,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   getJudgeAI: () => (/* binding */ getJudgeAI),
 /* harmony export */   getVideoInfo: () => (/* binding */ getVideoInfo)
 /* harmony export */ });
-/* harmony import */ var _values_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
+/* harmony import */ var _values_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
 // fork 自 BiliPlus 项目：https://github.com/0xlau/biliplus
 
 
@@ -5774,7 +5786,7 @@ async function followUser (mid, isFollow) {
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -5788,14 +5800,14 @@ const aiData = {}
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   handleHistoryShowMore: () => (/* binding */ handleHistoryShowMore)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(29);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
 
 
 // 设置历史自动展开
@@ -5892,14 +5904,14 @@ async function handleHistoryShowMore () {
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   handleDynamicShowMore: () => (/* binding */ handleDynamicShowMore)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(29);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
 
 
 // 设置动态自动展开
@@ -5988,14 +6000,16 @@ function handleDynamicShowMore () {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   setSidebarBtn: () => (/* binding */ setSidebarBtn)
 /* harmony export */ });
-/* harmony import */ var _comment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(34);
+/* harmony import */ var _comment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(35);
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(24);
+
 
 
 /* 使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。
@@ -6030,10 +6044,7 @@ function setSidebarBtn (page) {
       const recommendFooter = document.querySelector('.rec-footer') // 自动收起侧边栏
       if (!nextPlay?.contains(event.target) && !recommendFooter.contains(event.target)) {
         closeSidebar()
-        rightContainer.addEventListener('transitionend', event => {
-          if (event.propertyName === 'transform') { rightContainer.scrollTop = 0 }
-        }, { once: true })
-
+        ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_1__.handleTransitionEndOnce)(rightContainer, 'transform', () => { rightContainer.scrollTop = 0 })
         // 此处不要使用监听器，否则会干扰原函数执行
         ;(0,_comment_js__WEBPACK_IMPORTED_MODULE_0__.modifyShadowDOMLate)()
       }
@@ -6066,7 +6077,7 @@ function setSidebarBtn (page) {
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -6317,7 +6328,7 @@ function modifyShadowDOMLate (isDynamicRefresh) {
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -6325,8 +6336,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   handleHeaderImage: () => (/* binding */ handleHeaderImage),
 /* harmony export */   handleVideoCard: () => (/* binding */ handleVideoCard)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(29);
-/* harmony import */ var _ai_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(36);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
+/* harmony import */ var _ai_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(37);
 
 
 
@@ -6613,15 +6624,15 @@ function handleVideoCard () {
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   loadAI: () => (/* binding */ loadAI)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(29);
-/* harmony import */ var _values_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(30);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
+/* harmony import */ var _values_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(31);
 
 
 
@@ -6713,14 +6724,14 @@ function genterateAIConclusionCard (aiConclusionRes, aiCardElement, bvid) {
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   videoInteraction: () => (/* binding */ videoInteraction)
 /* harmony export */ });
-/* harmony import */ var _comment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(34);
+/* harmony import */ var _comment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(35);
 /* global GM_getValue */
 
 
@@ -7012,7 +7023,7 @@ function setEndingContent () {
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -7140,12 +7151,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_space_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(19);
 /* harmony import */ var _style_message_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(21);
 /* harmony import */ var _window_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(23);
-/* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(24);
-/* harmony import */ var _actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(25);
-/* harmony import */ var _home_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(35);
-/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(37);
-/* harmony import */ var _message_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(38);
+/* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(25);
+/* harmony import */ var _actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(26);
+/* harmony import */ var _home_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(36);
+/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(38);
+/* harmony import */ var _message_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(39);
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(24);
 // @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
+
 
 
 
@@ -7167,9 +7180,8 @@ __webpack_require__.r(__webpack_exports__);
 
   if (window.top !== window.self) { return } // 检查当前执行环境是否为顶级窗口
 
-  function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
-
   /* initViewport */ document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'viewport', content: 'width=device-width, initial-scale=1' }))
+  /* initScrollY */ ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.waitDOMContentLoaded)(() => window.scrollTo(0, 0))
 
   ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.preventBeforeUnload)()
   ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.countViewTime)()
@@ -7187,7 +7199,7 @@ __webpack_require__.r(__webpack_exports__);
         (0,_window_js__WEBPACK_IMPORTED_MODULE_7__.increaseVideoLoadSize)()
         ;(0,_home_js__WEBPACK_IMPORTED_MODULE_10__.handleHeaderImage)()
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
-        waitDOMContentLoaded(() => {
+        ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.waitDOMContentLoaded)(() => {
           ;(0,_actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__.handleActionbar)('home')
           ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
           ;(0,_home_js__WEBPACK_IMPORTED_MODULE_10__.handleVideoCard)()
@@ -7196,7 +7208,7 @@ __webpack_require__.r(__webpack_exports__);
         })
       } else if (location.pathname.startsWith('/video')) {
         (0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
-        waitDOMContentLoaded(() => {
+        ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.waitDOMContentLoaded)(() => {
           ;(0,_actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__.handleActionbar)('video')
           ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
           ;(0,_video_js__WEBPACK_IMPORTED_MODULE_11__.videoInteraction)()
@@ -7207,7 +7219,7 @@ __webpack_require__.r(__webpack_exports__);
       break
     case 'search':
       ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
-      waitDOMContentLoaded(() => {
+      ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.waitDOMContentLoaded)(() => {
         ;(0,_actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__.handleActionbar)('search')
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
         ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('search')
@@ -7216,7 +7228,7 @@ __webpack_require__.r(__webpack_exports__);
       break
     case 'space':
       ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
-      waitDOMContentLoaded(() => {
+      ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.waitDOMContentLoaded)(() => {
         ;(0,_actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__.handleActionbar)('space')
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
         ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('space')
@@ -7225,7 +7237,7 @@ __webpack_require__.r(__webpack_exports__);
       break
     case 'message':
       ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
-      waitDOMContentLoaded(() => {
+      ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.waitDOMContentLoaded)(() => {
         ;(0,_actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__.handleActionbar)('message')
         ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
         ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('message')

@@ -1,4 +1,5 @@
 import { modifyShadowDOMLate } from '../comment.js'
+import { handleTransitionEndOnce } from '../utils.js'
 
 /* 使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。
    head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。 */
@@ -32,10 +33,7 @@ export function setSidebarBtn (page) {
       const recommendFooter = document.querySelector('.rec-footer') // 自动收起侧边栏
       if (!nextPlay?.contains(event.target) && !recommendFooter.contains(event.target)) {
         closeSidebar()
-        rightContainer.addEventListener('transitionend', event => {
-          if (event.propertyName === 'transform') { rightContainer.scrollTop = 0 }
-        }, { once: true })
-
+        handleTransitionEndOnce(rightContainer, 'transform', () => { rightContainer.scrollTop = 0 })
         // 此处不要使用监听器，否则会干扰原函数执行
         modifyShadowDOMLate()
       }

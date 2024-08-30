@@ -1,4 +1,5 @@
 /* global GM_getValue GM_setValue unsafeWindow */
+import { handleTransitionEndOnce } from './utils.js'
 
 export function preventBeforeUnload () {
   const originalAddEventListener = window.addEventListener
@@ -97,7 +98,6 @@ function scrollToHidden (page) {
   let lastScrollY = 0
   const scrollThreshold = 75
 
-  // if (page !== 'video') {
   window.addEventListener('scroll', () => {
     const currentScrollY = window.scrollY
     const offsetY = currentScrollY - lastScrollY
@@ -109,31 +109,15 @@ function scrollToHidden (page) {
       lastScrollY = currentScrollY
     }
   })
-  // } else {
-  //   const leftContainer = document.body.querySelector('.left-container')
-  //   const backToTop = document.getElementsByClassName('back-to-top')[0]
 
-  //   leftContainer.addEventListener('scroll', () => { // change
-  //     const currentScrollY = leftContainer.scrollTop // change
-  //     const offsetY = currentScrollY - lastScrollY
+  if (page === 'video') {
+    const backToTop = document.getElementsByClassName('back-to-top')[0]
 
-  //     if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
-
-  //     if (Math.abs(offsetY) > scrollThreshold) {
-  //       offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
-  //       lastScrollY = currentScrollY
-  //     }
-
-  //     // 修复更改滚动区后的置顶按钮不显示
-  //     currentScrollY > leftContainer.clientHeight ? backToTop?.setAttribute('show', '') : backToTop?.removeAttribute('show')
-  //   })
-
-  //   backToTop.addEventListener('click', () => {
-  //     leftContainer.scrollTo({ top: 0 })
-  //     backToTop.classList.add('touch-active')
-  //     backToTop.addEventListener('transitionend', () => { backToTop.classList.remove('touch-active') }, { once: true })
-  //   })
-  // }
+    backToTop.addEventListener('click', () => {
+      backToTop.setAttribute('touch-active', '')
+      handleTransitionEndOnce(backToTop, 'transform', () => backToTop.removeAttribute('touch-active'))
+    })
+  }
 }
 
 function slideSearchSort () {

@@ -1,5 +1,5 @@
 /* global GM_getValue GM_setValue GM_registerMenuCommand */
-function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
+import { waitDOMContentLoaded } from './utils.js'
 
 // 脚本预加载设置
 export function handleScriptPreSetting () {

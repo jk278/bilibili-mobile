@@ -14,15 +14,15 @@ import { handleActionbar } from './actionbar/actionbar.js'
 import { handleHeaderImage, handleVideoCard } from './home.js'
 import { videoInteraction } from './video.js'
 import { createUnfoldBtn } from './message.js'
+import { waitDOMContentLoaded } from './utils.js'
 
 (function () {
   // setInterval(() => { debugger }, 100)
 
   if (window.top !== window.self) { return } // 检查当前执行环境是否为顶级窗口
 
-  function waitDOMContentLoaded (callback) { document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', callback) : callback() }
-
   /* initViewport */ document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'viewport', content: 'width=device-width, initial-scale=1' }))
+  /* initScrollY */ waitDOMContentLoaded(() => window.scrollTo(0, 0))
 
   preventBeforeUnload()
   countViewTime()

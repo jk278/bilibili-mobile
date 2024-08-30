@@ -925,8 +925,8 @@ div.bili-dyn-item-draw__avatar {
     transition: transform .5s ease-in-out;
 }
 
-/* 替代原 visible 类 */
-.fixed-sidenav-storage .back-to-top[show] {
+/* 使用原 visible 类 */
+.back-to-top.visible {
     transform: none;
 }
 
@@ -935,7 +935,8 @@ div.bili-dyn-item-draw__avatar {
     background: white;
 }
 
-#app .fixed-sidenav-storage div.fixed-sidenav-storage-item.touch-active {
+/* 类名会自动直接修改 (而非classList) */
+#app .fixed-sidenav-storage div.fixed-sidenav-storage-item[touch-active] {
     background: var(--graph_bg_thick);
 }
 
