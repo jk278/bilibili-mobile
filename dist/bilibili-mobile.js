@@ -7181,7 +7181,7 @@ __webpack_require__.r(__webpack_exports__);
   if (window.top !== window.self) { return } // 检查当前执行环境是否为顶级窗口
 
   /* initViewport */ document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'viewport', content: 'width=device-width, initial-scale=1' }))
-  /* initScrollY */ ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.waitDOMContentLoaded)(() => window.scrollTo(0, 0))
+  /* initScrollY */ window.addEventListener('load', () => window.scrollTo(0, 0))
 
   ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.preventBeforeUnload)()
   ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.countViewTime)()
