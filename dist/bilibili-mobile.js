@@ -1526,7 +1526,7 @@ div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest:after 
 .inline-progress-bar {
     position: absolute;
     bottom: 0;
-    height: 10px;
+    height: 4px;
     left: 0;
     width: 100%;
     z-index: 2;
@@ -1548,10 +1548,11 @@ div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest:after 
 
 .inline-progress-bar-thumb {
     position: absolute;
-    top: -5px;
+    top: -4px;
     left: 0;
-    width: 20px;
-    height: 20px;
+    width: 12px;
+    height: 12px;
+    transform: translateX(-2px);
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 50%;
