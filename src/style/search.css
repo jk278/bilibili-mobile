@@ -7,8 +7,8 @@
 }
 
 /* 分类和另几个包含块 */
-.i_wrapper {
-    padding: 0 5px !important;
+div.i_wrapper {
+    padding: 0 5px;
 }
 
 /* 分类 */
@@ -332,6 +332,11 @@ div.live-content {
 
 .media-card-content-head-text {
     line-height: 15px !important;
+}
+
+/* 综合里的用户账户 */
+.info-card.flex_start {
+    width: 100%;
 }
 
 /* 位置异常的 logo */

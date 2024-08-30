@@ -1,10 +1,11 @@
 /* ------------------------ 顶栏 -------------------- */
 
-/* #i_cecream 属首页(含顶栏)和搜索页(不含顶栏)，#app #biliMainHeader 属视频页 */
+/* #i_cecream 属首页(含顶栏)和搜索页(不含顶栏)，#app #biliMainHeader 属视频页，#home_nav 属消息页 */
 
 /* 顶栏外框: translate 会生成新的堆叠上下文，导致 position:fixed 的消息数不可显示 */
 #biliMainHeader,
-#bili-header-container {
+#bili-header-container,
+#home_nav {
     position: fixed;
     width: 100%;
     z-index: 62;
@@ -26,6 +27,11 @@
 /* 视频搜索页顶栏内容跟随外框移出屏幕 */
 .fixed-header .bili-header__bar {
     position: absolute !important;
+}
+
+/* 消息页顶部阴影 */
+div.mini-header {
+    box-shadow: unset;
 }
 
 /* 搜索框 */
@@ -83,33 +89,6 @@
 }
 
 /* 使用 controlHeaderImage 获取随机头图 */
-
-/* -------------------------------------------------- 
- --------------------- 菜单消息数 --------------------
- --------------------------------------------------- */
-
-.red-num--message,
-.red-num--dynamic {
-    position: fixed !important;
-    bottom: calc(var(--actionbar-height) + 138px);
-    left: calc((200vw + 70px) / 3) !important;
-    top: unset !important;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(calc(160px + var(--actionbar-height) + 5px));
-    transition: var(--overlay-time) ease-in;
-}
-
-.red-num--dynamic.red-num--dynamic {
-    bottom: calc(var(--actionbar-height) + 108px);
-}
-
-[menu] .red-num--message,
-[menu] .red-num--dynamic {
-    opacity: 1;
-    pointer-events: auto;
-    transform: none;
-}
 
 /* -------------------------------------------------- 
  ---------------------- 展开图类 --------------------- 

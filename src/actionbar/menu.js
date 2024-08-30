@@ -47,12 +47,9 @@ export function setMenuBtn () {
   menuFab.appendChild(menuOverlay)
   const menu = menuOverlay.querySelector('#header-in-menu')
 
-  menuFab.addEventListener('click', () => {
-    menu.classList.add('show')
-    document.body.setAttribute('menu', '') // 显示消息数
-    menuOverlay.classList.add('show')
-    menuFab.classList.add('active')
-  })
+  // 消息数
+  // https://api.bilibili.com/x/web-interface/dynamic/entrance?alltype_offset=971363530378838016&video_offset=0&article_offset=0
+  // https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0
 
   let openedDialog = '' // sessionStorage 刷新网页不变
 

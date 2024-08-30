@@ -981,11 +981,12 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------------ 顶栏 -------------------- */
 
-/* #i_cecream 属首页(含顶栏)和搜索页(不含顶栏)，#app #biliMainHeader 属视频页 */
+/* #i_cecream 属首页(含顶栏)和搜索页(不含顶栏)，#app #biliMainHeader 属视频页，#home_nav 属消息页 */
 
 /* 顶栏外框: translate 会生成新的堆叠上下文，导致 position:fixed 的消息数不可显示 */
 #biliMainHeader,
-#bili-header-container {
+#bili-header-container,
+#home_nav {
     position: fixed;
     width: 100%;
     z-index: 62;
@@ -1007,6 +1008,11 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* ------------------------ 顶栏 ---
 /* 视频搜索页顶栏内容跟随外框移出屏幕 */
 .fixed-header .bili-header__bar {
     position: absolute !important;
+}
+
+/* 消息页顶部阴影 */
+div.mini-header {
+    box-shadow: unset;
 }
 
 /* 搜索框 */
@@ -2746,8 +2752,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `/* -------------------- 搜索页 ----
 }
 
 /* 分类和另几个包含块 */
-.i_wrapper {
-    padding: 0 5px !important;
+div.i_wrapper {
+    padding: 0 5px;
 }
 
 /* 分类 */
@@ -3071,6 +3077,11 @@ div.live-content {
 
 .media-card-content-head-text {
     line-height: 15px !important;
+}
+
+/* 综合里的用户账户 */
+.info-card.flex_start {
+    width: 100%;
 }
 
 /* 位置异常的 logo */
