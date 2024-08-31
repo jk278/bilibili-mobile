@@ -17,7 +17,8 @@ export function setMenuBtn () {
   waitRightEntry()
 
   function tryPreload () {
-    if (document.querySelector(preloadeditems[2])) {
+    // 好像收藏加载最慢
+    if (document.querySelector(preloadeditems[1])) {
       preloadeditems.forEach(item => {
         document.querySelector(item).dispatchEvent(new MouseEvent('mouseenter'))
       })
