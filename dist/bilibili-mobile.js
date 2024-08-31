@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.23
+// @version            5.0-beta.24
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -481,12 +481,30 @@ body {
 
 /* 有的用户这俩不生效 */
 body #header-in-menu li {
+    position: relative;
     padding: 5px 30px !important;
     line-height: 20px !important;
 }
 
 #header-in-menu.show {
     transform: translate(-50%, calc(-100% - var(--actionbar-height) - 5px));
+}
+
+/* 菜单消息数 */
+.badge {
+    position: absolute;
+    top: 6px;
+    left: 63px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 16px;
+    padding: 0 4.5px 1px;
+    border-radius: 8px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    visibility: hidden;
 }
 
 /* 底部菜单、侧边栏等: overlay */
@@ -1038,10 +1056,9 @@ div.mini-header {
 /* 失焦后立即重新聚焦会导致搜索历史折叠闪烁，直接强制保留聚焦状态 (.is-focus) */
 .center-search-container #nav-searchform {
     border-radius: 8px 8px 0px 0px !important;
-
-    border: 1px solid var(--line_regular) !important;
     border-bottom: none !important;
-    background: var(--bg1) !important;
+    background: white !important;
+    opacity: 1 !important;
 }
 
 .center-search-container #nav-searchform .nav-search-content {
@@ -1111,20 +1128,7 @@ div.bili-header .v-popover[show] {
     pointer-events: auto;
 }
 
-/* 复制的分类图 */
-#copy-category-dialog.v-popover {
-    /* transform: translate(-50%, -50%) !important; */
-    display: none;
-    z-index: 2;
-}
-
-/* 分类(左侧入口)展开图: 一列 */
-.channel-panel__column {
-    flex: 1;
-    padding: 0 !important;
-}
-
-/* 右侧入口展开图 */
+/* 展开图 */
 .dynamic-panel-popover,
 .favorite-panel-popover,
 .history-panel-popover {
@@ -1204,6 +1208,57 @@ div.bili-header .v-popover[show] {
 /* 查看全部历史按钮 */
 a.view-all-history-btn {
     display: none !important;
+}
+
+/* 历史搜索 */
+.header-tabs-panel__content #nav-searchform {
+    display: flex;
+    align-items: center;
+    padding: 6px 48px 0 15px;
+    position: relative;
+    height: 40px;
+    background-color: white;
+    transition: background-color .3s;
+}
+
+.header-tabs-panel__content .nav-search-btn {
+    position: absolute;
+    top: 9px;
+    right: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.header-tabs-panel__content .nav-search-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    width: 100%;
+    height: 32px;
+    border-radius: 6px;
+    background-color: var(--graph_bg_thick) !important;
+}
+
+.header-tabs-panel__content input.nav-search-input {
+    flex: 1;
+    margin-right: 8px;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+    color: var(--text2);
+    font-size: 14px;
+    line-height: 32px;
+}
+
+.header-tabs-panel__content .nav-search-clean {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
 }
 
 /* 移除头像大图 */
@@ -5224,6 +5279,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _menu_follow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(29);
 /* harmony import */ var _menu_history_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(32);
 /* harmony import */ var _menu_dynamic_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(33);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(30);
+
 
 
 
@@ -5260,8 +5317,8 @@ function setMenuBtn () {
     <div id="header-in-menu">
       <ul>
         <li><a target="_blank" href="https://www.bilibili.com/v/popular/all/">热门</a></li>
-        <li data-refer=".right-entry__outside[href='//message.bilibili.com']">消息</li>
-        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
+        <li data-refer=".right-entry__outside[href='//message.bilibili.com']">消息<span class="badge" id="message-badge">1</span></li>
+        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态<span class="badge" id="dynamic-badge">2</span></li>
         <li data-refer=".right-entry__outside[data-header-fav-entry]">收藏</li>
         <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
         <li data-refer=".header-avatar-wrap--container">主页</li>
@@ -5279,9 +5336,22 @@ function setMenuBtn () {
     menuFab.classList.add('active')
   })
 
+  updateBadges()
   // 消息数
-  // https://api.bilibili.com/x/web-interface/dynamic/entrance?alltype_offset=971363530378838016&video_offset=0&article_offset=0
-  // https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0
+  async function updateBadges () {
+    function update (id, number) {
+      const badge = menuOverlay.querySelector(`#${id}`)
+      if (number > 0) {
+        badge.textContent = number > 99 ? '99+' : number
+        badge.style.visibility = 'visible'
+      } else {
+        badge.style.visibility = 'hidden'
+      }
+    }
+    const { messageNum, dynamicNum } = await (0,_api_js__WEBPACK_IMPORTED_MODULE_3__.getUnreadNums)()
+    update('message-badge', messageNum)
+    update('dynamic-badge', dynamicNum)
+  }
 
   let openedDialog = '' // sessionStorage 刷新网页不变
 
@@ -5331,6 +5401,10 @@ function setMenuBtn () {
     const referElement = document.querySelector(`${openedDialog}+.v-popover`)
     referElement.removeAttribute('show')
     referElement.addEventListener('transitionend', () => { referElement.removeAttribute('display') }, { once: true }) // 鼠标一动就会触发 mouseleave
+
+    if (openedDialog === ("'.right-entry__outside[href='//message.bilibili.com']" || 0)) {
+      updateBadges()
+    }
   })
 
   function handleTouchMove () { menuOverlay.click() }
@@ -5533,7 +5607,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   getDynamicList: () => (/* binding */ getDynamicList),
 /* harmony export */   getFollowList: () => (/* binding */ getFollowList),
 /* harmony export */   getHistoryList: () => (/* binding */ getHistoryList),
+/* harmony export */   getHistorySearchList: () => (/* binding */ getHistorySearchList),
 /* harmony export */   getJudgeAI: () => (/* binding */ getJudgeAI),
+/* harmony export */   getUnreadNums: () => (/* binding */ getUnreadNums),
 /* harmony export */   getVideoInfo: () => (/* binding */ getVideoInfo)
 /* harmony export */ });
 /* harmony import */ var _values_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
@@ -5739,9 +5815,36 @@ async function getDynamicList (offset) {
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 async function getHistoryList (cursor) {
-  const url = `https://api.bilibili.com/x/web-interface/history/cursor?max=${cursor.max}&view_at=${cursor.view_at}&business=archive`
+  const url = `${_values_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/web-interface/history/cursor?max=${cursor.max}&view_at=${cursor.view_at}&business=archive`
   const options = { credentials: 'include' }
   return fetchAPI(url, options)
+}
+
+/**
+ * 获取历史搜索列表
+ * @param {string} key 关键词
+ * @param {number} pn 返回结果页序数
+ * @returns {Promise<Object>} 响应主体 data
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+async function getHistorySearchList (key, pn) {
+  return fetchAPI(`${_values_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/web-interface/history/search?pn=${pn}&keyword=${key}&business=all`, { credentials: 'include' })
+}
+
+/**
+ * 获取菜单消息数
+ * @returns {Promise<Object>} [messageNum, dynamicNum]
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+async function getUnreadNums () {
+  const options = { credentials: 'include' }
+  const messageNumObj = await fetchAPI('https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0', options)
+  const dynamicNumObj = await fetchAPI(`${_values_js__WEBPACK_IMPORTED_MODULE_0__.BILIBILI_API}/x/web-interface/dynamic/entrance?alltype_offset=&video_offset=0&article_offset=0`, options)
+
+  const messageNum = Object.values(messageNumObj).reduce((acc, value) => acc + value, 0)
+  const dynamicNum = dynamicNumObj.update_info.item.count
+
+  return [messageNum, dynamicNum]
 }
 
 /**
@@ -5804,22 +5907,119 @@ async function handleHistoryShowMore () {
     // eslint-disable-next-line camelcase
     view_at: 0
   }
+  let pn
+  let isHistoryItem = true
+  let isAddSearchItem = false
 
   const data = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getHistoryList)(cursor)
   cursor = data.cursor
 
   const historyContent = document.querySelector('.history-panel-popover>.header-tabs-panel__content')
 
+  // 添加历史搜索
+  const historySearch = Object.assign(document.createElement('form'), {
+    id: 'nav-searchform',
+    innerHTML: `
+    <div class="nav-search-content">
+      <input class="nav-search-input" type="text" autocomplete="off" maxlength="100">
+      <div class="nav-search-clean"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 14.75C11.7279 14.75 14.75 11.7279 14.75 8C14.75 4.27208 11.7279 1.25 8 1.25C4.27208 1.25 1.25 4.27208 1.25 8C1.25 11.7279 4.27208 14.75 8 14.75ZM9.64999 5.64303C9.84525 5.44777 10.1618 5.44777 10.3571 5.64303C10.5524 5.83829 10.5524 6.15487 10.3571 6.35014L8.70718 8.00005L10.3571 9.64997C10.5524 9.84523 10.5524 10.1618 10.3571 10.3571C10.1618 10.5523 9.84525 10.5523 9.64999 10.3571L8.00007 8.70716L6.35016 10.3571C6.15489 10.5523 5.83831 10.5523 5.64305 10.3571C5.44779 10.1618 5.44779 9.84523 5.64305 9.64997L7.29296 8.00005L5.64305 6.35014C5.44779 6.15487 5.44779 5.83829 5.64305 5.64303C5.83831 5.44777 6.15489 5.44777 6.35016 5.64303L8.00007 7.29294L9.64999 5.64303Z" fill="#C9CCD0" data-darkreader-inline-fill="" style="--darkreader-inline-fill: #c8c3bc;"></path></svg></div>
+    </div>
+    <div class="nav-search-btn"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg></div>
+    `
+  })
+  historyContent.insertBefore(historySearch, historyContent.firstChild)
+
+  const btn = historySearch.querySelector('.nav-search-btn')
+  const input = historySearch.querySelector('input')
+  const clean = historySearch.querySelector('.nav-search-clean')
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      btn.click()
+    }
+  })
+
+  clean.addEventListener('click', () => {
+    const oldElems = historyContent.querySelectorAll('.history-search-item')
+    oldElems.forEach(elem => elem.remove())
+    historyContent.querySelector('#search-history')?.remove()
+
+    input.value = ''
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+
+    isAddSearchItem = false
+  })
+
+  btn.addEventListener('click', async () => {
+    if (!historyContent.querySelector('#search-history')) {
+      const style = document.createElement('style')
+      style.id = 'search-history'
+      style.textContent = `
+      .header-tabs-panel__content>a:not(.history-search-item) {display: none}
+      .header-tabs-panel__content>div {display: none}
+    `
+      historyContent.appendChild(style)
+    }
+
+    pn = 1
+    const data = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getHistorySearchList)(input.value, pn)
+    pn++
+
+    const oldElems = historyContent.querySelectorAll('.history-search-item')
+    oldElems.forEach(elem => elem.remove())
+
+    isAddSearchItem = true
+    data.list.forEach(addElementByItem) // 简写形式有时需绑定 this
+  })
+
+  function removeNoFirstStyle () {
+    isHistoryItem = true
+    historyContent.querySelector('#no-first-history-item')?.remove()
+  }
+
+  function addNoFirstStyle () {
+    isHistoryItem = false
+    if (!historyContent.querySelector('#no-first-history-item')) {
+      const style = document.createElement('style')
+      style.id = 'no-first-history-item'
+      style.textContent = `
+      .header-tabs-panel__content>a.header-history-card {display: none}
+      .header-tabs-panel__content>a.view-all-history-btn {display: block !important}
+      .header-tabs-panel__content>form#nav-searchform {display: none}
+      div.header-tabs-panel__content>div {display: block}
+      `
+      historyContent.appendChild(style)
+    }
+  }
+
+  const historyPanel = document.querySelector('.header-tabs-panel')
+  const observer = new MutationObserver(mutationsList => {
+    mutationsList.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE && node.className === 'header-tabs-panel__item' && node.textContent === '专栏') {
+          historyPanel.children[0].addEventListener('click', removeNoFirstStyle)
+          historyPanel.children[1].addEventListener('click', addNoFirstStyle)
+          historyPanel.children[2].addEventListener('click', addNoFirstStyle)
+          observer.disconnect()
+        }
+      })
+    })
+  })
+  observer.observe(historyPanel, { childList: true })
+
   async function onScroll () {
+    if (!isHistoryItem) return
+
     const { scrollTop, scrollHeight, clientHeight } = historyContent
-    if (Math.abs(scrollTop + clientHeight - scrollHeight) > 1) { return }
+    if (Math.abs(scrollTop + clientHeight - scrollHeight) > 1) return
 
     historyContent.removeEventListener('scroll', onScroll) // 内容加载后再重新监听滚动
     setTimeout(() => { historyContent.addEventListener('scroll', onScroll) }, 2000)
     console.log('Scroll to bottom')
 
-    const data = await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getHistoryList)(cursor)
-    cursor = data.cursor
+    const data = isAddSearchItem ? await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getHistorySearchList)(input.value, pn) : await (0,_api_js__WEBPACK_IMPORTED_MODULE_0__.getHistoryList)(cursor)
+    isAddSearchItem ? pn++ : cursor = data.cursor
+
     data.list.forEach(addElementByItem) // 简写形式有时需绑定 this
   }
   historyContent.addEventListener('scroll', onScroll)
@@ -5827,7 +6027,7 @@ async function handleHistoryShowMore () {
   function addElementByItem (item) {
     const record = Object.assign(document.createElement('a'), {
       href: `//www.bilibili.com/video/${item.history.bvid}/?`,
-      className: 'header-history-card header-history-video',
+      className: `header-history-card header-history-video ${isAddSearchItem ? 'history-search-item' : ''}`,
       target: '_blank',
       'data-mod': 'top_right_bar_window_history',
       'data-idx': 'content',

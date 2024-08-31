@@ -57,10 +57,9 @@ div.mini-header {
 /* 失焦后立即重新聚焦会导致搜索历史折叠闪烁，直接强制保留聚焦状态 (.is-focus) */
 .center-search-container #nav-searchform {
     border-radius: 8px 8px 0px 0px !important;
-
-    border: 1px solid var(--line_regular) !important;
     border-bottom: none !important;
-    background: var(--bg1) !important;
+    background: white !important;
+    opacity: 1 !important;
 }
 
 .center-search-container #nav-searchform .nav-search-content {
@@ -130,20 +129,7 @@ div.bili-header .v-popover[show] {
     pointer-events: auto;
 }
 
-/* 复制的分类图 */
-#copy-category-dialog.v-popover {
-    /* transform: translate(-50%, -50%) !important; */
-    display: none;
-    z-index: 2;
-}
-
-/* 分类(左侧入口)展开图: 一列 */
-.channel-panel__column {
-    flex: 1;
-    padding: 0 !important;
-}
-
-/* 右侧入口展开图 */
+/* 展开图 */
 .dynamic-panel-popover,
 .favorite-panel-popover,
 .history-panel-popover {
@@ -223,6 +209,57 @@ div.bili-header .v-popover[show] {
 /* 查看全部历史按钮 */
 a.view-all-history-btn {
     display: none !important;
+}
+
+/* 历史搜索 */
+.header-tabs-panel__content #nav-searchform {
+    display: flex;
+    align-items: center;
+    padding: 6px 48px 0 15px;
+    position: relative;
+    height: 40px;
+    background-color: white;
+    transition: background-color .3s;
+}
+
+.header-tabs-panel__content .nav-search-btn {
+    position: absolute;
+    top: 9px;
+    right: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.header-tabs-panel__content .nav-search-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    width: 100%;
+    height: 32px;
+    border-radius: 6px;
+    background-color: var(--graph_bg_thick) !important;
+}
+
+.header-tabs-panel__content input.nav-search-input {
+    flex: 1;
+    margin-right: 8px;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+    color: var(--text2);
+    font-size: 14px;
+    line-height: 32px;
+}
+
+.header-tabs-panel__content .nav-search-clean {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
 }
 
 /* 移除头像大图 */

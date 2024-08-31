@@ -148,12 +148,30 @@ body {
 
 /* 有的用户这俩不生效 */
 body #header-in-menu li {
+    position: relative;
     padding: 5px 30px !important;
     line-height: 20px !important;
 }
 
 #header-in-menu.show {
     transform: translate(-50%, calc(-100% - var(--actionbar-height) - 5px));
+}
+
+/* 菜单消息数 */
+.badge {
+    position: absolute;
+    top: 6px;
+    left: 63px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 16px;
+    padding: 0 4.5px 1px;
+    border-radius: 8px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    visibility: hidden;
 }
 
 /* 底部菜单、侧边栏等: overlay */

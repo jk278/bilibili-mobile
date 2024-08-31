@@ -1,6 +1,7 @@
 import { loadFollowList } from './menu-follow.js'
 import { handleHistoryShowMore } from './menu-history.js'
 import { handleDynamicShowMore } from './menu-dynamic.js'
+import { getUnreadNums } from '../api.js'
 
 export function setMenuBtn () {
   // 覆盖显隐，初始化加载动态、收藏、历史、主页
@@ -34,8 +35,8 @@ export function setMenuBtn () {
     <div id="header-in-menu">
       <ul>
         <li><a target="_blank" href="https://www.bilibili.com/v/popular/all/">热门</a></li>
-        <li data-refer=".right-entry__outside[href='//message.bilibili.com']">消息</li>
-        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态</li>
+        <li data-refer=".right-entry__outside[href='//message.bilibili.com']">消息<span class="badge" id="message-badge">1</span></li>
+        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态<span class="badge" id="dynamic-badge">2</span></li>
         <li data-refer=".right-entry__outside[data-header-fav-entry]">收藏</li>
         <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
         <li data-refer=".header-avatar-wrap--container">主页</li>
@@ -53,9 +54,22 @@ export function setMenuBtn () {
     menuFab.classList.add('active')
   })
 
+  updateBadges()
   // 消息数
-  // https://api.bilibili.com/x/web-interface/dynamic/entrance?alltype_offset=971363530378838016&video_offset=0&article_offset=0
-  // https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0
+  async function updateBadges () {
+    function update (id, number) {
+      const badge = menuOverlay.querySelector(`#${id}`)
+      if (number > 0) {
+        badge.textContent = number > 99 ? '99+' : number
+        badge.style.visibility = 'visible'
+      } else {
+        badge.style.visibility = 'hidden'
+      }
+    }
+    const { messageNum, dynamicNum } = await getUnreadNums()
+    update('message-badge', messageNum)
+    update('dynamic-badge', dynamicNum)
+  }
 
   let openedDialog = '' // sessionStorage 刷新网页不变
 
@@ -105,6 +119,10 @@ export function setMenuBtn () {
     const referElement = document.querySelector(`${openedDialog}+.v-popover`)
     referElement.removeAttribute('show')
     referElement.addEventListener('transitionend', () => { referElement.removeAttribute('display') }, { once: true }) // 鼠标一动就会触发 mouseleave
+
+    if (openedDialog === ("'.right-entry__outside[href='//message.bilibili.com']" || ".right-entry__outside[href='//t.bilibili.com/']")) {
+      updateBadges()
+    }
   })
 
   function handleTouchMove () { menuOverlay.click() }

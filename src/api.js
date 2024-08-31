@@ -200,9 +200,36 @@ export async function getDynamicList (offset) {
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getHistoryList (cursor) {
-  const url = `https://api.bilibili.com/x/web-interface/history/cursor?max=${cursor.max}&view_at=${cursor.view_at}&business=archive`
+  const url = `${BILIBILI_API}/x/web-interface/history/cursor?max=${cursor.max}&view_at=${cursor.view_at}&business=archive`
   const options = { credentials: 'include' }
   return fetchAPI(url, options)
+}
+
+/**
+ * 获取历史搜索列表
+ * @param {string} key 关键词
+ * @param {number} pn 返回结果页序数
+ * @returns {Promise<Object>} 响应主体 data
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+export async function getHistorySearchList (key, pn) {
+  return fetchAPI(`${BILIBILI_API}/x/web-interface/history/search?pn=${pn}&keyword=${key}&business=all`, { credentials: 'include' })
+}
+
+/**
+ * 获取菜单消息数
+ * @returns {Promise<Object>} [messageNum, dynamicNum]
+ * @throws {Error} 如果请求失败或响应状态码不是 200
+ */
+export async function getUnreadNums () {
+  const options = { credentials: 'include' }
+  const messageNumObj = await fetchAPI('https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0', options)
+  const dynamicNumObj = await fetchAPI(`${BILIBILI_API}/x/web-interface/dynamic/entrance?alltype_offset=&video_offset=0&article_offset=0`, options)
+
+  const messageNum = Object.values(messageNumObj).reduce((acc, value) => acc + value, 0)
+  const dynamicNum = dynamicNumObj.update_info.item.count
+
+  return [messageNum, dynamicNum]
 }
 
 /**
