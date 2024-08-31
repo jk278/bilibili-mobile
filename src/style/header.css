@@ -98,7 +98,7 @@ div.bili-header .v-popover {
     position: fixed;
     margin: 0 !important;
     max-width: 100%;
-    padding: 5px !important;
+    padding: 0 5px !important;
     left: 50%;
     opacity: 0;
     transition: .4s ease-in;

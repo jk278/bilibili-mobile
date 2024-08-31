@@ -11,14 +11,13 @@ export function setMenuBtn () {
     '.right-entry__outside[href="//www.bilibili.com/account/history"]',
     '.header-avatar-wrap']
 
-  const waitRightEntry = () => {
-    document.querySelector('.right-entry') ? tryPreload() : setTimeout(waitRightEntry, 200)
-  }
-  waitRightEntry()
-
+  tryPreload()
   function tryPreload () {
-    // 好像收藏加载最慢
-    if (document.querySelector(preloadeditems[1])) {
+    if (document.querySelector(preloadeditems[0]) ||
+      document.querySelector(preloadeditems[1]) ||
+      document.querySelector(preloadeditems[2]) ||
+      document.querySelector(preloadeditems[3])
+    ) {
       preloadeditems.forEach(item => {
         document.querySelector(item).dispatchEvent(new MouseEvent('mouseenter'))
       })

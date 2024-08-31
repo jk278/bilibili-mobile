@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.24
+// @version            5.0-beta.25
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -1097,7 +1097,7 @@ div.bili-header .v-popover {
     position: fixed;
     margin: 0 !important;
     max-width: 100%;
-    padding: 5px !important;
+    padding: 0 5px !important;
     left: 50%;
     opacity: 0;
     transition: .4s ease-in;
@@ -5293,13 +5293,13 @@ function setMenuBtn () {
     '.right-entry__outside[href="//www.bilibili.com/account/history"]',
     '.header-avatar-wrap']
 
-  const waitRightEntry = () => {
-    document.querySelector('.right-entry') ? tryPreload() : setTimeout(waitRightEntry, 200)
-  }
-  waitRightEntry()
-
+  tryPreload()
   function tryPreload () {
-    if (document.querySelector(preloadeditems[2])) {
+    if (document.querySelector(preloadeditems[0]) ||
+      document.querySelector(preloadeditems[1]) ||
+      document.querySelector(preloadeditems[2]) ||
+      document.querySelector(preloadeditems[3])
+    ) {
       preloadeditems.forEach(item => {
         document.querySelector(item).dispatchEvent(new MouseEvent('mouseenter'))
       })
