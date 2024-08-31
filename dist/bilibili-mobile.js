@@ -574,7 +574,8 @@ body #header-in-menu li {
     top: 50%;
     left: 50%;
     background: white;
-    z-index: 1;
+    /* 遮盖菜单弹窗 */
+    z-index: 1002;
     border: 1px solid var(--line_regular);
     flex-direction: column;
     padding: 10px 5px;
@@ -5280,6 +5281,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _menu_history_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(32);
 /* harmony import */ var _menu_dynamic_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(33);
 /* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(30);
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(24);
+
 
 
 
@@ -5400,7 +5403,8 @@ function setMenuBtn () {
 
     const referElement = document.querySelector(`${openedDialog}+.v-popover`)
     referElement.removeAttribute('show')
-    referElement.addEventListener('transitionend', () => { referElement.removeAttribute('display') }, { once: true }) // 鼠标一动就会触发 mouseleave
+
+    ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_4__.handleTransitionEndOnce)(referElement, 'opacity', () => { referElement.removeAttribute('display') })
 
     if (openedDialog === ("'.right-entry__outside[href='//message.bilibili.com']" || 0)) {
       updateBadges()

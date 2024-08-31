@@ -2,6 +2,7 @@ import { loadFollowList } from './menu-follow.js'
 import { handleHistoryShowMore } from './menu-history.js'
 import { handleDynamicShowMore } from './menu-dynamic.js'
 import { getUnreadNums } from '../api.js'
+import { handleTransitionEndOnce } from '../utils.js'
 
 export function setMenuBtn () {
   // 覆盖显隐，初始化加载动态、收藏、历史、主页
@@ -118,7 +119,8 @@ export function setMenuBtn () {
 
     const referElement = document.querySelector(`${openedDialog}+.v-popover`)
     referElement.removeAttribute('show')
-    referElement.addEventListener('transitionend', () => { referElement.removeAttribute('display') }, { once: true }) // 鼠标一动就会触发 mouseleave
+
+    handleTransitionEndOnce(referElement, 'opacity', () => { referElement.removeAttribute('display') })
 
     if (openedDialog === ("'.right-entry__outside[href='//message.bilibili.com']" || ".right-entry__outside[href='//t.bilibili.com/']")) {
       updateBadges()
