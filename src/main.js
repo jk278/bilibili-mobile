@@ -13,7 +13,7 @@ import './style/video/list.css'
 import { preventBeforeUnload, countViewTime, increaseVideoLoadSize, handleScroll } from './window.js'
 import { handleScriptPreSetting, handleScriptSetting, setScriptHelp } from './setting.js'
 import { handleActionbar } from './actionbar/actionbar.js'
-import { handleHeaderImage, handleVideoCard } from './home.js'
+import { preloadAnchor, handleHeaderImage, handleVideoCard } from './home.js'
 import { videoInteraction } from './video.js'
 import { createUnfoldBtn } from './message.js'
 import { waitDOMContentLoaded } from './utils.js'
@@ -70,7 +70,10 @@ import { waitDOMContentLoaded } from './utils.js'
     case 'home':
       increaseVideoLoadSize()
       handleHeaderImage()
-      waitDOMContentLoaded(handleVideoCard)
+      waitDOMContentLoaded(() => {
+        preloadAnchor()
+        handleVideoCard()
+      })
       break
     case 'video':
     case 'list':

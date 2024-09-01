@@ -104,8 +104,6 @@ function scrollToHidden (type) {
 
   const elem = (() => {
     switch (type) {
-      case 'home':
-        return document.body
       case 'video':
       case 'list':
         backup = document.getElementsByClassName(videoMap[type][1])[0]

@@ -129,6 +129,32 @@ div.bili-header .v-popover[show] {
     pointer-events: auto;
 }
 
+/* 分类视图 */
+#copy-category-dialog.v-popover {
+    display: none;
+    z-index: 2;
+}
+
+/* 链接框 */
+.bili-header-channel-panel {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+}
+
+/* 分类展开图: 一列 */
+.channel-panel__column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.channel-panel__column a {
+    padding: 5px;
+    text-align: center;
+}
+
 /* 展开图 */
 .dynamic-panel-popover,
 .favorite-panel-popover,

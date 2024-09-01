@@ -1,6 +1,43 @@
 import { getVideoInfo, getJudgeAI } from './api.js'
 import { loadAI } from './ai.js'
 
+// 真正的预加载
+export function preloadAnchor () {
+  let anchor
+  let placeholder
+  let firstUnloadElem
+  let height
+
+  const container = document.querySelector('.container')
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE && node.className === 'load-more-anchor') {
+          anchor = node
+          placeholder = node.cloneNode(true)
+          firstUnloadElem = document.querySelector('.container>.bili-video-card:not(.is-rcmd)')
+          height = firstUnloadElem.clientHeight + 8
+          observer.disconnect()
+        }
+      })
+    })
+  })
+  observer.observe(container, { childList: true })
+
+  window.addEventListener('scroll', () => {
+    if (firstUnloadElem.getBoundingClientRect().top < height * 6) {
+      anchor.parentNode.insertBefore(anchor, anchor.parentNode.childNodes[0])
+      anchor.parentNode.insertBefore(placeholder, anchor.parentNode.childNodes[0])
+
+      setTimeout(() => {
+        anchor.parentNode.appendChild(anchor)
+        placeholder.remove()
+        firstUnloadElem = document.querySelector('.container>.bili-video-card:not(.is-rcmd)')
+      }, 300)
+    }
+  })
+}
+
 // 控制首页头图函数
 export function handleHeaderImage () {
   // eslint-disable-next-line no-undef

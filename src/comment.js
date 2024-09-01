@@ -53,6 +53,7 @@ export function modifyShadowDOMLate (isDynamicRefresh) {
     const observer = new MutationObserver(handleHeaderMutation)
     observer.observe(commentsHeaderShadow, { childList: true, subtree: true })
 
+    // 修复评论行概率性异常
     appendStyle(commentsHeaderShadow, `
         div#commentbox {
           position: fixed;
@@ -60,10 +61,23 @@ export function modifyShadowDOMLate (isDynamicRefresh) {
           bottom: var(--actionbar-height);
           z-index: 10;
           background: white;
-          width: 100%;
+          width: calc(100% - 24px);
           padding: 8px 12px;
           border-top: 1px solid var(--line_regular);
           transition: calc(var(--actionbar-time)*1.40) ease-in;
+          display: var(--commentbox-display);
+          transform: var(--shadow-transform);
+        }
+        div#commentbox[style] {
+          display: none;
+        }
+        div#commentbox[style]+.bili-comments-bottom-fixed-wrapper {
+          bottom: var(--actionbar-height) !important;
+        }
+        div#commentbox[style]+.bili-comments-bottom-fixed-wrapper>div {
+          padding: 8px 12px !important;
+          width: calc(100% - 24px) !important;
+          transition: calc(var(--actionbar-time)* 1.40) ease-in;
           display: var(--commentbox-display);
           transform: var(--shadow-transform);
         }
@@ -99,7 +113,7 @@ export function modifyShadowDOMLate (isDynamicRefresh) {
           display: none;
         }
         div#comment-area {
-          width: calc(100% - 24px);
+          width: 100%;
         }
         div#editor {
           border-radius: 13px;
