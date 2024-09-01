@@ -3,10 +3,12 @@
 import './style/app.css'
 import './style/header.css'
 import './style/home.css'
-import './style/video.css'
 import './style/search.css'
 import './style/space.css'
 import './style/message.css'
+import './style/video/video.css'
+import './style/video/control.css'
+import './style/video/list.css'
 
 import { preventBeforeUnload, countViewTime, increaseVideoLoadSize, handleScroll } from './window.js'
 import { handleScriptPreSetting, handleScriptSetting, setScriptHelp } from './setting.js'
@@ -31,59 +33,50 @@ import { waitDOMContentLoaded } from './utils.js'
   console.log('Bilibili mobile execute!')
 
   // 简单表达式: 常量折叠，解析引擎优化为只计算一次，然后缓存入临时变量。函数调用、对象属性访问等不适用。
-  const part = location.hostname.substring(0, location.hostname.indexOf('.'))
+  const firstSubdomain = location.hostname.substring(0, location.hostname.indexOf('.'))
 
-  switch (part) {
-    case 'www':
-      if (location.pathname === '/') {
-        increaseVideoLoadSize()
-        handleHeaderImage()
-        handleScriptPreSetting()
-        waitDOMContentLoaded(() => {
-          handleActionbar('home')
-          handleScriptSetting()
-          handleVideoCard()
-          handleScroll()
-          setScriptHelp()
-        })
-      } else if (location.pathname.startsWith('/video')) {
-        handleScriptPreSetting()
-        waitDOMContentLoaded(() => {
-          handleActionbar('video')
-          handleScriptSetting()
-          videoInteraction()
-          handleScroll('video')
-          setScriptHelp()
-        })
-      }
+  const pathToTypeMap = {
+    '/video': 'video',
+    '/list': 'list'
+  }
+
+  const getTypeFromPath = map => {
+    for (const [prefix, type] of Object.entries(map)) {
+      if (location.pathname.startsWith(prefix)) return type
+    }
+    return 'unknow'
+  }
+
+  const type = firstSubdomain === 'www'
+    ? location.pathname === '/' ? 'home' : getTypeFromPath(pathToTypeMap)
+    : firstSubdomain
+
+  function handleCommonSettings (type) {
+    handleScriptPreSetting()
+    waitDOMContentLoaded(() => {
+      handleScriptSetting()
+      handleActionbar(type)
+      handleScroll(type)
+      setScriptHelp()
+    })
+  }
+
+  const handleVideoInteraction = (type) => {
+    waitDOMContentLoaded(() => videoInteraction(type))
+  }
+
+  handleCommonSettings(type)
+  switch (type) {
+    case 'home':
+      increaseVideoLoadSize()
+      handleHeaderImage()
+      waitDOMContentLoaded(handleVideoCard)
       break
-    case 'search':
-      handleScriptPreSetting()
-      waitDOMContentLoaded(() => {
-        handleActionbar('search')
-        handleScriptSetting()
-        handleScroll('search')
-        setScriptHelp()
-      })
+    case 'video':
+    case 'list':
+      handleVideoInteraction(type)
       break
-    case 'space':
-      handleScriptPreSetting()
-      waitDOMContentLoaded(() => {
-        handleActionbar('space')
-        handleScriptSetting()
-        handleScroll('space')
-        setScriptHelp()
-      })
-      break
-    case 'message':
-      handleScriptPreSetting()
-      waitDOMContentLoaded(() => {
-        handleActionbar('message')
-        handleScriptSetting()
-        handleScroll('message')
-        createUnfoldBtn()
-        setScriptHelp()
-      })
+    case 'message': waitDOMContentLoaded(createUnfoldBtn)
       break
     default:
       break

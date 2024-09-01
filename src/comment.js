@@ -210,6 +210,12 @@ export function modifyShadowDOMLate (isDynamicRefresh) {
     })
   }
 
+  function appendStyle (shadowRoot, cssText) {
+    const style = document.createElement('style')
+    style.textContent = cssText
+    shadowRoot.appendChild(style)
+  }
+
   if (isDynamicRefresh) { return }
 
   // 评论区图片
@@ -231,11 +237,5 @@ export function modifyShadowDOMLate (isDynamicRefresh) {
         }
       })
     })
-  }
-
-  function appendStyle (shadowRoot, cssText) {
-    const style = document.createElement('style')
-    style.textContent = cssText
-    shadowRoot.appendChild(style)
   }
 }

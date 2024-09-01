@@ -307,7 +307,7 @@ div.header.space-search-tip {
     line-break: anywhere;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
     text-overflow: ellipsis;
     padding: 0 3px;
 }
@@ -324,7 +324,7 @@ div.header.space-search-tip {
 }
 
 /* 空番剧文本 */
-#page-index .col-1 .section.empty:after {
+#page-index .col-1 .section.empty::after {
     left: 100px !important;
 }
 
@@ -384,7 +384,7 @@ div.header.space-search-tip {
     white-space: normal;
     display: -webkit-box !important;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    line-clamp: 3;
 }
 
 /* 文本标题 */
@@ -397,7 +397,7 @@ h2.article-title {
 .article-title a {
     display: -webkit-box !important;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
 }
 
 /* 元信息栏 (笔记类型、访问量) */
@@ -729,7 +729,7 @@ div.sec-empty-hint {
 #page-follows .follow-main .list-item p {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
     white-space: unset;
     font-size: 13px;
     line-height: 16px;

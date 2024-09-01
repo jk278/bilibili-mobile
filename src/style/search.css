@@ -82,10 +82,6 @@ ul.vui_tabs--nav>* {
     opacity: 1;
 }
 
-[scroll-hidden] .search-conditions {
-    transform: translateY(calc(100% + var(--actionbar-height)));
-}
-
 /* 排序按钮 */
 .conditions-order .vui_button--tab {
     width: 33.3%;
@@ -262,7 +258,7 @@ h2.i_card_title>a {
     white-space: wrap !important;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
     margin-right: 10px;
 }
 

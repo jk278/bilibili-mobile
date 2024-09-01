@@ -2,18 +2,22 @@
 
 import { modifyShadowDOMLate } from './comment.js'
 
-export function videoInteraction () {
+/**
+ * 处理视频的响应操作交互
+ * @param {string} page 页数 video or list，用于 closeMiniPlayer 和 modifyShadowDOMLate
+ */
+export function videoInteraction (page) {
   handlePortrait()
 
   handlelVideoClick()
 
   handleVideoInteraction()
 
-  closeMiniPlayer()
+  closeMiniPlayer(page)
 
   setEndingContent()
 
-  modifyShadowDOMLate()
+  page === 'video' && modifyShadowDOMLate()
 }
 
 let isPortrait = false
@@ -153,10 +157,13 @@ function handlelVideoClick () {
   videoArea.addEventListener('touchstart', event => { event.stopPropagation() })
 }
 
-function closeMiniPlayer () {
+/**
+ * @param {string} page 页数 video or list
+ */
+function closeMiniPlayer (page) {
   // 关闭小窗: getElement 提前使用在元素加载后能获取到, querySelector 在元素加载后使用才能获取到
   if (!localStorage.getItem('is-mini-player-closed')) {
-    const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
+    const miniPlayerBtn = document.getElementsByClassName(page === 'video' ? 'mini-player-window' : 'mini')[0]
     new MutationObserver(mutations =>
       mutations.forEach(mutation => {
         if (mutation.target.classList.contains('on')) {

@@ -1,0 +1,610 @@
+/************************************************* 视频详情页 *************************************************/
+
+/* 适配 shadowDOM 的评论行滚动隐藏 */
+body {
+    --shadow-transform: none;
+    --commentbox-display: block;
+}
+
+body[scroll-hidden] {
+    --shadow-transform: translateY(calc(100% + var(--actionbar-height)));
+}
+
+/* 主应用块 */
+#app {
+    --sidebar-time: .6s;
+}
+
+/* 主体内容块 */
+#app #mirror-vdcon {
+    min-width: 0;
+    padding: 0;
+    margin-top: 56.25vw;
+}
+
+/* 视频页主滚动条下移 */
+[itemprop=video]+body {
+    overflow: hidden !important;
+}
+
+#app {
+    height: 100%;
+}
+
+/* 修复 via 滚动条异常 */
+[itemprop=video]+body #app {
+    overflow: hidden;
+}
+
+#mirror-vdcon {
+    height: 100%;
+}
+
+/* 缩短主内容块，让其响应滚动 */
+.left-container,
+.playlist-container--left {
+    overflow-y: auto;
+    /* 同 .right-container */
+    height: calc(100% - 56.25vw) !important;
+}
+
+/************************************************* 主视频块 *************************************************/
+
+/* 主视频块 */
+.left-container,
+.playlist-container--left {
+    --video-min-height: calc(100vw * 0.5625);
+    --dm-row-height: 44px;
+}
+
+/* 有初始内联 top */
+/* 视频块（宽度） (#mainheight与header的高度差导致了64px-48px的可滚动区域) */
+.left-container,
+.playlist-container--left {
+    /* 移动 Safari 百分比宽高自动考虑边框和填充 */
+    box-sizing: border-box;
+    width: 100% !important;
+    padding: calc(var(--dm-row-height) + 5px) 10px 10px;
+    
+    background: white;
+}
+
+.left-container::after,
+.playlist-container--left::after {
+    content: '';
+    /* 因为现在是限制高度 + overflow:auto，所以不用 absolute 了 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity var(--sidebar-time) ease-in;
+}
+
+.playlist-container--left {
+    z-index: 1;
+}
+
+#mirror-vdcon[sidebar] .left-container::after
+#mirror-vdcon[sidebar] .playlist-container--left::after {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+/************************************************** 推荐块 **************************************************/
+
+/* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
+.right-container,
+.playlist-container--right {
+    position: fixed !important;
+    width: 100% !important;
+    left: 100%;
+    padding: 10px 10px calc(var(--actionbar-height) + 10px) !important;
+    margin: 0 !important;
+
+    z-index: 1;
+    background: white;
+    transition: transform var(--sidebar-time) ease-in;
+    height: calc(100% - 56.25vw);
+    overflow-y: auto;
+    /* 避免到达边界后的滚动事件穿透 */
+    overscroll-behavior: contain;
+
+    box-sizing: border-box;
+}
+
+#mirror-vdcon[sidebar] .right-container,
+#mirror-vdcon[sidebar] .playlist-container--right {
+    transform: translateX(-100%);
+}
+
+.right-container-inner {
+    padding: 0 !important;
+}
+
+/* UP信息 */
+.upinfo-btn-panel .default-btn {
+    font-size: 12px !important;
+}
+
+.new-charge-btn {
+    max-width: 35%;
+}
+
+.follow-btn {
+    max-width: 150px !important;
+}
+
+/* 视频选集 */
+div.multi-page-v1 .cur-list {
+    overflow-y: auto;
+}
+
+/* 推荐视频图块 */
+#reco_list .card-box .pic-box {
+    max-width: 50%;
+}
+
+/* 展开按钮 */
+.rec-footer {
+    display: none;
+}
+
+/******************************************* 块状广告（整个视频页） ******************************************/
+
+#activity_vote,
+#bannerAd,
+.reply-notice,
+.ad-report,
+.pop-live-small-mode,
+#slide_ad,
+.video-page-game-card-small {
+    display: none !important;
+}
+
+/*************************************************** 播放器 **************************************************/
+
+/* 视频置顶 */
+#playerWrap {
+    position: fixed;
+    z-index: 61;
+    top: 0;
+    left: 0;
+
+    height: 56.25vw !important;
+}
+
+#bilibili-player {
+    width: 100vw !important;
+    height: 56.25vw !important;
+}
+
+/* 竖屏时占满高度 */
+#bilibili-player.mode-webscreen {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 移除白色阴影 */
+.bpx-player-container,
+#bilibili-player-placeholder {
+    box-shadow: none !important;
+}
+
+/* 视频页不显示原双击全屏层 */
+#app .bpx-player-video-perch {
+    max-height: 0;
+}
+
+/* 小窗时的隐藏 - 始终隐藏*/
+/* 顶部关注、音乐、反馈 */
+/* 右下角暂停图标 */
+/* 取消静音 */
+.bpx-player-top-wrap,
+.bpx-player-state-wrap {
+    display: none !important;
+}
+
+/* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
+.bpx-player-toast-wrap {
+    display: block !important;
+    bottom: 65px !important;
+}
+
+/* 小窗按钮见下面按钮部分 */
+
+/************************************************** 播完预览 **************************************************/
+
+/* 窄屏不隐藏 */
+.bpx-player-ending-wrap[hidden] {
+    display: block !important;
+}
+
+/* .bpx-player-ending-content 的 scale 根据 screen-mode 和 data-screen 动态调整 */
+
+/* 修改网页全屏样式为竖屏 */
+div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
+    margin-left: -268px;
+    width: 536px;
+}
+
+/* 关注按钮 */
+.bpx-player-ending-functions-follow {
+    width: auto !important;
+    padding: 0 15px !important;
+}
+
+/* 重播按钮 */
+.bpx-player-ending-functions-btn[data-action=restart] {
+    padding-right: 15px !important;
+}
+
+/* 反馈按钮组 */
+.bpx-player-ending-functions-pagecallback {
+    margin-left: 5px !important;
+
+    .bpx-player-ending-functions-btn {
+        margin-left: 10px !important;
+    }
+}
+
+/* 横屏展开顶部按钮 */
+@media screen and (orientation: landscape) {
+    .bpx-player-ending-functions-btn[data-action=restart] {
+        padding-right: 42px !important;
+    }
+
+    .bpx-player-ending-functions-pagecallback {
+        margin-left: 14px !important;
+
+        .bpx-player-ending-functions-btn {
+            margin-left: 28px !important;
+        }
+    }
+}
+
+/* 自动连播倒计时图标 */
+.bpx-player-ending-related-item-countdown {
+    margin-top: 34px !important;
+    width: 48px !important;
+}
+
+/* up 名 */
+.bpx-player-ending-functions-upinfo {
+    height: 56px !important;
+    margin-top: 0 !important;
+}
+
+/* 适配互动视频 */
+.bui-swiper~.bpx-player-ending-related {
+    height: 109px !important;
+}
+
+/*************************************************** 弹幕行 **************************************************/
+
+/* 弹幕行：滚动隐藏 */
+.bpx-player-sending-area {
+    position: absolute !important;
+    bottom: 0;
+    width: 100%;
+    transform: translateY(100%);
+
+    transition: 0.5s transform ease-in;
+    display: block !important;
+    z-index: 0;
+    border-bottom: 1px solid var(--line_regular);
+}
+
+[scroll-hidden] .bpx-player-sending-area {
+    transform: none;
+}
+
+.bpx-player-video-area {
+    z-index: 1;
+}
+
+/* 修改小窗样式的时候把这行删了，导致弹幕行显示异常 */
+.bpx-player-container[data-screen=mini] {
+    overflow: unset !important;
+}
+
+/* 弹幕行预加载灰块白条(视频底下也有，预加载有时会看到) */
+.bpx-player-sending-bar-left,
+.bpx-player-sending-bar-right,
+#bilibili-player-placeholder-bottom {
+    display: none !important;
+}
+
+/* 弹幕行高度、背景色 */
+div.bpx-player-sending-bar {
+    height: var(--dm-row-height);
+    /* 适配 dark reader 全局变量值更改延后，否则临时白块 */
+    background-color: white;
+}
+
+.bpx-player-dm-input {
+    height: 26px !important;
+}
+
+/* 弹幕输入栏外 */
+.bpx-player-video-inputbar {
+    height: 26px !important;
+    border-radius: 13px !important;
+
+    min-width: 0 !important;
+}
+
+.bpx-player-video-inputbar-wrap {
+    width: 100% !important;
+}
+
+/* 不输入隐藏发送 */
+.bpx-player-dm-btn-send {
+    display: none !important;
+}
+
+.bpx-player-video-inputbar-wrap:has(>input:focus)+.bpx-player-dm-btn-send {
+    display: flex !important;
+}
+
+.bpx-player-dm-btn-send {
+    border-radius: 0 13px 13px 0 !important;
+    height: 26px !important;
+    min-width: 50px !important;
+    width: 50px !important;
+}
+
+.bui-button-blue {
+    min-width: 50px !important;
+}
+
+/* 观看人数 */
+.bpx-player-video-info {
+    margin-right: 6px !important;
+}
+
+/* 弹幕数量、弹幕礼仪 */
+.bpx-player-video-info-divide,
+.bpx-player-video-info-dm,
+.bpx-player-dm-hint {
+    display: none !important;
+}
+
+/************************************************* 播放页组件 *************************************************/
+
+/* 信息块（标题） */
+.video-info-container {
+    height: auto !important;
+    padding-top: 0 !important;
+}
+
+/* 标题（可两行显示） */
+.video-title {
+    font-size: 18px !important;
+
+    white-space: wrap !important;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+
+    /* 去除折叠时的 show-more 按钮 margin */
+    margin-right: 0 !important;
+}
+
+.show-more {
+    top: unset !important;
+    transform: none !important;
+    bottom: 4px;
+    right: 4px !important;
+}
+
+.video-desc-container {
+    margin: 10px 0 !important;
+}
+
+.video-info-detail-list .item {
+    margin-right: 4px !important;
+}
+
+/* 更新时间: 避免窄屏隐藏 */
+.pubdate-ip {
+    display: block !important;
+}
+
+/* 全站排行、每周必看等标签 & 温馨提示 */
+.video-info-detail-list:has(.honor.item) {
+    margin-top: 24px;
+}
+
+.video-info-detail-list:has(.video-argue.item) {
+    margin-bottom: 20px;
+}
+
+.honor.item {
+    position: absolute;
+    align-self: start !important;
+    top: 0;
+}
+
+.video-argue.item {
+    position: absolute;
+    align-self: start !important;
+    bottom: 0;
+    /* 避免窄屏隐藏温馨提示 */
+    display: block !important;
+}
+
+/* 点赞投币行 */
+.video-toolbar-container {
+    padding: 10px 0 8px !important;
+}
+
+.video-toolbar-left,
+.video-toolbar-left-main {
+    min-width: 0;
+}
+
+.toolbar-left-item-wrap {
+    flex: 1;
+    min-width: 0;
+}
+
+.video-toolbar-container * {
+    margin: 0 !important;
+}
+
+.toolbar-left-item-wrap span {
+    padding-left: 2px;
+}
+
+.video-share-info {
+    width: 40px !important;
+}
+
+.video-share-popover {
+    display: none !important;
+}
+
+/* AI 助手“测试版”字样 */
+.video-ai-assistant-badge {
+    display: none !important;
+}
+
+/* AI 总结 */
+div.resizable-component.resizable-component {
+    width: 100% !important;
+    left: 0 !important;
+    height: fit-content !important;
+    max-height: 100vw;
+    top: 50% !important;
+    transform: translateY(-50%);
+    border-radius: 12px !important;
+}
+
+/* 总结内容继承高度限制 */
+div.ai-summary-popup {
+    max-height: inherit;
+    border-radius: 12px;
+}
+
+/* 简介 */
+#v_desc .toggle-btn {
+    text-align: right;
+    margin-right: 7px;
+}
+
+.basic-desc-info[style="height: 84px;"] {
+    height: 70px !important;
+}
+
+/* 标签 */
+.video-tag-container {
+    margin: 6px 0 0 !important;
+    padding-bottom: 1px !important;
+}
+
+.tag-panel .tag {
+    margin-bottom: 6px !important;
+}
+
+/* ------ 顶部投票卡片 ------ */
+
+/* 两个选项 */
+.left-vote-option,
+.right-vote-option {
+    min-width: 0 !important;
+}
+
+/* 投票: 选题 */
+.top-vote-card {
+    padding-top: 27px !important;
+}
+
+.top-vote-card-left__title {
+    transform: translateY(-23px);
+}
+
+.vui_ellipsis.multi-mode {
+    overflow: visible !important;
+    white-space: nowrap;
+}
+
+/**************************************************** 按钮 ***************************************************/
+
+/* 视频页返回顶部按钮（添加渐变） */
+/* 权重：基本设置属性 < transition < animation */
+.back-to-top,
+.backup {
+    border-radius: 0 25% 25% 0 !important;
+    border-left: 0 !important;
+    margin-bottom: 0 !important;
+    width: 42px !important;
+    border-color: var(--line_regular) !important;
+
+    visibility: visible !important;
+    transform: translateX(-100%);
+    transition: transform .5s ease-in-out, background-color .3s !important;
+}
+
+/* 覆盖显隐逻辑 */
+.back-to-top[show],
+.float-nav-exp .backup[show] {
+    transform: none;
+}
+
+/* 列表(稍后观看)页不隐藏 */
+.float-nav-exp {
+    display: block !important;
+}
+
+/* 覆盖鼠标悬浮样式，触摸点击后长期显示 */
+#app .fixed-sidenav-storage .fixed-sidenav-storage-item:hover,
+.float-nav-exp .nav-menu .item.backup:hover {
+    background-color: var(--bg1_float);
+    color: var(--text1);
+    fill: var(--text1);
+}
+
+/* 用触摸样式替代，类名会被修改 */
+div#app .fixed-sidenav-storage .fixed-sidenav-storage-item[touch-active],
+div.float-nav-exp .nav-menu .item.backup[touch-active] {
+    background: var(--graph_bg_thick);
+}
+
+/* 修复稍后观看回顶部按钮的 darkreader 下颜色异常  */
+.item.backup svg path {
+    fill: currentColor;
+}
+
+/* 回顶按钮的位置 */
+.fixed-sidenav-storage,
+.float-nav-exp {
+    left: 0;
+    right: unset !important;
+    bottom: 78px !important;
+    z-index: 1 !important;
+    opacity: 1;
+    transition: opacity var(--sidebar-time) ease-in;
+}
+
+#mirror-vdcon[sidebar] .fixed-sidenav-storage,
+#mirror-vdcon[sidebar] .float-nav-exp {
+    opacity: 0;
+}
+
+/* 小窗按钮 */
+.mini-player-window,
+.nav-menu>.mini {
+    position: fixed;
+    z-index: -10;
+    visibility: hidden;
+}
+
+/* 客服按钮 */
+.customer-service,
+.nav-menu>a:has(>.help) {
+    display: none !important;
+}

@@ -1,0 +1,311 @@
+
+/************************************************* 控制栏样式 *************************************************/
+
+/* 移除次要按钮：画中画、宽屏、时间、选集 */
+.bpx-player-ctrl-pip,
+.bpx-player-ctrl-wide,
+.bpx-player-ctrl-time,
+.bpx-player-ctrl-eplist {
+    display: none !important;
+}
+
+/* 横屏时恢复时间显示 */
+@media screen and (orientation: landscape) {
+    .bpx-player-ctrl-time {
+        display: block !important;
+    }
+}
+
+/* 清晰度文本:全屏时恢复大小 */
+@media screen and (min-width: 750px) {
+    .bpx-player-container[data-screen=full] .bpx-player-ctrl-quality-result {
+        font-size: 16px !important;
+        height: unset !important;
+    }
+}
+
+/* 修复宽屏全屏时的控制栏图标增大导致的高度过高 */
+@media screen and (min-width: 750px) {
+    .bpx-player-container[data-screen=full] .bpx-player-control-wrap {
+        height: 43px !important;
+    }
+
+    .bpx-player-container[data-screen=full] .bpx-player-control-top {
+        bottom: 43px !important;
+    }
+}
+
+/* 主控制区: 覆盖宽屏全屏样式 (图标22px，算 margin 37px) */
+div.bpx-player-control-bottom {
+    height: 29px !important;
+    margin-top: 7px !important;
+    padding: 0 7px !important;
+}
+
+/* 进度条 */
+div.bpx-player-control-top {
+    bottom: 36px;
+    transition: none;
+}
+
+/* 隐藏颠倒的高能进度条常驻切换提示 */
+.bpx-player-pbp .bpx-player-pbp-pin-tip {
+    display: none !important;
+}
+
+/* 左右控制区 */
+.bpx-player-control-bottom-left,
+.bpx-player-control-bottom-right {
+    flex: unset !important;
+}
+
+/* 全屏时 */
+.bpx-player-container .bpx-player-control-bottom-left,
+.bpx-player-container .bpx-player-control-bottom-right {
+    min-width: 0 !important;
+}
+
+/* 清晰度(width:auto 不换行，隐藏不掉高清字样) */
+.bpx-player-ctrl-quality {
+    margin-right: 0 !important;
+    min-width: 0;
+    flex: auto !important;
+}
+
+/* 清晰度、倍速文本 */
+.bpx-player-ctrl-quality-result,
+.bpx-player-ctrl-playbackrate {
+    font-size: 12px !important;
+}
+
+/* 清晰度文本:隐藏换行的部分 */
+.bpx-player-ctrl-quality-result {
+    height: 22px;
+    overflow: hidden;
+}
+
+/* 倍速文本:禁止换行 */
+.bpx-player-ctrl-playbackrate {
+    text-wrap: nowrap;
+}
+
+/* 进度条细条包含块（高12px） */
+.bpx-player-progress-wrap {
+    height: 7px !important;
+    padding-bottom: 3px !important;
+}
+
+/* 替换via暗色异常的阴影 */
+.bpx-player-control-mask {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .5) 100%) !important;
+}
+
+/* 清晰度弹窗 */
+.bpx-player-ctrl-quality-menu-wrap {
+    bottom: 22px !important;
+}
+
+.bpx-player-ctrl-quality-menu-item {
+    height: 7.7vw !important;
+    max-height: 36px;
+    max-width: 95px;
+    padding: 0 8px 0 12px !important;
+}
+
+/* 高码率会员图标 */
+.bpx-player-ctrl-quality-badge-bigvip {
+    background-color: #f25d8e;
+    color: #fff;
+    width: 16px;
+    overflow: hidden;
+    right: 8px !important;
+}
+
+/* 用字母 V 覆盖 */
+.bpx-player-ctrl-quality-badge-bigvip::before {
+    background-color: #f25d8e;
+    color: #fff;
+    content: 'V';
+    padding: 0 4px;
+    position: absolute;
+    left: 0;
+}
+
+/* 倍速弹窗 */
+.bpx-player-ctrl-playbackrate-menu {
+    bottom: 22px !important;
+}
+
+.bpx-player-ctrl-playbackrate-menu-item {
+    height: 7.7vw !important;
+    max-height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 弹幕弹窗 */
+div.bpx-player-ctrl-subtitle-box {
+    bottom: 0;
+    right: 0;
+    transform: scale(.8);
+}
+
+/* 设置弹窗 */
+.bpx-player-ctrl-setting-box {
+    right: 0 !important;
+    bottom: 0 !important;
+}
+
+/* 更多设置 */
+.bpx-player-ctrl-setting-menu-right {
+    padding: 5px !important;
+}
+
+.bpx-player-ctrl-setting-menu-right>div {
+    height: 10vw !important;
+    max-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 更多设置 - 选项行 */
+.bpx-player-ctrl-setting-menu-right .bui-radio {
+    margin: 0 0 8px 7px;
+    width: 77%;
+}
+
+.bpx-player-ctrl-setting-others-content {
+    width: 77% !important;
+    margin-left: 7px;
+}
+
+/* 高能进度条选项 */
+.bpx-player-ctrl-setting-highenergy .bui-checkbox-name {
+    white-space: nowrap;
+    width: 48px;
+    overflow: hidden;
+}
+
+/* 弹幕设置弹窗 */
+.bpx-player-dm-setting-wrap {
+    bottom: unset !important;
+    top: 0;
+    position: fixed !important;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* 全屏控制栏 */
+.bpx-player-control-bottom-center .bpx-player-sending-bar {
+    padding-right: 6px !important;
+    height: 24px !important;
+}
+
+/* 存在章节时(允许章节缩小) */
+.bpx-player-ctrl-viewpoint {
+    margin: 0 !important;
+    min-width: 0 !important;
+    width: 45px !important;
+    flex-shrink: 1 !important;
+}
+
+.bpx-player-ctrl-viewpoint-text {
+    width: 24px !important;
+    text-overflow: unset !important;
+    font-size: 12px;
+    flex: none;
+}
+
+/* 隐藏旧控制栏 */
+.bpx-player-control-wrap:not(.new) {
+    display: none;
+}
+
+/* 窄屏不禁用控制条和阴影 (新控制栏默认不禁用阴影) */
+.bpx-player-control-entity,
+.bpx-player-control-mask {
+    display: block !important;
+}
+
+/* 隐藏控制条时不响应点击 */
+.bpx-player-container[data-ctrl-hidden=true] .bpx-player-control-bottom {
+    display: none;
+}
+
+/********************************** 控制栏隐藏 (覆盖原显隐：3级选择器覆盖2级) **********************************/
+
+/* control-bottom 和 mask (阴影) */
+.bpx-player-container[ctrl-shown=false] .bpx-player-control-wrap .bpx-player-control-mask {
+    opacity: 0;
+    /* 渐变属性应用在需要变化的状态 */
+    transition: opacity .2s ease-in;
+}
+
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-wrap .bpx-player-control-mask {
+    opacity: 1;
+}
+
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-control-bottom {
+    opacity: 1;
+    display: flex;
+
+}
+
+.bpx-player-container[ctrl-shown=false] .bpx-player-control-entity .bpx-player-control-bottom {
+    display: none;
+}
+
+/* 进度条 */
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-control-top,
+.bpx-player-container[ctrl-shown=false] .bpx-player-control-entity .bpx-player-shadow-progress-area {
+    opacity: 1;
+    visibility: visible;
+}
+
+.bpx-player-container[ctrl-shown=false] .bpx-player-control-entity .bpx-player-control-top,
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-shadow-progress-area {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* 高能进度 */
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-pbp {
+    bottom: calc(100% + 6px);
+    left: 0;
+    opacity: 1;
+    width: 100%;
+}
+
+/*
+    权重：
+    ID 选择器：100
+    类选择器、属性选择器、伪类选择器：10
+    元素选择器、伪元素选择器：1
+
+    如果有多个选择器同时作用于同一个元素，则计算每个选择器的权重值，并将其相加，得出总权重值。
+*/
+
+/* 覆盖 show */
+div.bpx-player-control-entity .bpx-player-pbp {
+    bottom: 1px;
+    opacity: 0;
+    left: -12px;
+    width: calc(100% + 24px);
+}
+
+/* 不覆盖 pin */
+div.bpx-player-control-entity .bpx-player-pbp.pin {
+    opacity: 1;
+}
+
+/* pin 按钮: display 代替 opacity */
+.bpx-player-pbp-pin {
+    opacity: 1 !important;
+    display: none;
+}
+
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-pbp-pin {
+    display: block;
+}

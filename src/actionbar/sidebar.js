@@ -7,14 +7,22 @@ import { handleTransitionEndOnce } from '../utils.js'
 /**
  * 处理侧边栏事件的函数
  */
-export function setSidebarBtn (page) {
-  if (page === 'video') {
+export function setSidebarBtn (type) {
+  const videoMap = {
+    video: ['.right-container', '#reco_list'],
+    list: ['.playlist-container--right', '.recommend-list-container']
+  }
+
+  if (['video', 'list'].includes(type)) {
     handleVideoSidebar()
     showMoreRecommend()
-  } else if (page === 'message') {
+  } else if (type === 'message') {
     handleMessageSidebar()
   }
 
+  /**
+ * 处理视频侧边栏
+ */
   function handleVideoSidebar () {
     const sidebarFab = document.getElementById('sidebar-fab')
     const videoContainer = document.querySelector('#mirror-vdcon')
@@ -25,8 +33,8 @@ export function setSidebarBtn (page) {
       videoContainer.removeAttribute('sidebar')
     }
 
-    const rightContainer = videoContainer.querySelector('.right-container')
-    const recommendLiist = document.getElementById('reco_list')
+    const rightContainer = videoContainer.querySelector(videoMap[type][0])
+    const recommendLiist = rightContainer.querySelector(videoMap[type][1])
 
     recommendLiist.addEventListener('click', event => {
       const nextPlay = document.querySelector('.rec-title')
@@ -35,12 +43,12 @@ export function setSidebarBtn (page) {
         closeSidebar()
         handleTransitionEndOnce(rightContainer, 'transform', () => { rightContainer.scrollTop = 0 })
         // 此处不要使用监听器，否则会干扰原函数执行
-        modifyShadowDOMLate()
+        modifyShadowDOMLate(true)
       }
     })
   }
 
-  // 自动展开侧边栏
+  // 侧边栏自动展开更多
   function showMoreRecommend () {
     const recommendFooter = document.querySelector('.rec-footer')
     setTimeout(() => { recommendFooter?.click() }, 2000) // 直接传递 recommendFooter?.click: 可选链操作符前的 recommendFooter 条件判断将会立即执行

@@ -4,9 +4,9 @@ import { setSidebarBtn } from './sidebar.js'
 
 /**
  * 管理操作栏的函数 (DOMContentLoaded 之后)
- * @param {string} page - 简短描述页面的字符串: home, video, search, space, message
+ * @param {string} type - 简短描述页面的字符串: home, video, search, space, message
  */
-export function handleActionbar (page) {
+export function handleActionbar (type) {
   const actionbar = Object.assign(document.createElement('div'), {
     id: 'actionbar',
     // <div style="display:flex; transform:scale(4)">
@@ -42,19 +42,20 @@ export function handleActionbar (page) {
 
   document.body.appendChild(Object.assign(document.createElement('div'), { id: 'toast' }))
 
-  actionbar.classList.add(page)
+  actionbar.classList.add(type)
   setHomeBtn()
-  setSearchBtn(page)
-  if (page !== 'message') { setMenuBtn() }
+  setSearchBtn(type)
+  if (type !== 'message') { setMenuBtn() }
 
-  switch (page) {
+  switch (type) {
     case 'home':
       setTopBtn()
       setRefreshBtn()
       break
     case 'video':
+    case 'list':
       setFullbtn()
-      setSidebarBtn(page)
+      setSidebarBtn(type)
       break
     case 'search':
       setTopBtn()
@@ -65,7 +66,7 @@ export function handleActionbar (page) {
       setShowMoreBtn()
       break
     case 'message':
-      setSidebarBtn(page)
+      setSidebarBtn(type)
       break
     default:
       break
@@ -120,7 +121,7 @@ export function handleActionbar (page) {
     const showMoreFab = document.getElementById('show-more-fab')
 
     const handleClick = () => {
-      if (page === 'search') {
+      if (type === 'search') {
         const searchConditions = document.querySelector('.search-conditions')
 
         if (searchConditions) {
@@ -140,7 +141,7 @@ export function handleActionbar (page) {
             sessionStorage.setItem('show-conditions', '')
           }
         }
-      } else if (page === 'space') {
+      } else if (type === 'space') {
         const followRow = document.querySelector('.h .h-action')
 
         followRow.style.transition = '.4s ease-in'

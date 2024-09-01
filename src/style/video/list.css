@@ -1,0 +1,199 @@
+
+/********************************************* 适配列表部分的评论 *********************************************/
+
+/* 固定评论栏 */
+.main-reply-box {
+    position: fixed;
+    left: 0;
+    bottom: var(--actionbar-height);
+    z-index: 1;
+    background: white;
+    width: 100%;
+    padding: 8px 12px;
+    border-top: 1px solid var(--line_regular);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    transition: calc(var(--actionbar-time)*1.40) ease-in;
+    display: block !important;
+}
+
+/* 评论行滚动隐藏 */
+[scroll-hidden] .main-reply-box {
+    transform: translateY(calc(100% + var(--actionbar-height)))
+}
+
+/* 移除评论头像 */
+.reply-box-avatar {
+    display: none !important;
+}
+
+/* 输入块外 */
+.reply-box-warp {
+    border-radius: 13px !important;
+}
+
+/* 输入块内 */
+.textarea-wrap {
+    padding: 0 !important;
+}
+
+/* 文字输入 */
+.reply-box-textarea {
+    height: 26px !important;
+    line-height: 26px !important;
+    min-height: 26px !important;
+}
+
+/* 输入展开块 */
+.main-reply-box .reply-box .box-expand[data-v-a6daab22] {
+    height: 26px;
+    margin: 8px 0 0 0;
+}
+
+/* 插入表情图片 */
+.box-left {
+    flex: 1;
+    justify-content: space-evenly !important;
+}
+
+/* 点击发送 */
+.reply-box-send {
+    width: 50px !important;
+    height: 26px !important;
+}
+
+/* 评论块 */
+#comment {
+    margin-top: 12px !important;
+}
+
+/* 评论导航 */
+.reply-navigation {
+    margin-bottom: 0 !important;
+}
+
+/* 评论 */
+.root-reply-container {
+    padding: 12px 0 0 36px !important;
+}
+
+.root-reply-avatar,
+.root-reply-avatar .bili-avatar {
+    width: 36px !important;
+    height: 36px !important;
+}
+
+.user-info {
+    margin: 3px 5px 0 !important;
+}
+
+/* 回复评论 */
+.sub-reply-container {
+    padding-left: 28px !important;
+}
+
+.sub-reply-item {
+    padding: 4px 0 4px 37px !important;
+}
+
+/* 评论图片 */
+.reply-view-image .show-image-wrap {
+    padding: 0 0 145px !important;
+
+    .image-content {
+        width: 100% !important;
+    }
+}
+
+.reply-view-image .operation-btn {
+
+    .last-image,
+    .next-image,
+    .close-container {
+        top: unset !important;
+        bottom: 100px;
+    }
+
+    .last-image,
+    .next-image {
+        transform: none !important;
+    }
+
+    .close-container {
+        right: 50% !important;
+        transform: translateX(50%);
+    }
+
+    .last-image {
+        left: 20vw !important;
+    }
+
+    .next-image {
+        right: 20vw !important;
+    }
+}
+
+/******************************************** 播放组件（评论以下） ********************************************/
+
+/* 评论信息 (点赞等) */
+.reply-info,
+.sub-reply-info {
+    justify-content: space-between;
+}
+
+.reply-info>*,
+.sub-reply-info>* {
+    margin-right: 0 !important;
+}
+
+/* 评论举报操作按钮 */
+.reply-operation-warp,
+.sub-reply-operation-warp {
+    display: inline-flex !important;
+    position: static !important;
+}
+
+.sub-reply-operation-warp {
+    opacity: 1 !important;
+}
+
+.reply-info,
+.sub-reply-info {
+    font-size: 12px !important;
+}
+
+.reply-info>* .sub-reply-info>* {
+    margin: 0 3px !important;
+}
+
+/* 评论投票 */
+.vote-dialog {
+    max-width: calc(100% - 10px);
+}
+
+/* 点击展开的评论详情 */
+[itemprop=video]+body .dynamic-card {
+    left: 0;
+    max-width: 100%;
+    /* 百分比以父元素为基准 */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 内框 (在 iframe 内) */
+div.bili-dyn-item-draw {
+    min-width: 0;
+    width: 100%;
+}
+
+/* 评论详情 - 头像 */
+div.bili-dyn-item-draw__avatar {
+    height: 62px;
+}
+
+/* 内容 */
+.bili-dyn-item-draw__body {
+    transform: translateX(-68px);
+    /* 子元素的宽度会减去父元素的 padding (左间距=88px-68px=20px=右间距) */
+    width: calc(100% + 68px);
+}

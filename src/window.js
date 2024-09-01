@@ -69,17 +69,16 @@ export function countViewTime () {
 
 /**
  * 管理滚动和滑动事件的函数
- * @param {string} page - 简短描述页面的字符串: search, video, message, space
+ * @param {string} type - 简短描述页面的字符串: search, video, list, message, space
  */
-export function handleScroll (page) {
-  if (page !== 'video') { scrollToHidden() }
+export function handleScroll (type) {
+  scrollToHidden(type)
 
-  switch (page) {
+  switch (type) {
     case 'search':
       slideSearchSort()
       break
     case 'video':
-      scrollToHidden('video')
       slideVideoSidebar()
       break
     case 'message':
@@ -94,12 +93,30 @@ export function handleScroll (page) {
 }
 
 // 滚动隐藏函数(弹幕行、评论行、操作栏)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
-function scrollToHidden (page) {
+function scrollToHidden (type) {
   let lastScrollY = 0
   const scrollThreshold = 75
+  let backup
+  const videoMap = {
+    video: ['left-container', 'back-to-top'],
+    list: ['playlist-container--left', 'backup']
+  }
 
-  window.addEventListener('scroll', () => {
-    const currentScrollY = window.scrollY
+  const elem = (() => {
+    switch (type) {
+      case 'home':
+        return document.body
+      case 'video':
+      case 'list':
+        backup = document.getElementsByClassName(videoMap[type][1])[0]
+        return document.getElementsByClassName(videoMap[type][0])[0]
+      default:
+        return window
+    }
+  })()
+
+  elem.addEventListener('scroll', () => {
+    const currentScrollY = elem === window ? elem.scrollY : elem.scrollTop
     const offsetY = currentScrollY - lastScrollY
 
     if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
@@ -108,44 +125,19 @@ function scrollToHidden (page) {
       offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
       lastScrollY = currentScrollY
     }
+
+    if (['video', 'list'].includes(type)) {
+      currentScrollY > elem.clientHeight ? backup?.setAttribute('show', '') : backup?.removeAttribute('show')
+    }
   })
 
-  if (page === 'video') {
-    const backToTop = document.getElementsByClassName('back-to-top')[0]
-
-    backToTop.addEventListener('click', () => {
-      backToTop.setAttribute('touch-active', '')
-      handleTransitionEndOnce(backToTop, 'transform', () => backToTop.removeAttribute('touch-active'))
+  if (['video', 'list'].includes(type)) {
+    backup.addEventListener('click', () => {
+      elem.scrollTo({ top: 0, behavior: 'smooth' })
+      backup.setAttribute('touch-active', '')
+      handleTransitionEndOnce(backup, 'transform', () => backup.removeAttribute('touch-active'))
     })
   }
-}
-
-function slideSearchSort () {
-  let startX = 0; let startY = 0
-
-  let clickIndex = 3
-  const touchXThreshold = 55
-
-  const handleTouchStart = event => {
-    startX = event.changedTouches[0].clientX
-    startY = event.changedTouches[0].clientY
-  }
-
-  const handleTouchEnd = event => {
-    const offsetX = event.changedTouches[0].clientX - startX
-    const offsetY = event.changedTouches[0].clientY - startY
-
-    const navItems = [4, 3, 2, 1, 7, 6, 5]
-
-    if (Math.abs(offsetX) > touchXThreshold && Math.abs(offsetY / offsetX) < 1 / 2) {
-      offsetX > 0 ? clickIndex-- : clickIndex++
-      document.querySelector(`.vui_tabs--nav-item:nth-child(${navItems[clickIndex]})`).click()
-    }
-  }
-
-  const container = document.querySelector('#i_cecream')
-  container.addEventListener('touchstart', handleTouchStart)
-  container.addEventListener('touchend', handleTouchEnd)
 }
 
 function slideVideoSidebar () {
@@ -174,6 +166,34 @@ function slideVideoSidebar () {
 
   videoContainer.addEventListener('touchstart', handleTouchStart)
   videoContainer.addEventListener('touchend', handleTouchEnd)
+}
+
+function slideSearchSort () {
+  let startX = 0; let startY = 0
+
+  let clickIndex = 3
+  const touchXThreshold = 55
+
+  const handleTouchStart = event => {
+    startX = event.changedTouches[0].clientX
+    startY = event.changedTouches[0].clientY
+  }
+
+  const handleTouchEnd = event => {
+    const offsetX = event.changedTouches[0].clientX - startX
+    const offsetY = event.changedTouches[0].clientY - startY
+
+    const navItems = [4, 3, 2, 1, 7, 6, 5]
+
+    if (Math.abs(offsetX) > touchXThreshold && Math.abs(offsetY / offsetX) < 1 / 2) {
+      offsetX > 0 ? clickIndex-- : clickIndex++
+      document.querySelector(`.vui_tabs--nav-item:nth-child(${navItems[clickIndex]})`).click()
+    }
+  }
+
+  const container = document.querySelector('#i_cecream')
+  container.addEventListener('touchstart', handleTouchStart)
+  container.addEventListener('touchend', handleTouchEnd)
 }
 
 function slideMessageSidebar () {

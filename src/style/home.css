@@ -1,5 +1,15 @@
 /* ---------------------- 首页 ----------------------- */
 
+/* 修复 via 记忆滚动位置导致的加载异常 (api获取频繁) */
+html:has(>body.win) {
+    /* overflow-y 属性的值会影响滚动事件的传递 */
+    overflow-y: hidden;
+}
+body.win {
+    /* overscroll-behavior-y 属性用于控制当用户在滚动到边界时浏览器的行为 */    
+    overflow-y: auto;
+}
+
 body {
     /* 避免评论未加载时显示灰色 */
     background: white !important;
@@ -160,7 +170,7 @@ div.bili-live-card .bili-live-card__info--no-interest {
 }
 
 /* 不喜欢按钮: 有 ai 总结时 */
-div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest:after {
+div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest::after {
     content: '';
     position: absolute;
     top: 0;

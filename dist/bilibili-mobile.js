@@ -2,7 +2,7 @@
 // @name               Bilibili Mobile
 // @name:zh-CN         bilibili 移动端
 // @namespace          https://github.com/jk278/bilibili-pc2mobile
-// @version            5.0-beta.25
+// @version            5.0-beta.26
 // @description        view bilibili pc page on mobile phone
 // @description:zh-CN  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @author             jk278
@@ -385,7 +385,8 @@ body {
     }
 }
 
-#actionbar.video {
+#actionbar.video,
+#actionbar.list {
     #full-now {
         display: block;
     }
@@ -398,6 +399,7 @@ body {
 }
 
 #actionbar.video,
+#actionbar.list,
 #actionbar.message {
     #sidebar-fab {
         display: block;
@@ -1362,6 +1364,16 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 首页 ----------------------- */
 
+/* 修复 via 记忆滚动位置导致的加载异常 (api获取频繁) */
+html:has(>body.win) {
+    /* overflow-y 属性的值会影响滚动事件的传递 */
+    overflow-y: hidden;
+}
+body.win {
+    /* overscroll-behavior-y 属性用于控制当用户在滚动到边界时浏览器的行为 */    
+    overflow-y: auto;
+}
+
 body {
     /* 避免评论未加载时显示灰色 */
     background: white !important;
@@ -1522,7 +1534,7 @@ div.bili-live-card .bili-live-card__info--no-interest {
 }
 
 /* 不喜欢按钮: 有 ai 总结时 */
-div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest:after {
+div.bili-video-card[data-has-ai=true] .bili-video-card__info--no-interest::after {
     content: '';
     position: absolute;
     top: 0;
@@ -1703,1029 +1715,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(16);
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var options = {};
-
-options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
-options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
-
-      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
-    
-options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
-options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
-
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
-
-
-
-
-       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
-
-
-/***/ }),
-/* 16 */
-/***/ ((module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-// Imports
-
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-// Module
-___CSS_LOADER_EXPORT___.push([module.id, `/* ---------------------- 视频详情页 ------------------- */
-
-/* 适配 shadowDOM 的评论行滚动隐藏 */
-body {
-    --shadow-transform: none;
-    --commentbox-display: block;
-}
-
-body[scroll-hidden] {
-    --shadow-transform: translateY(calc(100% + var(--actionbar-height)));
-}
-
-/* 主应用块 */
-#app {
-    --sidebar-time: .6s;
-}
-
-/* 主体内容块 */
-#app #mirror-vdcon {
-    min-width: 0;
-    padding: 0;
-    margin-top: 56.25vw;
-}
-
-#app {
-    height: 100%;
-}
-
-#mirror-vdcon {
-    height: 100%;
-}
-
-/* ----------------------------------------------------
-  * ---------------------- 主视频块 --------------------- *
-   ----------------------------------------------------- */
-
-/* 主视频块 */
-.left-container {
-    --video-min-height: calc(100vw * 0.5625);
-    --dm-row-height: 44px;
-}
-
-/* 有初始内联 top */
-/* 视频块（宽度） (#mainheight与header的高度差导致了64px-48px的可滚动区域) */
-.left-container {
-    /* 移动 Safari 百分比宽高自动考虑边框和填充 */
-    box-sizing: border-box;
-    width: 100% !important;
-    padding: calc(var(--dm-row-height) + 5px) 10px 10px;
-    
-    background: white;
-}
-
-.left-container::after {
-    content: '';
-    /* 因为现在是限制高度 + overflow:auto，所以不用 absolute 了 */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    background-color: rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    transition: opacity var(--sidebar-time) ease-in;
-}
-
-#mirror-vdcon[sidebar] .left-container::after {
-    pointer-events: auto;
-    opacity: 1;
-}
-
-#mirror-vdcon[sidebar] .fixed-sidenav-storage {
-    opacity: 0;
-}
-
-/* ----------------------------------------------------
-  * ----------------------- 推荐块 ---------------------- *
-   ----------------------------------------------------- */
-
-/* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
-.right-container {
-    position: fixed !important;
-    width: 100% !important;
-    left: 100%;
-    padding: 10px 10px calc(var(--actionbar-height) + 10px);
-    margin: 0 !important;
-
-    z-index: 1;
-    background: white;
-    transition: transform var(--sidebar-time) ease-in;
-    height: calc(100% - 56.25vw);
-    overflow-y: auto;
-    /* 避免到达边界后的滚动事件穿透 */
-    overscroll-behavior: contain;
-
-    box-sizing: border-box;
-}
-
-#mirror-vdcon[sidebar] .right-container {
-    transform: translateX(-100%);
-}
-
-.right-container-inner {
-    padding: 0 !important;
-}
-
-/* UP信息 */
-.upinfo-btn-panel .default-btn {
-    font-size: 12px !important;
-}
-
-.new-charge-btn {
-    max-width: 35%;
-}
-
-.follow-btn {
-    max-width: 150px !important;
-}
-
-/* 视频选集 */
-div.multi-page-v1 .cur-list {
-    overflow-y: auto;
-}
-
-/* 推荐视频图块 */
-#reco_list .card-box .pic-box {
-    max-width: 50%;
-}
-
-/* 展开按钮 */
-.rec-footer {
-    display: none;
-}
-
-/* --------------------------------------------------
- ---------------- 块状广告（整个视频页）---------------
- ---------------------------------------------------- */
-
-#activity_vote,
-#bannerAd,
-.reply-notice,
-.ad-report,
-.pop-live-small-mode,
-#slide_ad,
-.video-page-game-card-small {
-    display: none !important;
-}
-
-/* ---------------------------------------------------
- ----------------------- 播放器 -----------------------
- ----------------------------------------------------- */
-
-/* 视频置顶 */
-#playerWrap {
-    position: fixed;
-    z-index: 61;
-    top: 0;
-    left: 0;
-
-    height: 56.25vw !important;
-}
-
-#bilibili-player {
-    width: 100vw !important;
-    height: 56.25vw !important;
-}
-
-/* 竖屏时占满高度 */
-#bilibili-player.mode-webscreen {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-/* 移除白色阴影 */
-.bpx-player-container,
-#bilibili-player-placeholder {
-    box-shadow: none !important;
-}
-
-/* 视频页不显示原双击全屏层 */
-#app .bpx-player-video-perch {
-    max-height: 0;
-}
-
-/* 小窗时的隐藏 - 始终隐藏*/
-/* 顶部关注、音乐、反馈 */
-/* 右下角暂停图标 */
-/* 取消静音 */
-.bpx-player-top-wrap,
-.bpx-player-state-wrap {
-    display: none !important;
-}
-
-/* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
-.bpx-player-toast-wrap {
-    display: block !important;
-    bottom: 65px !important;
-}
-
-/* 小窗按钮 */
-.mini-player-window {
-    position: fixed;
-    z-index: -10;
-    visibility: hidden;
-}
-
-/* 客服按钮 */
-.customer-service {
-    display: none !important;
-}
-
-/* ------------ 控制栏隐藏 (覆盖原显隐：3级选择器覆盖2级) ------------ */
-
-/* control-bottom 和 mask (阴影) */
-.bpx-player-container[ctrl-shown=false] .bpx-player-control-wrap .bpx-player-control-mask {
-    opacity: 0;
-    /* 渐变属性应用在需要变化的状态 */
-    transition: opacity .2s ease-in;
-}
-
-.bpx-player-container[ctrl-shown=true] .bpx-player-control-wrap .bpx-player-control-mask {
-    opacity: 1;
-}
-
-.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-control-bottom {
-    opacity: 1;
-    display: flex;
-
-}
-
-.bpx-player-container[ctrl-shown=false] .bpx-player-control-entity .bpx-player-control-bottom {
-    display: none;
-}
-
-/* 进度条 */
-.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-control-top,
-.bpx-player-container[ctrl-shown=false] .bpx-player-control-entity .bpx-player-shadow-progress-area {
-    opacity: 1;
-    visibility: visible;
-}
-
-.bpx-player-container[ctrl-shown=false] .bpx-player-control-entity .bpx-player-control-top,
-.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-shadow-progress-area {
-    opacity: 0;
-    visibility: hidden;
-}
-
-/* 高能进度 */
-.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-pbp {
-    bottom: calc(100% + 6px);
-    left: 0;
-    opacity: 1;
-    width: 100%;
-}
-
-/*
-    权重：
-    ID 选择器：100
-    类选择器、属性选择器、伪类选择器：10
-    元素选择器、伪元素选择器：1
-
-    如果有多个选择器同时作用于同一个元素，则计算每个选择器的权重值，并将其相加，得出总权重值。
-*/
-
-/* 覆盖 show */
-div.bpx-player-control-entity .bpx-player-pbp {
-    bottom: 1px;
-    opacity: 0;
-    left: -12px;
-    width: calc(100% + 24px);
-}
-
-/* 不覆盖 pin */
-div.bpx-player-control-entity .bpx-player-pbp.pin {
-    opacity: 1;
-}
-
-/* pin 按钮: display 代替 opacity */
-.bpx-player-pbp-pin {
-    opacity: 1 !important;
-    display: none;
-}
-
-.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-pbp-pin {
-    display: block;
-}
-
-/* ------------ 控制栏样式 ------------ */
-
-/* 移除次要按钮：画中画、宽屏、时间、选集 */
-.bpx-player-ctrl-pip,
-.bpx-player-ctrl-wide,
-.bpx-player-ctrl-time,
-.bpx-player-ctrl-eplist {
-    display: none !important;
-}
-
-/* 横屏时恢复时间显示 */
-@media screen and (orientation: landscape) {
-    .bpx-player-ctrl-time {
-        display: block !important;
-    }
-}
-
-/* 清晰度文本:全屏时恢复大小 */
-@media screen and (min-width: 750px) {
-    .bpx-player-container[data-screen=full] .bpx-player-ctrl-quality-result {
-        font-size: 16px !important;
-        height: unset !important;
-    }
-}
-
-/* 修复宽屏全屏时的控制栏图标增大导致的高度过高 */
-@media screen and (min-width: 750px) {
-    .bpx-player-container[data-screen=full] .bpx-player-control-wrap {
-        height: 43px !important;
-    }
-
-    .bpx-player-container[data-screen=full] .bpx-player-control-top {
-        bottom: 43px !important;
-    }
-}
-
-/* 主控制区: 覆盖宽屏全屏样式 (图标22px，算 margin 37px) */
-div.bpx-player-control-bottom {
-    height: 29px !important;
-    margin-top: 7px !important;
-    padding: 0 7px !important;
-}
-
-/* 进度条 */
-div.bpx-player-control-top {
-    bottom: 36px;
-    transition: none;
-}
-
-/* 隐藏颠倒的高能进度条常驻切换提示 */
-.bpx-player-pbp .bpx-player-pbp-pin-tip {
-    display: none !important;
-}
-
-/* 左右控制区 */
-.bpx-player-control-bottom-left,
-.bpx-player-control-bottom-right {
-    flex: unset !important;
-}
-
-/* 全屏时 */
-.bpx-player-container .bpx-player-control-bottom-left,
-.bpx-player-container .bpx-player-control-bottom-right {
-    min-width: 0 !important;
-}
-
-/* 清晰度(width:auto 不换行，隐藏不掉高清字样) */
-.bpx-player-ctrl-quality {
-    margin-right: 0 !important;
-    min-width: 0;
-    flex: auto !important;
-}
-
-/* 清晰度、倍速文本 */
-.bpx-player-ctrl-quality-result,
-.bpx-player-ctrl-playbackrate {
-    font-size: 12px !important;
-}
-
-/* 清晰度文本:隐藏换行的部分 */
-.bpx-player-ctrl-quality-result {
-    height: 22px;
-    overflow: hidden;
-}
-
-/* 倍速文本:禁止换行 */
-.bpx-player-ctrl-playbackrate {
-    text-wrap: nowrap;
-}
-
-/* 进度条细条包含块（高12px） */
-.bpx-player-progress-wrap {
-    height: 7px !important;
-    padding-bottom: 3px !important;
-}
-
-/* 替换via暗色异常的阴影 */
-.bpx-player-control-mask {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .5) 100%) !important;
-}
-
-/* 清晰度弹窗 */
-.bpx-player-ctrl-quality-menu-wrap {
-    bottom: 22px !important;
-}
-
-.bpx-player-ctrl-quality-menu-item {
-    height: 7.7vw !important;
-    max-height: 36px;
-    max-width: 95px;
-    padding: 0 8px 0 12px !important;
-}
-
-/* 高码率会员图标 */
-.bpx-player-ctrl-quality-badge-bigvip {
-    background-color: #f25d8e;
-    color: #fff;
-    width: 16px;
-    overflow: hidden;
-    right: 8px !important;
-}
-
-/* 用字母 V 覆盖 */
-.bpx-player-ctrl-quality-badge-bigvip:before {
-    background-color: #f25d8e;
-    color: #fff;
-    content: 'V';
-    padding: 0 4px;
-    position: absolute;
-    left: 0;
-}
-
-/* 倍速弹窗 */
-.bpx-player-ctrl-playbackrate-menu {
-    bottom: 22px !important;
-}
-
-.bpx-player-ctrl-playbackrate-menu-item {
-    height: 7.7vw !important;
-    max-height: 36px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* 弹幕弹窗 */
-div.bpx-player-ctrl-subtitle-box {
-    bottom: 0;
-    right: 0;
-    transform: scale(.8);
-}
-
-/* 设置弹窗 */
-.bpx-player-ctrl-setting-box {
-    right: 0 !important;
-    bottom: 0 !important;
-}
-
-/* 更多设置 */
-.bpx-player-ctrl-setting-menu-right {
-    padding: 5px !important;
-}
-
-.bpx-player-ctrl-setting-menu-right>div {
-    height: 10vw !important;
-    max-height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* 更多设置 - 选项行 */
-.bpx-player-ctrl-setting-menu-right .bui-radio {
-    margin: 0 0 8px 7px;
-    width: 77%;
-}
-
-.bpx-player-ctrl-setting-others-content {
-    width: 77% !important;
-    margin-left: 7px;
-}
-
-/* 高能进度条选项 */
-.bpx-player-ctrl-setting-highenergy .bui-checkbox-name {
-    white-space: nowrap;
-    width: 48px;
-    overflow: hidden;
-}
-
-/* 弹幕设置弹窗 */
-.bpx-player-dm-setting-wrap {
-    bottom: unset !important;
-    top: 0;
-    position: fixed !important;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-/* 全屏控制栏 */
-.bpx-player-control-bottom-center .bpx-player-sending-bar {
-    padding-right: 6px !important;
-    height: 24px !important;
-}
-
-/* 存在章节时(允许章节缩小) */
-.bpx-player-ctrl-viewpoint {
-    margin: 0 !important;
-    min-width: 0 !important;
-    width: 45px !important;
-    flex-shrink: 1 !important;
-}
-
-.bpx-player-ctrl-viewpoint-text {
-    width: 24px !important;
-    text-overflow: unset !important;
-    font-size: 12px;
-    flex: none;
-}
-
-/* 隐藏旧控制栏 */
-.bpx-player-control-wrap:not(.new) {
-    display: none;
-}
-
-/* 窄屏不禁用控制条和阴影 (新控制栏默认不禁用阴影) */
-.bpx-player-control-entity,
-.bpx-player-control-mask {
-    display: block !important;
-}
-
-/* 隐藏控制条时不响应点击 */
-.bpx-player-container[data-ctrl-hidden=true] .bpx-player-control-bottom {
-    display: none;
-}
-
-/* --------- 播完预览 --------- */
-
-/* 窄屏不隐藏 */
-.bpx-player-ending-wrap[hidden] {
-    display: block !important;
-}
-
-/* .bpx-player-ending-content 的 scale 根据 screen-mode 和 data-screen 动态调整 */
-
-/* 修改网页全屏样式为竖屏 */
-div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
-    margin-left: -268px;
-    width: 536px;
-}
-
-/* 关注按钮 */
-.bpx-player-ending-functions-follow {
-    width: auto !important;
-    padding: 0 15px !important;
-}
-
-/* 重播按钮 */
-.bpx-player-ending-functions-btn[data-action=restart] {
-    padding-right: 15px !important;
-}
-
-/* 反馈按钮组 */
-.bpx-player-ending-functions-pagecallback {
-    margin-left: 5px !important;
-
-    .bpx-player-ending-functions-btn {
-        margin-left: 10px !important;
-    }
-}
-
-/* 横屏展开顶部按钮 */
-@media screen and (orientation: landscape) {
-    .bpx-player-ending-functions-btn[data-action=restart] {
-        padding-right: 42px !important;
-    }
-
-    .bpx-player-ending-functions-pagecallback {
-        margin-left: 14px !important;
-
-        .bpx-player-ending-functions-btn {
-            margin-left: 28px !important;
-        }
-    }
-}
-
-/* 自动连播倒计时图标 */
-.bpx-player-ending-related-item-countdown {
-    margin-top: 34px !important;
-    width: 48px !important;
-}
-
-/* up 名 */
-.bpx-player-ending-functions-upinfo {
-    height: 56px !important;
-    margin-top: 0 !important;
-}
-
-/* 适配互动视频 */
-.bui-swiper~.bpx-player-ending-related {
-    height: 109px !important;
-}
-
-/* ----------------------------------------------------
-  * ----------------------- 弹幕行 ---------------------- *
-   ----------------------------------------------------- */
-
-/* 弹幕行：滚动隐藏 */
-.bpx-player-sending-area {
-    position: absolute !important;
-    bottom: 0;
-    width: 100%;
-    transform: translateY(100%);
-
-    transition: 0.5s transform ease-in;
-    display: block !important;
-    z-index: 0;
-    border-bottom: 1px solid var(--line_regular);
-}
-
-[scroll-hidden] .bpx-player-sending-area {
-    transform: none;
-}
-
-.bpx-player-video-area {
-    z-index: 1;
-}
-
-/* 修改小窗样式的时候把这行删了，导致弹幕行显示异常 */
-.bpx-player-container[data-screen=mini] {
-    overflow: unset !important;
-}
-
-/* 弹幕行预加载灰块白条(视频底下也有，预加载有时会看到) */
-.bpx-player-sending-bar-left,
-.bpx-player-sending-bar-right,
-#bilibili-player-placeholder-bottom {
-    display: none !important;
-}
-
-/* 弹幕行高度、背景色 */
-div.bpx-player-sending-bar {
-    height: var(--dm-row-height);
-    /* 适配 dark reader 全局变量值更改延后，否则临时白块 */
-    background-color: white;
-}
-
-.bpx-player-dm-input {
-    height: 26px !important;
-}
-
-/* 弹幕输入栏外 */
-.bpx-player-video-inputbar {
-    height: 26px !important;
-    border-radius: 13px !important;
-
-    min-width: 0 !important;
-}
-
-.bpx-player-video-inputbar-wrap {
-    width: 100% !important;
-}
-
-/* 不输入隐藏发送 */
-.bpx-player-dm-btn-send {
-    display: none !important;
-}
-
-.bpx-player-video-inputbar-wrap:has(>input:focus)+.bpx-player-dm-btn-send {
-    display: flex !important;
-}
-
-.bpx-player-dm-btn-send {
-    border-radius: 0 13px 13px 0 !important;
-    height: 26px !important;
-    min-width: 50px !important;
-    width: 50px !important;
-}
-
-.bui-button-blue {
-    min-width: 50px !important;
-}
-
-/* 观看人数 */
-.bpx-player-video-info {
-    margin-right: 6px !important;
-}
-
-/* 弹幕数量、弹幕礼仪 */
-.bpx-player-video-info-divide,
-.bpx-player-video-info-dm,
-.bpx-player-dm-hint {
-    display: none !important;
-}
-
-/* ----------------------------------------------------
-  * ---------------------- 播放页组件 ------------------- *
-   ----------------------------------------------------- */
-
-/* 信息块（标题） */
-.video-info-container {
-    height: auto !important;
-    padding-top: 0 !important;
-}
-
-/* 标题（可两行显示） */
-.video-title {
-    font-size: 18px !important;
-
-    white-space: wrap !important;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    line-clamp: 2;
-
-    /* 去除折叠时的 show-more 按钮 margin */
-    margin-right: 0 !important;
-}
-
-.show-more {
-    top: unset !important;
-    transform: none !important;
-    bottom: 4px;
-    right: 4px !important;
-}
-
-.video-desc-container {
-    margin: 10px 0 !important;
-}
-
-.video-info-detail-list .item {
-    margin-right: 4px !important;
-}
-
-/* 更新时间: 避免窄屏隐藏 */
-.pubdate-ip {
-    display: block !important;
-}
-
-/* 全站排行、每周必看等标签 & 温馨提示 */
-.video-info-detail-list:has(.honor.item) {
-    margin-top: 24px;
-}
-
-.video-info-detail-list:has(.video-argue.item) {
-    margin-bottom: 20px;
-}
-
-.honor.item {
-    position: absolute;
-    align-self: start !important;
-    top: 0;
-}
-
-.video-argue.item {
-    position: absolute;
-    align-self: start !important;
-    bottom: 0;
-    /* 避免窄屏隐藏温馨提示 */
-    display: block !important;
-}
-
-/* 点赞投币行 */
-.video-toolbar-container {
-    padding: 10px 0 8px !important;
-}
-
-.video-toolbar-left,
-.video-toolbar-left-main {
-    min-width: 0;
-}
-
-.toolbar-left-item-wrap {
-    flex: 1;
-    min-width: 0;
-}
-
-.video-toolbar-container * {
-    margin: 0 !important;
-}
-
-.toolbar-left-item-wrap span {
-    padding-left: 2px;
-}
-
-.video-share-info {
-    width: 40px !important;
-}
-
-.video-share-popover {
-    display: none !important;
-}
-
-/* AI 助手“测试版”字样 */
-.video-ai-assistant-badge {
-    display: none !important;
-}
-
-/* AI 总结 */
-div.resizable-component.resizable-component {
-    width: 100% !important;
-    left: 0 !important;
-    height: fit-content !important;
-    max-height: 100vw;
-    top: 50% !important;
-    transform: translateY(-50%);
-    border-radius: 12px !important;
-}
-
-/* 总结内容继承高度限制 */
-div.ai-summary-popup {
-    max-height: inherit;
-    border-radius: 12px;
-}
-
-/* 简介 */
-#v_desc .toggle-btn {
-    text-align: right;
-    margin-right: 7px;
-}
-
-.basic-desc-info[style="height: 84px;"] {
-    height: 70px !important;
-}
-
-/* 标签 */
-.video-tag-container {
-    margin: 6px 0 0 !important;
-    padding-bottom: 1px !important;
-}
-
-.tag-panel .tag {
-    margin-bottom: 6px !important;
-}
-
-/* ------ 顶部投票卡片 ------ */
-
-/* 两个选项 */
-.left-vote-option,
-.right-vote-option {
-    min-width: 0 !important;
-}
-
-/* 投票: 选题 */
-.top-vote-card {
-    padding-top: 27px !important;
-}
-
-.top-vote-card-left__title {
-    transform: translateY(-23px);
-}
-
-.vui_ellipsis.multi-mode {
-    overflow: visible !important;
-    white-space: nowrap;
-}
-
-/* ----------------------------------------------------
-  * ----------------- 播放组件（评论以下） -------------- *
-   ----------------------------------------------------- */
-
-/* 评论信息 (点赞等) */
-.reply-info,
-.sub-reply-info {
-    justify-content: space-between;
-}
-
-.reply-info>*,
-.sub-reply-info>* {
-    margin-right: 0 !important;
-}
-
-/* 评论举报操作按钮 */
-.reply-operation-warp,
-.sub-reply-operation-warp {
-    display: inline-flex !important;
-    position: static !important;
-}
-
-.sub-reply-operation-warp {
-    opacity: 1 !important;
-}
-
-.reply-info,
-.sub-reply-info {
-    font-size: 12px !important;
-}
-
-.reply-info>* .sub-reply-info>* {
-    margin: 0 3px !important;
-}
-
-/* 评论投票 */
-.vote-dialog {
-    max-width: calc(100% - 10px);
-}
-
-/* 点击展开的评论详情 */
-[itemprop=video]+body .dynamic-card {
-    left: 0;
-    max-width: 100%;
-    /* 百分比以父元素为基准 */
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-/* 内框 (在 iframe 内) */
-div.bili-dyn-item-draw {
-    min-width: 0;
-    width: 100%;
-}
-
-/* 评论详情 - 头像 */
-div.bili-dyn-item-draw__avatar {
-    height: 62px;
-}
-
-/* 内容 */
-.bili-dyn-item-draw__body {
-    transform: translateX(-68px);
-    /* 子元素的宽度会减去父元素的 padding (左间距=88px-68px=20px=右间距) */
-    width: calc(100% + 68px);
-}
-
-/* ----------------------------------------------------
- ------------------------- 按钮 -----------------------
- ----------------------------------------------------- */
-
-/* 视频页返回顶部按钮（添加渐变） */
-/* 权重：基本设置属性 < transition < animation */
-.back-to-top {
-    border-radius: 0 25% 25% 0 !important;
-    border-left: 0 !important;
-    margin-bottom: 0 !important;
-    width: 42px !important;
-
-    visibility: visible !important;
-    transform: translateX(-100%);
-    transition: transform .5s ease-in-out;
-}
-
-/* 使用原 visible 类 */
-.back-to-top.visible {
-    transform: none;
-}
-
-/* 覆盖鼠标悬浮样式 */
-#app .fixed-sidenav-storage .fixed-sidenav-storage-item:hover {
-    background: white;
-}
-
-/* 类名会自动直接修改 (而非classList) */
-#app .fixed-sidenav-storage div.fixed-sidenav-storage-item[touch-active] {
-    background: var(--graph_bg_thick);
-}
-
-/* 回顶按钮的位置 */
-.fixed-sidenav-storage {
-    left: 0;
-    right: unset !important;
-    bottom: 78px !important;
-    z-index: 1 !important;
-    opacity: 1;
-    transition: opacity var(--sidebar-time) ease-in;
-}`, ""]);
-// Exports
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-/* 17 */
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_search_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(18);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_search_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(16);
 
       
       
@@ -2756,7 +1746,7 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /***/ }),
-/* 18 */
+/* 16 */
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -2854,10 +1844,6 @@ ul.vui_tabs--nav>* {
 .search-conditions.show {
     bottom: var(--actionbar-height);
     opacity: 1;
-}
-
-[scroll-hidden] .search-conditions {
-    transform: translateY(calc(100% + var(--actionbar-height)));
 }
 
 /* 排序按钮 */
@@ -3036,7 +2022,7 @@ h2.i_card_title>a {
     white-space: wrap !important;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
     margin-right: 10px;
 }
 
@@ -3122,7 +2108,7 @@ div.live-content {
 
 
 /***/ }),
-/* 19 */
+/* 17 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -3141,7 +2127,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_space_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(20);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_space_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(18);
 
       
       
@@ -3172,7 +2158,7 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /***/ }),
-/* 20 */
+/* 18 */
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -3497,7 +2483,7 @@ div.header.space-search-tip {
     line-break: anywhere;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
     text-overflow: ellipsis;
     padding: 0 3px;
 }
@@ -3514,7 +2500,7 @@ div.header.space-search-tip {
 }
 
 /* 空番剧文本 */
-#page-index .col-1 .section.empty:after {
+#page-index .col-1 .section.empty::after {
     left: 100px !important;
 }
 
@@ -3574,7 +2560,7 @@ div.header.space-search-tip {
     white-space: normal;
     display: -webkit-box !important;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    line-clamp: 3;
 }
 
 /* 文本标题 */
@@ -3587,7 +2573,7 @@ h2.article-title {
 .article-title a {
     display: -webkit-box !important;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
 }
 
 /* 元信息栏 (笔记类型、访问量) */
@@ -3919,7 +2905,7 @@ div.sec-empty-hint {
 #page-follows .follow-main .list-item p {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
     white-space: unset;
     font-size: 13px;
     line-height: 16px;
@@ -3944,7 +2930,7 @@ div.follow-dialog-wrap .follow-dialog-window .content {
 
 
 /***/ }),
-/* 21 */
+/* 19 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -3963,7 +2949,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_message_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(22);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_message_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(20);
 
       
       
@@ -3994,7 +2980,7 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /***/ }),
-/* 22 */
+/* 20 */
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -4157,7 +3143,1343 @@ body>.container[sidebar] .space-left {
 
 
 /***/ }),
+/* 21 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(22);
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_video_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+/* 22 */
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `/************************************************* 视频详情页 *************************************************/
+
+/* 适配 shadowDOM 的评论行滚动隐藏 */
+body {
+    --shadow-transform: none;
+    --commentbox-display: block;
+}
+
+body[scroll-hidden] {
+    --shadow-transform: translateY(calc(100% + var(--actionbar-height)));
+}
+
+/* 主应用块 */
+#app {
+    --sidebar-time: .6s;
+}
+
+/* 主体内容块 */
+#app #mirror-vdcon {
+    min-width: 0;
+    padding: 0;
+    margin-top: 56.25vw;
+}
+
+/* 视频页主滚动条下移 */
+[itemprop=video]+body {
+    overflow: hidden !important;
+}
+
+#app {
+    height: 100%;
+}
+
+/* 修复 via 滚动条异常 */
+[itemprop=video]+body #app {
+    overflow: hidden;
+}
+
+#mirror-vdcon {
+    height: 100%;
+}
+
+/* 缩短主内容块，让其响应滚动 */
+.left-container,
+.playlist-container--left {
+    overflow-y: auto;
+    /* 同 .right-container */
+    height: calc(100% - 56.25vw) !important;
+}
+
+/************************************************* 主视频块 *************************************************/
+
+/* 主视频块 */
+.left-container,
+.playlist-container--left {
+    --video-min-height: calc(100vw * 0.5625);
+    --dm-row-height: 44px;
+}
+
+/* 有初始内联 top */
+/* 视频块（宽度） (#mainheight与header的高度差导致了64px-48px的可滚动区域) */
+.left-container,
+.playlist-container--left {
+    /* 移动 Safari 百分比宽高自动考虑边框和填充 */
+    box-sizing: border-box;
+    width: 100% !important;
+    padding: calc(var(--dm-row-height) + 5px) 10px 10px;
+    
+    background: white;
+}
+
+.left-container::after,
+.playlist-container--left::after {
+    content: '';
+    /* 因为现在是限制高度 + overflow:auto，所以不用 absolute 了 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity var(--sidebar-time) ease-in;
+}
+
+.playlist-container--left {
+    z-index: 1;
+}
+
+#mirror-vdcon[sidebar] .left-container::after
+#mirror-vdcon[sidebar] .playlist-container--left::after {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+/************************************************** 推荐块 **************************************************/
+
+/* 推荐块(初始样式不要设transform，否则via在刷新时侧边栏出问题) */
+.right-container,
+.playlist-container--right {
+    position: fixed !important;
+    width: 100% !important;
+    left: 100%;
+    padding: 10px 10px calc(var(--actionbar-height) + 10px) !important;
+    margin: 0 !important;
+
+    z-index: 1;
+    background: white;
+    transition: transform var(--sidebar-time) ease-in;
+    height: calc(100% - 56.25vw);
+    overflow-y: auto;
+    /* 避免到达边界后的滚动事件穿透 */
+    overscroll-behavior: contain;
+
+    box-sizing: border-box;
+}
+
+#mirror-vdcon[sidebar] .right-container,
+#mirror-vdcon[sidebar] .playlist-container--right {
+    transform: translateX(-100%);
+}
+
+.right-container-inner {
+    padding: 0 !important;
+}
+
+/* UP信息 */
+.upinfo-btn-panel .default-btn {
+    font-size: 12px !important;
+}
+
+.new-charge-btn {
+    max-width: 35%;
+}
+
+.follow-btn {
+    max-width: 150px !important;
+}
+
+/* 视频选集 */
+div.multi-page-v1 .cur-list {
+    overflow-y: auto;
+}
+
+/* 推荐视频图块 */
+#reco_list .card-box .pic-box {
+    max-width: 50%;
+}
+
+/* 展开按钮 */
+.rec-footer {
+    display: none;
+}
+
+/******************************************* 块状广告（整个视频页） ******************************************/
+
+#activity_vote,
+#bannerAd,
+.reply-notice,
+.ad-report,
+.pop-live-small-mode,
+#slide_ad,
+.video-page-game-card-small {
+    display: none !important;
+}
+
+/*************************************************** 播放器 **************************************************/
+
+/* 视频置顶 */
+#playerWrap {
+    position: fixed;
+    z-index: 61;
+    top: 0;
+    left: 0;
+
+    height: 56.25vw !important;
+}
+
+#bilibili-player {
+    width: 100vw !important;
+    height: 56.25vw !important;
+}
+
+/* 竖屏时占满高度 */
+#bilibili-player.mode-webscreen {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 移除白色阴影 */
+.bpx-player-container,
+#bilibili-player-placeholder {
+    box-shadow: none !important;
+}
+
+/* 视频页不显示原双击全屏层 */
+#app .bpx-player-video-perch {
+    max-height: 0;
+}
+
+/* 小窗时的隐藏 - 始终隐藏*/
+/* 顶部关注、音乐、反馈 */
+/* 右下角暂停图标 */
+/* 取消静音 */
+.bpx-player-top-wrap,
+.bpx-player-state-wrap {
+    display: none !important;
+}
+
+/* 小窗时的隐藏：定位、解除静音、点赞关注等弹窗 */
+.bpx-player-toast-wrap {
+    display: block !important;
+    bottom: 65px !important;
+}
+
+/* 小窗按钮见下面按钮部分 */
+
+/************************************************** 播完预览 **************************************************/
+
+/* 窄屏不隐藏 */
+.bpx-player-ending-wrap[hidden] {
+    display: block !important;
+}
+
+/* .bpx-player-ending-content 的 scale 根据 screen-mode 和 data-screen 动态调整 */
+
+/* 修改网页全屏样式为竖屏 */
+div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
+    margin-left: -268px;
+    width: 536px;
+}
+
+/* 关注按钮 */
+.bpx-player-ending-functions-follow {
+    width: auto !important;
+    padding: 0 15px !important;
+}
+
+/* 重播按钮 */
+.bpx-player-ending-functions-btn[data-action=restart] {
+    padding-right: 15px !important;
+}
+
+/* 反馈按钮组 */
+.bpx-player-ending-functions-pagecallback {
+    margin-left: 5px !important;
+
+    .bpx-player-ending-functions-btn {
+        margin-left: 10px !important;
+    }
+}
+
+/* 横屏展开顶部按钮 */
+@media screen and (orientation: landscape) {
+    .bpx-player-ending-functions-btn[data-action=restart] {
+        padding-right: 42px !important;
+    }
+
+    .bpx-player-ending-functions-pagecallback {
+        margin-left: 14px !important;
+
+        .bpx-player-ending-functions-btn {
+            margin-left: 28px !important;
+        }
+    }
+}
+
+/* 自动连播倒计时图标 */
+.bpx-player-ending-related-item-countdown {
+    margin-top: 34px !important;
+    width: 48px !important;
+}
+
+/* up 名 */
+.bpx-player-ending-functions-upinfo {
+    height: 56px !important;
+    margin-top: 0 !important;
+}
+
+/* 适配互动视频 */
+.bui-swiper~.bpx-player-ending-related {
+    height: 109px !important;
+}
+
+/*************************************************** 弹幕行 **************************************************/
+
+/* 弹幕行：滚动隐藏 */
+.bpx-player-sending-area {
+    position: absolute !important;
+    bottom: 0;
+    width: 100%;
+    transform: translateY(100%);
+
+    transition: 0.5s transform ease-in;
+    display: block !important;
+    z-index: 0;
+    border-bottom: 1px solid var(--line_regular);
+}
+
+[scroll-hidden] .bpx-player-sending-area {
+    transform: none;
+}
+
+.bpx-player-video-area {
+    z-index: 1;
+}
+
+/* 修改小窗样式的时候把这行删了，导致弹幕行显示异常 */
+.bpx-player-container[data-screen=mini] {
+    overflow: unset !important;
+}
+
+/* 弹幕行预加载灰块白条(视频底下也有，预加载有时会看到) */
+.bpx-player-sending-bar-left,
+.bpx-player-sending-bar-right,
+#bilibili-player-placeholder-bottom {
+    display: none !important;
+}
+
+/* 弹幕行高度、背景色 */
+div.bpx-player-sending-bar {
+    height: var(--dm-row-height);
+    /* 适配 dark reader 全局变量值更改延后，否则临时白块 */
+    background-color: white;
+}
+
+.bpx-player-dm-input {
+    height: 26px !important;
+}
+
+/* 弹幕输入栏外 */
+.bpx-player-video-inputbar {
+    height: 26px !important;
+    border-radius: 13px !important;
+
+    min-width: 0 !important;
+}
+
+.bpx-player-video-inputbar-wrap {
+    width: 100% !important;
+}
+
+/* 不输入隐藏发送 */
+.bpx-player-dm-btn-send {
+    display: none !important;
+}
+
+.bpx-player-video-inputbar-wrap:has(>input:focus)+.bpx-player-dm-btn-send {
+    display: flex !important;
+}
+
+.bpx-player-dm-btn-send {
+    border-radius: 0 13px 13px 0 !important;
+    height: 26px !important;
+    min-width: 50px !important;
+    width: 50px !important;
+}
+
+.bui-button-blue {
+    min-width: 50px !important;
+}
+
+/* 观看人数 */
+.bpx-player-video-info {
+    margin-right: 6px !important;
+}
+
+/* 弹幕数量、弹幕礼仪 */
+.bpx-player-video-info-divide,
+.bpx-player-video-info-dm,
+.bpx-player-dm-hint {
+    display: none !important;
+}
+
+/************************************************* 播放页组件 *************************************************/
+
+/* 信息块（标题） */
+.video-info-container {
+    height: auto !important;
+    padding-top: 0 !important;
+}
+
+/* 标题（可两行显示） */
+.video-title {
+    font-size: 18px !important;
+
+    white-space: wrap !important;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+
+    /* 去除折叠时的 show-more 按钮 margin */
+    margin-right: 0 !important;
+}
+
+.show-more {
+    top: unset !important;
+    transform: none !important;
+    bottom: 4px;
+    right: 4px !important;
+}
+
+.video-desc-container {
+    margin: 10px 0 !important;
+}
+
+.video-info-detail-list .item {
+    margin-right: 4px !important;
+}
+
+/* 更新时间: 避免窄屏隐藏 */
+.pubdate-ip {
+    display: block !important;
+}
+
+/* 全站排行、每周必看等标签 & 温馨提示 */
+.video-info-detail-list:has(.honor.item) {
+    margin-top: 24px;
+}
+
+.video-info-detail-list:has(.video-argue.item) {
+    margin-bottom: 20px;
+}
+
+.honor.item {
+    position: absolute;
+    align-self: start !important;
+    top: 0;
+}
+
+.video-argue.item {
+    position: absolute;
+    align-self: start !important;
+    bottom: 0;
+    /* 避免窄屏隐藏温馨提示 */
+    display: block !important;
+}
+
+/* 点赞投币行 */
+.video-toolbar-container {
+    padding: 10px 0 8px !important;
+}
+
+.video-toolbar-left,
+.video-toolbar-left-main {
+    min-width: 0;
+}
+
+.toolbar-left-item-wrap {
+    flex: 1;
+    min-width: 0;
+}
+
+.video-toolbar-container * {
+    margin: 0 !important;
+}
+
+.toolbar-left-item-wrap span {
+    padding-left: 2px;
+}
+
+.video-share-info {
+    width: 40px !important;
+}
+
+.video-share-popover {
+    display: none !important;
+}
+
+/* AI 助手“测试版”字样 */
+.video-ai-assistant-badge {
+    display: none !important;
+}
+
+/* AI 总结 */
+div.resizable-component.resizable-component {
+    width: 100% !important;
+    left: 0 !important;
+    height: fit-content !important;
+    max-height: 100vw;
+    top: 50% !important;
+    transform: translateY(-50%);
+    border-radius: 12px !important;
+}
+
+/* 总结内容继承高度限制 */
+div.ai-summary-popup {
+    max-height: inherit;
+    border-radius: 12px;
+}
+
+/* 简介 */
+#v_desc .toggle-btn {
+    text-align: right;
+    margin-right: 7px;
+}
+
+.basic-desc-info[style="height: 84px;"] {
+    height: 70px !important;
+}
+
+/* 标签 */
+.video-tag-container {
+    margin: 6px 0 0 !important;
+    padding-bottom: 1px !important;
+}
+
+.tag-panel .tag {
+    margin-bottom: 6px !important;
+}
+
+/* ------ 顶部投票卡片 ------ */
+
+/* 两个选项 */
+.left-vote-option,
+.right-vote-option {
+    min-width: 0 !important;
+}
+
+/* 投票: 选题 */
+.top-vote-card {
+    padding-top: 27px !important;
+}
+
+.top-vote-card-left__title {
+    transform: translateY(-23px);
+}
+
+.vui_ellipsis.multi-mode {
+    overflow: visible !important;
+    white-space: nowrap;
+}
+
+/**************************************************** 按钮 ***************************************************/
+
+/* 视频页返回顶部按钮（添加渐变） */
+/* 权重：基本设置属性 < transition < animation */
+.back-to-top,
+.backup {
+    border-radius: 0 25% 25% 0 !important;
+    border-left: 0 !important;
+    margin-bottom: 0 !important;
+    width: 42px !important;
+    border-color: var(--line_regular) !important;
+
+    visibility: visible !important;
+    transform: translateX(-100%);
+    transition: transform .5s ease-in-out, background-color .3s !important;
+}
+
+/* 覆盖显隐逻辑 */
+.back-to-top[show],
+.float-nav-exp .backup[show] {
+    transform: none;
+}
+
+/* 列表(稍后观看)页不隐藏 */
+.float-nav-exp {
+    display: block !important;
+}
+
+/* 覆盖鼠标悬浮样式，触摸点击后长期显示 */
+#app .fixed-sidenav-storage .fixed-sidenav-storage-item:hover,
+.float-nav-exp .nav-menu .item.backup:hover {
+    background-color: var(--bg1_float);
+    color: var(--text1);
+    fill: var(--text1);
+}
+
+/* 用触摸样式替代，类名会被修改 */
+div#app .fixed-sidenav-storage .fixed-sidenav-storage-item[touch-active],
+div.float-nav-exp .nav-menu .item.backup[touch-active] {
+    background: var(--graph_bg_thick);
+}
+
+/* 修复稍后观看回顶部按钮的 darkreader 下颜色异常  */
+.item.backup svg path {
+    fill: currentColor;
+}
+
+/* 回顶按钮的位置 */
+.fixed-sidenav-storage,
+.float-nav-exp {
+    left: 0;
+    right: unset !important;
+    bottom: 78px !important;
+    z-index: 1 !important;
+    opacity: 1;
+    transition: opacity var(--sidebar-time) ease-in;
+}
+
+#mirror-vdcon[sidebar] .fixed-sidenav-storage,
+#mirror-vdcon[sidebar] .float-nav-exp {
+    opacity: 0;
+}
+
+/* 小窗按钮 */
+.mini-player-window,
+.nav-menu>.mini {
+    position: fixed;
+    z-index: -10;
+    visibility: hidden;
+}
+
+/* 客服按钮 */
+.customer-service,
+.nav-menu>a:has(>.help) {
+    display: none !important;
+}
+`, ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
 /* 23 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_control_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(24);
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_control_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_control_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_control_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_control_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+/* 24 */
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `
+/************************************************* 控制栏样式 *************************************************/
+
+/* 移除次要按钮：画中画、宽屏、时间、选集 */
+.bpx-player-ctrl-pip,
+.bpx-player-ctrl-wide,
+.bpx-player-ctrl-time,
+.bpx-player-ctrl-eplist {
+    display: none !important;
+}
+
+/* 横屏时恢复时间显示 */
+@media screen and (orientation: landscape) {
+    .bpx-player-ctrl-time {
+        display: block !important;
+    }
+}
+
+/* 清晰度文本:全屏时恢复大小 */
+@media screen and (min-width: 750px) {
+    .bpx-player-container[data-screen=full] .bpx-player-ctrl-quality-result {
+        font-size: 16px !important;
+        height: unset !important;
+    }
+}
+
+/* 修复宽屏全屏时的控制栏图标增大导致的高度过高 */
+@media screen and (min-width: 750px) {
+    .bpx-player-container[data-screen=full] .bpx-player-control-wrap {
+        height: 43px !important;
+    }
+
+    .bpx-player-container[data-screen=full] .bpx-player-control-top {
+        bottom: 43px !important;
+    }
+}
+
+/* 主控制区: 覆盖宽屏全屏样式 (图标22px，算 margin 37px) */
+div.bpx-player-control-bottom {
+    height: 29px !important;
+    margin-top: 7px !important;
+    padding: 0 7px !important;
+}
+
+/* 进度条 */
+div.bpx-player-control-top {
+    bottom: 36px;
+    transition: none;
+}
+
+/* 隐藏颠倒的高能进度条常驻切换提示 */
+.bpx-player-pbp .bpx-player-pbp-pin-tip {
+    display: none !important;
+}
+
+/* 左右控制区 */
+.bpx-player-control-bottom-left,
+.bpx-player-control-bottom-right {
+    flex: unset !important;
+}
+
+/* 全屏时 */
+.bpx-player-container .bpx-player-control-bottom-left,
+.bpx-player-container .bpx-player-control-bottom-right {
+    min-width: 0 !important;
+}
+
+/* 清晰度(width:auto 不换行，隐藏不掉高清字样) */
+.bpx-player-ctrl-quality {
+    margin-right: 0 !important;
+    min-width: 0;
+    flex: auto !important;
+}
+
+/* 清晰度、倍速文本 */
+.bpx-player-ctrl-quality-result,
+.bpx-player-ctrl-playbackrate {
+    font-size: 12px !important;
+}
+
+/* 清晰度文本:隐藏换行的部分 */
+.bpx-player-ctrl-quality-result {
+    height: 22px;
+    overflow: hidden;
+}
+
+/* 倍速文本:禁止换行 */
+.bpx-player-ctrl-playbackrate {
+    text-wrap: nowrap;
+}
+
+/* 进度条细条包含块（高12px） */
+.bpx-player-progress-wrap {
+    height: 7px !important;
+    padding-bottom: 3px !important;
+}
+
+/* 替换via暗色异常的阴影 */
+.bpx-player-control-mask {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .5) 100%) !important;
+}
+
+/* 清晰度弹窗 */
+.bpx-player-ctrl-quality-menu-wrap {
+    bottom: 22px !important;
+}
+
+.bpx-player-ctrl-quality-menu-item {
+    height: 7.7vw !important;
+    max-height: 36px;
+    max-width: 95px;
+    padding: 0 8px 0 12px !important;
+}
+
+/* 高码率会员图标 */
+.bpx-player-ctrl-quality-badge-bigvip {
+    background-color: #f25d8e;
+    color: #fff;
+    width: 16px;
+    overflow: hidden;
+    right: 8px !important;
+}
+
+/* 用字母 V 覆盖 */
+.bpx-player-ctrl-quality-badge-bigvip::before {
+    background-color: #f25d8e;
+    color: #fff;
+    content: 'V';
+    padding: 0 4px;
+    position: absolute;
+    left: 0;
+}
+
+/* 倍速弹窗 */
+.bpx-player-ctrl-playbackrate-menu {
+    bottom: 22px !important;
+}
+
+.bpx-player-ctrl-playbackrate-menu-item {
+    height: 7.7vw !important;
+    max-height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 弹幕弹窗 */
+div.bpx-player-ctrl-subtitle-box {
+    bottom: 0;
+    right: 0;
+    transform: scale(.8);
+}
+
+/* 设置弹窗 */
+.bpx-player-ctrl-setting-box {
+    right: 0 !important;
+    bottom: 0 !important;
+}
+
+/* 更多设置 */
+.bpx-player-ctrl-setting-menu-right {
+    padding: 5px !important;
+}
+
+.bpx-player-ctrl-setting-menu-right>div {
+    height: 10vw !important;
+    max-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 更多设置 - 选项行 */
+.bpx-player-ctrl-setting-menu-right .bui-radio {
+    margin: 0 0 8px 7px;
+    width: 77%;
+}
+
+.bpx-player-ctrl-setting-others-content {
+    width: 77% !important;
+    margin-left: 7px;
+}
+
+/* 高能进度条选项 */
+.bpx-player-ctrl-setting-highenergy .bui-checkbox-name {
+    white-space: nowrap;
+    width: 48px;
+    overflow: hidden;
+}
+
+/* 弹幕设置弹窗 */
+.bpx-player-dm-setting-wrap {
+    bottom: unset !important;
+    top: 0;
+    position: fixed !important;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* 全屏控制栏 */
+.bpx-player-control-bottom-center .bpx-player-sending-bar {
+    padding-right: 6px !important;
+    height: 24px !important;
+}
+
+/* 存在章节时(允许章节缩小) */
+.bpx-player-ctrl-viewpoint {
+    margin: 0 !important;
+    min-width: 0 !important;
+    width: 45px !important;
+    flex-shrink: 1 !important;
+}
+
+.bpx-player-ctrl-viewpoint-text {
+    width: 24px !important;
+    text-overflow: unset !important;
+    font-size: 12px;
+    flex: none;
+}
+
+/* 隐藏旧控制栏 */
+.bpx-player-control-wrap:not(.new) {
+    display: none;
+}
+
+/* 窄屏不禁用控制条和阴影 (新控制栏默认不禁用阴影) */
+.bpx-player-control-entity,
+.bpx-player-control-mask {
+    display: block !important;
+}
+
+/* 隐藏控制条时不响应点击 */
+.bpx-player-container[data-ctrl-hidden=true] .bpx-player-control-bottom {
+    display: none;
+}
+
+/********************************** 控制栏隐藏 (覆盖原显隐：3级选择器覆盖2级) **********************************/
+
+/* control-bottom 和 mask (阴影) */
+.bpx-player-container[ctrl-shown=false] .bpx-player-control-wrap .bpx-player-control-mask {
+    opacity: 0;
+    /* 渐变属性应用在需要变化的状态 */
+    transition: opacity .2s ease-in;
+}
+
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-wrap .bpx-player-control-mask {
+    opacity: 1;
+}
+
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-control-bottom {
+    opacity: 1;
+    display: flex;
+
+}
+
+.bpx-player-container[ctrl-shown=false] .bpx-player-control-entity .bpx-player-control-bottom {
+    display: none;
+}
+
+/* 进度条 */
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-control-top,
+.bpx-player-container[ctrl-shown=false] .bpx-player-control-entity .bpx-player-shadow-progress-area {
+    opacity: 1;
+    visibility: visible;
+}
+
+.bpx-player-container[ctrl-shown=false] .bpx-player-control-entity .bpx-player-control-top,
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-shadow-progress-area {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* 高能进度 */
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-pbp {
+    bottom: calc(100% + 6px);
+    left: 0;
+    opacity: 1;
+    width: 100%;
+}
+
+/*
+    权重：
+    ID 选择器：100
+    类选择器、属性选择器、伪类选择器：10
+    元素选择器、伪元素选择器：1
+
+    如果有多个选择器同时作用于同一个元素，则计算每个选择器的权重值，并将其相加，得出总权重值。
+*/
+
+/* 覆盖 show */
+div.bpx-player-control-entity .bpx-player-pbp {
+    bottom: 1px;
+    opacity: 0;
+    left: -12px;
+    width: calc(100% + 24px);
+}
+
+/* 不覆盖 pin */
+div.bpx-player-control-entity .bpx-player-pbp.pin {
+    opacity: 1;
+}
+
+/* pin 按钮: display 代替 opacity */
+.bpx-player-pbp-pin {
+    opacity: 1 !important;
+    display: none;
+}
+
+.bpx-player-container[ctrl-shown=true] .bpx-player-control-entity .bpx-player-pbp-pin {
+    display: block;
+}
+`, ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+/* 25 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_list_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(26);
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default());
+options.setAttributes = (_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default());
+
+      options.insert = _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default().bind(null, "head");
+    
+options.domAPI = (_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default());
+options.insertStyleElement = (_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default());
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_list_css__WEBPACK_IMPORTED_MODULE_6__["default"], options);
+
+
+
+
+       /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_list_css__WEBPACK_IMPORTED_MODULE_6__["default"] && _node_modules_css_loader_dist_cjs_js_list_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals ? _node_modules_css_loader_dist_cjs_js_list_css__WEBPACK_IMPORTED_MODULE_6__["default"].locals : undefined);
+
+
+/***/ }),
+/* 26 */
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `
+/********************************************* 适配列表部分的评论 *********************************************/
+
+/* 固定评论栏 */
+.main-reply-box {
+    position: fixed;
+    left: 0;
+    bottom: var(--actionbar-height);
+    z-index: 1;
+    background: white;
+    width: 100%;
+    padding: 8px 12px;
+    border-top: 1px solid var(--line_regular);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    transition: calc(var(--actionbar-time)*1.40) ease-in;
+    display: block !important;
+}
+
+/* 评论行滚动隐藏 */
+[scroll-hidden] .main-reply-box {
+    transform: translateY(calc(100% + var(--actionbar-height)))
+}
+
+/* 移除评论头像 */
+.reply-box-avatar {
+    display: none !important;
+}
+
+/* 输入块外 */
+.reply-box-warp {
+    border-radius: 13px !important;
+}
+
+/* 输入块内 */
+.textarea-wrap {
+    padding: 0 !important;
+}
+
+/* 文字输入 */
+.reply-box-textarea {
+    height: 26px !important;
+    line-height: 26px !important;
+    min-height: 26px !important;
+}
+
+/* 输入展开块 */
+.main-reply-box .reply-box .box-expand[data-v-a6daab22] {
+    height: 26px;
+    margin: 8px 0 0 0;
+}
+
+/* 插入表情图片 */
+.box-left {
+    flex: 1;
+    justify-content: space-evenly !important;
+}
+
+/* 点击发送 */
+.reply-box-send {
+    width: 50px !important;
+    height: 26px !important;
+}
+
+/* 评论块 */
+#comment {
+    margin-top: 12px !important;
+}
+
+/* 评论导航 */
+.reply-navigation {
+    margin-bottom: 0 !important;
+}
+
+/* 评论 */
+.root-reply-container {
+    padding: 12px 0 0 36px !important;
+}
+
+.root-reply-avatar,
+.root-reply-avatar .bili-avatar {
+    width: 36px !important;
+    height: 36px !important;
+}
+
+.user-info {
+    margin: 3px 5px 0 !important;
+}
+
+/* 回复评论 */
+.sub-reply-container {
+    padding-left: 28px !important;
+}
+
+.sub-reply-item {
+    padding: 4px 0 4px 37px !important;
+}
+
+/* 评论图片 */
+.reply-view-image .show-image-wrap {
+    padding: 0 0 145px !important;
+
+    .image-content {
+        width: 100% !important;
+    }
+}
+
+.reply-view-image .operation-btn {
+
+    .last-image,
+    .next-image,
+    .close-container {
+        top: unset !important;
+        bottom: 100px;
+    }
+
+    .last-image,
+    .next-image {
+        transform: none !important;
+    }
+
+    .close-container {
+        right: 50% !important;
+        transform: translateX(50%);
+    }
+
+    .last-image {
+        left: 20vw !important;
+    }
+
+    .next-image {
+        right: 20vw !important;
+    }
+}
+
+/******************************************** 播放组件（评论以下） ********************************************/
+
+/* 评论信息 (点赞等) */
+.reply-info,
+.sub-reply-info {
+    justify-content: space-between;
+}
+
+.reply-info>*,
+.sub-reply-info>* {
+    margin-right: 0 !important;
+}
+
+/* 评论举报操作按钮 */
+.reply-operation-warp,
+.sub-reply-operation-warp {
+    display: inline-flex !important;
+    position: static !important;
+}
+
+.sub-reply-operation-warp {
+    opacity: 1 !important;
+}
+
+.reply-info,
+.sub-reply-info {
+    font-size: 12px !important;
+}
+
+.reply-info>* .sub-reply-info>* {
+    margin: 0 3px !important;
+}
+
+/* 评论投票 */
+.vote-dialog {
+    max-width: calc(100% - 10px);
+}
+
+/* 点击展开的评论详情 */
+[itemprop=video]+body .dynamic-card {
+    left: 0;
+    max-width: 100%;
+    /* 百分比以父元素为基准 */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 内框 (在 iframe 内) */
+div.bili-dyn-item-draw {
+    min-width: 0;
+    width: 100%;
+}
+
+/* 评论详情 - 头像 */
+div.bili-dyn-item-draw__avatar {
+    height: 62px;
+}
+
+/* 内容 */
+.bili-dyn-item-draw__body {
+    transform: translateX(-68px);
+    /* 子元素的宽度会减去父元素的 padding (左间距=88px-68px=20px=右间距) */
+    width: calc(100% + 68px);
+}
+`, ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+/* 27 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -4167,7 +4489,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   increaseVideoLoadSize: () => (/* binding */ increaseVideoLoadSize),
 /* harmony export */   preventBeforeUnload: () => (/* binding */ preventBeforeUnload)
 /* harmony export */ });
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(24);
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(28);
 /* global GM_getValue GM_setValue unsafeWindow */
 
 
@@ -4239,17 +4561,16 @@ function countViewTime () {
 
 /**
  * 管理滚动和滑动事件的函数
- * @param {string} page - 简短描述页面的字符串: search, video, message, space
+ * @param {string} type - 简短描述页面的字符串: search, video, list, message, space
  */
-function handleScroll (page) {
-  if (page !== 'video') { scrollToHidden() }
+function handleScroll (type) {
+  scrollToHidden(type)
 
-  switch (page) {
+  switch (type) {
     case 'search':
       slideSearchSort()
       break
     case 'video':
-      scrollToHidden('video')
       slideVideoSidebar()
       break
     case 'message':
@@ -4264,12 +4585,30 @@ function handleScroll (page) {
 }
 
 // 滚动隐藏函数(弹幕行、评论行、操作栏)(主要布局块的class在初始化时会动态刷新，动态加载块子元素动态变动)(页面初始化使用了element的className方法设置class属性的值来同时添加多个class)
-function scrollToHidden (page) {
+function scrollToHidden (type) {
   let lastScrollY = 0
   const scrollThreshold = 75
+  let backup
+  const videoMap = {
+    video: ['left-container', 'back-to-top'],
+    list: ['playlist-container--left', 'backup']
+  }
 
-  window.addEventListener('scroll', () => {
-    const currentScrollY = window.scrollY
+  const elem = (() => {
+    switch (type) {
+      case 'home':
+        return document.body
+      case 'video':
+      case 'list':
+        backup = document.getElementsByClassName(videoMap[type][1])[0]
+        return document.getElementsByClassName(videoMap[type][0])[0]
+      default:
+        return window
+    }
+  })()
+
+  elem.addEventListener('scroll', () => {
+    const currentScrollY = elem === window ? elem.scrollY : elem.scrollTop
     const offsetY = currentScrollY - lastScrollY
 
     if (currentScrollY < scrollThreshold) { document.body.removeAttribute('scroll-hidden') }
@@ -4278,44 +4617,19 @@ function scrollToHidden (page) {
       offsetY > 0 ? document.body.setAttribute('scroll-hidden', '') : document.body.removeAttribute('scroll-hidden')
       lastScrollY = currentScrollY
     }
+
+    if (['video', 'list'].includes(type)) {
+      currentScrollY > elem.clientHeight ? backup?.setAttribute('show', '') : backup?.removeAttribute('show')
+    }
   })
 
-  if (page === 'video') {
-    const backToTop = document.getElementsByClassName('back-to-top')[0]
-
-    backToTop.addEventListener('click', () => {
-      backToTop.setAttribute('touch-active', '')
-      ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_0__.handleTransitionEndOnce)(backToTop, 'transform', () => backToTop.removeAttribute('touch-active'))
+  if (['video', 'list'].includes(type)) {
+    backup.addEventListener('click', () => {
+      elem.scrollTo({ top: 0, behavior: 'smooth' })
+      backup.setAttribute('touch-active', '')
+      ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_0__.handleTransitionEndOnce)(backup, 'transform', () => backup.removeAttribute('touch-active'))
     })
   }
-}
-
-function slideSearchSort () {
-  let startX = 0; let startY = 0
-
-  let clickIndex = 3
-  const touchXThreshold = 55
-
-  const handleTouchStart = event => {
-    startX = event.changedTouches[0].clientX
-    startY = event.changedTouches[0].clientY
-  }
-
-  const handleTouchEnd = event => {
-    const offsetX = event.changedTouches[0].clientX - startX
-    const offsetY = event.changedTouches[0].clientY - startY
-
-    const navItems = [4, 3, 2, 1, 7, 6, 5]
-
-    if (Math.abs(offsetX) > touchXThreshold && Math.abs(offsetY / offsetX) < 1 / 2) {
-      offsetX > 0 ? clickIndex-- : clickIndex++
-      document.querySelector(`.vui_tabs--nav-item:nth-child(${navItems[clickIndex]})`).click()
-    }
-  }
-
-  const container = document.querySelector('#i_cecream')
-  container.addEventListener('touchstart', handleTouchStart)
-  container.addEventListener('touchend', handleTouchEnd)
 }
 
 function slideVideoSidebar () {
@@ -4344,6 +4658,34 @@ function slideVideoSidebar () {
 
   videoContainer.addEventListener('touchstart', handleTouchStart)
   videoContainer.addEventListener('touchend', handleTouchEnd)
+}
+
+function slideSearchSort () {
+  let startX = 0; let startY = 0
+
+  let clickIndex = 3
+  const touchXThreshold = 55
+
+  const handleTouchStart = event => {
+    startX = event.changedTouches[0].clientX
+    startY = event.changedTouches[0].clientY
+  }
+
+  const handleTouchEnd = event => {
+    const offsetX = event.changedTouches[0].clientX - startX
+    const offsetY = event.changedTouches[0].clientY - startY
+
+    const navItems = [4, 3, 2, 1, 7, 6, 5]
+
+    if (Math.abs(offsetX) > touchXThreshold && Math.abs(offsetY / offsetX) < 1 / 2) {
+      offsetX > 0 ? clickIndex-- : clickIndex++
+      document.querySelector(`.vui_tabs--nav-item:nth-child(${navItems[clickIndex]})`).click()
+    }
+  }
+
+  const container = document.querySelector('#i_cecream')
+  container.addEventListener('touchstart', handleTouchStart)
+  container.addEventListener('touchend', handleTouchEnd)
 }
 
 function slideMessageSidebar () {
@@ -4450,7 +4792,7 @@ function handleSpaceSwipe () {
 
 
 /***/ }),
-/* 24 */
+/* 28 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -4475,7 +4817,7 @@ const handleTransitionEndOnce = (element, propertyName, callback) => {
 
 
 /***/ }),
-/* 25 */
+/* 29 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -4484,7 +4826,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   handleScriptSetting: () => (/* binding */ handleScriptSetting),
 /* harmony export */   setScriptHelp: () => (/* binding */ setScriptHelp)
 /* harmony export */ });
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(24);
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(28);
 /* global GM_getValue GM_setValue GM_registerMenuCommand */
 
 
@@ -4912,25 +5254,25 @@ function setScriptHelp () {
 
 
 /***/ }),
-/* 26 */
+/* 30 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   handleActionbar: () => (/* binding */ handleActionbar)
 /* harmony export */ });
-/* harmony import */ var _search_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(27);
-/* harmony import */ var _menu_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(28);
-/* harmony import */ var _sidebar_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(34);
+/* harmony import */ var _search_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
+/* harmony import */ var _menu_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(32);
+/* harmony import */ var _sidebar_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(38);
 
 
 
 
 /**
  * 管理操作栏的函数 (DOMContentLoaded 之后)
- * @param {string} page - 简短描述页面的字符串: home, video, search, space, message
+ * @param {string} type - 简短描述页面的字符串: home, video, search, space, message
  */
-function handleActionbar (page) {
+function handleActionbar (type) {
   const actionbar = Object.assign(document.createElement('div'), {
     id: 'actionbar',
     // <div style="display:flex; transform:scale(4)">
@@ -4966,19 +5308,20 @@ function handleActionbar (page) {
 
   document.body.appendChild(Object.assign(document.createElement('div'), { id: 'toast' }))
 
-  actionbar.classList.add(page)
+  actionbar.classList.add(type)
   setHomeBtn()
-  ;(0,_search_js__WEBPACK_IMPORTED_MODULE_0__.setSearchBtn)(page)
-  if (page !== 'message') { (0,_menu_js__WEBPACK_IMPORTED_MODULE_1__.setMenuBtn)() }
+  ;(0,_search_js__WEBPACK_IMPORTED_MODULE_0__.setSearchBtn)(type)
+  if (type !== 'message') { (0,_menu_js__WEBPACK_IMPORTED_MODULE_1__.setMenuBtn)() }
 
-  switch (page) {
+  switch (type) {
     case 'home':
       setTopBtn()
       setRefreshBtn()
       break
     case 'video':
+    case 'list':
       setFullbtn()
-      ;(0,_sidebar_js__WEBPACK_IMPORTED_MODULE_2__.setSidebarBtn)(page)
+      ;(0,_sidebar_js__WEBPACK_IMPORTED_MODULE_2__.setSidebarBtn)(type)
       break
     case 'search':
       setTopBtn()
@@ -4989,7 +5332,7 @@ function handleActionbar (page) {
       setShowMoreBtn()
       break
     case 'message':
-      ;(0,_sidebar_js__WEBPACK_IMPORTED_MODULE_2__.setSidebarBtn)(page)
+      ;(0,_sidebar_js__WEBPACK_IMPORTED_MODULE_2__.setSidebarBtn)(type)
       break
     default:
       break
@@ -5044,7 +5387,7 @@ function handleActionbar (page) {
     const showMoreFab = document.getElementById('show-more-fab')
 
     const handleClick = () => {
-      if (page === 'search') {
+      if (type === 'search') {
         const searchConditions = document.querySelector('.search-conditions')
 
         if (searchConditions) {
@@ -5064,7 +5407,7 @@ function handleActionbar (page) {
             sessionStorage.setItem('show-conditions', '')
           }
         }
-      } else if (page === 'space') {
+      } else if (type === 'space') {
         const followRow = document.querySelector('.h .h-action')
 
         followRow.style.transition = '.4s ease-in'
@@ -5080,7 +5423,7 @@ function handleActionbar (page) {
 
 
 /***/ }),
-/* 27 */
+/* 31 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -5270,18 +5613,18 @@ function setSearchBtn (page) {
 
 
 /***/ }),
-/* 28 */
+/* 32 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   setMenuBtn: () => (/* binding */ setMenuBtn)
 /* harmony export */ });
-/* harmony import */ var _menu_follow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(29);
-/* harmony import */ var _menu_history_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(32);
-/* harmony import */ var _menu_dynamic_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(33);
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(30);
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(24);
+/* harmony import */ var _menu_follow_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(33);
+/* harmony import */ var _menu_history_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(36);
+/* harmony import */ var _menu_dynamic_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(37);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(34);
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(28);
 
 
 
@@ -5450,14 +5793,14 @@ function setMenuBtn () {
 
 
 /***/ }),
-/* 29 */
+/* 33 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   loadFollowList: () => (/* binding */ loadFollowList)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(34);
 
 
 /**
@@ -5601,7 +5944,7 @@ async function loadFollowList (orderType) {
 
 
 /***/ }),
-/* 30 */
+/* 34 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -5616,7 +5959,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   getUnreadNums: () => (/* binding */ getUnreadNums),
 /* harmony export */   getVideoInfo: () => (/* binding */ getVideoInfo)
 /* harmony export */ });
-/* harmony import */ var _values_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
+/* harmony import */ var _values_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(35);
 // fork 自 BiliPlus 项目：https://github.com/0xlau/biliplus
 
 
@@ -5880,7 +6223,7 @@ async function followUser (mid, isFollow) {
 
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -5894,14 +6237,14 @@ const aiData = {}
 
 
 /***/ }),
-/* 32 */
+/* 36 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   handleHistoryShowMore: () => (/* binding */ handleHistoryShowMore)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(34);
 
 
 // 设置历史自动展开
@@ -6095,14 +6438,14 @@ async function handleHistoryShowMore () {
 
 
 /***/ }),
-/* 33 */
+/* 37 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   handleDynamicShowMore: () => (/* binding */ handleDynamicShowMore)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(34);
 
 
 // 设置动态自动展开
@@ -6191,15 +6534,15 @@ function handleDynamicShowMore () {
 
 
 /***/ }),
-/* 34 */
+/* 38 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   setSidebarBtn: () => (/* binding */ setSidebarBtn)
 /* harmony export */ });
-/* harmony import */ var _comment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(35);
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(24);
+/* harmony import */ var _comment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(39);
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(28);
 
 
 
@@ -6209,14 +6552,22 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * 处理侧边栏事件的函数
  */
-function setSidebarBtn (page) {
-  if (page === 'video') {
+function setSidebarBtn (type) {
+  const videoMap = {
+    video: ['.right-container', '#reco_list'],
+    list: ['.playlist-container--right', '.recommend-list-container']
+  }
+
+  if (['video', 'list'].includes(type)) {
     handleVideoSidebar()
     showMoreRecommend()
-  } else if (page === 'message') {
+  } else if (type === 'message') {
     handleMessageSidebar()
   }
 
+  /**
+ * 处理视频侧边栏
+ */
   function handleVideoSidebar () {
     const sidebarFab = document.getElementById('sidebar-fab')
     const videoContainer = document.querySelector('#mirror-vdcon')
@@ -6227,8 +6578,8 @@ function setSidebarBtn (page) {
       videoContainer.removeAttribute('sidebar')
     }
 
-    const rightContainer = videoContainer.querySelector('.right-container')
-    const recommendLiist = document.getElementById('reco_list')
+    const rightContainer = videoContainer.querySelector(videoMap[type][0])
+    const recommendLiist = rightContainer.querySelector(videoMap[type][1])
 
     recommendLiist.addEventListener('click', event => {
       const nextPlay = document.querySelector('.rec-title')
@@ -6237,12 +6588,12 @@ function setSidebarBtn (page) {
         closeSidebar()
         ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_1__.handleTransitionEndOnce)(rightContainer, 'transform', () => { rightContainer.scrollTop = 0 })
         // 此处不要使用监听器，否则会干扰原函数执行
-        ;(0,_comment_js__WEBPACK_IMPORTED_MODULE_0__.modifyShadowDOMLate)()
+        ;(0,_comment_js__WEBPACK_IMPORTED_MODULE_0__.modifyShadowDOMLate)(true)
       }
     })
   }
 
-  // 自动展开侧边栏
+  // 侧边栏自动展开更多
   function showMoreRecommend () {
     const recommendFooter = document.querySelector('.rec-footer')
     setTimeout(() => { recommendFooter?.click() }, 2000) // 直接传递 recommendFooter?.click: 可选链操作符前的 recommendFooter 条件判断将会立即执行
@@ -6268,7 +6619,7 @@ function setSidebarBtn (page) {
 
 
 /***/ }),
-/* 35 */
+/* 39 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -6487,6 +6838,12 @@ function modifyShadowDOMLate (isDynamicRefresh) {
     })
   }
 
+  function appendStyle (shadowRoot, cssText) {
+    const style = document.createElement('style')
+    style.textContent = cssText
+    shadowRoot.appendChild(style)
+  }
+
   if (isDynamicRefresh) { return }
 
   // 评论区图片
@@ -6509,17 +6866,11 @@ function modifyShadowDOMLate (isDynamicRefresh) {
       })
     })
   }
-
-  function appendStyle (shadowRoot, cssText) {
-    const style = document.createElement('style')
-    style.textContent = cssText
-    shadowRoot.appendChild(style)
-  }
 }
 
 
 /***/ }),
-/* 36 */
+/* 40 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -6527,8 +6878,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   handleHeaderImage: () => (/* binding */ handleHeaderImage),
 /* harmony export */   handleVideoCard: () => (/* binding */ handleVideoCard)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
-/* harmony import */ var _ai_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(37);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(34);
+/* harmony import */ var _ai_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(41);
 
 
 
@@ -6815,15 +7166,15 @@ function handleVideoCard () {
 
 
 /***/ }),
-/* 37 */
+/* 41 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   loadAI: () => (/* binding */ loadAI)
 /* harmony export */ });
-/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(30);
-/* harmony import */ var _values_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(31);
+/* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(34);
+/* harmony import */ var _values_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(35);
 
 
 
@@ -6915,30 +7266,34 @@ function genterateAIConclusionCard (aiConclusionRes, aiCardElement, bvid) {
 
 
 /***/ }),
-/* 38 */
+/* 42 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   videoInteraction: () => (/* binding */ videoInteraction)
 /* harmony export */ });
-/* harmony import */ var _comment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(35);
+/* harmony import */ var _comment_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(39);
 /* global GM_getValue */
 
 
 
-function videoInteraction () {
+/**
+ * 处理视频的响应操作交互
+ * @param {string} page 页数 video or list，用于 closeMiniPlayer 和 modifyShadowDOMLate
+ */
+function videoInteraction (page) {
   handlePortrait()
 
   handlelVideoClick()
 
   handleVideoInteraction()
 
-  closeMiniPlayer()
+  closeMiniPlayer(page)
 
   setEndingContent()
 
-  ;(0,_comment_js__WEBPACK_IMPORTED_MODULE_0__.modifyShadowDOMLate)()
+  page === 'video' && (0,_comment_js__WEBPACK_IMPORTED_MODULE_0__.modifyShadowDOMLate)()
 }
 
 let isPortrait = false
@@ -7078,10 +7433,13 @@ function handlelVideoClick () {
   videoArea.addEventListener('touchstart', event => { event.stopPropagation() })
 }
 
-function closeMiniPlayer () {
+/**
+ * @param {string} page 页数 video or list
+ */
+function closeMiniPlayer (page) {
   // 关闭小窗: getElement 提前使用在元素加载后能获取到, querySelector 在元素加载后使用才能获取到
   if (!localStorage.getItem('is-mini-player-closed')) {
-    const miniPlayerBtn = document.getElementsByClassName('mini-player-window')[0]
+    const miniPlayerBtn = document.getElementsByClassName(page === 'video' ? 'mini-player-window' : 'mini')[0]
     new MutationObserver(mutations =>
       mutations.forEach(mutation => {
         if (mutation.target.classList.contains('on')) {
@@ -7214,7 +7572,7 @@ function setEndingContent () {
 
 
 /***/ }),
-/* 39 */
+/* 43 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -7337,18 +7695,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_app_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _style_header_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
 /* harmony import */ var _style_home_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(13);
-/* harmony import */ var _style_video_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
-/* harmony import */ var _style_search_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(17);
-/* harmony import */ var _style_space_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(19);
-/* harmony import */ var _style_message_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(21);
-/* harmony import */ var _window_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(23);
-/* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(25);
-/* harmony import */ var _actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(26);
-/* harmony import */ var _home_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(36);
-/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(38);
-/* harmony import */ var _message_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(39);
-/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(24);
+/* harmony import */ var _style_search_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
+/* harmony import */ var _style_space_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(17);
+/* harmony import */ var _style_message_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(19);
+/* harmony import */ var _style_video_video_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(21);
+/* harmony import */ var _style_video_control_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(23);
+/* harmony import */ var _style_video_list_css__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(25);
+/* harmony import */ var _window_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(27);
+/* harmony import */ var _setting_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(29);
+/* harmony import */ var _actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(30);
+/* harmony import */ var _home_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(40);
+/* harmony import */ var _video_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(42);
+/* harmony import */ var _message_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(43);
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(28);
 // @grant 表示全局作用域运行，而不在隔离沙盒内使用特定 API
+
+
 
 
 
@@ -7373,67 +7735,58 @@ __webpack_require__.r(__webpack_exports__);
 
   /* initViewport */ document.head.appendChild(Object.assign(document.createElement('meta'), { name: 'viewport', content: 'width=device-width, initial-scale=1' }))
 
-  ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.preventBeforeUnload)()
-  ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.countViewTime)()
+  ;(0,_window_js__WEBPACK_IMPORTED_MODULE_9__.preventBeforeUnload)()
+  ;(0,_window_js__WEBPACK_IMPORTED_MODULE_9__.countViewTime)()
 
   /* iconfont */document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://s1.hdslb.com/bfs/static/jinkela/space/css/space.8.22c06a62b42dec796d083a84f5a769f44a97b325.css' }))
 
   console.log('Bilibili mobile execute!')
 
   // 简单表达式: 常量折叠，解析引擎优化为只计算一次，然后缓存入临时变量。函数调用、对象属性访问等不适用。
-  const part = location.hostname.substring(0, location.hostname.indexOf('.'))
+  const firstSubdomain = location.hostname.substring(0, location.hostname.indexOf('.'))
 
-  switch (part) {
-    case 'www':
-      if (location.pathname === '/') {
-        (0,_window_js__WEBPACK_IMPORTED_MODULE_7__.increaseVideoLoadSize)()
-        ;(0,_home_js__WEBPACK_IMPORTED_MODULE_10__.handleHeaderImage)()
-        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
-        ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.waitDOMContentLoaded)(() => {
-          ;(0,_actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__.handleActionbar)('home')
-          ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
-          ;(0,_home_js__WEBPACK_IMPORTED_MODULE_10__.handleVideoCard)()
-          ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)()
-          ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.setScriptHelp)()
-        })
-      } else if (location.pathname.startsWith('/video')) {
-        (0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
-        ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.waitDOMContentLoaded)(() => {
-          ;(0,_actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__.handleActionbar)('video')
-          ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
-          ;(0,_video_js__WEBPACK_IMPORTED_MODULE_11__.videoInteraction)()
-          ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('video')
-          ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.setScriptHelp)()
-        })
-      }
+  const pathToTypeMap = {
+    '/video': 'video',
+    '/list': 'list'
+  }
+
+  const getTypeFromPath = map => {
+    for (const [prefix, type] of Object.entries(map)) {
+      if (location.pathname.startsWith(prefix)) return type
+    }
+    return 'unknow'
+  }
+
+  const type = firstSubdomain === 'www'
+    ? location.pathname === '/' ? 'home' : getTypeFromPath(pathToTypeMap)
+    : firstSubdomain
+
+  function handleCommonSettings (type) {
+    ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_10__.handleScriptPreSetting)()
+    ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_15__.waitDOMContentLoaded)(() => {
+      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_10__.handleScriptSetting)()
+      ;(0,_actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_11__.handleActionbar)(type)
+      ;(0,_window_js__WEBPACK_IMPORTED_MODULE_9__.handleScroll)(type)
+      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_10__.setScriptHelp)()
+    })
+  }
+
+  const handleVideoInteraction = (type) => {
+    (0,_utils_js__WEBPACK_IMPORTED_MODULE_15__.waitDOMContentLoaded)(() => (0,_video_js__WEBPACK_IMPORTED_MODULE_13__.videoInteraction)(type))
+  }
+
+  handleCommonSettings(type)
+  switch (type) {
+    case 'home':
+      ;(0,_window_js__WEBPACK_IMPORTED_MODULE_9__.increaseVideoLoadSize)()
+      ;(0,_home_js__WEBPACK_IMPORTED_MODULE_12__.handleHeaderImage)()
+      ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_15__.waitDOMContentLoaded)(_home_js__WEBPACK_IMPORTED_MODULE_12__.handleVideoCard)
       break
-    case 'search':
-      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
-      ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.waitDOMContentLoaded)(() => {
-        ;(0,_actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__.handleActionbar)('search')
-        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
-        ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('search')
-        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.setScriptHelp)()
-      })
+    case 'video':
+    case 'list':
+      handleVideoInteraction(type)
       break
-    case 'space':
-      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
-      ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.waitDOMContentLoaded)(() => {
-        ;(0,_actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__.handleActionbar)('space')
-        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
-        ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('space')
-        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.setScriptHelp)()
-      })
-      break
-    case 'message':
-      ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptPreSetting)()
-      ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_13__.waitDOMContentLoaded)(() => {
-        ;(0,_actionbar_actionbar_js__WEBPACK_IMPORTED_MODULE_9__.handleActionbar)('message')
-        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.handleScriptSetting)()
-        ;(0,_window_js__WEBPACK_IMPORTED_MODULE_7__.handleScroll)('message')
-        ;(0,_message_js__WEBPACK_IMPORTED_MODULE_12__.createUnfoldBtn)()
-        ;(0,_setting_js__WEBPACK_IMPORTED_MODULE_8__.setScriptHelp)()
-      })
+    case 'message': ;(0,_utils_js__WEBPACK_IMPORTED_MODULE_15__.waitDOMContentLoaded)(_message_js__WEBPACK_IMPORTED_MODULE_14__.createUnfoldBtn)
       break
     default:
       break
