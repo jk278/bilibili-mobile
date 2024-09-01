@@ -1135,6 +1135,8 @@ div.bili-header .v-popover[show] {
 #copy-category-dialog.v-popover {
     display: none;
     z-index: 2;
+    width: 80%;
+    max-width: 300px;
 }
 
 /* 链接框 */
