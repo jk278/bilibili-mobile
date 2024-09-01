@@ -1155,7 +1155,7 @@ div.bili-header .v-popover[show] {
 }
 
 .channel-panel__column a {
-    padding: 5px;
+    padding: 7.5px 5px;
     text-align: center;
 }
 
