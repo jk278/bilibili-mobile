@@ -83,7 +83,10 @@ export function setMenuBtn () {
 
       const refer = item.dataset.refer
 
-      if (!refer) { return } // 热门
+      if (!refer) { // 热门
+        menuOverlay.classList.remove('show')
+        return
+      }
 
       const referElement = document.querySelector(`${refer}+.v-popover`)
       if (!referElement) {
@@ -112,7 +115,6 @@ export function setMenuBtn () {
   menuOverlay.addEventListener('click', event => {
     event.stopPropagation()
     menu.classList.remove('show')
-    document.body.removeAttribute('menu')
     menuOverlay.classList.remove('show')
     menuFab.classList.remove('active')
 

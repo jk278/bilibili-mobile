@@ -79,6 +79,7 @@ export function handleScroll (type) {
       slideSearchSort()
       break
     case 'video':
+    case 'list':
       slideVideoSidebar()
       break
     case 'message':

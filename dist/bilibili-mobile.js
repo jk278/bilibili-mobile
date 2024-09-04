@@ -1140,7 +1140,7 @@ div.bili-header .v-popover[show] {
 }
 
 /* 链接框 */
-.bili-header-channel-panel {
+div.bili-header-channel-panel {
     display: flex;
     flex-direction: row;
     padding: 5px;
@@ -4593,6 +4593,7 @@ function handleScroll (type) {
       slideSearchSort()
       break
     case 'video':
+    case 'list':
       slideVideoSidebar()
       break
     case 'message':
@@ -5730,7 +5731,10 @@ function setMenuBtn () {
 
       const refer = item.dataset.refer
 
-      if (!refer) { return } // 热门
+      if (!refer) { // 热门
+        menuOverlay.classList.remove('show')
+        return
+      }
 
       const referElement = document.querySelector(`${refer}+.v-popover`)
       if (!referElement) {
@@ -5759,7 +5763,6 @@ function setMenuBtn () {
   menuOverlay.addEventListener('click', event => {
     event.stopPropagation()
     menu.classList.remove('show')
-    document.body.removeAttribute('menu')
     menuOverlay.classList.remove('show')
     menuFab.classList.remove('active')
 

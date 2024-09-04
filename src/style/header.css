@@ -138,7 +138,7 @@ div.bili-header .v-popover[show] {
 }
 
 /* 链接框 */
-.bili-header-channel-panel {
+div.bili-header-channel-panel {
     display: flex;
     flex-direction: row;
     padding: 5px;
