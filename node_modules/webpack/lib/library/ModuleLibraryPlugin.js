@@ -23,12 +23,12 @@ const AbstractLibraryPlugin = require("./AbstractLibraryPlugin");
 /** @template T @typedef {import("./AbstractLibraryPlugin").LibraryContext<T>} LibraryContext<T> */
 
 /**
- * @typedef {Object} ModuleLibraryPluginOptions
+ * @typedef {object} ModuleLibraryPluginOptions
  * @property {LibraryType} type
  */
 
 /**
- * @typedef {Object} ModuleLibraryPluginParsed
+ * @typedef {object} ModuleLibraryPluginParsed
  * @property {string} name
  */
 
@@ -58,8 +58,9 @@ class ModuleLibraryPlugin extends AbstractLibraryPlugin {
 				`Library name must be unset. ${AbstractLibraryPlugin.COMMON_LIBRARY_NAME_MESSAGE}`
 			);
 		}
+		const _name = /** @type {string} */ (name);
 		return {
-			name: /** @type {string} */ (name)
+			name: _name
 		};
 	}
 

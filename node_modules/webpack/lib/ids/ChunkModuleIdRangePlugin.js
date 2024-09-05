@@ -14,7 +14,7 @@ const {
 /** @typedef {import("../Compiler")} Compiler */
 
 /**
- * @typedef {Object} ChunkModuleIdRangePluginOptions
+ * @typedef {object} ChunkModuleIdRangePluginOptions
  * @property {string} name the chunk name
  * @property {("index" | "index2" | "preOrderIndex" | "postOrderIndex")=} order order
  * @property {number=} start start id
@@ -70,9 +70,7 @@ class ChunkModuleIdRangePlugin {
 					chunkModules = chunkGraph.getOrderedChunkModules(chunk, cmpFn);
 				} else {
 					chunkModules = Array.from(modules)
-						.filter(m => {
-							return chunkGraph.isModuleInChunk(m, chunk);
-						})
+						.filter(m => chunkGraph.isModuleInChunk(m, chunk))
 						.sort(compareModulesByPreOrderIndexOrIdentifier(moduleGraph));
 				}
 

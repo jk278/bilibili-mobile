@@ -39,7 +39,7 @@ const getAsyncWebAssemblyParser = memoize(() =>
 );
 
 /**
- * @typedef {Object} WebAssemblyRenderContext
+ * @typedef {object} WebAssemblyRenderContext
  * @property {Chunk} chunk the chunk
  * @property {DependencyTemplates} dependencyTemplates the dependency templates
  * @property {RuntimeTemplate} runtimeTemplate the runtime template
@@ -49,12 +49,12 @@ const getAsyncWebAssemblyParser = memoize(() =>
  */
 
 /**
- * @typedef {Object} CompilationHooks
+ * @typedef {object} CompilationHooks
  * @property {SyncWaterfallHook<[Source, Module, WebAssemblyRenderContext]>} renderModuleContent
  */
 
 /**
- * @typedef {Object} AsyncWebAssemblyModulesPluginOptions
+ * @typedef {object} AsyncWebAssemblyModulesPluginOptions
  * @property {boolean} [mangleImports] mangle imports
  */
 
@@ -208,9 +208,9 @@ class AsyncWebAssemblyModulesPlugin {
 					hooks.renderModuleContent.call(moduleSource, module, renderContext),
 				"AsyncWebAssemblyModulesPlugin.getCompilationHooks().renderModuleContent"
 			);
-		} catch (e) {
-			/** @type {WebpackError} */ (e).module = module;
-			throw e;
+		} catch (err) {
+			/** @type {WebpackError} */ (err).module = module;
+			throw err;
 		}
 	}
 }

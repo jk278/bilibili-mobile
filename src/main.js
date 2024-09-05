@@ -64,7 +64,7 @@ import { waitDOMContentLoaded } from './utils.js'
   const handleVideoInteraction = (type) => {
     waitDOMContentLoaded(() => videoInteraction(type))
   }
-
+ 
   handleCommonSettings(type)
   switch (type) {
     case 'home':

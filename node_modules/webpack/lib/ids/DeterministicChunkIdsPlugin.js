@@ -16,7 +16,7 @@ const {
 /** @typedef {import("../Module")} Module */
 
 /**
- * @typedef {Object} DeterministicChunkIdsPluginOptions
+ * @typedef {object} DeterministicChunkIdsPluginOptions
  * @property {string=} context context for ids
  * @property {number=} maxLength maximum length of ids
  */
@@ -51,9 +51,7 @@ class DeterministicChunkIdsPlugin {
 
 						const usedIds = getUsedChunkIds(compilation);
 						assignDeterministicIds(
-							Array.from(chunks).filter(chunk => {
-								return chunk.id === null;
-							}),
+							Array.from(chunks).filter(chunk => chunk.id === null),
 							chunk =>
 								getFullChunkName(chunk, chunkGraph, context, compiler.root),
 							compareNatural,
@@ -65,7 +63,7 @@ class DeterministicChunkIdsPlugin {
 								chunk.ids = [id];
 								return true;
 							},
-							[Math.pow(10, maxLength)],
+							[10 ** maxLength],
 							10,
 							usedIds.size
 						);
