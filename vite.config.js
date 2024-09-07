@@ -9,9 +9,10 @@ export default defineConfig({
         name: 'bilibili 移动端',
         namespace: 'https://github.com/jk278/bilibili-mobile',
         description: 'Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。',
-        version: '5.0-beta.31',
+        version: '5.0-beta.32',
         author: 'jk278',
         license: 'MIT',
+        'run-at': 'document-start',
         icon: 'https://www.bilibili.com/favicon.ico',
         match: ['https://*.bilibili.com/*'],
         exclude: ['https://message.bilibili.com/pages/nav/*'],
@@ -23,5 +24,5 @@ export default defineConfig({
         outDir: 'dist', // 输出目录
       }
     }),
-  ],
+  ]
 });

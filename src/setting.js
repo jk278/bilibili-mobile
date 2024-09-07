@@ -3,9 +3,7 @@ import { waitDOMContentLoaded } from './utils.js';
 
 // 脚本预加载设置
 export function handleScriptPreSetting () {
-  console.log('handleScriptPreSetting execute!');
-
-  const defaultValue = Array(6).fill(false);
+  const defaultValue = Array(7).fill(false);
 
   const css = {
     css1: `
@@ -23,7 +21,8 @@ export function handleScriptPreSetting () {
     css6: `
       .bili-footer {display: none;}
       .vui_pagenation {padding-bottom: var(--actionbar-height);}
-    `
+    `,
+    css7: '.fixed-sidenav-storage, div.float-nav-exp {display: none !important;}'
   }; // 对象的值可通过 object[key] 获取
 
   readScriptSetting();
@@ -106,6 +105,7 @@ export function handleScriptPreSetting () {
           <label><input type="checkbox"><span>热搜榜</span></label>
           <label><input type="checkbox"><span>播放器全屏音量键</span></label>
           <label><input type="checkbox"><span>页脚导航链接</span></label>
+          <label><input type="checkbox"><span>视频页回顶部按钮</span></label>
         </div>
         <button id="setting-conform-1" class="setting-conform">确认</button>
         `
@@ -135,8 +135,6 @@ export function handleScriptPreSetting () {
 
 // 脚本设置
 export function handleScriptSetting () {
-  console.log('handleScriptSetting execute!');
-
   const keyValues = {
     key1: 'ban-video-click-play',
     key2: 'ban-action-hidden',

@@ -8,7 +8,7 @@ export function modifyShadowDOMLate (isDynamicRefresh) {
   let headerBoxShadow;
 
   // 初始化动态要获胜 #comment，第一次变化删除.comment增加.comment，第二次添加bili-comments
-  const comment = document.getElementById('comment');
+  const comment = document.getElementById('commentapp');
   const observer = new MutationObserver(handleCommentMutation);
   observer.observe(comment, { childList: true, subtree: true });
 
@@ -133,7 +133,7 @@ export function modifyShadowDOMLate (isDynamicRefresh) {
   }
 
   function observeHeader3 () {
-    const textareaShadow = headerBoxShadow.querySelector('bili-comment-textarea').shadowRoot;
+    const textareaShadow = headerBoxShadow.querySelector('bili-comment-rich-textarea').shadowRoot;
     appendStyle(textareaShadow, `
         textarea#input {
           line-height: 26px;
