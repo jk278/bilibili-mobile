@@ -1,20 +1,20 @@
-import { getHistoryList, getHistorySearchList } from '../api.js'
+import { getHistoryList, getHistorySearchList } from '../api.js';
 
 // 设置历史自动展开
 export async function handleHistoryShowMore () {
   let cursor = {
     max: 0,
-    // eslint-disable-next-line camelcase
+
     view_at: 0
-  }
-  let pn
-  let isHistoryItem = true
-  let isAddSearchItem = false
+  };
+  let pn;
+  let isHistoryItem = true;
+  let isAddSearchItem = false;
 
-  const data = await getHistoryList(cursor)
-  cursor = data.cursor
+  const data = await getHistoryList(cursor);
+  cursor = data.cursor;
 
-  const historyContent = document.querySelector('.history-panel-popover>.header-tabs-panel__content')
+  const historyContent = document.querySelector('.history-panel-popover>.header-tabs-panel__content');
 
   // 添加历史搜索
   const historySearch = Object.assign(document.createElement('form'), {
@@ -26,103 +26,103 @@ export async function handleHistoryShowMore () {
     </div>
     <div class="nav-search-btn"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.3451 15.2003C16.6377 15.4915 16.4752 15.772 16.1934 16.0632C16.15 16.1279 16.0958 16.1818 16.0525 16.2249C15.7707 16.473 15.4456 16.624 15.1854 16.3652L11.6848 12.8815C10.4709 13.8198 8.97529 14.3267 7.44714 14.3267C3.62134 14.3267 0.5 11.2314 0.5 7.41337C0.5 3.60616 3.6105 0.5 7.44714 0.5C11.2729 0.5 14.3943 3.59538 14.3943 7.41337C14.3943 8.98802 13.8524 10.5087 12.8661 11.7383L16.3451 15.2003ZM2.13647 7.4026C2.13647 10.3146 4.52083 12.6766 7.43624 12.6766C10.3517 12.6766 12.736 10.3146 12.736 7.4026C12.736 4.49058 10.3517 2.1286 7.43624 2.1286C4.50999 2.1286 2.13647 4.50136 2.13647 7.4026Z" fill="currentColor"></path></svg></div>
     `
-  })
-  historyContent.insertBefore(historySearch, historyContent.firstChild)
+  });
+  historyContent.insertBefore(historySearch, historyContent.firstChild);
 
-  const btn = historySearch.querySelector('.nav-search-btn')
-  const input = historySearch.querySelector('input')
-  const clean = historySearch.querySelector('.nav-search-clean')
+  const btn = historySearch.querySelector('.nav-search-btn');
+  const input = historySearch.querySelector('input');
+  const clean = historySearch.querySelector('.nav-search-clean');
   input.addEventListener('keydown', event => {
     if (event.key === 'Enter') {
-      event.preventDefault()
-      btn.click()
+      event.preventDefault();
+      btn.click();
     }
-  })
+  });
 
   clean.addEventListener('click', () => {
-    const oldElems = historyContent.querySelectorAll('.history-search-item')
-    oldElems.forEach(elem => elem.remove())
-    historyContent.querySelector('#search-history')?.remove()
+    const oldElems = historyContent.querySelectorAll('.history-search-item');
+    oldElems.forEach(elem => elem.remove());
+    historyContent.querySelector('#search-history')?.remove();
 
-    input.value = ''
-    input.dispatchEvent(new Event('input', { bubbles: true }))
+    input.value = '';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
 
-    isAddSearchItem = false
-  })
+    isAddSearchItem = false;
+  });
 
   btn.addEventListener('click', async () => {
     if (!historyContent.querySelector('#search-history')) {
-      const style = document.createElement('style')
-      style.id = 'search-history'
+      const style = document.createElement('style');
+      style.id = 'search-history';
       style.textContent = `
       .header-tabs-panel__content>a:not(.history-search-item) {display: none}
       .header-tabs-panel__content>div {display: none}
-    `
-      historyContent.appendChild(style)
+    `;
+      historyContent.appendChild(style);
     }
 
-    pn = 1
-    const data = await getHistorySearchList(input.value, pn)
-    pn++
+    pn = 1;
+    const data = await getHistorySearchList(input.value, pn);
+    pn++;
 
-    const oldElems = historyContent.querySelectorAll('.history-search-item')
-    oldElems.forEach(elem => elem.remove())
+    const oldElems = historyContent.querySelectorAll('.history-search-item');
+    oldElems.forEach(elem => elem.remove());
 
-    isAddSearchItem = true
-    data.list.forEach(addElementByItem) // 简写形式有时需绑定 this
-  })
+    isAddSearchItem = true;
+    data.list.forEach(addElementByItem); // 简写形式有时需绑定 this
+  });
 
   function removeNoFirstStyle () {
-    isHistoryItem = true
-    historyContent.querySelector('#no-first-history-item')?.remove()
+    isHistoryItem = true;
+    historyContent.querySelector('#no-first-history-item')?.remove();
   }
 
   function addNoFirstStyle () {
-    isHistoryItem = false
+    isHistoryItem = false;
     if (!historyContent.querySelector('#no-first-history-item')) {
-      const style = document.createElement('style')
-      style.id = 'no-first-history-item'
+      const style = document.createElement('style');
+      style.id = 'no-first-history-item';
       style.textContent = `
       .header-tabs-panel__content>a.header-history-card {display: none}
       .header-tabs-panel__content>a.view-all-history-btn {display: block !important}
       .header-tabs-panel__content>form#nav-searchform {display: none}
       div.header-tabs-panel__content>div {display: block}
-      `
-      historyContent.appendChild(style)
+      `;
+      historyContent.appendChild(style);
     }
   }
 
-  const historyPanel = document.querySelector('.header-tabs-panel')
+  const historyPanel = document.querySelector('.header-tabs-panel');
   const observer = new MutationObserver(mutationsList => {
     mutationsList.forEach(mutation => {
       mutation.addedNodes.forEach(node => {
         if (node.nodeType === Node.ELEMENT_NODE && node.className === 'header-tabs-panel__item' && node.textContent === '专栏') {
-          historyPanel.children[0].addEventListener('click', removeNoFirstStyle)
-          historyPanel.children[1].addEventListener('click', addNoFirstStyle)
-          historyPanel.children[2].addEventListener('click', addNoFirstStyle)
-          observer.disconnect()
+          historyPanel.children[0].addEventListener('click', removeNoFirstStyle);
+          historyPanel.children[1].addEventListener('click', addNoFirstStyle);
+          historyPanel.children[2].addEventListener('click', addNoFirstStyle);
+          observer.disconnect();
         }
-      })
-    })
-  })
-  observer.observe(historyPanel, { childList: true })
+      });
+    });
+  });
+  observer.observe(historyPanel, { childList: true });
 
   async function onScroll () {
-    if (!isHistoryItem) return
+    if (!isHistoryItem) { return; }
 
-    const { scrollTop, scrollHeight, clientHeight } = historyContent
-    if (Math.abs(scrollTop + clientHeight - scrollHeight) > 1) return
+    const { scrollTop, scrollHeight, clientHeight } = historyContent;
+    if (Math.abs(scrollTop + clientHeight - scrollHeight) > 1) { return; }
 
-    historyContent.removeEventListener('scroll', onScroll) // 内容加载后再重新监听滚动
-    setTimeout(() => { historyContent.addEventListener('scroll', onScroll) }, 2000)
-    console.log('Scroll to bottom')
+    historyContent.removeEventListener('scroll', onScroll); // 内容加载后再重新监听滚动
+    setTimeout(() => { historyContent.addEventListener('scroll', onScroll); }, 2000);
+    console.log('Scroll to bottom');
 
-    const data = isAddSearchItem ? await getHistorySearchList(input.value, pn) : await getHistoryList(cursor)
-    isAddSearchItem ? pn++ : cursor = data.cursor
+    const data = isAddSearchItem ? await getHistorySearchList(input.value, pn) : await getHistoryList(cursor);
+    isAddSearchItem ? pn++ : cursor = data.cursor;
 
-    data.list.forEach(addElementByItem) // 简写形式有时需绑定 this
+    data.list.forEach(addElementByItem); // 简写形式有时需绑定 this
   }
-  historyContent.addEventListener('scroll', onScroll)
+  historyContent.addEventListener('scroll', onScroll);
 
   function addElementByItem (item) {
     const record = Object.assign(document.createElement('a'), {
@@ -140,7 +140,7 @@ export async function handleHistoryShowMore () {
               <source srcset="${formatUrl(item.cover)}@256w_144h_1c.webp" type="image/webp">
               <img src="${formatUrl(item.cover)}@256w_144h_1c" alt="" loading="lazy" onload="" onerror="typeof window.imgOnError === 'function' &amp;&amp; window.imgOnError(this)">
             </picture>
-            <div class="header-history-video__duration"><span class="header-history-video__duration--text">${formatProgressTime(item.progress) + '/' + formatProgressTime(item.duration)}</span></div>
+            <div class="header-history-video__duration"><span class="header-history-video__duration--text">${`${formatProgressTime(item.progress)}/${formatProgressTime(item.duration)}`}</span></div>
             <div class="header-history-video__progress"><div class="header-history-video__progress--inner" style="width: ${item.progress / item.duration * 100}%; border-radius: 0px;"></div></div>
           </div>
           <div class="header-history-card__info">
@@ -155,36 +155,36 @@ export async function handleHistoryShowMore () {
             </div>
           </div>
           `
-    })
-    historyContent.appendChild(record)
+    });
+    historyContent.appendChild(record);
   }
 
-  const formatUrl = url => url.slice(url.indexOf(':') + 1)
+  const formatUrl = url => url.slice(url.indexOf(':') + 1);
 
   function formatProgressTime (seconds) {
-    const hrs = Math.floor(seconds / 3600) // Math.floor() 向下取整
-    const mins = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
+    const hrs = Math.floor(seconds / 3600); // Math.floor() 向下取整
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
 
-    return `${hrs ? (hrs + ':') : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+    return `${hrs ? (`${hrs}:`) : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
 
   function formatViewTime (timestamp) {
-    const days = Math.floor(timestamp / 86400)
-    const hrs = Math.floor((timestamp % 86400) / 3600)
-    const mins = Math.floor((timestamp % 3600) / 60)
+    const days = Math.floor(timestamp / 86400);
+    const hrs = Math.floor((timestamp % 86400) / 3600);
+    const mins = Math.floor((timestamp % 3600) / 60);
 
-    const now = Math.floor(Date.now() / 1000)
-    const today = Math.floor(now / 86400)
+    const now = Math.floor(Date.now() / 1000);
+    const today = Math.floor(now / 86400);
 
     const dayTextMap = {
       0: '今天',
       1: '昨天',
       2: '前天'
-    }
+    };
 
-    const dayText = dayTextMap[today - days] || (today - days) + '天前'
+    const dayText = dayTextMap[today - days] || `${today - days}天前`;
 
-    return `${dayText} ${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
+    return `${dayText} ${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
   }
 }

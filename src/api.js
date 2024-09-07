@@ -1,58 +1,58 @@
 // fork 自 BiliPlus 项目：https://github.com/0xlau/biliplus
-import { BILIBILI_API } from './values.js'
+import { BILIBILI_API } from './values.js';
 
 const mixinKeyEncTab = [
   46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,
   33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40,
   61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11,
   36, 20, 34, 44, 52
-]
+];
 
 // 对 imgKey 和 subKey 进行字符顺序打乱编码
 // 使用缓存机制减少重复计算
-const mixinKeyCache = new Map()
+const mixinKeyCache = new Map();
 
 const getMixinKey = (orig) => {
   if (mixinKeyCache.has(orig)) {
-    return mixinKeyCache.get(orig)
+    return mixinKeyCache.get(orig);
   }
   const mixinKey = mixinKeyEncTab
     .map((n) => orig[n])
     .join('')
-    .slice(0, 32)
-  mixinKeyCache.set(orig, mixinKey)
-  return mixinKey
-}
+    .slice(0, 32);
+  mixinKeyCache.set(orig, mixinKey);
+  return mixinKey;
+};
 
 // 为请求参数进行 wbi 签名
 function encWbi (params, imgKey, subKey) {
-  const mixinKey = getMixinKey(imgKey + subKey)
-  const currTime = Math.round(Date.now() / 1000)
-  const chrFilter = /[!'()*]/g
+  const mixinKey = getMixinKey(imgKey + subKey);
+  const currTime = Math.round(Date.now() / 1000);
+  const chrFilter = /[!'()*]/g;
 
-  Object.assign(params, { wts: currTime }) // 添加 wts 字段
+  Object.assign(params, { wts: currTime }); // 添加 wts 字段
   // 按照 key 重排参数
   const query = Object.keys(params)
     .sort()
     .map((key) => {
       // 过滤 value 中的 "!'()*" 字符
-      const value = params[key].toString().replace(chrFilter, '')
-      return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+      const value = params[key].toString().replace(chrFilter, '');
+      return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
     })
-    .join('&')
+    .join('&');
 
   // 在脚本 metadata 中引用 AI 总结使用的 md5 算法
   // eslint-disable-next-line no-undef
-  const wbiSign = md5(query + mixinKey) // 计算 w_rid
+  const wbiSign = md5(query + mixinKey); // 计算 w_rid
 
-  return query + '&w_rid=' + wbiSign
+  return `${query}&w_rid=${wbiSign}`;
 }
 
 // 获取最新的 imgKey 和 subKey
 async function getWbiKeys () {
   const {
     wbi_img: { img_url: imgUrl, sub_url: subUrl }
-  } = await getNavUserInfo()
+  } = await getNavUserInfo();
 
   return {
     imgKey: imgUrl.slice(
@@ -63,16 +63,16 @@ async function getWbiKeys () {
       subUrl.lastIndexOf('/') + 1,
       subUrl.lastIndexOf('.')
     )
-  }
+  };
 }
 
 // 刷新 wts 和 wrid
 async function getwts (params) {
-  const webKeys = await getWbiKeys()
-  const imgKey = webKeys.imgKey
-  const subKey = webKeys.subKey
-  const query = encWbi(params, imgKey, subKey)
-  return query
+  const webKeys = await getWbiKeys();
+  const imgKey = webKeys.imgKey;
+  const subKey = webKeys.subKey;
+  const query = encWbi(params, imgKey, subKey);
+  return query;
 }
 
 /**
@@ -84,15 +84,15 @@ async function getwts (params) {
  */
 async function fetchAPI (url, options = {}) {
   try {
-    const response = await fetch(url, options)
+    const response = await fetch(url, options);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const jsonData = await response.json()
-    return jsonData.data
+    const jsonData = await response.json();
+    return jsonData.data;
   } catch (error) {
-    console.error('Error fetching data:', error)
-    throw error
+    console.error('Error fetching data:', error);
+    throw error;
   }
 }
 
@@ -102,7 +102,7 @@ async function fetchAPI (url, options = {}) {
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 async function getNavUserInfo () {
-  return fetchAPI(`${BILIBILI_API}/x/web-interface/nav`, { credentials: 'include' })
+  return fetchAPI(`${BILIBILI_API}/x/web-interface/nav`, { credentials: 'include' });
 }
 
 /**
@@ -112,7 +112,7 @@ async function getNavUserInfo () {
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getVideoInfo (bvid) {
-  return fetchAPI(`${BILIBILI_API}/x/web-interface/view?bvid=${bvid}`)
+  return fetchAPI(`${BILIBILI_API}/x/web-interface/view?bvid=${bvid}`);
 }
 
 /**
@@ -122,8 +122,8 @@ export async function getVideoInfo (bvid) {
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getJudgeAI (params) {
-  const query = await getwts(params)
-  return fetchAPI(`${BILIBILI_API}/x/web-interface/view/conclusion/judge?${query}`)
+  const query = await getwts(params);
+  return fetchAPI(`${BILIBILI_API}/x/web-interface/view/conclusion/judge?${query}`);
 }
 
 /**
@@ -133,8 +133,8 @@ export async function getJudgeAI (params) {
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getAIConclusion (params) {
-  const query = await getwts(params)
-  return fetchAPI(`${BILIBILI_API}/x/web-interface/view/conclusion/get?${query}`)
+  const query = await getwts(params);
+  return fetchAPI(`${BILIBILI_API}/x/web-interface/view/conclusion/get?${query}`);
 }
 
 /**
@@ -142,15 +142,15 @@ export async function getAIConclusion (params) {
  * @returns cookie: DedeUserID
  */
 function getUserID () {
-  const cookies = document.cookie
-  const cookieArray = cookies.split('; ')
+  const cookies = document.cookie;
+  const cookieArray = cookies.split('; ');
   for (let i = 0; i < cookieArray.length; i++) {
-    const cookie = cookieArray[i].split('=')
+    const cookie = cookieArray[i].split('=');
     if (cookie[0] === 'DedeUserID') {
-      return cookie[1]
+      return cookie[1];
     }
   }
-  return null // 如果不返回 null，那么函数就会返回 undefined，这可能会导致一些意想不到的问题。
+  return null; // 如果不返回 null，那么函数就会返回 undefined，这可能会导致一些意想不到的问题。
 }
 
 /**
@@ -158,15 +158,15 @@ function getUserID () {
  * @returns cookie: bili_jct
  */
 function getCSRF () {
-  const cookies = document.cookie
-  const cookieArray = cookies.split('; ')
+  const cookies = document.cookie;
+  const cookieArray = cookies.split('; ');
   for (let i = 0; i < cookieArray.length; i++) {
-    const cookie = cookieArray[i].split('=')
+    const cookie = cookieArray[i].split('=');
     if (cookie[0] === 'bili_jct') {
-      return cookie[1]
+      return cookie[1];
     }
   }
-  return null // 如果不返回 null，那么函数就会返回 undefined，这可能会导致一些意想不到的问题。
+  return null; // 如果不返回 null，那么函数就会返回 undefined，这可能会导致一些意想不到的问题。
 }
 
 /**
@@ -178,9 +178,9 @@ function getCSRF () {
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getFollowList (pageNumber, pageSize, orderType) {
-  const vmid = getUserID()
-  const query = await getwts({})
-  return fetchAPI(`${BILIBILI_API}/x/relation/followings?vmid=${vmid}&pn=${pageNumber}&ps=${pageSize}&order=desc&order_type=${orderType === 1 ? 'attention' : ''}&gaia_source=main_web&web_location=333.999&${query}`, { credentials: 'include' })
+  const vmid = getUserID();
+  const query = await getwts({});
+  return fetchAPI(`${BILIBILI_API}/x/relation/followings?vmid=${vmid}&pn=${pageNumber}&ps=${pageSize}&order=desc&order_type=${orderType === 1 ? 'attention' : ''}&gaia_source=main_web&web_location=333.999&${query}`, { credentials: 'include' });
 }
 
 /**
@@ -190,7 +190,7 @@ export async function getFollowList (pageNumber, pageSize, orderType) {
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getDynamicList (offset) {
-  return fetchAPI(`${BILIBILI_API}/x/polymer/web-dynamic/v1/feed/nav?offset=${offset}`, { credentials: 'include' })
+  return fetchAPI(`${BILIBILI_API}/x/polymer/web-dynamic/v1/feed/nav?offset=${offset}`, { credentials: 'include' });
 }
 
 /**
@@ -200,9 +200,9 @@ export async function getDynamicList (offset) {
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getHistoryList (cursor) {
-  const url = `${BILIBILI_API}/x/web-interface/history/cursor?max=${cursor.max}&view_at=${cursor.view_at}&business=archive`
-  const options = { credentials: 'include' }
-  return fetchAPI(url, options)
+  const url = `${BILIBILI_API}/x/web-interface/history/cursor?max=${cursor.max}&view_at=${cursor.view_at}&business=archive`;
+  const options = { credentials: 'include' };
+  return fetchAPI(url, options);
 }
 
 /**
@@ -213,7 +213,7 @@ export async function getHistoryList (cursor) {
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getHistorySearchList (key, pn) {
-  return fetchAPI(`${BILIBILI_API}/x/web-interface/history/search?pn=${pn}&keyword=${key}&business=all`, { credentials: 'include' })
+  return fetchAPI(`${BILIBILI_API}/x/web-interface/history/search?pn=${pn}&keyword=${key}&business=all`, { credentials: 'include' });
 }
 
 /**
@@ -222,14 +222,14 @@ export async function getHistorySearchList (key, pn) {
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
 export async function getUnreadNums () {
-  const options = { credentials: 'include' }
-  const messageNumObj = await fetchAPI('https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0', options)
-  const dynamicNumObj = await fetchAPI(`${BILIBILI_API}/x/web-interface/dynamic/entrance?alltype_offset=&video_offset=0&article_offset=0`, options)
+  const options = { credentials: 'include' };
+  const messageNumObj = await fetchAPI('https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0', options);
+  const dynamicNumObj = await fetchAPI(`${BILIBILI_API}/x/web-interface/dynamic/entrance?alltype_offset=&video_offset=0&article_offset=0`, options);
 
-  const messageNum = Object.values(messageNumObj).reduce((acc, value) => acc + value, 0)
-  const dynamicNum = dynamicNumObj.update_info.item.count
+  const messageNum = Object.values(messageNumObj).reduce((acc, value) => acc + value, 0);
+  const dynamicNum = dynamicNumObj.update_info.item.count;
 
-  return [messageNum, dynamicNum]
+  return [messageNum, dynamicNum];
 }
 
 /**
@@ -246,15 +246,15 @@ export async function followUser (mid, isFollow) {
     body: new URLSearchParams({
       fid: mid,
       act: isFollow ? '1' : '2',
-      // eslint-disable-next-line camelcase
+
       re_src: '11',
       csrf: getCSRF()
     }).toString(),
     credentials: 'include'
-  })
+  });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
-  return response.json()
+  return response.json();
 }

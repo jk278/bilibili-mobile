@@ -1,55 +1,55 @@
-import { getAIConclusion } from './api.js'
-import { aiData } from './values.js'
+import { getAIConclusion } from './api.js';
+import { aiData } from './values.js';
 
 export async function loadAI (card) {
-  const aiCardElement = createAICardElement(card.querySelector('.bili-video-card__image--wrap'))
+  const aiCardElement = createAICardElement(card.querySelector('.bili-video-card__image--wrap'));
 
-  const aiConclusionRes = await aiConclusion(card)
-  const bvid = card.querySelector('.bili-video-card__image--link').dataset.bvid
-  genterateAIConclusionCard(aiConclusionRes, aiCardElement, bvid)
+  const aiConclusionRes = await aiConclusion(card);
+  const bvid = card.querySelector('.bili-video-card__image--link').dataset.bvid;
+  genterateAIConclusionCard(aiConclusionRes, aiCardElement, bvid);
 }
 
 async function aiConclusion (card) {
-  const cardImageLinkElement = card.querySelector('.bili-video-card__image--link')
-  const match = /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) || /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
-  const bvid = match[1]
+  const cardImageLinkElement = card.querySelector('.bili-video-card__image--link');
+  const match = /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) || /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href);
+  const bvid = match[1];
 
   if (aiData[bvid] && aiData[bvid].code === 0) {
-    return aiData[bvid]
+    return aiData[bvid];
   }
 
   if (cardImageLinkElement.dataset.hasGotAi === undefined) {
-    const cid = cardImageLinkElement.dataset.cid
-    const up_mid = cardImageLinkElement.dataset.upMid
-    const aiConclusionRes = await getAIConclusion({ bvid, cid, up_mid })
-    aiData[bvid] = aiConclusionRes
-    cardImageLinkElement.dataset.hasGotAi = true
+    const cid = cardImageLinkElement.dataset.cid;
+    const up_mid = cardImageLinkElement.dataset.upMid;
+    const aiConclusionRes = await getAIConclusion({ bvid, cid, up_mid });
+    aiData[bvid] = aiConclusionRes;
+    cardImageLinkElement.dataset.hasGotAi = true;
     if (aiConclusionRes.code === 0) {
-      return aiData[bvid]
+      return aiData[bvid];
     }
   }
 }
 
 function createAICardElement (cardElement) {
-  const overlay = document.createElement('div')
-  overlay.id = 'ai-conclusion-overlay'
+  const overlay = document.createElement('div');
+  overlay.id = 'ai-conclusion-overlay';
   overlay.innerHTML = `
       <div class="ai-conclusion-card resizable-component">
         <div class="ai-conclusion-card-header">正在加载 AI 总结</div>
       </div>
-    `
-  cardElement.closest('.bili-video-card').appendChild(overlay)
-  overlay.classList.add('show')
+    `;
+  cardElement.closest('.bili-video-card').appendChild(overlay);
+  overlay.classList.add('show');
 
   overlay.addEventListener('click', () => {
-    overlay.classList.remove('show')
-    overlay.addEventListener('transitionend', overlay.remove)
-  }, { once: true })
+    overlay.classList.remove('show');
+    overlay.addEventListener('transitionend', overlay.remove);
+  }, { once: true });
 
-  const div = overlay.querySelector('.ai-conclusion-card')
-  div.addEventListener('click', event => event.stopPropagation())
+  const div = overlay.querySelector('.ai-conclusion-card');
+  div.addEventListener('click', event => event.stopPropagation());
 
-  return div
+  return div;
 }
 
 function genterateAIConclusionCard (aiConclusionRes, aiCardElement, bvid) {
@@ -63,7 +63,7 @@ function genterateAIConclusionCard (aiConclusionRes, aiCardElement, bvid) {
       <div class="ai-conclusion-card-summary">
         ${aiConclusionRes.model_result.summary}
       </div>
-    `
+    `;
   aiConclusionRes.model_result.outline.forEach(item => {
     aiCard += `
         <div class="ai-conclusion-card-selection">
@@ -75,14 +75,14 @@ function genterateAIConclusionCard (aiConclusionRes, aiCardElement, bvid) {
             </a>
           `).join('')}
         </div>
-      `
-  })
+      `;
+  });
 
   function timeNumberToTime (time) {
-    const min = Math.floor(time / 60)
-    const sec = time % 60
-    return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
+    const min = Math.floor(time / 60);
+    const sec = time % 60;
+    return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   }
 
-  aiCardElement.innerHTML = aiCard
+  aiCardElement.innerHTML = aiCard;
 }

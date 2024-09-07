@@ -1,6 +1,6 @@
-import { setSearchBtn } from './search.js'
-import { setMenuBtn } from './menu.js'
-import { setSidebarBtn } from './sidebar.js'
+import { setSearchBtn } from './search.js';
+import { setMenuBtn } from './menu.js';
+import { setSidebarBtn } from './sidebar.js';
 
 /**
  * 管理操作栏的函数 (DOMContentLoaded 之后)
@@ -37,120 +37,120 @@ export function handleActionbar (type) {
         <svg width="24" height="24" viewBox="0 0 40 40" fill="currentColor"  style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(4,4)" d="M0.256 23.481c0 0.269 0.106 0.544 0.313 0.75 0.412 0.413 1.087 0.413 1.5 0l14.119-14.119 13.913 13.912c0.413 0.413 1.087 0.413 1.5 0s0.413-1.087 0-1.5l-14.663-14.669c-0.413-0.412-1.088-0.412-1.5 0l-14.869 14.869c-0.213 0.212-0.313 0.481-0.313 0.756z"></path></svg>
       </div>
       `
-  })
-  document.body.appendChild(actionbar)
+  });
+  document.body.appendChild(actionbar);
 
-  document.body.appendChild(Object.assign(document.createElement('div'), { id: 'toast' }))
+  document.body.appendChild(Object.assign(document.createElement('div'), { id: 'toast' }));
 
-  actionbar.classList.add(type)
-  setHomeBtn()
-  setSearchBtn(type)
-  if (type !== 'message') { setMenuBtn() }
+  actionbar.classList.add(type);
+  setHomeBtn();
+  setSearchBtn(type);
+  if (type !== 'message') { setMenuBtn(); }
 
   switch (type) {
     case 'home':
-      setTopBtn()
-      setRefreshBtn()
-      break
+      setTopBtn();
+      setRefreshBtn();
+      break;
     case 'video':
     case 'list':
-      setFullbtn()
-      setSidebarBtn(type)
-      break
+      setFullbtn();
+      setSidebarBtn(type);
+      break;
     case 'search':
-      setTopBtn()
-      setShowMoreBtn()
-      break
+      setTopBtn();
+      setShowMoreBtn();
+      break;
     case 'space':
-      setTopBtn()
-      setShowMoreBtn()
-      break
+      setTopBtn();
+      setShowMoreBtn();
+      break;
     case 'message':
-      setSidebarBtn(type)
-      break
+      setSidebarBtn(type);
+      break;
     default:
-      break
+      break;
   }
 
   function setTopBtn () {
-    const topBtn = document.getElementById('my-top')
-    topBtn.addEventListener('click', () => window.scrollTo({ top: 0 }))
+    const topBtn = document.getElementById('my-top');
+    topBtn.addEventListener('click', () => window.scrollTo({ top: 0 }));
   }
 
   function setHomeBtn () {
-    const home = document.getElementById('my-home')
-    home.addEventListener('click', () => (location.href = 'https://www.bilibili.com/'))
+    const home = document.getElementById('my-home');
+    home.addEventListener('click', () => (location.href = 'https://www.bilibili.com/'));
   }
 
   function setRefreshBtn () {
-    const refreshFab = document.getElementById('refresh-fab') // 返回动态 HTML Collection
+    const refreshFab = document.getElementById('refresh-fab'); // 返回动态 HTML Collection
 
     // 使用rollBtn?.click可选链操作符前的rollBtn会立即执行，如果rollBtn存在才传递该元素的click函数引用。而创建了一个新的箭头函数()=>{rollBtn?.click()}则会在监听事件触发时才执行rollBtn
-    refreshFab.addEventListener('click', () => { document.querySelector('.flexible-roll-btn-inner')?.click() })
+    refreshFab.addEventListener('click', () => { document.querySelector('.flexible-roll-btn-inner')?.click(); });
   }
 
   function setFullbtn () {
-    let clickTimer = null
+    let clickTimer = null;
 
-    const fullBtn = document.getElementById('full-now')
+    const fullBtn = document.getElementById('full-now');
 
     function playVideo () {
-      const video = document.querySelector('video')
-      video.play()
-      video.muted = false
-      if (video.volume === 0) { document.querySelector('.bpx-player-ctrl-muted-icon').click() }
+      const video = document.querySelector('video');
+      video.play();
+      video.muted = false;
+      if (video.volume === 0) { document.querySelector('.bpx-player-ctrl-muted-icon').click(); }
     }
 
     fullBtn.addEventListener('click', () => {
-      clearTimeout(clickTimer) // 双击会产生两次单击事件和两个定时器, 双击事件只能清除第二个定时器
+      clearTimeout(clickTimer); // 双击会产生两次单击事件和两个定时器, 双击事件只能清除第二个定时器
 
       // via 报错：DOMException: play() can only be initiated by a user gesture. 是浏览器为防止未经请求的视频播放而实施的安全措施。
       // 如果 video.play() 方法是在 setTimeout 函数中调用的，这不被视为直接用户手势。
-      playVideo()
+      playVideo();
 
       clickTimer = setTimeout(() => {
-        const videoWrap = document.querySelector('.bpx-player-video-wrap')
-        videoWrap.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
-      }, 250)
-    })
+        const videoWrap = document.querySelector('.bpx-player-video-wrap');
+        videoWrap.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+      }, 250);
+    });
 
-    fullBtn.addEventListener('dblclick', () => { clearTimeout(clickTimer) })
+    fullBtn.addEventListener('dblclick', () => { clearTimeout(clickTimer); });
   }
 
   function setShowMoreBtn () {
-    const showMoreFab = document.getElementById('show-more-fab')
+    const showMoreFab = document.getElementById('show-more-fab');
 
     const handleClick = () => {
       if (type === 'search') {
-        const searchConditions = document.querySelector('.search-conditions')
+        const searchConditions = document.querySelector('.search-conditions');
 
         if (searchConditions) {
           if (sessionStorage.getItem('show-conditions') !== 'true') {
-            searchConditions.style.transition = '.4s ease-in'
-            searchConditions.classList.add('show')
-            searchConditions.addEventListener('transitionend', () => { searchConditions.style.transition = '' }, { once: true })
+            searchConditions.style.transition = '.4s ease-in';
+            searchConditions.classList.add('show');
+            searchConditions.addEventListener('transitionend', () => { searchConditions.style.transition = ''; }, { once: true });
 
-            showMoreFab.classList.add('reverse')
-            sessionStorage.setItem('show-conditions', 'true')
+            showMoreFab.classList.add('reverse');
+            sessionStorage.setItem('show-conditions', 'true');
           } else {
-            searchConditions.style.transition = '.4s ease-in'
-            searchConditions.classList.remove('show')
-            searchConditions.addEventListener('transitionend', () => { searchConditions.style.transition = '' }, { once: true })
+            searchConditions.style.transition = '.4s ease-in';
+            searchConditions.classList.remove('show');
+            searchConditions.addEventListener('transitionend', () => { searchConditions.style.transition = ''; }, { once: true });
 
-            showMoreFab.classList.remove('reverse')
-            sessionStorage.setItem('show-conditions', '')
+            showMoreFab.classList.remove('reverse');
+            sessionStorage.setItem('show-conditions', '');
           }
         }
       } else if (type === 'space') {
-        const followRow = document.querySelector('.h .h-action')
+        const followRow = document.querySelector('.h .h-action');
 
-        followRow.style.transition = '.4s ease-in'
-        followRow?.classList.toggle('show')
-        followRow.addEventListener('transitionend', () => { followRow.style.transition = '' }, { once: true })
+        followRow.style.transition = '.4s ease-in';
+        followRow?.classList.toggle('show');
+        followRow.addEventListener('transitionend', () => { followRow.style.transition = ''; }, { once: true });
 
-        showMoreFab.classList.toggle('reverse')
+        showMoreFab.classList.toggle('reverse');
       }
-    }
-    showMoreFab.addEventListener('click', handleClick)
+    };
+    showMoreFab.addEventListener('click', handleClick);
   }
 }

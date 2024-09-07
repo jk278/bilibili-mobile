@@ -42,7 +42,7 @@ import { waitDOMContentLoaded } from './utils.js';
 
   const getTypeFromPath = map => {
     for (const [prefix, type] of Object.entries(map)) {
-      if (location.pathname.startsWith(prefix)) {return type;}
+      if (location.pathname.startsWith(prefix)) { return type; }
     }
     return 'unknow';
   };
