@@ -40,7 +40,7 @@ import { waitDOMContentLoaded } from './utils.js';
     '/list': 'list'
   };
 
-  const getTypeFromPath = map => {
+  const getTypeFromPath = (map: { '/video': string; '/list': string; }) => {
     for (const [prefix, type] of Object.entries(map)) {
       if (location.pathname.startsWith(prefix)) { return type; }
     }
@@ -51,7 +51,7 @@ import { waitDOMContentLoaded } from './utils.js';
     ? location.pathname === '/' ? 'home' : getTypeFromPath(pathToTypeMap)
     : firstSubdomain;
 
-  function handleCommonSettings (type) {
+  function handleCommonSettings (type: string) {
     handleScriptPreSetting();
     waitDOMContentLoaded(() => {
       handleScriptSetting();
@@ -61,7 +61,7 @@ import { waitDOMContentLoaded } from './utils.js';
     });
   }
 
-  const handleVideoInteraction = (type) => {
+  const handleVideoInteraction = (type: string) => {
     waitDOMContentLoaded(() => videoInteraction(type));
   };
 

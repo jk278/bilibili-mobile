@@ -1,14 +1,26 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
+import typescriptParser from '@typescript-eslint/parser';
+import typescriptPlugin from '@typescript-eslint/eslint-plugin';
 
 export default [
   {
+    parser: typescriptParser,
+    plugins: {
+      '@typescript-eslint': typescriptPlugin,
+    },
+    extends: [
+      'eslint:recommended',
+      'plugin:@typescript-eslint/recommended',
+      'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    ],
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       globals: globals.browser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
+        project: './tsconfig.json', // 指定 TypeScript 配置文件
       },
     },
     rules: {
