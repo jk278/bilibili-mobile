@@ -16,7 +16,7 @@ import { handleActionbar } from './actionbar/actionbar.js';
 import { preloadAnchor, handleHeaderImage, handleVideoCard } from './home.js';
 import { videoInteraction } from './video.js';
 import { createUnfoldBtn } from './message.js';
-import { waitDOMContentLoaded } from './utils.js';
+import { waitDOMContentLoaded } from './utils.ts';
 
 (function () {
   // setInterval(() => { debugger }, 100)

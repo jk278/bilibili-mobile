@@ -26,4 +26,4 @@ Firefox 推荐扩展：[User Agent Switcher](https://addons.mozilla.org/zh-CN/fi
 - [vite-plugin-monkey](https://github.com/lisonge/vite-plugin-monkey)
   提供丝滑的开发支持
 - [BiliPlus](https://github.com/0xlau/biliplus)
-  展示访问AI接口方式
+  展示AI接口访问路径

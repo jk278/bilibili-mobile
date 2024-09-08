@@ -1,42 +1,55 @@
-import { getDynamicList } from '../api.js';
+import { getDynamicList } from '../api.js'
 
 // 设置动态自动展开
-export function handleDynamicShowMore () {
-  let offset = '';
+export function handleDynamicShowMore() {
+  let offset = ''
 
-  let i = 0;
-  async function getLoadedData () {
-    const data = await getDynamicList(offset);
-    offset = data.offset;
-    if (i < 2) { getLoadedData(); i++; }
+  let i = 0
+  async function getLoadedData() {
+    const data = await getDynamicList(offset)
+    offset = data.offset
+    if (i < 2) {
+      getLoadedData()
+      i++
+    }
   }
-  getLoadedData();
+  getLoadedData()
 
-  const dynamicContent = document.querySelector('.dynamic-panel-popover>.header-tabs-panel__content');
-  const dynamicAll = dynamicContent.querySelector('.dynamic-all');
+  const dynamicContent = document.querySelector(
+    '.dynamic-panel-popover>.header-tabs-panel__content',
+  )
+  const dynamicAll = dynamicContent.querySelector('.dynamic-all')
 
-  let loadedTitle = [];
+  let loadedTitle = []
 
-  async function onScroll () {
-    const { scrollTop, scrollHeight, clientHeight } = dynamicContent;
-    if (Math.abs(scrollTop + clientHeight - scrollHeight) > 1) { return; }
+  async function onScroll() {
+    const { scrollTop, scrollHeight, clientHeight } = dynamicContent
+    if (Math.abs(scrollTop + clientHeight - scrollHeight) > 1) {
+      return
+    }
 
-    dynamicContent.removeEventListener('scroll', onScroll); // 内容加载后再重新监听滚动
-    setTimeout(() => { dynamicContent.addEventListener('scroll', onScroll); }, 2000);
-    console.log('Scroll to bottom');
+    dynamicContent.removeEventListener('scroll', onScroll) // 内容加载后再重新监听滚动
+    setTimeout(() => {
+      dynamicContent.addEventListener('scroll', onScroll)
+    }, 2000)
+    console.log('Scroll to bottom')
 
-    const data = await getDynamicList(offset);
-    offset = data.offset;
-    data.items.forEach(checkIsLoaded); // 简写形式有时需绑定 this
+    const data = await getDynamicList(offset)
+    offset = data.offset
+    data.items.forEach(checkIsLoaded) // 简写形式有时需绑定 this
 
-    const dynamics = dynamicAll.querySelectorAll(':scope>a');
-    loadedTitle = Array.from(dynamics).map(a => a.title);
+    const dynamics = dynamicAll.querySelectorAll(':scope>a')
+    loadedTitle = Array.from(dynamics).map((a) => a.title)
   }
-  dynamicContent.addEventListener('scroll', onScroll);
+  dynamicContent.addEventListener('scroll', onScroll)
 
-  function checkIsLoaded (item) { if (!loadedTitle.includes(item.title)) { addElementByItem(item); } }
+  function checkIsLoaded(item) {
+    if (!loadedTitle.includes(item.title)) {
+      addElementByItem(item)
+    }
+  }
 
-  function addElementByItem (item) {
+  function addElementByItem(item) {
     const record = Object.assign(document.createElement('a'), {
       href: `${item.jump_url}`,
       title: `${item.title}`,
@@ -76,10 +89,10 @@ export function handleDynamicShowMore () {
               </a>
             </div>
           </div>
-          `
-    });
-    dynamicAll.appendChild(record);
+          `,
+    })
+    dynamicAll.appendChild(record)
   }
 
-  const formatUrl = url => url.slice(url.indexOf(':') + 1);
+  const formatUrl = (url) => url.slice(url.indexOf(':') + 1)
 }

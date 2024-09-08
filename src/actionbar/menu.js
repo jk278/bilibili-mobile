@@ -1,33 +1,37 @@
-import { loadFollowList } from './menu-follow.js';
-import { handleHistoryShowMore } from './menu-history.js';
-import { handleDynamicShowMore } from './menu-dynamic.js';
-import { getUnreadNums } from '../api.js';
-import { handleTransitionEndOnce } from '../utils.js';
+import { loadFollowList } from './menu-follow.js'
+import { handleHistoryShowMore } from './menu-history.js'
+import { handleDynamicShowMore } from './menu-dynamic.js'
+import { getUnreadNums } from '../api.js'
+import { handleTransitionEndOnce } from '../utils.ts'
 
-export function setMenuBtn () {
+export function setMenuBtn() {
   // 覆盖显隐，初始化加载动态、收藏、历史、主页
   const preloadeditems = [
     '.v-popover-wrap:has(>.right-entry__outside[href="//t.bilibili.com/"])',
     '.v-popover-wrap:has(>.right-entry__outside[data-header-fav-entry])',
     '.right-entry__outside[href="//www.bilibili.com/account/history"]',
-    '.header-avatar-wrap'];
+    '.header-avatar-wrap',
+  ]
 
-  tryPreload();
-  function tryPreload () {
-    if (document.querySelector(preloadeditems[0]) ||
+  tryPreload()
+  function tryPreload() {
+    if (
+      document.querySelector(preloadeditems[0]) ||
       document.querySelector(preloadeditems[1]) ||
       document.querySelector(preloadeditems[2]) ||
       document.querySelector(preloadeditems[3])
     ) {
-      preloadeditems.forEach(item => {
-        document.querySelector(item).dispatchEvent(new MouseEvent('mouseenter'));
-      });
-      setTimeout(handleHistoryShowMore, 70);
-      setTimeout(handleDynamicShowMore, 60);
-    } else { setTimeout(tryPreload, 1000); }
+      preloadeditems.forEach((item) => {
+        document.querySelector(item).dispatchEvent(new MouseEvent('mouseenter'))
+      })
+      setTimeout(handleHistoryShowMore, 70)
+      setTimeout(handleDynamicShowMore, 60)
+    } else {
+      setTimeout(tryPreload, 1000)
+    }
   }
 
-  const menuFab = document.getElementById('menu-fab');
+  const menuFab = document.getElementById('menu-fab')
 
   // headerInMenu
   const menuOverlay = Object.assign(document.createElement('div'), {
@@ -45,99 +49,124 @@ export function setMenuBtn () {
         <li data-refer=".right-entry__outside.follow-list">关注</li>
       </li>
     </div>
-    `
-  });
-  menuFab.appendChild(menuOverlay);
-  const menu = menuOverlay.querySelector('#header-in-menu');
+    `,
+  })
+  menuFab.appendChild(menuOverlay)
+  const menu = menuOverlay.querySelector('#header-in-menu')
 
   menuFab.addEventListener('click', () => {
-    menu.classList.add('show');
-    menuOverlay.classList.add('show');
-    menuFab.classList.add('active');
-  });
+    menu.classList.add('show')
+    menuOverlay.classList.add('show')
+    menuFab.classList.add('active')
+  })
 
-  updateBadges();
+  updateBadges()
   // 消息数
-  async function updateBadges () {
-    function update (id, number) {
-      const badge = menuOverlay.querySelector(`#${id}`);
+  async function updateBadges() {
+    function update(id, number) {
+      const badge = menuOverlay.querySelector(`#${id}`)
       if (number > 0) {
-        badge.textContent = number > 99 ? '99+' : number;
-        badge.style.visibility = 'visible';
+        badge.textContent = number > 99 ? '99+' : number
+        badge.style.visibility = 'visible'
       } else {
-        badge.style.visibility = 'hidden';
+        badge.style.visibility = 'hidden'
       }
     }
-    const { messageNum, dynamicNum } = await getUnreadNums();
-    update('message-badge', messageNum);
-    update('dynamic-badge', dynamicNum);
+    const { messageNum, dynamicNum } = await getUnreadNums()
+    update('message-badge', messageNum)
+    update('dynamic-badge', dynamicNum)
   }
 
-  let openedDialog = ''; // sessionStorage 刷新网页不变
+  let openedDialog = '' // sessionStorage 刷新网页不变
 
-  const items = menuOverlay.querySelectorAll('li');
-  items.forEach(item =>
-    item.addEventListener('click', event => {
-      event.stopPropagation();
-      menu.classList.remove('show');
+  const items = menuOverlay.querySelectorAll('li')
+  items.forEach((item) =>
+    item.addEventListener('click', (event) => {
+      event.stopPropagation()
+      menu.classList.remove('show')
 
-      const refer = item.dataset.refer;
+      const refer = item.dataset.refer
 
-      if (!refer) { // 热门
-        menuOverlay.classList.remove('show');
-        return;
+      if (!refer) {
+        // 热门
+        menuOverlay.classList.remove('show')
+        return
       }
 
-      const referElement = document.querySelector(`${refer}+.v-popover`);
+      const referElement = document.querySelector(`${refer}+.v-popover`)
       if (!referElement) {
-        const toast = document.querySelector('#toast');
-        toast.textContent = '网页菜单加载中，请稍后重试';
-        toast.style.display = 'block';
-        setTimeout(() => { toast.setAttribute('show', ''); }, 10);
+        const toast = document.querySelector('#toast')
+        toast.textContent = '网页菜单加载中，请稍后重试'
+        toast.style.display = 'block'
+        setTimeout(() => {
+          toast.setAttribute('show', '')
+        }, 10)
 
-        menuOverlay.click();
+        menuOverlay.click()
 
         setTimeout(() => {
-          toast.removeAttribute('show');
-          toast.addEventListener('transitionend', () => { toast.style.cssText = ''; }, { once: true });
-        }, 3000);
+          toast.removeAttribute('show')
+          toast.addEventListener(
+            'transitionend',
+            () => {
+              toast.style.cssText = ''
+            },
+            { once: true },
+          )
+        }, 3000)
 
-        return;
+        return
       }
 
-      openedDialog = refer;
+      openedDialog = refer
 
-      referElement.setAttribute('display', '');
-      setTimeout(() => { referElement.setAttribute('show', ''); }, 10);
-    })
-  );
+      referElement.setAttribute('display', '')
+      setTimeout(() => {
+        referElement.setAttribute('show', '')
+      }, 10)
+    }),
+  )
 
-  menuOverlay.addEventListener('click', event => {
-    event.stopPropagation();
-    menu.classList.remove('show');
-    menuOverlay.classList.remove('show');
-    menuFab.classList.remove('active');
+  menuOverlay.addEventListener('click', (event) => {
+    event.stopPropagation()
+    menu.classList.remove('show')
+    menuOverlay.classList.remove('show')
+    menuFab.classList.remove('active')
 
-    if (openedDialog === '') { return; }
-
-    const referElement = document.querySelector(`${openedDialog}+.v-popover`);
-    referElement.removeAttribute('show');
-
-    handleTransitionEndOnce(referElement, 'opacity', () => { referElement.removeAttribute('display'); });
-
-    if ((openedDialog === '\'.right-entry__outside[href=\'//message.bilibili.com\']') || (openedDialog === '.right-entry__outside[href=\'//t.bilibili.com/\']')) {
-      updateBadges();
+    if (openedDialog === '') {
+      return
     }
-  });
 
-  function handleTouchMove () { menuOverlay.click(); }
-  menuOverlay.addEventListener('touchstart', () => menuOverlay.addEventListener('touchmove', handleTouchMove, { once: true }));
-  menuOverlay.addEventListener('touchend', () => menuOverlay.removeEventListener('touchmove', handleTouchMove));
+    const referElement = document.querySelector(`${openedDialog}+.v-popover`)
+    referElement.removeAttribute('show')
 
-  createExtraDialog();
+    handleTransitionEndOnce(referElement, 'opacity', () => {
+      referElement.removeAttribute('display')
+    })
+
+    if (
+      openedDialog ===
+        "'.right-entry__outside[href='//message.bilibili.com']" ||
+      openedDialog === ".right-entry__outside[href='//t.bilibili.com/']"
+    ) {
+      updateBadges()
+    }
+  })
+
+  function handleTouchMove() {
+    menuOverlay.click()
+  }
+  menuOverlay.addEventListener('touchstart', () =>
+    menuOverlay.addEventListener('touchmove', handleTouchMove, { once: true }),
+  )
+  menuOverlay.addEventListener('touchend', () =>
+    menuOverlay.removeEventListener('touchmove', handleTouchMove),
+  )
+
+  createExtraDialog()
 
   // 添加关注弹窗
-  function createExtraDialog () {
+  function createExtraDialog() {
     const falseHeader = Object.assign(document.createElement('div'), {
       className: 'bili-header false-header',
       innerHTML: `
@@ -190,13 +219,13 @@ export function setMenuBtn () {
     </div>
   </div>
 </div>
-      `
-    });
-    document.body.appendChild(falseHeader);
+      `,
+    })
+    document.body.appendChild(falseHeader)
 
-    const followOutside = document.createElement('div');
-    followOutside.className = 'right-entry__outside follow-list';
-    falseHeader.appendChild(followOutside);
+    const followOutside = document.createElement('div')
+    followOutside.className = 'right-entry__outside follow-list'
+    falseHeader.appendChild(followOutside)
 
     const followDialog = Object.assign(document.createElement('div'), {
       className: 'v-popover is-bottom',
@@ -210,10 +239,10 @@ export function setMenuBtn () {
           </div>
           <ul class="follow-list-content"></ul>
         </div></div>
-        `
-    });
-    falseHeader.appendChild(followDialog);
+        `,
+    })
+    falseHeader.appendChild(followDialog)
 
-    loadFollowList(1);
+    loadFollowList(1)
   }
 }
