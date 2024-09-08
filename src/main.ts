@@ -28,7 +28,7 @@ import { waitDOMContentLoaded } from './utils.ts';
   preventBeforeUnload();
   countViewTime();
 
-  /* iconfont */document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://s1.hdslb.com/bfs/static/jinkela/space/css/space.8.22c06a62b42dec796d083a84f5a769f44a97b325.css' }));
+  /* iconfont for dialog */ document.head.appendChild(Object.assign(document.createElement('link'), { rel: 'stylesheet', href: 'https://s1.hdslb.com/bfs/static/jinkela/space/css/space.8.22c06a62b42dec796d083a84f5a769f44a97b325.css' }));
 
   console.log('Bilibili mobile execute!');
 
