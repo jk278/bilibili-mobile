@@ -381,14 +381,16 @@ div.bpx-player-sending-bar {
     padding-top: 0 !important;
 }
 
-/* 标题（可两行显示） */
-.video-title {
+/* 标题（可两行显示 & for list） */
+.video-title,
+.video-title-href {
     font-size: 18px !important;
 
     white-space: wrap !important;
-    display: -webkit-box;
+    display: -webkit-box !important;
     -webkit-box-orient: vertical;
     line-clamp: 2;
+    -webkit-line-clamp: 2;
 
     /* 去除折叠时的 show-more 按钮 margin */
     margin-right: 0 !important;
@@ -510,34 +512,11 @@ div.ai-summary-popup {
     margin-bottom: 6px !important;
 }
 
-/* ------ 顶部投票卡片 ------ */
-
-/* 两个选项 */
-.left-vote-option,
-.right-vote-option {
-    min-width: 0 !important;
-}
-
-/* 投票: 选题 */
-.top-vote-card {
-    padding-top: 27px !important;
-}
-
-.top-vote-card-left__title {
-    transform: translateY(-23px);
-}
-
-.vui_ellipsis.multi-mode {
-    overflow: visible !important;
-    white-space: nowrap;
-}
-
 /**************************************************** 按钮 ***************************************************/
 
 /* 视频页返回顶部按钮（添加渐变） */
 /* 权重：基本设置属性 < transition < animation */
-.back-to-top,
-.backup {
+.back-to-top {
     border-radius: 0 25% 25% 0 !important;
     border-left: 0 !important;
     margin-bottom: 0 !important;
@@ -550,61 +529,44 @@ div.ai-summary-popup {
 }
 
 /* 覆盖显隐逻辑 */
-.back-to-top[show],
-.float-nav-exp .backup[show] {
+.back-to-top[show] {
     transform: none;
 }
 
-/* 列表(稍后观看)页不隐藏 */
-.float-nav-exp {
-    display: block !important;
-}
-
 /* 覆盖鼠标悬浮样式，触摸点击后长期显示 */
-#app .fixed-sidenav-storage .fixed-sidenav-storage-item:hover,
-.float-nav-exp .nav-menu .item.backup:hover {
+#app .fixed-sidenav-storage .fixed-sidenav-storage-item:hover {
     background-color: var(--bg1_float);
     color: var(--text1);
     fill: var(--text1);
 }
 
 /* 用触摸样式替代，类名会被修改 */
-div#app .fixed-sidenav-storage .fixed-sidenav-storage-item[touch-active],
-div.float-nav-exp .nav-menu .item.backup[touch-active] {
+div#app .fixed-sidenav-storage .fixed-sidenav-storage-item[touch-active] {
     background: var(--graph_bg_thick);
 }
 
-/* 修复稍后观看回顶部按钮的 darkreader 下颜色异常  */
-.item.backup svg path {
-    fill: currentColor;
-}
-
 /* 回顶按钮的位置 */
-.fixed-sidenav-storage,
-.float-nav-exp {
+.fixed-sidenav-storage {
     left: 0;
     right: unset !important;
-    bottom: 78px !important;
+    bottom: 90px !important;
     z-index: 1 !important;
     opacity: 1;
     transition: opacity var(--sidebar-time) ease-in;
 }
 
-#mirror-vdcon[sidebar] .fixed-sidenav-storage,
-#mirror-vdcon[sidebar] .float-nav-exp {
+#mirror-vdcon[sidebar] .fixed-sidenav-storage {
     opacity: 0;
 }
 
 /* 小窗按钮 */
-.mini-player-window,
-.nav-menu>.mini {
+.mini-player-window {
     position: fixed;
     z-index: -10;
     visibility: hidden;
 }
 
 /* 客服按钮 */
-.customer-service,
-.nav-menu>a:has(>.help) {
+.customer-service {
     display: none !important;
 }

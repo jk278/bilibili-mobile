@@ -396,6 +396,7 @@ ul.follow-list-content {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     line-clamp: 2;
+    -webkit-line-clamp: 2;
     overflow: hidden;
     font-size: 13px;
     line-height: 15px;

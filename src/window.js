@@ -1,5 +1,5 @@
 import { GM_getValue, GM_setValue, unsafeWindow } from '$'
-import { handleTransitionEndOnce } from './utils.ts'
+import { handleTransitionEndOnce } from './utils/transition.ts'
 
 export function preventBeforeUnload() {
   const originalAddEventListener = window.addEventListener
@@ -113,18 +113,17 @@ export function handleScroll(type) {
 function scrollToHidden(type) {
   let lastScrollY = 0
   const scrollThreshold = 75
-  let backup
+  const backup = document.getElementsByClassName('back-to-top')[0]
   const videoMap = {
-    video: ['left-container', 'back-to-top'],
-    list: ['playlist-container--left', 'backup'],
+    video: 'left-container',
+    list: 'playlist-container--left',
   }
 
   const elem = (() => {
     switch (type) {
       case 'video':
       case 'list':
-        backup = document.getElementsByClassName(videoMap[type][1])[0]
-        return document.getElementsByClassName(videoMap[type][0])[0]
+        return document.getElementsByClassName(videoMap[type])[0]
       default:
         return window
     }

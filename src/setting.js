@@ -1,5 +1,5 @@
 import { GM_getValue, GM_setValue, GM_registerMenuCommand } from '$'
-import { waitDOMContentLoaded } from './utils.ts'
+import { waitDOMContentLoaded } from './utils/wait.ts'
 
 // 脚本预加载设置
 export function handleScriptPreSetting() {
@@ -164,7 +164,7 @@ export function handleScriptPreSetting() {
 export function handleScriptSetting() {
   const keyValues = {
     key1: 'ban-video-click-play',
-    key2: 'ban-action-hidden',
+    key2: 'ban-actionbar-hidden',
     key3: 'message-sidebar-change-right',
     key4: 'home-single-column',
     key5: 'allow-video-slid',
@@ -173,7 +173,7 @@ export function handleScriptSetting() {
 
   const keyNames = {
     'ban-video-click-play': '禁用点击视频播放/暂停',
-    'ban-action-hidden': '禁止底栏滚动时隐藏',
+    'ban-actionbar-hidden': '禁止底栏滚动时隐藏',
     'message-sidebar-change-right': '消息页侧边栏靠右',
     'home-single-column': '首页单列推荐',
     'allow-video-slid': '视频滑动调整进度',
@@ -214,8 +214,8 @@ export function handleScriptSetting() {
   })
 
   function initSettings() {
-    if (GM_getValue('ban-action-hidden', false)) {
-      banActionHidden()
+    if (GM_getValue('ban-actionbar-hidden', false)) {
+      banActionbarHidden()
     }
     if (GM_getValue('message-sidebar-change-right', false)) {
       messageSidebarRight()
@@ -235,12 +235,12 @@ export function handleScriptSetting() {
     }
   }
 
-  function banActionHidden() {
+  function banActionbarHidden() {
     appendStyle(
-      'ban-action-hidden',
+      'ban-actionbar-hidden',
       `
       [scroll-hidden] #actionbar,
-      [scroll-hidden] .flexible-roll-btn-inner,
+      [scroll-hidden] .flexible-roll-btn-inner, /* 刷新、回顶 */
       [scroll-hidden] .top-btn {
         transform: none !important;
       }
@@ -387,8 +387,8 @@ export function handleScriptSetting() {
           if (value !== GM_getValue(key, false)) {
             GM_setValue(key, value)
             switch (key) {
-              case 'ban-action-hidden':
-                if (value) banActionHidden()
+              case 'ban-actionbar-hidden':
+                if (value) banActionbarHidden()
                 else document.getElementById(key).remove()
                 break
               case 'message-sidebar-change-right':

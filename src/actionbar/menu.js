@@ -2,7 +2,7 @@ import { loadFollowList } from './menu-follow.js'
 import { handleHistoryShowMore } from './menu-history.js'
 import { handleDynamicShowMore } from './menu-dynamic.js'
 import { getUnreadNums } from '../api.js'
-import { handleTransitionEndOnce } from '../utils.ts'
+import { handleTransitionEndOnce } from '../utils/transition.ts'
 
 export function setMenuBtn() {
   // 覆盖显隐，初始化加载动态、收藏、历史、主页

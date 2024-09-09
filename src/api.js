@@ -1,9 +1,10 @@
 // fork 自 BiliPlus 项目：https://github.com/0xlau/biliplus
+
 import { BILIBILI_API } from './values.ts'
 
 // 下两行只用于调试，dev 模式获取不到插件的 window
-// import { monkeyWindow } from '$';
-// const md5 = monkeyWindow.md5;
+import { monkeyWindow } from '$'
+const md5 = monkeyWindow.md5
 
 const mixinKeyEncTab = [
   46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,
@@ -46,7 +47,7 @@ function encWbi(params, imgKey, subKey) {
     .join('&')
 
   // 在脚本 metadata 中引用 AI 总结使用的 md5 算法
-  // eslint-disable-next-line no-undef
+
   const wbiSign = md5(query + mixinKey) // 计算 w_rid
 
   return `${query}&w_rid=${wbiSign}`

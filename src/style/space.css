@@ -308,6 +308,7 @@ div.header.space-search-tip {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     line-clamp: 2;
+    -webkit-line-clamp: 2;
     text-overflow: ellipsis;
     padding: 0 3px;
 }
@@ -385,6 +386,7 @@ div.header.space-search-tip {
     display: -webkit-box !important;
     -webkit-box-orient: vertical;
     line-clamp: 3;
+    -webkit-line-clamp: 3;
 }
 
 /* 文本标题 */
@@ -398,6 +400,7 @@ h2.article-title {
     display: -webkit-box !important;
     -webkit-box-orient: vertical;
     line-clamp: 2;
+    -webkit-line-clamp: 2;
 }
 
 /* 元信息栏 (笔记类型、访问量) */
@@ -730,6 +733,7 @@ div.sec-empty-hint {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     line-clamp: 2;
+    -webkit-line-clamp: 2;
     white-space: unset;
     font-size: 13px;
     line-height: 16px;

@@ -14,16 +14,22 @@ Firefox 推荐扩展：[User Agent Switcher](https://addons.mozilla.org/zh-CN/fi
 
 ### 截图
 
-<div class="image-container">
-  <img src="https://dreamforest.pages.dev/source/example-picture/home-page.png" alt="首页">
-  <img src="https://dreamforest.pages.dev/source/example-picture/search-page.png" alt="搜索页">
-  <img src="https://dreamforest.pages.dev/source/example-picture/video-page-1.png" alt="视频页1">
-  <img src="https://dreamforest.pages.dev/source/example-picture/video-page-2.png" alt="视频页2">
-</div>
+<table>
+  <tr>
+    <td><img src="https://dreamforest.pages.dev/source/example-picture/home-page.png" alt="首页"></td>
+    <td><img src="https://dreamforest.pages.dev/source/example-picture/search-page.png" alt="搜索页""></td>
+  </tr>
+  <tr>
+    <td><img src="https://dreamforest.pages.dev/source/example-picture/video-page-1.png" alt="视频页1"></td>
+    <td><img src="https://dreamforest.pages.dev/source/example-picture/video-page-2.png" alt="视频页2"></td>
+  </tr>
+</table>
 
 ### 感谢
 
 - [vite-plugin-monkey](https://github.com/lisonge/vite-plugin-monkey)
-  提供丝滑的开发支持
+  - 提供丝滑的开发支持
 - [BiliPlus](https://github.com/0xlau/biliplus)
-  展示AI接口访问路径
+  - 展示 AI 接口访问路径
+- [Bilibili-Web-Show-IP-Location](https://github.com/maxchang3/Bilibili-Web-Show-IP-Location)
+  - 作为我学习的对象

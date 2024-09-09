@@ -1,5 +1,5 @@
 import { modifyShadowDOMLate } from '../comment.js'
-import { handleTransitionEndOnce } from '../utils.ts'
+import { handleTransitionEndOnce } from '../utils/transition.ts'
 
 /* 使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。
    head 中的 style 也会暂缓。最后确定是元素在样式表加载前的初始样式问题。 */

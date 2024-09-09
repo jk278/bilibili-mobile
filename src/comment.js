@@ -138,6 +138,33 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
           padding: 0;
         }`,
     )
+
+    const headerVote = commentsHeaderShadow.querySelector(
+      'bili-comments-vote-card',
+    )
+    if (headerVote) {
+      appendStyle(
+        headerVote.shadowRoot,
+        `.option.left,
+        .option.right {
+          min-width: 0 !important;
+        }
+        #card {
+          padding-top: 27px !important;
+        }
+        #info {
+          transform: translateY(-23px);
+        }
+        #title {
+          overflow: visible !important;
+          white-space: nowrap;
+          position: absolute;
+        }
+        #desc {
+          padding-top: 20px;
+        }`,
+      )
+    }
   }
 
   function handleHeader2Mutation(mutations) {
@@ -156,17 +183,32 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
   }
 
   function observeHeader3() {
-    const textareaShadow = headerBoxShadow.querySelector(
-      'bili-comment-rich-textarea',
-    ).shadowRoot
-    appendStyle(
-      textareaShadow,
-      `div#input, div.brt-root {
+    // list 还是 bili-comment-textarea
+    const oldTextarea = headerBoxShadow.querySelector('bili-comment-textarea')
+
+    const textarea = oldTextarea
+      ? oldTextarea
+      : headerBoxShadow.querySelector('bili-comment-rich-textarea')
+
+    if (oldTextarea) {
+      appendStyle(
+        textarea.shadowRoot,
+        `textarea#input {
+            line-height: 26px;
+            min-height: 26px;
+            height: 26px !important;
+          }`,
+      )
+    } else {
+      appendStyle(
+        textarea.shadowRoot,
+        `div#input, div.brt-root {
         line-height: 26px;
         min-height: 26px;
         --brt-line-height: 26px;
       }`,
-    )
+      )
+    }
   }
 
   // --------------------

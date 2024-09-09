@@ -13,6 +13,8 @@ export function preloadAnchor() {
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
+        console.log(node)
+
         if (
           node.nodeType === Node.ELEMENT_NODE &&
           node.className === 'load-more-anchor'
@@ -31,7 +33,7 @@ export function preloadAnchor() {
   observer.observe(container, { childList: true })
 
   window.addEventListener('scroll', () => {
-    if (firstUnloadElem.getBoundingClientRect().top < height * 6) {
+    if (firstUnloadElem?.getBoundingClientRect().top < height * 6) {
       anchor.parentNode.insertBefore(anchor, anchor.parentNode.childNodes[0])
       anchor.parentNode.insertBefore(
         placeholder,
