@@ -1,5 +1,5 @@
 import { getAIConclusion } from './api.js'
-import { aiData } from './values.js'
+import { aiData } from './values.ts'
 
 export async function loadAI(card) {
   const aiCardElement = createAICardElement(

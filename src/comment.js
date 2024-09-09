@@ -161,12 +161,11 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
     ).shadowRoot
     appendStyle(
       textareaShadow,
-      `
-        textarea#input {
-          line-height: 26px;
-          min-height: 26px;
-          height: 26px !important;
-        }`,
+      `div#input, div.brt-root {
+        line-height: 26px;
+        min-height: 26px;
+        --brt-line-height: 26px;
+      }`,
     )
   }
 

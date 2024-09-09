@@ -1,5 +1,5 @@
 // fork 自 BiliPlus 项目：https://github.com/0xlau/biliplus
-import { BILIBILI_API } from './values.js'
+import { BILIBILI_API } from './values.ts'
 
 // 下两行只用于调试，dev 模式获取不到插件的 window
 // import { monkeyWindow } from '$';
