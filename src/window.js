@@ -263,7 +263,7 @@ function slideMessageSidebar() {
       Math.abs(offsetX) > touchXThreshold &&
       Math.abs(offsetY / offsetX) < 1 / 2
     ) {
-      const isToShow = GM_getValue('message-sidebar-right', false)
+      const isToShow = GM_getValue('message-sidebar-change-right', false)
         ? offsetX < 0
         : offsetX > 0
 

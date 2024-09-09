@@ -67,6 +67,7 @@ export function setSidebarBtn(type) {
       .addEventListener('canplay', showMoreRecommend, { once: true })
   }
 
+  // 处理消息侧边栏
   function handleMessageSidebar() {
     const sidebarFab = document.getElementById('sidebar-fab')
     const messageContainer = document.querySelector('body>.container')

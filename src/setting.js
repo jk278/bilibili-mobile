@@ -23,6 +23,7 @@ export function handleScriptPreSetting() {
       .vui_pagenation {padding-bottom: var(--actionbar-height);}
     `,
     css7: '.fixed-sidenav-storage, div.float-nav-exp {display: none !important;}',
+    css8: '.bili-live-card {display: none !important;}',
   } // 对象的值可通过 object[key] 获取
 
   readScriptSetting()
@@ -119,6 +120,7 @@ export function handleScriptPreSetting() {
           <label><input type="checkbox"><span>播放器全屏音量键</span></label>
           <label><input type="checkbox"><span>页脚导航链接</span></label>
           <label><input type="checkbox"><span>视频页回顶部按钮</span></label>
+          <label><input type="checkbox"><span>首页直播推荐</span></label>
         </div>
         <button id="setting-conform-1" class="setting-conform">确认</button>
         `,
@@ -250,7 +252,7 @@ export function handleScriptSetting() {
 
   function messageSidebarRight() {
     appendStyle(
-      'message-sidebar-change-right',
+      'message-sidebar-change-right' /* window slide 也获取该值 */,
       `
       .space-left.space-left { left: 100%; }      
       body>.container[sidebar] .space-left.space-left { transform: translateX(-100%); }

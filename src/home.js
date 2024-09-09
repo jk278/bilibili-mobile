@@ -12,8 +12,9 @@ export function preloadAnchor() {
   const container = document.querySelector('.container')
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
+      console.log(mutation.addedNodes)
       mutation.addedNodes.forEach((node) => {
-        console.log(node)
+        // dev 模式获取不到全部 node
 
         if (
           node.nodeType === Node.ELEMENT_NODE &&

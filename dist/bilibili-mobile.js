@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili 移动端
 // @namespace    https://github.com/jk278/bilibili-mobile
-// @version      5.0-beta.32
+// @version      5.0-beta.33
 // @author       jk278
 // @description  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @license      MIT
@@ -231,7 +231,7 @@
       const offsetX = event.changedTouches[0].clientX - startX;
       const offsetY = event.changedTouches[0].clientY - startY;
       if (Math.abs(offsetX) > touchXThreshold && Math.abs(offsetY / offsetX) < 1 / 2) {
-        const isToShow = _GM_getValue("message-sidebar-right", false) ? offsetX < 0 : offsetX > 0;
+        const isToShow = _GM_getValue("message-sidebar-change-right", false) ? offsetX < 0 : offsetX > 0;
         if (isToShow !== messageContainer.hasAttribute("sidebar")) {
           if (isToShow) {
             messageContainer.setAttribute("sidebar", "");
@@ -327,7 +327,8 @@
       .bili-footer {display: none;}
       .vui_pagenation {padding-bottom: var(--actionbar-height);}
     `,
-      css7: ".fixed-sidenav-storage, div.float-nav-exp {display: none !important;}"
+      css7: ".fixed-sidenav-storage, div.float-nav-exp {display: none !important;}",
+      css8: ".bili-live-card {display: none !important;}"
     };
     readScriptSetting();
     if (_GM_getValue("home-single-column", false)) {
@@ -414,6 +415,7 @@
           <label><input type="checkbox"><span>播放器全屏音量键</span></label>
           <label><input type="checkbox"><span>页脚导航链接</span></label>
           <label><input type="checkbox"><span>视频页回顶部按钮</span></label>
+          <label><input type="checkbox"><span>首页直播推荐</span></label>
         </div>
         <button id="setting-conform-1" class="setting-conform">确认</button>
         `
@@ -2344,8 +2346,8 @@
     const container = document.querySelector(".container");
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
+        console.log(mutation.addedNodes);
         mutation.addedNodes.forEach((node) => {
-          console.log(node);
           if (node.nodeType === Node.ELEMENT_NODE && node.className === "load-more-anchor") {
             anchor = node;
             placeholder = node.cloneNode(true);
