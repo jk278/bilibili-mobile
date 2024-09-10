@@ -31,6 +31,7 @@ export function increaseVideoLoadSize() {
   }
 }
 
+// 网页计时提醒
 export function countViewTime() {
   window.onload = function () {
     let storedTime = GM_getValue('view-time', undefined)
