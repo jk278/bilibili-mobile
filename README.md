@@ -30,6 +30,6 @@ Firefox 推荐扩展：[User Agent Switcher](https://addons.mozilla.org/zh-CN/fi
 - [vite-plugin-monkey](https://github.com/lisonge/vite-plugin-monkey)
   - 提供丝滑的开发支持
 - [BiliPlus](https://github.com/0xlau/biliplus)
-  - 展示 AI 接口访问路径
+  - 展示 AI 接口访问方式
 - [Bilibili-Web-Show-IP-Location](https://github.com/maxchang3/Bilibili-Web-Show-IP-Location)
   - 作为我学习的对象
