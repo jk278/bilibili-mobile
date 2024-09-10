@@ -123,23 +123,20 @@ function scrollToHidden(type: string) {
     'back-to-top',
   )[0] as HTMLElement
   const videoMap = {
-    video: 'left-container',
-    list: 'playlist-container--left',
+    video: '.left-container',
+    list: '.playlist-container--left',
   }
 
-  const elem = (() => {
-    switch (type) {
-      case 'video':
-      case 'list':
-        return document.getElementsByClassName(videoMap[type])[0]
-      default:
-        return window
-    }
-  })()
+  let elem: HTMLElement
+  if (['video', 'list'].includes(type)) {
+    const container = document.querySelector(
+      videoMap[type as keyof typeof videoMap],
+    ) as HTMLElement | null
+    if (container) elem = container
+  }
 
-  elem.addEventListener('scroll', () => {
-    const currentScrollY =
-      elem === window ? elem.scrollY : (elem as HTMLElement).scrollTop
+  window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY
     const offsetY = currentScrollY - lastScrollY
 
     if (currentScrollY < scrollThreshold) {
@@ -156,7 +153,7 @@ function scrollToHidden(type: string) {
     }
 
     if (['video', 'list'].includes(type)) {
-      if (currentScrollY > (elem as HTMLElement).clientHeight) {
+      if (currentScrollY > elem.clientHeight) {
         backup?.setAttribute('show', '')
       } else {
         backup?.removeAttribute('show')

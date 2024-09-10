@@ -348,6 +348,15 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
           node.nodeType === Node.ELEMENT_NODE &&
           node.nodeName.toLowerCase() === 'bili-photoswipe'
         ) {
+          node.addEventListener(
+            'touchmove',
+            (event) => {
+              event.stopImmediatePropagation() // 禁用阻止缩放的事件
+            },
+            true,
+            { once: true },
+          )
+
           const photoShadow = node.shadowRoot
           appendStyle(
             photoShadow,
@@ -358,9 +367,6 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
               #close {
                 right: 50% !important;
                 transform: translate(50%, -50%);
-              }
-              #container #zoom-wrap img {
-                -webkit-user-drag: unset;
               }`,
           )
         }

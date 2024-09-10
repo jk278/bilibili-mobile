@@ -319,6 +319,7 @@ export function handleVideoCard() {
       true,
     )
 
+    // 在捕获阶段阻止时间传播，从而禁用后续同一事件的监听
     video.addEventListener(
       'timeupdate',
       (event) => event.stopImmediatePropagation(),

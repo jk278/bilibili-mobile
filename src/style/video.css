@@ -22,31 +22,33 @@ body[scroll-hidden] {
     margin-top: 56.25vw;
 }
 
-/* 视频页主滚动条下移 */
-[itemprop=video]+body {
-    overflow: hidden !important;
-}
-
 #app {
     height: 100%;
-}
-
-/* 修复 via 滚动条异常 */
-[itemprop=video]+body #app {
-    overflow: hidden;
 }
 
 #mirror-vdcon {
     height: 100%;
 }
 
-/* 缩短主内容块，让其响应滚动 */
+/* 拦截滚动事件后，评论不加载 */
+/* 若 left-container 响应滚动，则要减去视频高度，否则高度溢出
+不响应时继续减去，则无法包括滚动的后代元素，溢出子元素背景色偏灰 */
+
+/* 视频页主滚动条下移
+[itemprop=video]+body {
+    overflow: hidden !important;
+} */
+
+/* 修复 via 滚动条异常
+[itemprop=video]+body #app {
+    overflow: hidden;
+} */
+
+/* 让主内容块应滚动
 .left-container,
 .playlist-container--left {
-    overflow-y: auto;
-    /* 同 .right-container */
     height: calc(100% - 56.25vw) !important;
-}
+} */
 
 /************************************************* 主视频块 *************************************************/
 
