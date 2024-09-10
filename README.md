@@ -17,7 +17,7 @@ Firefox 推荐扩展：[User Agent Switcher](https://addons.mozilla.org/zh-CN/fi
 <table>
   <tr>
     <td><img src="https://dreamforest.pages.dev/source/img/home-page.png" alt="首页"></td>
-    <td><img src="https://dreamforest.pages.dev/source/img/search-page.png" alt="搜索页""></td>
+    <td><img src="https://dreamforest.pages.dev/source/img/search-page.png" alt="搜索页"></td>
   </tr>
   <tr>
     <td><img src="https://dreamforest.pages.dev/source/img/video-page-1.png" alt="视频页1"></td>
