@@ -58,6 +58,13 @@ body,
     display: none !important;
 }
 
+/* 修复视频被未知规则屏蔽一部分后导致的提示词溢出 */
+.bili-video-card *::before, .bili-video-card *::after {
+    width: 100%;
+    white-space: wrap !important;
+    word-break: break-all;
+}
+
 /* ----------------------------------------------------
  --------------------- 主页视频卡片 --------------------
  ----------------------------------------------------- */

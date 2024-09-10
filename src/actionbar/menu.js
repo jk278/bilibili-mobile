@@ -5,27 +5,49 @@ import { getUnreadNums } from '../api.js'
 import { handleTransitionEndOnce } from '../utils/transition.ts'
 
 export function setMenuBtn() {
-  // 覆盖显隐，初始化加载动态、收藏、历史、主页
-  const preloadeditems = [
+  let isOldApp
+  // 覆盖显隐，初始化加载：消息、动态、收藏、历史（依DOM中顺序）、主页（从最前置最后））
+  const preloadeditems1 = [
+    // 旧APP不用预加载消息
     '.v-popover-wrap:has(>.right-entry__outside[href="//t.bilibili.com/"])',
     '.v-popover-wrap:has(>.right-entry__outside[data-header-fav-entry])',
     '.right-entry__outside[href="//www.bilibili.com/account/history"]',
     '.header-avatar-wrap',
   ]
+  const preloadeditems2 = [
+    '.v-popover-wrap:has(>[data-idx=message])',
+    '.v-popover-wrap:has(>[data-idx=dynamic])',
+    '.v-popover-wrap:has(>[data-idx=fav])',
+    '.v-popover-wrap:has(>[data-idx=history])',
+    '.header-avatar-wrap',
+  ]
+
+  function preload() {
+    const preloadeditems = isOldApp ? preloadeditems1 : preloadeditems2
+    preloadeditems.forEach((item) => {
+      document.querySelector(item)?.dispatchEvent(new MouseEvent('mouseenter'))
+    })
+    setTimeout(handleHistoryShowMore, 70)
+    setTimeout(handleDynamicShowMore, 60)
+  }
 
   tryPreload()
   function tryPreload() {
     if (
-      document.querySelector(preloadeditems[0]) ||
-      document.querySelector(preloadeditems[1]) ||
-      document.querySelector(preloadeditems[2]) ||
-      document.querySelector(preloadeditems[3])
+      document.querySelector(preloadeditems1[0]) && // 排除登录、主页
+      document.querySelector(preloadeditems1[1]) &&
+      document.querySelector(preloadeditems1[2])
     ) {
-      preloadeditems.forEach((item) => {
-        document.querySelector(item).dispatchEvent(new MouseEvent('mouseenter'))
-      })
-      setTimeout(handleHistoryShowMore, 70)
-      setTimeout(handleDynamicShowMore, 60)
+      isOldApp = true
+      preload()
+    } else if (
+      document.querySelector(preloadeditems2[0]) && // 排除登录、主页
+      document.querySelector(preloadeditems2[1]) &&
+      document.querySelector(preloadeditems2[2]) &&
+      document.querySelector(preloadeditems2[3])
+    ) {
+      isOldApp = false
+      preload()
     } else {
       setTimeout(tryPreload, 1000)
     }
@@ -36,17 +58,25 @@ export function setMenuBtn() {
   // headerInMenu
   const menuOverlay = Object.assign(document.createElement('div'), {
     id: 'menu-overlay',
+    // 顺序要与 setting.js 中的菜单选项排序对应
     innerHTML: `
     <div id="header-in-menu">
       <ul>
-        <li data-refer=".right-entry__outside.copy-category">分类</li>
         <li><a target="_blank" href="https://www.bilibili.com/v/popular/all/">热门</a></li>
-        <li data-refer=".right-entry__outside[href='//message.bilibili.com']">消息<span class="badge" id="message-badge">1</span></li>
+        <li data-refer="[data-idx=category]">分类</li>
+        ${
+          isOldApp
+            ? `<li data-refer=".right-entry__outside[href='//message.bilibili.com']">消息<span class="badge" id="message-badge">1</span></li>
         <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态<span class="badge" id="dynamic-badge">2</span></li>
         <li data-refer=".right-entry__outside[data-header-fav-entry]">收藏</li>
-        <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>
+        <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>`
+            : `<li data-refer="[data-idx=message]">消息<span class="badge" id="message-badge"></span></li>
+        <li data-refer="[data-idx=dynamic]">动态<span class="badge" id="dynamic-badge"></span></li>
+        <li data-refer="[data-idx=fav]">收藏</li>
+        <li data-refer="[data-idx=history]">历史</li>`
+        }
         <li data-refer=".header-avatar-wrap--container">主页</li>
-        <li data-refer=".right-entry__outside.follow-list">关注</li>
+        <li data-refer="[data-idx=follow]">关注</li>
       </li>
     </div>
     `,
@@ -170,7 +200,7 @@ export function setMenuBtn() {
     const falseHeader = Object.assign(document.createElement('div'), {
       className: 'bili-header false-header',
       innerHTML: `
-      <div class="right-entry__outside copy-category"></div>
+      <div data-idx="category" class="right-entry__outside copy-category"></div>
 <div class="v-popover" id="copy-category-dialog">
   <div class="v-popover-content">
     <div class="bili-header-channel-panel">
@@ -225,6 +255,7 @@ export function setMenuBtn() {
 
     const followOutside = document.createElement('div')
     followOutside.className = 'right-entry__outside follow-list'
+    followOutside.dataset.idx = 'follow'
     falseHeader.appendChild(followOutside)
 
     const followDialog = Object.assign(document.createElement('div'), {

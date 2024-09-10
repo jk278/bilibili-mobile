@@ -1,7 +1,7 @@
 /**
  * 设置不同页面的搜索事件的函数
  */
-export function setSearchBtn(page) {
+export function setSearchBtn(type) {
   const searchFab = document.getElementById('search-fab')
   const svg = searchFab.querySelector('svg')
 
@@ -9,8 +9,7 @@ export function setSearchBtn(page) {
   searchOverlay.id = 'search-overlay'
   searchFab.appendChild(searchOverlay)
 
-  const searchContainerSelector =
-    page === 'message' ? '.nav-search-box' : '.center-search-container'
+  const searchContainerSelector = '.center-search-container'
 
   let clickTimer = null
 
@@ -34,7 +33,7 @@ export function setSearchBtn(page) {
    */
   let input = null
 
-  if (page !== 'search' && page !== 'space') {
+  if (type !== 'search' && type !== 'space') {
     searchFab.addEventListener('click', () => {
       input = document.querySelector(`${searchContainerSelector} input`)
       if (!input) {
@@ -45,13 +44,13 @@ export function setSearchBtn(page) {
     })
   }
 
-  if (page === 'search') {
+  if (type === 'search') {
     // 底部显示搜索文本
-    const pageInput = document.querySelector('.search-input input')
+    const typeInput = document.querySelector('.search-input input')
 
     const searchFabText = Object.assign(document.createElement('div'), {
       id: 'search-fab-text',
-      textContent: pageInput.value,
+      textContent: typeInput.value,
     })
     searchFab.appendChild(searchFabText)
 
@@ -119,7 +118,7 @@ export function setSearchBtn(page) {
     })
   }
 
-  if (page === 'space') {
+  if (type === 'space') {
     // 使用 let handleInput 声明变量并在内部块中赋值时，实际上是在创建一个新的函数。即使引用移除事件监听器时能访问到 let handleInput 变量，但是此时 handleInput 变量引用的函数并不是添加事件监听器时使用的那个函数
     const spaceHandleInput = (event) => {
       if (event.key === 'Enter') {

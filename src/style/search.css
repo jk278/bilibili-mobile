@@ -275,6 +275,7 @@ h2.i_card_title>a {
 .live-actions button {
     height: 26px !important;
     width: 70px !important;
+    min-width: 70px;
     border-radius: 13px !important;
 }
 

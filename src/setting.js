@@ -197,7 +197,7 @@ export function handleScriptSetting() {
   const menuOptions = {
     key: 'modify-menu-options',
     value: [true, true, ...Array(6).fill(false)],
-    names: ['分类', '热门', '消息', '动态', '收藏', '历史', '主页', '关注'],
+    names: ['热门', '分类', '消息', '动态', '收藏', '历史', '主页', '关注'], // 菜单选项排序
   }
 
   // 初始化设置

@@ -317,3 +317,8 @@ a.view-all-history-btn {
 .header-banner__inner {
     display: none !important;
 }
+
+/* 未登录点击菜单显示的登录按钮 */
+.login-panel-popover {
+    max-width: 100%;
+}

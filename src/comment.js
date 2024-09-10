@@ -353,11 +353,14 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
             photoShadow,
             `
               #prev, #next, #close {
-                top: 90% !important;
+                top: calc(100% - 120px) !important;
               }
               #close {
                 right: 50% !important;
                 transform: translate(50%, -50%);
+              }
+              #container #zoom-wrap img {
+                -webkit-user-drag: unset;
               }`,
           )
         }
