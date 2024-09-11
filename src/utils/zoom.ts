@@ -23,7 +23,7 @@ export function touchZoomWrap(zoomWrap: HTMLElement) {
       if (event.touches.length === 2) {
         const currentDistance = calculateDistance(event.touches)
         const scale = initialScale * (currentDistance / initialDistance)
-        zoomWrap.style.transform = `scale(${scale})`
+        zoomWrap.style.cssText = `transform: scale(${scale}) !important`
         event.preventDefault() // 防止默认行为
       }
     }
