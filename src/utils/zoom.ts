@@ -15,7 +15,7 @@ export function touchZoomWrap(zoomWrap: HTMLElement) {
       if (event.touches.length === 2) {
         initialDistance = calculateDistance(event.touches)
         const scaleMatch = zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)
-        initialScale = scaleMatch ? +scaleMatch[0] : 1 // 解析当前缩放比例
+        initialScale = scaleMatch ? +scaleMatch[1] : 1 // 解析当前缩放比例
         zoomWrap.addEventListener('touchmove', handleTouchMove)
       }
     }
