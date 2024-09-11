@@ -11,8 +11,6 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
     let singleFingerTimer = 0
     console.log('Here')
 
-    zoomWrap.style.cssText = 'transform: scale(1) translate(0,0) !important;'
-
     const calculateDistance = (touches: TouchList): number => {
       const dx = touches[0].clientX - touches[1].clientX
       const dy = touches[0].clientY - touches[1].clientY
@@ -20,6 +18,12 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
     }
 
     const handleTouchStart = (event: TouchEvent) => {
+      if (zoomWrap.style.cssText.match(/scale3d\(1, 1, 1\)/)) {
+        zoomWrap.style.cssText =
+          'transform: scale(1) translate(0,0) !important;'
+        return
+      }
+
       if (event.touches.length === 2) {
         clearTimeout(singleFingerTimer)
         initialDistance = calculateDistance(event.touches)
@@ -28,7 +32,7 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
           isSingleFinger = true
           startX = event.changedTouches[0].clientX
           startY = event.changedTouches[0].clientY
-        }, 300)
+        }, 200)
       }
 
       initialTransformX = +zoomWrap.style.transform.match(
@@ -76,7 +80,7 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
     }
 
     const handleTouchEnd = (event: TouchEvent) => {
-      zoomWrap.addEventListener('touchend', handleTouchMove)
+      zoomWrap.removeEventListener('touchend', handleTouchMove)
       if (isSingleFinger) {
         if (initialScale === 1) {
           const offsetX = event.changedTouches[0].clientX - startX

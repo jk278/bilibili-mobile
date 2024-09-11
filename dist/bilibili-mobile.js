@@ -1818,13 +1818,16 @@
       let initialTransformY = 0;
       let singleFingerTimer = 0;
       console.log("Here");
-      zoomWrap.style.cssText = "transform: scale(1) translate(0,0) !important;";
       const calculateDistance = (touches) => {
         const dx = touches[0].clientX - touches[1].clientX;
         const dy = touches[0].clientY - touches[1].clientY;
         return Math.sqrt(dx * dx + dy * dy);
       };
       const handleTouchStart = (event) => {
+        if (zoomWrap.style.cssText.match(/scale3d\(1, 1, 1\)/)) {
+          zoomWrap.style.cssText = "transform: scale(1) translate(0,0) !important;";
+          return;
+        }
         if (event.touches.length === 2) {
           clearTimeout(singleFingerTimer);
           initialDistance = calculateDistance(event.touches);
@@ -1833,7 +1836,7 @@
             isSingleFinger = true;
             startX = event.changedTouches[0].clientX;
             startY = event.changedTouches[0].clientY;
-          }, 300);
+          }, 200);
         }
         initialTransformX = +zoomWrap.style.transform.match(
           /translate\(([0-9.])+,[0-9.]\)/
@@ -1876,7 +1879,7 @@
       };
       const handleTouchEnd = (event) => {
         var _a, _b;
-        zoomWrap.addEventListener("touchend", handleTouchMove);
+        zoomWrap.removeEventListener("touchend", handleTouchMove);
         if (isSingleFinger) {
           if (initialScale === 1) {
             const offsetX = event.changedTouches[0].clientX - startX;
