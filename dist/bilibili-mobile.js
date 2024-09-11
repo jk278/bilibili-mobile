@@ -1835,13 +1835,13 @@
             isSingleFinger = true;
             startX = event.changedTouches[0].clientX;
             startY = event.changedTouches[0].clientY;
-          }, 200);
+          }, 250);
         }
         initialTransformX = +zoomWrap.style.transform.match(
-          /translate\(([0-9.]+)px, [0-9.]+px\)/
+          /translate\((-?[0-9.]+)px, -?[0-9.]+px\)/
         )[1];
         initialTransformY = +zoomWrap.style.transform.match(
-          /translate\([0-9.]+px, ([0-9.]+)px\)/
+          /translate\(-?[0-9.]+px, (-?[0-9.]+)px\)/
         )[1];
         initialScale = +zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)[1];
         zoomWrap.addEventListener("touchmove", handleTouchMove);
@@ -1854,7 +1854,7 @@
           if (preScale < 1) {
             scale = 1;
             zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-              /translate\([0-9.]+px, [0-9.]+px\)/,
+              /translate\(-?[0-9.]+px, -?[0-9.]+px\)/,
               `translate(0px, 0px)`
             );
           } else {
@@ -1870,7 +1870,7 @@
             const deltaX = event.changedTouches[0].clientX - startX;
             const deltaY = event.changedTouches[0].clientY - startY;
             zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-              /translate\([0-9.]+px, [0-9.]+px\)/,
+              /translate\(-?[0-9.]+px, -?[0-9.]+px\)/,
               `translate(${initialTransformX + deltaX}px, ${initialTransformY + deltaY}px)`
             );
           }
