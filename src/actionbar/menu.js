@@ -41,13 +41,17 @@ export function setMenuBtn() {
     ) {
       isOldApp = true
       preload()
-      document.querySelector('data-refer="[data-idx=message]"').dataset.refer =
-        ".right-entry__outside[href='//message.bilibili.com']"
-      document.querySelector('data-refer="[data-idx=dynamic]"').dataset.refer =
-        ".right-entry__outside[href='//t.bilibili.com/']"
-      document.querySelector('data-refer="[data-idx=fav]"').dataset.refer =
+      document.querySelector(
+        '[data-refer="[data-idx=message]"]',
+      ).dataset.refer = ".right-entry__outside[href='//message.bilibili.com']"
+      document.querySelector(
+        '[data-refer="[data-idx=dynamic]"]',
+      ).dataset.refer = ".right-entry__outside[href='//t.bilibili.com/']"
+      document.querySelector('[data-refer="[data-idx=fav]"]').dataset.refer =
         '.right-entry__outside[data-header-fav-entry]'
-      document.querySelector('data-refer="[data-idx=history]"').dataset.refer =
+      document.querySelector(
+        '[data-refer="[data-idx=history]"]',
+      ).dataset.refer =
         ".right-entry__outside[href='//www.bilibili.com/account/history']"
     } else if (
       document.querySelector(preloadeditems2[0]) && // 排除登录、主页

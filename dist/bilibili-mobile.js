@@ -1594,10 +1594,16 @@
       document.querySelector(preloadeditems1[1]) && document.querySelector(preloadeditems1[2])) {
         isOldApp = true;
         preload();
-        document.querySelector('data-refer="[data-idx=message]"').dataset.refer = ".right-entry__outside[href='//message.bilibili.com']";
-        document.querySelector('data-refer="[data-idx=dynamic]"').dataset.refer = ".right-entry__outside[href='//t.bilibili.com/']";
-        document.querySelector('data-refer="[data-idx=fav]"').dataset.refer = ".right-entry__outside[data-header-fav-entry]";
-        document.querySelector('data-refer="[data-idx=history]"').dataset.refer = ".right-entry__outside[href='//www.bilibili.com/account/history']";
+        document.querySelector(
+          '[data-refer="[data-idx=message]"]'
+        ).dataset.refer = ".right-entry__outside[href='//message.bilibili.com']";
+        document.querySelector(
+          '[data-refer="[data-idx=dynamic]"]'
+        ).dataset.refer = ".right-entry__outside[href='//t.bilibili.com/']";
+        document.querySelector('[data-refer="[data-idx=fav]"]').dataset.refer = ".right-entry__outside[data-header-fav-entry]";
+        document.querySelector(
+          '[data-refer="[data-idx=history]"]'
+        ).dataset.refer = ".right-entry__outside[href='//www.bilibili.com/account/history']";
       } else if (document.querySelector(preloadeditems2[0]) && // 排除登录、主页
       document.querySelector(preloadeditems2[1]) && document.querySelector(preloadeditems2[2]) && document.querySelector(preloadeditems2[3])) {
         isOldApp = false;
