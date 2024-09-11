@@ -1811,11 +1811,13 @@
     if (zoomWrap) {
       let initialDistance = 0;
       let initialScale = 1;
-      let isSingleFinger = false;
       let startX = 0;
       let startY = 0;
       let initialTransformX = 0;
       let initialTransformY = 0;
+      let isSingleFinger = false;
+      let isTwoFingerZooming = false;
+      let touchCount = 0;
       console.log("Here");
       const calculateDistance = (touches) => {
         const dx = touches[0].clientX - touches[1].clientX;
@@ -1823,11 +1825,13 @@
         return Math.sqrt(dx * dx + dy * dy);
       };
       const handleTouchStart = (event) => {
+        touchCount++;
         if (zoomWrap.style.cssText.match(/scale3d\(1, 1, 1\)/)) {
           zoomWrap.style.cssText = "transform: scale(1) translate(0px, 0px) !important;";
         }
         if (event.touches.length === 2) {
           isSingleFinger = false;
+          isTwoFingerZooming = true;
           initialDistance = calculateDistance(event.touches);
         } else if (event.touches.length === 1) {
           isSingleFinger = true;
@@ -1844,7 +1848,7 @@
         zoomWrap.addEventListener("touchmove", handleTouchMove);
       };
       const handleTouchMove = (event) => {
-        if (event.touches.length === 2) {
+        if (isTwoFingerZooming) {
           const currentDistance = calculateDistance(event.touches);
           const preScale = initialScale * (currentDistance / initialDistance);
           let scale;
@@ -1862,8 +1866,8 @@
             `scale(${scale})`
           );
           event.preventDefault();
-        } else if (event.touches.length === 1) {
-          if (initialScale > 1) {
+        } else {
+          if (initialScale > 1.05) {
             const deltaX = event.changedTouches[0].clientX - startX;
             const deltaY = event.changedTouches[0].clientY - startY;
             zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
@@ -1875,6 +1879,7 @@
       };
       const handleTouchEnd = (event) => {
         var _a, _b;
+        touchCount--;
         zoomWrap.removeEventListener("touchend", handleTouchMove);
         if (isSingleFinger) {
           if (initialScale === 1) {
@@ -1888,6 +1893,9 @@
               }
             }
           }
+        }
+        if (touchCount === 0) {
+          isTwoFingerZooming = false;
         }
       };
       zoomWrap.addEventListener("touchstart", handleTouchStart);

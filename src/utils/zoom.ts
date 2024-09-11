@@ -3,11 +3,13 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
   if (zoomWrap) {
     let initialDistance = 0
     let initialScale = 1
-    let isSingleFinger = false
     let startX = 0
     let startY = 0
     let initialTransformX = 0
     let initialTransformY = 0
+    let isSingleFinger = false
+    let isTwoFingerZooming = false
+    let touchCount = 0
     console.log('Here')
 
     const calculateDistance = (touches: TouchList): number => {
@@ -17,6 +19,7 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
     }
 
     const handleTouchStart = (event: TouchEvent) => {
+      touchCount++
       if (zoomWrap.style.cssText.match(/scale3d\(1, 1, 1\)/)) {
         zoomWrap.style.cssText =
           'transform: scale(1) translate(0px, 0px) !important;'
@@ -24,6 +27,7 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
 
       if (event.touches.length === 2) {
         isSingleFinger = false
+        isTwoFingerZooming = true
         initialDistance = calculateDistance(event.touches)
       } else if (event.touches.length === 1) {
         isSingleFinger = true
@@ -42,7 +46,7 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
     }
 
     const handleTouchMove = (event: TouchEvent) => {
-      if (event.touches.length === 2) {
+      if (isTwoFingerZooming) {
         const currentDistance = calculateDistance(event.touches)
         const preScale = initialScale * (currentDistance / initialDistance)
         let scale
@@ -62,8 +66,9 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
         )
 
         event.preventDefault() // 防止默认行为
-      } else if (event.touches.length === 1) {
-        if (initialScale > 1) {
+      } else {
+        if (initialScale > 1.05) {
+          // 防止双指变单指时，内容跳动
           const deltaX = event.changedTouches[0].clientX - startX
           const deltaY = event.changedTouches[0].clientY - startY
 
@@ -76,6 +81,7 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
     }
 
     const handleTouchEnd = (event: TouchEvent) => {
+      touchCount--
       zoomWrap.removeEventListener('touchend', handleTouchMove)
       if (isSingleFinger) {
         if (initialScale === 1) {
@@ -90,6 +96,9 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
             }
           }
         }
+      }
+      if (touchCount === 0) {
+        isTwoFingerZooming = false
       }
     }
     zoomWrap.addEventListener('touchstart', handleTouchStart)
