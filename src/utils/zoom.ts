@@ -68,9 +68,11 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
         event.preventDefault() // 防止默认行为
       } else {
         if (initialScale > 1.05) {
-          // 防止双指变单指时，内容跳动
-          const deltaX = event.changedTouches[0].clientX - startX
-          const deltaY = event.changedTouches[0].clientY - startY
+          // 防止未还原到位
+          const deltaX =
+            (event.changedTouches[0].clientX - startX) / initialScale
+          const deltaY =
+            (event.changedTouches[0].clientY - startY) / initialScale
 
           zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
             /translate\(-?[0-9.]+px, -?[0-9.]+px\)/,
@@ -84,7 +86,7 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
       touchCount--
       zoomWrap.removeEventListener('touchend', handleTouchMove)
       if (isSingleFinger) {
-        if (initialScale === 1) {
+        if (initialScale < 1.05) {
           const offsetX = event.changedTouches[0].clientX - startX
           const offsetY = event.changedTouches[0].clientY - startY
 
