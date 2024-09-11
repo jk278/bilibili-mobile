@@ -8,7 +8,6 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
     let startY = 0
     let initialTransformX = 0
     let initialTransformY = 0
-    let singleFingerTimer = 0
     console.log('Here')
 
     const calculateDistance = (touches: TouchList): number => {
@@ -24,14 +23,12 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
       }
 
       if (event.touches.length === 2) {
-        clearTimeout(singleFingerTimer)
+        isSingleFinger = false
         initialDistance = calculateDistance(event.touches)
       } else if (event.touches.length === 1) {
-        singleFingerTimer = setTimeout(() => {
-          isSingleFinger = true
-          startX = event.changedTouches[0].clientX
-          startY = event.changedTouches[0].clientY
-        }, 250)
+        isSingleFinger = true
+        startX = event.changedTouches[0].clientX
+        startY = event.changedTouches[0].clientY
       }
 
       initialTransformX = +zoomWrap.style.transform.match(
