@@ -1,9 +1,9 @@
 /**
  * 设置不同页面的搜索事件的函数
  */
-export function setSearchBtn(type) {
-  const searchFab = document.getElementById('search-fab')
-  const svg = searchFab.querySelector('svg')
+export function setSearchBtn(type: 'search' | 'space' | string) {
+  const searchFab = document.getElementById('search-fab') as HTMLElement
+  const svg = searchFab.querySelector('svg') as SVGElement
 
   const searchOverlay = document.createElement('div')
   searchOverlay.id = 'search-overlay'
@@ -11,11 +11,13 @@ export function setSearchBtn(type) {
 
   const searchContainerSelector = '.center-search-container'
 
-  let clickTimer = null
+  let clickTimer: number = 0
 
-  function handleClick(input) {
+  function handleClick(input: HTMLInputElement) {
     // 滑动时 .center-search-container 的 class 会刷新
-    const searchContainer = document.querySelector(`${searchContainerSelector}`)
+    const searchContainer = document.querySelector(
+      `${searchContainerSelector}`,
+    ) as HTMLElement
 
     searchContainer.style.cssText = 'display: block !important' // 修复搜索页优先隐藏
     // 在同一个执行上下文中修改多个 CSS 属性时，浏览器会将这些属性的变化合并为一个重绘和重排操作
@@ -31,14 +33,16 @@ export function setSearchBtn(type) {
   /**
    * 单击事件、双击事件、searchOverlay 共用的 input
    */
-  let input = null
+  let input: HTMLInputElement // 在 TypeScript 中，类型检查是静态的，类型为 (... | null) 则要次次判断
 
   if (type !== 'search' && type !== 'space') {
     searchFab.addEventListener('click', () => {
-      input = document.querySelector(`${searchContainerSelector} input`)
-      if (!input) {
-        return
-      }
+      const inputElem = document.querySelector(
+        `${searchContainerSelector} input`,
+      ) as HTMLInputElement | null
+      if (inputElem) {
+        input = inputElem
+      } else return
 
       handleClick(input)
     })
@@ -46,7 +50,9 @@ export function setSearchBtn(type) {
 
   if (type === 'search') {
     // 底部显示搜索文本
-    const typeInput = document.querySelector('.search-input input')
+    const typeInput = document.querySelector(
+      '.search-input input',
+    ) as HTMLInputElement
 
     const searchFabText = Object.assign(document.createElement('div'), {
       id: 'search-fab-text',
@@ -60,22 +66,26 @@ export function setSearchBtn(type) {
 
     // 文本更新到底部搜索
     const handleInput = () => {
-      searchFabText.textContent = input.value
-      if (input.value === '') {
-        searchFab.style.cssText = ''
-        svg.style.flex = ''
-      } else {
-        searchFab.style.cssText =
-          'background-color: var(--graph_bg_thick); border-radius: 16px;'
-        svg.style.flex = '0 0 20px'
+      if (input) {
+        searchFabText.textContent = input.value
+        if (input.value === '') {
+          searchFab.style.cssText = ''
+          svg.style.flex = ''
+        } else {
+          searchFab.style.cssText =
+            'background-color: var(--graph_bg_thick); border-radius: 16px;'
+          svg.style.flex = '0 0 20px'
+        }
       }
     }
 
     searchFab.addEventListener('click', () => {
-      input = document.querySelector(`${searchContainerSelector} input`)
-      if (!input) {
-        return
-      }
+      const inputElem = document.querySelector(
+        `${searchContainerSelector} input`,
+      ) as HTMLInputElement | null
+      if (inputElem) {
+        input = inputElem
+      } else return
 
       clearTimeout(clickTimer)
 
@@ -120,13 +130,17 @@ export function setSearchBtn(type) {
 
   if (type === 'space') {
     // 使用 let handleInput 声明变量并在内部块中赋值时，实际上是在创建一个新的函数。即使引用移除事件监听器时能访问到 let handleInput 变量，但是此时 handleInput 变量引用的函数并不是添加事件监听器时使用的那个函数
-    const spaceHandleInput = (event) => {
+    const spaceHandleInput = (event: KeyboardEvent) => {
       if (event.key === 'Enter') {
-        const spaceInput = document.querySelector('#navigator .space_input')
-        const spaceSearchBtn = document.querySelector('#navigator .search-btn')
+        const spaceInput = document.querySelector(
+          '#navigator .space_input',
+        ) as HTMLInputElement
+        const spaceSearchBtn = document.querySelector(
+          '#navigator .search-btn',
+        ) as HTMLElement
 
         event.preventDefault()
-        spaceInput.value = input.value
+        spaceInput.value = input!.value as string
         spaceInput.dispatchEvent(new Event('input', { bubbles: true }))
         spaceSearchBtn.click()
 
@@ -135,10 +149,12 @@ export function setSearchBtn(type) {
     }
 
     searchFab.addEventListener('click', () => {
-      input = document.querySelector(`${searchContainerSelector} input`)
-      if (!input) {
-        return
-      }
+      const inputElem = document.querySelector(
+        `${searchContainerSelector} input`,
+      ) as HTMLInputElement | null
+      if (inputElem) {
+        input = inputElem
+      } else return
 
       clearTimeout(clickTimer)
 
@@ -151,8 +167,10 @@ export function setSearchBtn(type) {
         // 引用回调函数时，形参写在函数声明中，不需要内联一个匿名函数 (匿名内部函数, 无函数名)
         input.addEventListener('keydown', spaceHandleInput)
 
-        const searchPanel = document.querySelector('.search-panel')
-        const firstChild = searchPanel.firstChild
+        const searchPanel = document.querySelector(
+          '.search-panel',
+        ) as HTMLElement
+        const firstChild = searchPanel.firstChild as HTMLElement
         if (
           firstChild.nodeType === Node.COMMENT_NODE ||
           !firstChild.classList.contains('space-search-tip')
@@ -185,7 +203,9 @@ export function setSearchBtn(type) {
   searchOverlay.addEventListener('click', (event) => {
     event.stopPropagation()
 
-    const searchContainer = document.querySelector(`${searchContainerSelector}`)
+    const searchContainer = document.querySelector(
+      `${searchContainerSelector}`,
+    ) as HTMLElement
 
     searchContainer.removeAttribute('show')
     searchContainer.addEventListener(

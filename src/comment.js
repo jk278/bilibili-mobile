@@ -1,3 +1,5 @@
+import { touchZoomWrap } from './utils/zoom.ts'
+
 /**
  * 动态修改播放组件样式
  * @param {boolean} isDynamicRefresh - 是否动态刷新
@@ -348,26 +350,35 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
           node.nodeType === Node.ELEMENT_NODE &&
           node.nodeName.toLowerCase() === 'bili-photoswipe'
         ) {
-          node.addEventListener(
-            'touchmove',
+          const photoShadow = node.shadowRoot
+          const zoomWrap = photoShadow.querySelector('#zoom-wrap')
+
+          zoomWrap.addEventListener(
+            'click',
             (event) => {
-              event.stopImmediatePropagation() // 禁用阻止缩放的事件
+              event.stopImmediatePropagation() // 禁用点击
+              photoShadow.querySelector('#close').click()
             },
             true,
             { once: true },
           )
 
-          const photoShadow = node.shadowRoot
+          touchZoomWrap(zoomWrap)
+
           appendStyle(
             photoShadow,
-            `
-              #prev, #next, #close {
-                top: calc(100% - 120px) !important;
-              }
-              #close {
-                right: 50% !important;
-                transform: translate(50%, -50%);
-              }`,
+            `#container {z-index:3;}
+#prev, #next, #close {visibility: hidden;}
+#item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#zoom-wrap {
+  position: unset !important;
+  transform: none !important;
+}
+`,
           )
         }
       })

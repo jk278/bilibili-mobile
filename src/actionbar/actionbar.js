@@ -1,4 +1,4 @@
-import { setSearchBtn } from './search.js'
+import { setSearchBtn } from './search.ts'
 import { setMenuBtn } from './menu.js'
 import { setSidebarBtn } from './sidebar.js'
 
