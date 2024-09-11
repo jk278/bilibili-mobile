@@ -1836,10 +1836,10 @@
           }, 300);
         }
         initialTransformX = +zoomWrap.style.transform.match(
-          /transform\(([0-9.])+,[0-9.]\)/
+          /translate\(([0-9.])+,[0-9.]\)/
         )[1];
         initialTransformY = +zoomWrap.style.transform.match(
-          /transform\([0-9.]+,([0-9.])\)/
+          /translate\([0-9.]+,([0-9.])\)/
         )[1];
         initialScale = +zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)[1];
         zoomWrap.addEventListener("touchmove", handleTouchMove);
@@ -1852,8 +1852,8 @@
           if (preScale < 1) {
             scale = 1;
             zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-              /transform\([0-9.]+,[0-9.]+\)/,
-              `transform(0,0)`
+              /translate\([0-9.]+,[0-9.]+\)/,
+              `translate(0,0)`
             );
           } else {
             scale = preScale;
@@ -1868,8 +1868,8 @@
             const deltaX = event.changedTouches[0].clientX - startX;
             const deltaY = event.changedTouches[0].clientY - startY;
             zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-              /transform\([0-9.]+,[0-9.]+\)/,
-              `transform(${initialTransformX + deltaX},${initialTransformY + deltaY})`
+              /translate\([0-9.]+,[0-9.]+\)/,
+              `translate(${initialTransformX + deltaX},${initialTransformY + deltaY})`
             );
           }
         }

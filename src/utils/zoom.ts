@@ -32,10 +32,10 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
       }
 
       initialTransformX = +zoomWrap.style.transform.match(
-        /transform\(([0-9.])+,[0-9.]\)/,
+        /translate\(([0-9.])+,[0-9.]\)/,
       )![1]
       initialTransformY = +zoomWrap.style.transform.match(
-        /transform\([0-9.]+,([0-9.])\)/,
+        /translate\([0-9.]+,([0-9.])\)/,
       )![1] // 解析当前偏移
       initialScale = +zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)![1] // 解析当前缩放比例
       zoomWrap.addEventListener('touchmove', handleTouchMove)
@@ -49,8 +49,8 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
         if (preScale < 1) {
           scale = 1
           zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-            /transform\([0-9.]+,[0-9.]+\)/,
-            `transform(0,0)`,
+            /translate\([0-9.]+,[0-9.]+\)/,
+            `translate(0,0)`,
           )
         } else {
           scale = preScale
@@ -68,8 +68,8 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
           const deltaY = event.changedTouches[0].clientY - startY
 
           zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-            /transform\([0-9.]+,[0-9.]+\)/,
-            `transform(${initialTransformX + deltaX},${initialTransformY + deltaY})`,
+            /translate\([0-9.]+,[0-9.]+\)/,
+            `translate(${initialTransformX + deltaX},${initialTransformY + deltaY})`,
           )
         }
       }
