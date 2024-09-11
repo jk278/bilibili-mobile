@@ -1825,7 +1825,7 @@
       };
       const handleTouchStart = (event) => {
         if (zoomWrap.style.cssText.match(/scale3d\(1, 1, 1\)/)) {
-          zoomWrap.style.cssText = "transform: scale(1) translate(0px,0px) !important;";
+          zoomWrap.style.cssText = "transform: scale(1) translate(0px, 0px) !important;";
         }
         if (event.touches.length === 2) {
           clearTimeout(singleFingerTimer);
@@ -1838,10 +1838,10 @@
           }, 200);
         }
         initialTransformX = +zoomWrap.style.transform.match(
-          /translate\(([0-9.]+)px,[0-9.]+px\)/
+          /translate\(([0-9.]+)px, [0-9.]+px\)/
         )[1];
         initialTransformY = +zoomWrap.style.transform.match(
-          /translate\([0-9.]+px,([0-9.]+)px\)/
+          /translate\([0-9.]+px, ([0-9.]+)px\)/
         )[1];
         initialScale = +zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)[1];
         zoomWrap.addEventListener("touchmove", handleTouchMove);
@@ -1854,8 +1854,8 @@
           if (preScale < 1) {
             scale = 1;
             zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-              /translate\([0-9.]+px,[0-9.]+px\)/,
-              `translate(0px,0px)`
+              /translate\([0-9.]+px, [0-9.]+px\)/,
+              `translate(0px, 0px)`
             );
           } else {
             scale = preScale;
@@ -1870,8 +1870,8 @@
             const deltaX = event.changedTouches[0].clientX - startX;
             const deltaY = event.changedTouches[0].clientY - startY;
             zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-              /translate\([0-9.]+px,[0-9.]+px\)/,
-              `translate(${initialTransformX + deltaX}px,${initialTransformY + deltaY}px)`
+              /translate\([0-9.]+px, [0-9.]+px\)/,
+              `translate(${initialTransformX + deltaX}px, ${initialTransformY + deltaY}px)`
             );
           }
         }
