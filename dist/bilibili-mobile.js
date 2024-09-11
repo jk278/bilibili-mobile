@@ -1820,7 +1820,8 @@
       const handleTouchStart = (event) => {
         if (event.touches.length === 2) {
           initialDistance = calculateDistance(event.touches);
-          initialScale = +zoomWrap.style.transform.replace(/[^0-9.]/g, "") || 1;
+          const scaleMatch = zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/);
+          initialScale = scaleMatch ? +scaleMatch[0] : 1;
           zoomWrap.addEventListener("touchmove", handleTouchMove);
         }
       };
