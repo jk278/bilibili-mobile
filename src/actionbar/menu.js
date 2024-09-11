@@ -5,7 +5,7 @@ import { getUnreadNums } from '../api.js'
 import { handleTransitionEndOnce } from '../utils/transition.ts'
 
 export function setMenuBtn() {
-  console.log('Menu')
+  // console.log('Menu')
   let isOldApp
   // 覆盖显隐，初始化加载：消息、动态、收藏、历史（依DOM中顺序）、主页（从最前置最后））
   const preloadeditems1 = [
@@ -41,18 +41,27 @@ export function setMenuBtn() {
     ) {
       isOldApp = true
       preload()
-      document.querySelector(
-        '[data-refer="[data-idx=message]"]',
-      ).dataset.refer = ".right-entry__outside[href='//message.bilibili.com']"
-      document.querySelector(
-        '[data-refer="[data-idx=dynamic]"]',
-      ).dataset.refer = ".right-entry__outside[href='//t.bilibili.com/']"
-      document.querySelector('[data-refer="[data-idx=fav]"]').dataset.refer =
-        '.right-entry__outside[data-header-fav-entry]'
-      document.querySelector(
-        '[data-refer="[data-idx=history]"]',
-      ).dataset.refer =
-        ".right-entry__outside[href='//www.bilibili.com/account/history']"
+      changeMenu()
+      function changeMenu() {
+        if (document.querySelector('#header-in-menu')) {
+          document.querySelector(
+            '[data-refer="[data-idx=message]"]',
+          ).dataset.refer =
+            ".right-entry__outside[href='//message.bilibili.com']"
+          document.querySelector(
+            '[data-refer="[data-idx=dynamic]"]',
+          ).dataset.refer = ".right-entry__outside[href='//t.bilibili.com/']"
+          document.querySelector(
+            '[data-refer="[data-idx=fav]"]',
+          ).dataset.refer = '.right-entry__outside[data-header-fav-entry]'
+          document.querySelector(
+            '[data-refer="[data-idx=history]"]',
+          ).dataset.refer =
+            ".right-entry__outside[href='//www.bilibili.com/account/history']"
+        } else {
+          setTimeout(changeMenu, 50)
+        }
+      }
     } else if (
       document.querySelector(preloadeditems2[0]) && // 排除登录、主页
       document.querySelector(preloadeditems2[1]) &&
