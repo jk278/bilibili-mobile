@@ -1818,7 +1818,6 @@
       let isSingleFinger = false;
       let isTwoFingerZooming = false;
       let touchCount = 0;
-      console.log("Here");
       const calculateDistance = (touches) => {
         const dx = touches[0].clientX - touches[1].clientX;
         const dy = touches[0].clientY - touches[1].clientY;

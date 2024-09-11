@@ -10,7 +10,7 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
     let isSingleFinger = false
     let isTwoFingerZooming = false
     let touchCount = 0
-    console.log('Here')
+    // console.log('Here')
 
     const calculateDistance = (touches: TouchList): number => {
       const dx = touches[0].clientX - touches[1].clientX
