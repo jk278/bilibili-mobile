@@ -1563,6 +1563,7 @@
     const formatUrl = (url) => url.slice(url.indexOf(":") + 1);
   }
   function setMenuBtn() {
+    console.log("Menu");
     let isOldApp;
     const preloadeditems1 = [
       // 旧APP不用预加载消息

@@ -5,6 +5,7 @@ import { getUnreadNums } from '../api.js'
 import { handleTransitionEndOnce } from '../utils/transition.ts'
 
 export function setMenuBtn() {
+  console.log('Menu')
   let isOldApp
   // 覆盖显隐，初始化加载：消息、动态、收藏、历史（依DOM中顺序）、主页（从最前置最后））
   const preloadeditems1 = [
