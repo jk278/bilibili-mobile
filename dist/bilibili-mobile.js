@@ -2437,7 +2437,6 @@
     const container = document.querySelector(".container");
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        console.log(mutation.addedNodes);
         mutation.addedNodes.forEach((node) => {
           if (node.nodeType === Node.ELEMENT_NODE && node.className === "load-more-anchor") {
             anchor = node;
