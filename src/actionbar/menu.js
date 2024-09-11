@@ -5,7 +5,7 @@ import { getUnreadNums } from '../api.js'
 import { handleTransitionEndOnce } from '../utils/transition.ts'
 
 export function setMenuBtn() {
-  console.log('Menu')
+  // console.log('Menu')
   let isOldApp
   // 覆盖显隐，初始化加载：消息、动态、收藏、历史（依DOM中顺序）、主页（从最前置最后））
   const preloadeditems1 = [
@@ -41,6 +41,14 @@ export function setMenuBtn() {
     ) {
       isOldApp = true
       preload()
+      document.querySelector('data-refer="[data-idx=message]"').dataset.refer =
+        ".right-entry__outside[href='//message.bilibili.com']"
+      document.querySelector('data-refer="[data-idx=dynamic]"').dataset.refer =
+        ".right-entry__outside[href='//t.bilibili.com/']"
+      document.querySelector('data-refer="[data-idx=fav]"').dataset.refer =
+        '.right-entry__outside[data-header-fav-entry]'
+      document.querySelector('data-refer="[data-idx=history]"').dataset.refer =
+        ".right-entry__outside[href='//www.bilibili.com/account/history']"
     } else if (
       document.querySelector(preloadeditems2[0]) && // 排除登录、主页
       document.querySelector(preloadeditems2[1]) &&
@@ -65,17 +73,10 @@ export function setMenuBtn() {
       <ul>
         <li><a target="_blank" href="https://www.bilibili.com/v/popular/all/">热门</a></li>
         <li data-refer="[data-idx=category]">分类</li>
-        ${
-          isOldApp
-            ? `<li data-refer=".right-entry__outside[href='//message.bilibili.com']">消息<span class="badge" id="message-badge">1</span></li>
-        <li data-refer=".right-entry__outside[href='//t.bilibili.com/']">动态<span class="badge" id="dynamic-badge">2</span></li>
-        <li data-refer=".right-entry__outside[data-header-fav-entry]">收藏</li>
-        <li data-refer=".right-entry__outside[href='//www.bilibili.com/account/history']">历史</li>`
-            : `<li data-refer="[data-idx=message]">消息<span class="badge" id="message-badge"></span></li>
+        <li data-refer="[data-idx=message]">消息<span class="badge" id="message-badge"></span></li>
         <li data-refer="[data-idx=dynamic]">动态<span class="badge" id="dynamic-badge"></span></li>
         <li data-refer="[data-idx=fav]">收藏</li>
-        <li data-refer="[data-idx=history]">历史</li>`
-        }
+        <li data-refer="[data-idx=history]">历史</li>
         <li data-refer=".header-avatar-wrap--container">主页</li>
         <li data-refer="[data-idx=follow]">关注</li>
       </li>
