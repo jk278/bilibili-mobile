@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili 移动端
 // @namespace    https://github.com/jk278/bilibili-mobile
-// @version      5.0-beta.34
+// @version      5.0-beta.35
 // @author       jk278
 // @description  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @license      MIT
@@ -2196,7 +2196,9 @@
             touchZoomWrap(zoomWrap, photoShadow);
             appendStyle(
               photoShadow,
-              `#container {z-index:3;}
+              `
+#container {z-index:3;}
+#thumb {z-index: 4;}
 #prev, #next, #close {visibility: hidden;}
 #item {
   display: flex;

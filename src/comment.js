@@ -367,7 +367,9 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
 
           appendStyle(
             photoShadow,
-            `#container {z-index:3;}
+            `
+#container {z-index:3;}
+#thumb {z-index: 4;}
 #prev, #next, #close {visibility: hidden;}
 #item {
   display: flex;
