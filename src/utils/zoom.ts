@@ -8,6 +8,7 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
     let startY = 0
     let initialTransformX = 0
     let initialTransformY = 0
+    let singleFingerTimer = 0
     console.log('Here')
 
     zoomWrap.style.cssText = 'transform: scale(1) translate(0,0) !important;'
@@ -20,19 +21,22 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
 
     const handleTouchStart = (event: TouchEvent) => {
       if (event.touches.length === 2) {
+        clearTimeout(singleFingerTimer)
         initialDistance = calculateDistance(event.touches)
       } else if (event.touches.length === 1) {
-        isSingleFinger = true
-        startX = event.changedTouches[0].clientX
-        startY = event.changedTouches[0].clientY
-        initialTransformX = +zoomWrap.style.transform.match(
-          /transform\(([0-9.])+,[0-9.]\)/,
-        )![1]
-        initialTransformY = +zoomWrap.style.transform.match(
-          /transform\([0-9.]+,([0-9.])\)/,
-        )![1] // 解析当前偏移
+        singleFingerTimer = setTimeout(() => {
+          isSingleFinger = true
+          startX = event.changedTouches[0].clientX
+          startY = event.changedTouches[0].clientY
+        }, 300)
       }
 
+      initialTransformX = +zoomWrap.style.transform.match(
+        /transform\(([0-9.])+,[0-9.]\)/,
+      )![1]
+      initialTransformY = +zoomWrap.style.transform.match(
+        /transform\([0-9.]+,([0-9.])\)/,
+      )![1] // 解析当前偏移
       initialScale = +zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)![1] // 解析当前缩放比例
       zoomWrap.addEventListener('touchmove', handleTouchMove)
     }
@@ -80,9 +84,9 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
 
           if (Math.abs(offsetX) > 55 && Math.abs(offsetY / offsetX) < 1 / 2) {
             if (offsetX > 0) {
-              ;(photoShadow.querySelector('#next') as HTMLElement)?.click()
-            } else {
               ;(photoShadow.querySelector('#prev') as HTMLElement)?.click()
+            } else {
+              ;(photoShadow.querySelector('#next') as HTMLElement)?.click()
             }
           }
         }

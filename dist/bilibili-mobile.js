@@ -1816,6 +1816,7 @@
       let startY = 0;
       let initialTransformX = 0;
       let initialTransformY = 0;
+      let singleFingerTimer = 0;
       console.log("Here");
       zoomWrap.style.cssText = "transform: scale(1) translate(0,0) !important;";
       const calculateDistance = (touches) => {
@@ -1825,18 +1826,21 @@
       };
       const handleTouchStart = (event) => {
         if (event.touches.length === 2) {
+          clearTimeout(singleFingerTimer);
           initialDistance = calculateDistance(event.touches);
         } else if (event.touches.length === 1) {
-          isSingleFinger = true;
-          startX = event.changedTouches[0].clientX;
-          startY = event.changedTouches[0].clientY;
-          initialTransformX = +zoomWrap.style.transform.match(
-            /transform\(([0-9.])+,[0-9.]\)/
-          )[1];
-          initialTransformY = +zoomWrap.style.transform.match(
-            /transform\([0-9.]+,([0-9.])\)/
-          )[1];
+          singleFingerTimer = setTimeout(() => {
+            isSingleFinger = true;
+            startX = event.changedTouches[0].clientX;
+            startY = event.changedTouches[0].clientY;
+          }, 300);
         }
+        initialTransformX = +zoomWrap.style.transform.match(
+          /transform\(([0-9.])+,[0-9.]\)/
+        )[1];
+        initialTransformY = +zoomWrap.style.transform.match(
+          /transform\([0-9.]+,([0-9.])\)/
+        )[1];
         initialScale = +zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)[1];
         zoomWrap.addEventListener("touchmove", handleTouchMove);
       };
@@ -1879,9 +1883,9 @@
             const offsetY = event.changedTouches[0].clientY - startY;
             if (Math.abs(offsetX) > 55 && Math.abs(offsetY / offsetX) < 1 / 2) {
               if (offsetX > 0) {
-                (_a = photoShadow.querySelector("#next")) == null ? void 0 : _a.click();
+                (_a = photoShadow.querySelector("#prev")) == null ? void 0 : _a.click();
               } else {
-                (_b = photoShadow.querySelector("#prev")) == null ? void 0 : _b.click();
+                (_b = photoShadow.querySelector("#next")) == null ? void 0 : _b.click();
               }
             }
           }
