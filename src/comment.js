@@ -363,7 +363,7 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
             { once: true },
           )
 
-          touchZoomWrap(zoomWrap)
+          touchZoomWrap(zoomWrap, photoShadow)
 
           appendStyle(
             photoShadow,

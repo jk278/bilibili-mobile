@@ -1,9 +1,16 @@
 // zoom.ts
-export function touchZoomWrap(zoomWrap: HTMLElement) {
+export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
   if (zoomWrap) {
     let initialDistance = 0
     let initialScale = 1
+    let isSingleFinger = false
+    let startX = 0
+    let startY = 0
+    let initialTransformX = 0
+    let initialTransformY = 0
     console.log('Here')
+
+    zoomWrap.style.cssText = 'transform: scale(1) translate(0,0) !important;'
 
     const calculateDistance = (touches: TouchList): number => {
       const dx = touches[0].clientX - touches[1].clientX
@@ -14,27 +21,73 @@ export function touchZoomWrap(zoomWrap: HTMLElement) {
     const handleTouchStart = (event: TouchEvent) => {
       if (event.touches.length === 2) {
         initialDistance = calculateDistance(event.touches)
-        const scaleMatch = zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)
-        initialScale = scaleMatch ? +scaleMatch[1] : 1 // 解析当前缩放比例
-        zoomWrap.addEventListener('touchmove', handleTouchMove)
+      } else if (event.touches.length === 1) {
+        isSingleFinger = true
+        startX = event.changedTouches[0].clientX
+        startY = event.changedTouches[0].clientY
+        initialTransformX = +zoomWrap.style.transform.match(
+          /transform\(([0-9.])+,[0-9.]\)/,
+        )![1]
+        initialTransformY = +zoomWrap.style.transform.match(
+          /transform\([0-9.]+,([0-9.])\)/,
+        )![1] // 解析当前偏移
       }
+
+      initialScale = +zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)![1] // 解析当前缩放比例
+      zoomWrap.addEventListener('touchmove', handleTouchMove)
     }
 
     const handleTouchMove = (event: TouchEvent) => {
       if (event.touches.length === 2) {
         const currentDistance = calculateDistance(event.touches)
-        const scale = initialScale * (currentDistance / initialDistance)
-        zoomWrap.style.cssText = `transform: scale(${scale}) !important`
+        const preScale = initialScale * (currentDistance / initialDistance)
+        let scale
+        if (preScale < 1) {
+          scale = 1
+          zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
+            /transform\([0-9.]+,[0-9.]+\)/,
+            `transform(0,0)`,
+          )
+        } else {
+          scale = preScale
+        }
+
+        zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
+          /scale\([0-9.]+\)/,
+          `scale(${scale})`,
+        )
+
         event.preventDefault() // 防止默认行为
+      } else if (event.touches.length === 1) {
+        if (initialScale > 1) {
+          const deltaX = event.changedTouches[0].clientX - startX
+          const deltaY = event.changedTouches[0].clientY - startY
+
+          zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
+            /transform\([0-9.]+,[0-9.]+\)/,
+            `transform(${initialTransformX + deltaX},${initialTransformY + deltaY})`,
+          )
+        }
       }
     }
 
-    const handleTouchEnd = () => {
-      // 可以根据需求处理结束事件
-      // 例如：如果缩放结束后需要保存状态等
+    const handleTouchEnd = (event: TouchEvent) => {
       zoomWrap.addEventListener('touchend', handleTouchMove)
-    }
+      if (isSingleFinger) {
+        if (initialScale === 1) {
+          const offsetX = event.changedTouches[0].clientX - startX
+          const offsetY = event.changedTouches[0].clientY - startY
 
+          if (Math.abs(offsetX) > 55 && Math.abs(offsetY / offsetX) < 1 / 2) {
+            if (offsetX > 0) {
+              ;(photoShadow.querySelector('#next') as HTMLElement)?.click()
+            } else {
+              ;(photoShadow.querySelector('#prev') as HTMLElement)?.click()
+            }
+          }
+        }
+      }
+    }
     zoomWrap.addEventListener('touchstart', handleTouchStart)
     zoomWrap.addEventListener('touchend', handleTouchEnd)
   }
