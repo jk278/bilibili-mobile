@@ -13,8 +13,9 @@ export function handleScriptPreSetting() {
     `,
     css2: '#v_tag {display:none !important;}',
     css3: `
-      .copyright.item {display:none !important;}
-      .show-more {display:none;}
+      .video-info-meta div.copyright.item {display: none;}
+      .video-info-meta .video-argue.item {display: none !important;}
+      .video-info-meta .video-info-detail-list:has(.video-argue.item) {margin-bottom: 0;}
     `,
     css4: '.trending {display:none;}',
     css5: '.bpx-player-ctrl-volume, .bpx-player-ctrl-full, .bpx-player-ctrl-web {display: none;}',
@@ -115,7 +116,7 @@ export function handleScriptPreSetting() {
         <div class="setting-checkboxes">
           <label><input type="checkbox"><span>弹幕行与评论行</span></label>
           <label><input type="checkbox"><span>标签块</span></label>
-          <label><input type="checkbox"><span>转载声明</span></label>
+          <label><input type="checkbox"><span>标题附加声明提示</span></label>
           <label><input type="checkbox"><span>热搜榜</span></label>
           <label><input type="checkbox"><span>播放器全屏音量键</span></label>
           <label><input type="checkbox"><span>页脚导航链接</span></label>
@@ -281,17 +282,27 @@ export function handleScriptSetting() {
     appendStyle(
       'home-single-column',
       `
-      div.recommended-container_floor-aside .container {
-        grid-template-columns: repeat(1, 1fr) !important;
-      }
-      div.bili-video-card.is-rcmd,
-      div.bili-live-card.is-rcmd {
-        --cover-radio: 56.25% !important;
-      }
-      .bili-live-card__skeleton--right {
-        height: 70px;
-      }
-    `,
+div.recommended-container_floor-aside .container {
+  grid-template-columns: repeat(1, 1fr) !important;
+}
+div.bili-video-card.is-rcmd,
+div.bili-live-card.is-rcmd {
+  --cover-radio: 56.25% !important;
+}
+.bili-live-card__skeleton--right {
+  height: 70px;
+}
+div.recommended-container_floor-aside .container {
+  padding: 16px 0;
+  grid-gap: 16px !important;
+}
+picture.v-img.bili-video-card__cover, picture.v-img.bili-live-card__cover {
+  border-radius: 0 !important;
+}
+div.bili-video-card__wrap, div.bili-live-card__wrap {
+  border-radius: 0;
+}
+`,
     )
   }
 

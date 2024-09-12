@@ -753,3 +753,44 @@ div.follow-dialog-wrap .follow-dialog-window {
 div.follow-dialog-wrap .follow-dialog-window .content {
     padding: 0 10px;
 }
+
+/* ---------- 追番 ---------- */
+
+div.col-full {
+    padding: 10px;
+}
+
+.content .pgc-space-follow-page {
+    padding: 0 0 var(--actionbar-height);
+}
+
+li.pgc-space-follow-item {
+    width: 100%;
+    padding-right: 0;
+}
+
+/* 页数 */
+div.bangumi-pagelistbox {
+    white-space: pre-wrap;
+    height: auto;
+}
+
+.bangumi-pagelistbox a.p {
+    padding: 0 16px;
+}
+
+div.bangumi-pagelistbox::before {
+    content: '';
+}
+
+/* ---------- 课程 ---------- */
+.section .pugv-container a.pugv-item {
+    width: 100%;
+}
+
+.section .pugv-container .pugv-item .item-infos p.sub-title{
+    width: 100%;
+    white-space: pre-wrap;
+    height: 40px;
+    margin-bottom: 4px;
+}

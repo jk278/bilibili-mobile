@@ -8,6 +8,7 @@ import './style/space.css'
 import './style/message.css'
 import './style/video.css'
 import './style/video-control.css'
+import './style/read.css'
 
 import {
   preventBeforeUnload,

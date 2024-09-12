@@ -441,6 +441,11 @@ div.bpx-player-sending-bar {
     display: block !important;
 }
 
+/* 浮窗隐藏溢出 */
+.overflow-panel .video-argue.item {
+    max-width: calc(100% - 32px);
+}
+
 /* 点赞投币行 */
 .video-toolbar-container {
     padding: 10px 0 8px !important;

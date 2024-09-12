@@ -1,0 +1,27 @@
+.article-detail,
+.article-breadcrumb,
+.article-up-info {
+  max-width: 100%;
+}
+
+div.article-container {
+  padding: 10px;
+}
+
+.title-container {
+  padding: 0 !important;
+}
+
+#article-content {
+  max-width: 100%;
+  padding: 0;
+}
+
+figure.img-box {
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+img.normal-img {
+  height: auto !important;
+}

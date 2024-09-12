@@ -129,7 +129,10 @@ ul.vui_tabs--nav>* {
     padding-bottom: 0 !important;
 }
 
-/* 搜索页视频预览 */
+/* 搜索页无不喜欢按钮 */
+.search-page .bili-video-card h3.bili-video-card__info--tit {
+    padding-right: 0;
+}
 
 /* 页数 */
 .search-page .flex_center {
@@ -340,4 +343,9 @@ div.live-content {
 /* 位置异常的 logo */
 .search-logo.p_center_y {
     display: none;
+}
+
+/* 去除综合顶部空白 */
+.search-page-all div.i_wrapper.search-all-list {
+    padding-top: 8px;
 }
