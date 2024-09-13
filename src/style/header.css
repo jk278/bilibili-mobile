@@ -66,6 +66,11 @@ div.mini-header {
     background-color: var(--graph_bg_thick) !important;
 }
 
+/* 修复 VIA 搜索 */
+.nav-search-input {
+    width: 100%;
+}
+
 .center-search-container .search-panel {
     display: block !important;
 }
@@ -275,7 +280,6 @@ a.view-all-history-btn {
 .header-tabs-panel__content input.nav-search-input {
     flex: 1;
     margin-right: 8px;
-    width: 100%;
     border: none;
     background-color: transparent;
     box-shadow: none;

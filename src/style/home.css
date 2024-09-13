@@ -7,8 +7,6 @@
 body {
     /* 避免评论未加载时显示灰色 */
     background: white !important;
-
-    --actionbar-height: 46px;
 }
 
 /* 双列视频 */

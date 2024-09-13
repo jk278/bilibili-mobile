@@ -56,7 +56,7 @@ body[scroll-hidden] {
 .left-container,
 .playlist-container--left {
     --video-min-height: calc(100vw * 0.5625);
-    --dm-row-height: 44px;
+    --dm-row-height: 40px;
 }
 
 /* 有初始内联 top */
@@ -297,7 +297,6 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
     transition: 0.5s transform ease-in;
     display: block !important;
     z-index: 0;
-    border-bottom: 1px solid var(--line_regular);
 }
 
 [scroll-hidden] .bpx-player-sending-area {
@@ -324,7 +323,8 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
 div.bpx-player-sending-bar {
     height: var(--dm-row-height);
     /* 适配 dark reader 全局变量值更改延后，否则临时白块 */
-    background-color: white;
+    backdrop-filter: blur(3px);
+    background-color: rgba(255, 255, 255, .6) !important;
 }
 
 .bpx-player-dm-input {
@@ -480,6 +480,12 @@ div.bpx-player-sending-bar {
 /* AI 助手“测试版”字样 */
 .video-ai-assistant-badge {
     display: none !important;
+}
+
+/* 暂不支持AI总结字样 */
+.video-toolbar-right div.video-ai-assistant.disabled::after {
+    left: 180%;
+    transform: translateX(-100%);
 }
 
 /* AI 总结 */

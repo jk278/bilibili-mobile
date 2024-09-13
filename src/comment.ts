@@ -76,38 +76,42 @@ export function modifyShadowDOMLate(isDynamicRefresh: boolean) {
     appendStyle(
       commentsHeaderShadow,
       `
-        div#commentbox {
-          position: fixed;
-          left: 0;
-          bottom: var(--actionbar-height);
-          z-index: 10;
-          background: white;
-          width: calc(100% - 24px);
-          padding: 8px 12px;
-          border-top: 1px solid var(--line_regular);
-          transition: calc(var(--actionbar-time)*1.40) ease-in;
-          display: var(--commentbox-display);
-          transform: var(--shadow-transform);
-        }
-        div#commentbox[style] {
-          display: none;
-        }
-        div#commentbox[style]+.bili-comments-bottom-fixed-wrapper {
-          bottom: var(--actionbar-height) !important;
-        }
-        div#commentbox[style]+.bili-comments-bottom-fixed-wrapper>div {
-          padding: 8px 12px !important;
-          width: calc(100% - 24px) !important;
-          transition: calc(var(--actionbar-time)* 1.40) ease-in;
-          display: var(--commentbox-display);
-          transform: var(--shadow-transform);
-        }
-        div#navbar {
-          margin-bottom: 0;
-        }
-        #notice {
-          display: none;
-        }`,
+div#commentbox {
+  position: fixed;
+  left: 0;
+  bottom: var(--actionbar-height);
+  z-index: 10;
+  width: calc(100% - (100% - 200px) / 3);
+  padding: 7px calc((100% - 200px) / 6);
+  transition: calc(var(--actionbar-time)*1.40) ease-in;
+  display: var(--commentbox-display);
+  transform: var(--shadow-transform);
+  backdrop-filter: blur(3px);
+  background-color: rgba(255, 255, 255, .6);
+}
+div#commentbox[style] {
+  display: none;
+}
+div#commentbox[style]+.bili-comments-bottom-fixed-wrapper {
+  width: 100% !important;
+  bottom: var(--actionbar-height) !important;
+}
+div#commentbox[style]+.bili-comments-bottom-fixed-wrapper>div {
+  padding: 8px 12px !important;
+  width: calc(100% - 24px) !important;
+  transition: calc(var(--actionbar-time)* 1.40) ease-in;
+  display: var(--commentbox-display);
+  transform: var(--shadow-transform);
+  backdrop-filter: blur(3px);
+  background-color: rgba(255, 255, 255, .6) !important;
+  border: none !important;
+}
+div#navbar {
+  margin-bottom: 0;
+}
+#notice {
+  display: none;
+}`,
     )
   }
 
@@ -149,6 +153,7 @@ export function modifyShadowDOMLate(isDynamicRefresh: boolean) {
         div#editor {
           border-radius: 13px;
           padding: 0;
+          border: none;
         }`,
     )
 
