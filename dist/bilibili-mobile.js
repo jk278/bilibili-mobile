@@ -2530,11 +2530,11 @@ div#navbar {
     observer.observe(container, { childList: true });
     window.addEventListener("scroll", () => {
       if ((firstUnloadElem == null ? void 0 : firstUnloadElem.getBoundingClientRect().top) < height * 6) {
-        anchor.parentNode.insertBefore(anchor, anchor.parentNode.childNodes[2]);
-        anchor.parentNode.childNodes[1].style.display = "none";
+        anchor.parentNode.insertBefore(anchor, anchor.parentNode.children[2]);
+        anchor.parentNode.children[1].style.display = "none";
         setTimeout(() => {
           anchor.parentNode.appendChild(anchor);
-          anchor.parentNode.childNodes[1].style.display = "block";
+          anchor.parentNode.children[1].style.display = "block";
           firstUnloadElem = document.querySelector(
             ".container>.bili-video-card:not(.is-rcmd)"
           );
