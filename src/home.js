@@ -5,7 +5,6 @@ import { loadAI } from './ai.js'
 // 真正的预加载
 export function preloadAnchor() {
   let anchor
-  let placeholder
   let firstUnloadElem
   let height
 
@@ -19,7 +18,6 @@ export function preloadAnchor() {
           node.className === 'load-more-anchor'
         ) {
           anchor = node
-          placeholder = node.cloneNode(true)
           firstUnloadElem = document.querySelector(
             '.container>.bili-video-card:not(.is-rcmd)',
           )
@@ -33,15 +31,12 @@ export function preloadAnchor() {
 
   window.addEventListener('scroll', () => {
     if (firstUnloadElem?.getBoundingClientRect().top < height * 6) {
-      anchor.parentNode.insertBefore(anchor, anchor.parentNode.childNodes[0])
-      anchor.parentNode.insertBefore(
-        placeholder,
-        anchor.parentNode.childNodes[0],
-      )
+      anchor.parentNode.insertBefore(anchor, anchor.parentNode.childNodes[1])
+      anchor.parentNode.childNodes[0].style.display = 'none'
 
       setTimeout(() => {
         anchor.parentNode.appendChild(anchor)
-        placeholder.remove()
+        anchor.parentNode.childNodes[0].style.display = 'block'
         firstUnloadElem = document.querySelector(
           '.container>.bili-video-card:not(.is-rcmd)',
         )

@@ -1,6 +1,48 @@
 import { GM_getValue, GM_setValue, GM_registerMenuCommand } from '$'
 import { waitDOMContentLoaded } from './utils/wait.ts'
 
+function appendStyle(id, textContent) {
+  const style = Object.assign(document.createElement('style'), {
+    id,
+    textContent,
+  })
+  document.head.appendChild(style)
+}
+
+// 预加载与偏好修改共用
+function homeSingleColumn() {
+  appendStyle(
+    'home-single-column',
+    `
+div.recommended-container_floor-aside .container {
+  grid-template-columns: repeat(1, 1fr) !important;
+}
+div.bili-video-card.is-rcmd,
+div.bili-live-card.is-rcmd {
+  --cover-radio: 56.25% !important;
+}
+.bili-live-card__skeleton--right {
+  height: 70px;
+}
+div.recommended-container_floor-aside .container {
+  padding: 20px 0;
+  grid-gap: 20px !important;
+}
+picture.v-img.bili-video-card__cover, picture.v-img.bili-live-card__cover {
+  border-radius: 0 !important;
+}
+div.bili-video-card__wrap, div.bili-live-card__wrap {
+  border-radius: 0;
+}
+div.bili-video-card__info,
+div.bili-live-card__info {
+  --title-padding-right: 30px;
+  --no-interest-entry-size: 30px;
+}
+`,
+  )
+}
+
 // 脚本预加载设置
 export function handleScriptPreSetting() {
   const defaultValue = Array(7).fill(false)
@@ -56,14 +98,7 @@ export function handleScriptPreSetting() {
         // 可枚举属性，对数组使用获得元素为索引加值的二维数组，返回 [ [1,v1], [2,v2] ]
         if (value) {
           if (settingShowHidden[index]) {
-            const scriptPreStyle = Object.assign(
-              document.createElement('style'),
-              {
-                id: `script-pre-style-${index}`,
-                textContent: values[index],
-              },
-            )
-            document.head.appendChild(scriptPreStyle)
+            appendStyle(`script-pre-style-${index}`, values[index])
           } else {
             document.getElementById(`script-pre-style-${index}`)?.remove()
           }
@@ -72,39 +107,10 @@ export function handleScriptPreSetting() {
     } else {
       for (const [index, value] of values.entries()) {
         if (settingShowHidden[index]) {
-          const scriptPreStyle = Object.assign(
-            document.createElement('style'),
-            {
-              id: `script-pre-style-${index}`,
-              textContent: value,
-            },
-          )
-          document.head.appendChild(scriptPreStyle)
+          appendStyle(`script-pre-style-${index}`, value)
         }
       }
     }
-  }
-
-  function homeSingleColumn() {
-    const style = Object.assign(document.createElement('style'), {
-      id: 'home-single-column',
-      textContent: `
-      div.recommended-container_floor-aside .container {
-          grid-template-columns: repeat(1, 1fr) !important;
-      }
-
-      div.bili-video-card.is-rcmd,
-      div.bili-live-card.is-rcmd {
-          --cover-radio: 56.25% !important;
-      }
-
-      /* 修复直播info占位高度变窄 */
-      .bili-live-card__skeleton--right {
-        height: 70px;
-      }
-      `,
-    })
-    document.head.appendChild(style)
   }
 
   function createSettingPanel() {
@@ -226,9 +232,7 @@ export function handleScriptSetting() {
     if (GM_getValue('menu-dialog-move-down', false)) {
       menuDialogMoveDown()
     }
-    if (GM_getValue('home-single-column', false)) {
-      homeSingleColumn()
-    }
+    // home-single-column 由预加载初始化
     if (
       !GM_getValue(menuOptions.key, menuOptions.value).every(
         (item) => item === false,
@@ -278,34 +282,6 @@ export function handleScriptSetting() {
     )
   }
 
-  function homeSingleColumn() {
-    appendStyle(
-      'home-single-column',
-      `
-div.recommended-container_floor-aside .container {
-  grid-template-columns: repeat(1, 1fr) !important;
-}
-div.bili-video-card.is-rcmd,
-div.bili-live-card.is-rcmd {
-  --cover-radio: 56.25% !important;
-}
-.bili-live-card__skeleton--right {
-  height: 70px;
-}
-div.recommended-container_floor-aside .container {
-  padding: 16px 0;
-  grid-gap: 16px !important;
-}
-picture.v-img.bili-video-card__cover, picture.v-img.bili-live-card__cover {
-  border-radius: 0 !important;
-}
-div.bili-video-card__wrap, div.bili-live-card__wrap {
-  border-radius: 0;
-}
-`,
-    )
-  }
-
   function modifyMenuOptions() {
     const options = GM_getValue(menuOptions.key, menuOptions.value)
     let selector = ''
@@ -318,14 +294,6 @@ div.bili-video-card__wrap, div.bili-live-card__wrap {
       'modify-menu-options',
       `${selector.slice(0, -2)} { display: none; }`,
     )
-  }
-
-  function appendStyle(id, textContent) {
-    const style = Object.assign(document.createElement('style'), {
-      id,
-      textContent,
-    })
-    document.head.appendChild(style)
   }
 
   function createSettingPanel() {

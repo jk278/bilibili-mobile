@@ -1,4 +1,4 @@
-import { modifyShadowDOMLate } from '../comment.js'
+import { modifyShadowDOMLate } from '../comment.ts'
 import { handleTransitionEndOnce } from '../utils/transition.ts'
 
 /* 使用 sessionStorage + heade style 绕过 DOM 依赖以解决刷新缓加载导致的内容跳动。

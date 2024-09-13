@@ -4,17 +4,19 @@ import { touchZoomWrap } from './utils/zoom.ts'
  * 动态修改播放组件样式
  * @param {boolean} isDynamicRefresh - 是否动态刷新
  */
-export function modifyShadowDOMLate(isDynamicRefresh) {
-  let commentsShadow
-  let commentsHeaderShadow
-  let headerBoxShadow
+export function modifyShadowDOMLate(isDynamicRefresh: boolean) {
+  let commentsShadow: ShadowRoot | null | undefined = null
+  let commentsHeaderShadow: ShadowRoot | null | undefined = null
+  let headerBoxShadow: ShadowRoot | null | undefined = null
 
   // 初始化动态要获胜 #comment，第一次变化删除.comment增加.comment，第二次添加bili-comments
   const comment = document.getElementById('commentapp')
+  if (!comment) return
+
   const observer = new MutationObserver(handleCommentMutation)
   observer.observe(comment, { childList: true, subtree: true })
 
-  function handleCommentMutation(mutations) {
+  function handleCommentMutation(mutations: MutationRecord[]): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
@@ -29,7 +31,9 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
   }
 
   function observeComments() {
-    commentsShadow = document.querySelector('bili-comments').shadowRoot
+    commentsShadow = document.querySelector('bili-comments')?.shadowRoot
+    if (!commentsShadow) return
+
     const observer = new MutationObserver(handleCommentsMutation)
     observer.observe(commentsShadow, { childList: true, subtree: true })
 
@@ -42,10 +46,13 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
     )
   }
 
-  function handleCommentsMutation(mutations) {
+  function handleCommentsMutation(mutations: MutationRecord[]): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
-        if (node.nodeType === Node.ELEMENT_NODE && node.id === 'contents') {
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          (node as Element).id === 'contents'
+        ) {
           observeHeader()
           observeContent()
           observer.disconnect()
@@ -57,9 +64,11 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
   // --------------------
   // header
   function observeHeader() {
-    commentsHeaderShadow = commentsShadow.querySelector(
+    commentsHeaderShadow = commentsShadow?.querySelector(
       'bili-comments-header-renderer',
-    ).shadowRoot
+    )?.shadowRoot
+    if (!commentsHeaderShadow) return
+
     const observer = new MutationObserver(handleHeaderMutation)
     observer.observe(commentsHeaderShadow, { childList: true, subtree: true })
 
@@ -102,13 +111,13 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
     )
   }
 
-  function handleHeaderMutation(mutations) {
+  function handleHeaderMutation(mutations: MutationRecord[]): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
           node.nodeType === Node.ELEMENT_NODE &&
           node.nodeName.toLowerCase() === 'div' &&
-          node.id === 'commentbox'
+          (node as Element).id === 'commentbox'
         ) {
           observeHeader2()
           observer.disconnect()
@@ -119,7 +128,9 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
 
   function observeHeader2() {
     headerBoxShadow =
-      commentsHeaderShadow.querySelector('bili-comment-box').shadowRoot
+      commentsHeaderShadow?.querySelector('bili-comment-box')?.shadowRoot
+    if (!headerBoxShadow) return
+
     const observer = new MutationObserver(handleHeader2Mutation)
     observer.observe(headerBoxShadow, { childList: true, subtree: true })
 
@@ -141,12 +152,12 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
         }`,
     )
 
-    const headerVote = commentsHeaderShadow.querySelector(
+    const headerVote = commentsHeaderShadow?.querySelector(
       'bili-comments-vote-card',
     )
     if (headerVote) {
       appendStyle(
-        headerVote.shadowRoot,
+        headerVote.shadowRoot!,
         `.option.left,
         .option.right {
           min-width: 0 !important;
@@ -169,13 +180,13 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
     }
   }
 
-  function handleHeader2Mutation(mutations) {
+  function handleHeader2Mutation(mutations: MutationRecord[]): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
           node.nodeType === Node.ELEMENT_NODE &&
           node.nodeName.toLowerCase() === 'div' &&
-          node.id === 'comment-area'
+          (node as Element).id === 'comment-area'
         ) {
           observeHeader3()
           observer.disconnect()
@@ -186,15 +197,15 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
 
   function observeHeader3() {
     // list 还是 bili-comment-textarea
-    const oldTextarea = headerBoxShadow.querySelector('bili-comment-textarea')
+    const oldTextarea = headerBoxShadow?.querySelector('bili-comment-textarea')
 
     const textarea = oldTextarea
       ? oldTextarea
-      : headerBoxShadow.querySelector('bili-comment-rich-textarea')
+      : headerBoxShadow?.querySelector('bili-comment-rich-textarea')
 
     if (oldTextarea) {
       appendStyle(
-        textarea.shadowRoot,
+        textarea!.shadowRoot!,
         `textarea#input {
             line-height: 26px;
             min-height: 26px;
@@ -203,7 +214,7 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
       )
     } else {
       appendStyle(
-        textarea.shadowRoot,
+        textarea!.shadowRoot!,
         `div#input, div.brt-root {
         line-height: 26px;
         min-height: 26px;
@@ -216,41 +227,41 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
   // --------------------
   // content
   function observeContent() {
-    const commentThreads = commentsShadow.querySelectorAll(
+    const commentThreads = commentsShadow?.querySelectorAll(
       'bili-comment-thread-renderer',
     )
-    commentThreads.forEach((thread) => {
+    commentThreads?.forEach((thread) => {
       const threadShadow = thread.shadowRoot
       const observer = new MutationObserver(handleContentMutation)
-      observer.observe(threadShadow, { childList: true, subtree: true })
+      observer.observe(threadShadow!, { childList: true, subtree: true })
     })
   }
 
-  function handleContentMutation(mutations) {
+  function handleContentMutation(mutations: MutationRecord[]): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
           node.nodeType === Node.ELEMENT_NODE &&
           node.nodeName.toLowerCase() === 'div' &&
-          node.id === 'replies'
+          (node as Element).id === 'replies'
         ) {
-          observeContent2(mutation.target)
+          observeContent2(mutation.target as ShadowRoot)
           observer.disconnect()
         }
       })
     })
   }
 
-  function observeContent2(threadShadow) {
-    const commentShadow = threadShadow.querySelector(
+  function observeContent2(threadShadow: ShadowRoot): void {
+    const commentShadow = threadShadow?.querySelector(
       'bili-comment-renderer',
-    ).shadowRoot
-    const repliesShadow = threadShadow.querySelector(
+    )?.shadowRoot
+    const repliesShadow = threadShadow?.querySelector(
       'bili-comment-replies-renderer',
-    ).shadowRoot
+    )?.shadowRoot
 
     appendStyle(
-      commentShadow,
+      commentShadow!,
       `
         div#body {
           padding-left: 45px;
@@ -262,7 +273,7 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
     )
 
     appendStyle(
-      repliesShadow,
+      repliesShadow!,
       `
         div#expander {
           padding-left: 40px;
@@ -270,24 +281,25 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
     )
 
     const observer = new MutationObserver(handleCommentShadowMutation)
-    observer.observe(commentShadow, { childList: true, subtree: true })
+    observer.observe(commentShadow!, { childList: true, subtree: true })
 
     const observer2 = new MutationObserver(handleRepliesShadowMutation)
-    observer2.observe(repliesShadow, { childList: true, subtree: true })
+    observer2.observe(repliesShadow!, { childList: true, subtree: true })
   }
 
-  function handleCommentShadowMutation(mutations) {
+  function handleCommentShadowMutation(mutations: MutationRecord[]): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
           node.nodeType === Node.ELEMENT_NODE &&
           node.nodeName.toLowerCase() === 'div' &&
-          node.id === 'body'
+          (node as Element).id === 'body'
         ) {
-          const avatarShadow =
-            mutation.target.querySelector('bili-avatar').shadowRoot
+          const avatarShadow = (mutation.target! as HTMLElement).querySelector(
+            'bili-avatar',
+          )?.shadowRoot
           appendStyle(
-            avatarShadow,
+            avatarShadow!,
             `
               .layer.center {
                 width: 48px !important;
@@ -300,21 +312,21 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
     })
   }
 
-  function handleRepliesShadowMutation(mutations) {
+  function handleRepliesShadowMutation(mutations: MutationRecord[]): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
           node.nodeType === Node.ELEMENT_NODE &&
           node.nodeName.toLowerCase() === 'div' &&
-          node.id === 'expander'
+          (node as Element).id === 'expander'
         ) {
-          const replies = mutation.target.querySelectorAll(
+          const replies = (mutation.target as HTMLElement).querySelectorAll(
             'bili-comment-reply-renderer',
           )
           replies.forEach((reply) => {
             const replyShadow = reply.shadowRoot
             appendStyle(
-              replyShadow,
+              replyShadow!,
               `
                 div#body {
                   padding: 4px 0 4px 29px;
@@ -328,7 +340,7 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
     })
   }
 
-  function appendStyle(shadowRoot, cssText) {
+  function appendStyle(shadowRoot: ShadowRoot, cssText: string) {
     const style = document.createElement('style')
     style.textContent = cssText
     shadowRoot.appendChild(style)
@@ -343,30 +355,31 @@ export function modifyShadowDOMLate(isDynamicRefresh) {
     childList: true,
   })
 
-  function handleBodyMutation(mutations) {
+  function handleBodyMutation(mutations: MutationRecord[]): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
           node.nodeType === Node.ELEMENT_NODE &&
           node.nodeName.toLowerCase() === 'bili-photoswipe'
         ) {
-          const photoShadow = node.shadowRoot
-          const zoomWrap = photoShadow.querySelector('#zoom-wrap')
+          const photoShadow = (node as Element).shadowRoot
+          const zoomWrap = photoShadow?.querySelector(
+            '#zoom-wrap',
+          ) as HTMLElement
 
           zoomWrap.addEventListener(
             'click',
             (event) => {
               event.stopImmediatePropagation() // 禁用点击
-              photoShadow.querySelector('#close').click()
+              ;(photoShadow?.querySelector('#close') as HTMLElement)?.click()
             },
-            true,
-            { once: true },
+            { capture: true, once: true },
           )
 
-          touchZoomWrap(zoomWrap, photoShadow)
+          touchZoomWrap(zoomWrap, photoShadow!)
 
           appendStyle(
-            photoShadow,
+            photoShadow!,
             `
 #container {z-index:3;}
 #thumb {z-index: 4;}

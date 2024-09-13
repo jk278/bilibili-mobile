@@ -73,6 +73,11 @@ body,
     margin-top: 0 !important;
 }
 
+/* 隐藏无内容的空元素—— VIA 中 grid-gap * 2） */
+.feed-card:not(:has(.bili-video-card__wrap)), .bili-video-card:not(:has(.bili-video-card__wrap)) {
+    display: none !important;
+}
+
 /* 卡片底板 */
 .bili-video-card__wrap,
 .bili-live-card__wrap {

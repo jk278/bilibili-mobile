@@ -1,5 +1,10 @@
-// zoom.ts
-export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: HTMLElement) {
+/**
+ * 处理评论区图片的触摸事件
+ *
+ * @param zoomWrap - 缩放元素
+ * @param photoShadow - 包含操作按钮的外框元素
+ */
+export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: ShadowRoot) {
   if (zoomWrap) {
     let initialDistance = 0
     let initialScale = 1

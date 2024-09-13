@@ -1,5 +1,5 @@
 import { GM_getValue } from '$'
-import { modifyShadowDOMLate } from './comment.js'
+import { modifyShadowDOMLate } from './comment.ts'
 
 /**
  * 处理视频的响应操作交互
