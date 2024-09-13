@@ -31,12 +31,12 @@ export function preloadAnchor() {
 
   window.addEventListener('scroll', () => {
     if (firstUnloadElem?.getBoundingClientRect().top < height * 6) {
-      anchor.parentNode.insertBefore(anchor, anchor.parentNode.childNodes[1])
-      anchor.parentNode.childNodes[0].style.display = 'none'
+      anchor.parentNode.insertBefore(anchor, anchor.parentNode.childNodes[2])
+      anchor.parentNode.childNodes[1].style.display = 'none'
 
       setTimeout(() => {
         anchor.parentNode.appendChild(anchor)
-        anchor.parentNode.childNodes[0].style.display = 'block'
+        anchor.parentNode.childNodes[1].style.display = 'block'
         firstUnloadElem = document.querySelector(
           '.container>.bili-video-card:not(.is-rcmd)',
         )

@@ -504,7 +504,6 @@ div.contribution-sidenav .contribution-list-container {
     justify-content: space-evenly;
 }
 
-
 .contribution-sidenav li.contribution-item {
     padding-left: 0;
     flex-grow: 1;
@@ -557,6 +556,41 @@ div.page-head {
     flex: 25%;
 }
 
+/* 投稿列表样式 */
+#submit-video .list .title {
+    white-space: pre-wrap;
+    height: auto;
+    margin: 5px 0;
+}
+
+#page-video .list-item .cover div.b-img {
+    width: 100%;
+    height: auto;
+}
+
+#page-video .list-item div.c {
+    margin: 0;
+}
+
+#page-video .list-item div.desc {
+    margin-bottom: 5px;
+}
+
+#page-video .list-item div.desc:not(:has(>*)) {
+    display: none;
+}
+
+/* 投稿按内容分类 */
+#page-video #submit-video-type-filter a {
+    flex-direction: column;
+    line-height: 20px;
+    padding: 2px 0;
+}
+
+#page-video #submit-video-type-filter a span.count {
+    margin-left: 0;
+}
+
 /* 导航 - 合集 */
 /* 视频列表 */
 #page-channel .series-item .video-list {
@@ -581,6 +615,21 @@ div.video-card.card-item .cover {
 /* 列表标题 */
 #page-channel .series-item .header .btn {
     font-size: 12px;
+}
+
+/* 合集宫格样式双列 */
+#page-series-index .channel-list div.channel-item {
+    width: calc(50% - 10px);
+    margin: 5px !important;
+}
+
+/* 合集列表样式系列-按钮 */
+.series-item .btn.play-btn {
+    min-width: 60px;
+}
+
+.series-item .btn.more-btn {
+    min-width: 40px;
 }
 
 /* --- 搜索页 --- */
@@ -760,7 +809,7 @@ div.col-full {
     padding: 10px;
 }
 
-.content .pgc-space-follow-page {
+.content div.pgc-space-follow-page {
     padding: 0 0 var(--actionbar-height);
 }
 
@@ -775,8 +824,49 @@ div.bangumi-pagelistbox {
     height: auto;
 }
 
+.bangumi-pagelistbox>*:not(.custom-right) {
+    margin-top: 5px;
+}
+
 .bangumi-pagelistbox a.p {
-    padding: 0 16px;
+    height: 34px;
+    line-height: 34px;
+    padding: 0 8.5px;
+}
+
+div.bangumi-pagelistbox strong {
+    height: 34px;
+    line-height: 34px;
+    width: 34px;
+}
+
+.bangumi-pagelistbox a.p.prev-page,
+.bangumi-pagelistbox a.p.next-page {
+    width: 34px;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.bangumi-pagelistbox a.p.prev-page::before,
+.bangumi-pagelistbox a.p.next-page::before {
+    color: #18191C;
+    background-color: inherit;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 20px;
+    width: 34px;
+}
+
+.bangumi-pagelistbox a.p.prev-page::before {
+    content: '<';
+    padding: 1px 14px 13px 0;
+}
+
+.bangumi-pagelistbox a.p.next-page::before {
+    content: '>';
+    padding: 0 12px 14px 2px;
 }
 
 div.bangumi-pagelistbox::before {

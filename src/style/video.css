@@ -155,6 +155,15 @@ div.multi-page-v1 .cur-list {
     display: none;
 }
 
+/* 合集标题 */
+.base-video-sections-v1 a.first-line-title {
+    white-space: wrap !important;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+}
+
 /******************************************* 块状广告（整个视频页） ******************************************/
 
 #activity_vote,

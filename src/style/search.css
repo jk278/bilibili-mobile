@@ -6,6 +6,11 @@
     min-height: calc(100vh - var(--actionbar-height)) !important;
 }
 
+/* 禁止按钮限制最小宽度 */
+button.vui_button {
+    min-width: 0;
+}
+
 /* 分类和另几个包含块 */
 div.i_wrapper {
     padding: 0 5px;
@@ -74,16 +79,22 @@ ul.vui_tabs--nav>* {
     background: white;
     padding: 5px !important;
     opacity: 0;
-    transition: calc(var(--actionbar-time)*1.62) ease-in;
+    transition: var(--actionbar-time) ease-in;
+    pointer-events: none;
 }
 
 .search-conditions.show {
     bottom: var(--actionbar-height);
     opacity: 1;
+    pointer-events: auto;
+}
+
+[scroll-hidden] div.search-conditions {
+    bottom: 0;
 }
 
 /* 排序按钮 */
-.conditions-order .vui_button--tab {
+.search-condition-row>.vui_button {
     width: 33.3%;
     margin: 0 !important;
 }
@@ -134,31 +145,54 @@ ul.vui_tabs--nav>* {
     padding-right: 0;
 }
 
-/* 页数 */
+/* 页数 - 美化 */
 .search-page .flex_center {
     margin: 5px 0 !important;
 }
 
-.vui_pagenation--btns {
-    flex-wrap: wrap;
+div.vui_pagenation--btns {
+    display: block;
+    white-space: pre-wrap;
+    text-align: center;
 }
 
 .vui_pagenation--btns>*:not(last-child) {
     margin: 0 5px 5px !important;
 }
 
-.vui_pagenation--btn-side {
-    padding: 0 5px;
-    flex: 1 0 20%;
-    margin-bottom: 5px;
-}
-
 .vui_pagenation--btn-num {
-    flex: 1 0 12% !important;
+    max-width: 34px;
 }
 
 span.vui_pagenation--extend {
-    flex: 1 0 15% !important;
+    max-width: 34px;
+}
+
+.vui_pagenation--btn-side {
+    padding: 0 5px;
+    max-width: 34px;
+    overflow: hidden;
+    position: relative;
+}
+
+.vui_pagenation--btn-side::before {
+    color: var(--v_text1);
+    background-color: inherit;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 20px;
+    width: 34px;
+}
+
+.vui_pagenation--btn-side:first-child::before {
+    content: '<';
+    padding: 6.5px 9px 7.5px 5px;
+}
+
+.vui_pagenation--btn-side:last-child::before {
+    content: '>';
+    padding: 5.5px 7px 8.5px 7px;
 }
 
 /* 搜索页底部 */
