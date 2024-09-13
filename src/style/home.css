@@ -49,6 +49,12 @@ body,
     display: none !important;
 }
 
+/* 无内容的空元素—— VIA 中 grid-gap * 2） */
+.feed-card:not(:has(.bili-video-card__wrap)),
+.bili-video-card.is-rcmd:not(:has(.bili-video-card__wrap)) {
+    display: none !important;
+}
+
 /* 客户端广告 */
 /* 底部登录弹窗类 .lt-row 可能包含其它元素 */
 /* 菜单-个人: 会员广告 */
@@ -71,11 +77,6 @@ body,
 
 .container>* {
     margin-top: 0 !important;
-}
-
-/* 隐藏无内容的空元素—— VIA 中 grid-gap * 2） */
-.feed-card:not(:has(.bili-video-card__wrap)), .bili-video-card:not(:has(.bili-video-card__wrap)) {
-    display: none !important;
 }
 
 /* 卡片底板 */
