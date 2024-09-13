@@ -327,7 +327,7 @@ div.bili-live-card.is-rcmd {
   height: 70px;
 }
 div.recommended-container_floor-aside .container {
-  padding: 20px 0 0;
+  padding: 20px 0;
   grid-gap: 20px !important;
 }
 picture.v-img.bili-video-card__cover, picture.v-img.bili-live-card__cover {
