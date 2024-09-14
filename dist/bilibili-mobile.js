@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili 移动端
 // @namespace    https://github.com/jk278/bilibili-mobile
-// @version      5.0.1
+// @version      5.0.2
 // @author       jk278
 // @description  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @license      MIT
@@ -2528,19 +2528,17 @@ div#navbar {
       });
     });
     observer.observe(container, { childList: true });
-    window.addEventListener("scroll", () => {
+    function preload() {
       if ((firstUnloadElem == null ? void 0 : firstUnloadElem.getBoundingClientRect().top) < height * 6) {
-        anchor.parentNode.insertBefore(anchor, anchor.parentNode.children[2]);
-        anchor.parentNode.children[1].style.cssText = "display: none !important;";
+        window.removeEventListener("scroll", preload);
+        anchor.parentNode.children[1].appendChild(anchor);
         setTimeout(() => {
-          anchor.parentNode.appendChild(anchor);
-          anchor.parentNode.children[1].style.cssText = "";
-          firstUnloadElem = document.querySelector(
-            ".container>.bili-video-card:not(.is-rcmd)"
-          );
-        }, 300);
+          firstUnloadElem.parentNode.appendChild(anchor);
+          window.addEventListener("scroll", preload);
+        }, 500);
       }
-    });
+    }
+    window.addEventListener("scroll", preload);
   }
   function handleHeaderImage() {
     const source = _GM_getValue("header-image-source", "unsplash");

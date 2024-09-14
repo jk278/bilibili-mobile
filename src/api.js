@@ -1,10 +1,5 @@
 // fork 自 BiliPlus 项目：https://github.com/0xlau/biliplus
-
 import { BILIBILI_API } from './values.ts'
-
-// 下两行只用于调试，dev 模式获取不到插件的 window
-// import { monkeyWindow } from '$'
-// const md5 = monkeyWindow.md5
 
 const mixinKeyEncTab = [
   46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,

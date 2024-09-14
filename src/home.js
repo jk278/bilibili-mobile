@@ -29,20 +29,19 @@ export function preloadAnchor() {
   })
   observer.observe(container, { childList: true })
 
-  window.addEventListener('scroll', () => {
+  function preload() {
     if (firstUnloadElem?.getBoundingClientRect().top < height * 6) {
-      anchor.parentNode.insertBefore(anchor, anchor.parentNode.children[2])
-      anchor.parentNode.children[1].style.cssText = 'display: none !important;'
-
+      // 为何使用 {once: true} 无法正常工作？
+      window.removeEventListener('scroll', preload)
+      anchor.parentNode.children[1].appendChild(anchor)
       setTimeout(() => {
-        anchor.parentNode.appendChild(anchor)
-        anchor.parentNode.children[1].style.cssText = ''
-        firstUnloadElem = document.querySelector(
-          '.container>.bili-video-card:not(.is-rcmd)',
-        )
-      }, 300)
+        firstUnloadElem.parentNode.appendChild(anchor)
+        window.addEventListener('scroll', preload)
+      }, 500)
     }
-  })
+  }
+
+  window.addEventListener('scroll', preload)
 }
 
 // 控制首页头图函数
