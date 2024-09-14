@@ -331,7 +331,12 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
 /* 弹幕行高度、背景色 */
 div.bpx-player-sending-bar {
     height: var(--dm-row-height);
-    /* 适配 dark reader 全局变量值更改延后，否则临时白块 */
+    backdrop-filter: blur(3px);
+    background-color: rgba(255, 255, 255, .6) !important;
+}
+
+/* 排除视频内的弹幕条 */
+.bpx-player-sending-area .bpx-player-sending-bar {
     backdrop-filter: blur(3px);
     background-color: rgba(255, 255, 255, .6) !important;
 }
