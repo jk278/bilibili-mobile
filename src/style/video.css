@@ -331,8 +331,6 @@ div.bpx-player-container[data-screen=web] .bpx-player-ending-content {
 /* 弹幕行高度、背景色 */
 div.bpx-player-sending-bar {
     height: var(--dm-row-height);
-    backdrop-filter: blur(3px);
-    background-color: rgba(255, 255, 255, .6) !important;
 }
 
 /* 排除视频内的弹幕条 */
