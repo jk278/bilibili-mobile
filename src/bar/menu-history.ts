@@ -1,13 +1,12 @@
-import { getHistoryList, getHistorySearchList } from '../api.js'
+import { getHistoryList, getHistorySearchList } from '../api.ts'
 
 // 设置历史自动展开
 export async function handleHistoryShowMore() {
   let cursor = {
     max: 0,
-
     view_at: 0,
   }
-  let pn
+  let pn = 0
   let isHistoryItem = true
   let isAddSearchItem = false
 
@@ -16,7 +15,7 @@ export async function handleHistoryShowMore() {
 
   const historyContent = document.querySelector(
     '.history-panel-popover>.header-tabs-panel__content',
-  )
+  ) as HTMLElement
 
   // 添加历史搜索
   const historySearch = Object.assign(document.createElement('form'), {
@@ -31,9 +30,9 @@ export async function handleHistoryShowMore() {
   })
   historyContent.insertBefore(historySearch, historyContent.firstChild)
 
-  const btn = historySearch.querySelector('.nav-search-btn')
-  const input = historySearch.querySelector('input')
-  const clean = historySearch.querySelector('.nav-search-clean')
+  const btn = historySearch.querySelector('.nav-search-btn') as HTMLElement
+  const input = historySearch.querySelector('input') as HTMLInputElement
+  const clean = historySearch.querySelector('.nav-search-clean') as HTMLElement
   input.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
       event.preventDefault()
@@ -94,13 +93,15 @@ export async function handleHistoryShowMore() {
     }
   }
 
-  const historyPanel = document.querySelector('.header-tabs-panel')
+  const historyPanel = document.querySelector(
+    '.header-tabs-panel',
+  ) as HTMLElement
   const observer = new MutationObserver((mutationsList) => {
     mutationsList.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
           node.nodeType === Node.ELEMENT_NODE &&
-          node.className === 'header-tabs-panel__item' &&
+          (node as Element).className === 'header-tabs-panel__item' &&
           node.textContent === '专栏'
         ) {
           historyPanel.children[0].addEventListener('click', removeNoFirstStyle)
@@ -142,7 +143,15 @@ export async function handleHistoryShowMore() {
   }
   historyContent.addEventListener('scroll', onScroll)
 
-  function addElementByItem(item) {
+  function addElementByItem(item: {
+    progress: number
+    duration: number
+    view_at: number
+    cover: string
+    title: string
+    author_name: string
+    history: Record<string, string>
+  }) {
     const record = Object.assign(document.createElement('a'), {
       href: `//www.bilibili.com/video/${item.history.bvid}/?`,
       className: `header-history-card header-history-video ${isAddSearchItem ? 'history-search-item' : ''}`,
@@ -177,9 +186,9 @@ export async function handleHistoryShowMore() {
     historyContent.appendChild(record)
   }
 
-  const formatUrl = (url) => url.slice(url.indexOf(':') + 1)
+  const formatUrl = (url: string) => url.slice(url.indexOf(':') + 1)
 
-  function formatProgressTime(seconds) {
+  function formatProgressTime(seconds: number) {
     const hrs = Math.floor(seconds / 3600) // Math.floor() 向下取整
     const mins = Math.floor((seconds % 3600) / 60)
     const secs = seconds % 60
@@ -187,7 +196,7 @@ export async function handleHistoryShowMore() {
     return `${hrs ? `${hrs}:` : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  function formatViewTime(timestamp) {
+  function formatViewTime(timestamp: number) {
     const days = Math.floor(timestamp / 86400)
     const hrs = Math.floor((timestamp % 86400) / 3600)
     const mins = Math.floor((timestamp % 3600) / 60)
@@ -199,7 +208,7 @@ export async function handleHistoryShowMore() {
       0: '今天',
       1: '昨天',
       2: '前天',
-    }
+    } as { [key: number]: string }
 
     const dayText = dayTextMap[today - days] || `${today - days}天前`
 

@@ -1,12 +1,12 @@
 import { setSearchBtn } from './search.ts'
-import { setMenuBtn } from './menu.js'
-import { setSidebarBtn } from './sidebar.js'
+import { setMenuBtn } from './menu.ts'
+import { setSidebarBtn } from './sidebar.ts'
 
 /**
  * 管理操作栏的函数 (DOMContentLoaded 之后)
  * @param {string} type - 简短描述页面的字符串: home, video, search, space, message
  */
-export function handleActionbar(type) {
+export function handleActionbar(type: string): void {
   const actionbar = Object.assign(document.createElement('div'), {
     id: 'actionbar',
     // <div style="display:flex; transform:scale(4)">
@@ -77,12 +77,12 @@ export function handleActionbar(type) {
   }
 
   function setTopBtn() {
-    const topBtn = document.getElementById('my-top')
+    const topBtn = document.getElementById('my-top') as HTMLElement
     topBtn.addEventListener('click', () => window.scrollTo({ top: 0 }))
   }
 
   function setHomeBtn() {
-    const home = document.getElementById('my-home')
+    const home = document.getElementById('my-home') as HTMLElement
     home.addEventListener(
       'click',
       () => (location.href = 'https://www.bilibili.com/'),
@@ -90,25 +90,29 @@ export function handleActionbar(type) {
   }
 
   function setRefreshBtn() {
-    const refreshFab = document.getElementById('refresh-fab') // 返回动态 HTML Collection
+    const refreshFab = document.getElementById('refresh-fab') as HTMLElement // 返回动态 HTML Collection
 
     // 使用rollBtn?.click可选链操作符前的rollBtn会立即执行，如果rollBtn存在才传递该元素的click函数引用。而创建了一个新的箭头函数()=>{rollBtn?.click()}则会在监听事件触发时才执行rollBtn
     refreshFab.addEventListener('click', () => {
-      document.querySelector('.flexible-roll-btn-inner')?.click()
+      ;(
+        document.querySelector('.flexible-roll-btn-inner') as HTMLElement
+      )?.click()
     })
   }
 
   function setFullbtn() {
-    let clickTimer = null
+    let clickTimer = 0
 
-    const fullBtn = document.getElementById('full-now')
+    const fullBtn = document.getElementById('full-now') as HTMLElement
 
     function playVideo() {
-      const video = document.querySelector('video')
+      const video = document.querySelector('video') as HTMLVideoElement
       video.play()
       video.muted = false
       if (video.volume === 0) {
-        document.querySelector('.bpx-player-ctrl-muted-icon').click()
+        ;(
+          document.querySelector('.bpx-player-ctrl-muted-icon') as HTMLElement
+        )?.click()
       }
     }
 
@@ -120,7 +124,9 @@ export function handleActionbar(type) {
       playVideo()
 
       clickTimer = setTimeout(() => {
-        const videoWrap = document.querySelector('.bpx-player-video-wrap')
+        const videoWrap = document.querySelector(
+          '.bpx-player-video-wrap',
+        ) as HTMLElement
         videoWrap.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
       }, 250)
     })
@@ -131,11 +137,13 @@ export function handleActionbar(type) {
   }
 
   function setShowMoreBtn() {
-    const showMoreFab = document.getElementById('show-more-fab')
+    const showMoreFab = document.getElementById('show-more-fab') as HTMLElement
 
     const handleClick = () => {
       if (type === 'search') {
-        const searchConditions = document.querySelector('.search-conditions')
+        const searchConditions = document.querySelector(
+          '.search-conditions',
+        ) as HTMLElement
 
         if (searchConditions) {
           if (sessionStorage.getItem('show-conditions') !== 'true') {
@@ -167,7 +175,7 @@ export function handleActionbar(type) {
           }
         }
       } else if (type === 'space') {
-        const followRow = document.querySelector('.h .h-action')
+        const followRow = document.querySelector('.h .h-action') as HTMLElement
 
         followRow.style.transition = '.4s ease-in'
         followRow?.classList.toggle('show')

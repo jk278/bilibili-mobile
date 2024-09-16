@@ -1,13 +1,13 @@
-import { followUser, getFollowList } from '../api.js'
+import { followUser, getFollowList } from '../api.ts'
 
 /**
  * 加载关注列表
  * @param {number} orderType 排序方式，1: 最常访问，2: 最近关注
  */
-export async function loadFollowList(orderType) {
+export async function loadFollowList(orderType: number) {
   const content = document.querySelector(
     '#follow-list-dialog .follow-list-content',
-  )
+  ) as HTMLElement
 
   let pageNumber = 1
   let pageSize = 20
@@ -45,9 +45,9 @@ export async function loadFollowList(orderType) {
 
   const tabsPanel = document.querySelector(
     '#follow-list-dialog .header-tabs-panel',
-  )
-  const firstItem = tabsPanel.firstElementChild
-  const secondItem = firstItem.nextElementSibling
+  ) as HTMLElement
+  const firstItem = tabsPanel.firstElementChild as HTMLElement
+  const secondItem = firstItem.nextElementSibling as HTMLElement
 
   firstItem.addEventListener('click', () => {
     if (firstItem.classList.contains('header-tabs-panel__item--active')) {
@@ -75,7 +75,7 @@ export async function loadFollowList(orderType) {
     loadFollowList(2)
   })
 
-  function addElementByItem(item) {
+  function addElementByItem(item: Record<string, string>) {
     const up = Object.assign(document.createElement('li'), {
       className: 'list-item clearfix',
       /* html */
@@ -108,9 +108,9 @@ export async function loadFollowList(orderType) {
     })
     content.appendChild(up)
 
-    const fansAction = up.querySelector('.fans-action')
-    const follow = fansAction.firstElementChild
-    const more = follow.nextElementSibling
+    const fansAction = up.querySelector('.fans-action') as HTMLElement
+    const follow = fansAction.firstElementChild as HTMLElement
+    const more = follow.nextElementSibling as HTMLElement
 
     follow.addEventListener('click', async () => {
       if (!follow.classList.contains('follow')) {
@@ -135,24 +135,28 @@ export async function loadFollowList(orderType) {
     })
 
     more.addEventListener('mouseenter', () => {
-      const dropdownMenu = more.querySelector('.be-dropdown-menu')
+      const dropdownMenu = more.querySelector(
+        '.be-dropdown-menu',
+      ) as HTMLElement
       dropdownMenu.style.display = ''
-      fansAction.style.zIndex = 2
+      fansAction.style.zIndex = `${2}`
       more.style.color = '#00a1d6'
     })
     more.addEventListener('mouseleave', () => {
-      const dropdownMenu = more.querySelector('.be-dropdown-menu')
+      const dropdownMenu = more.querySelector(
+        '.be-dropdown-menu',
+      ) as HTMLElement
       dropdownMenu.style.display = 'none'
-      fansAction.style.zIndex = 1
+      fansAction.style.zIndex = `${2}`
       more.style.color = ''
     })
   }
 
   // 若为函数表达式，则不能在声明前调用
-  function formatUrl(url) {
+  function formatUrl(url: string) {
     return url.slice(url.indexOf(':') + 1)
   }
-  function desc(item) {
-    return item.official_verify.desc || item.sign
+  function desc(item: Record<string, string | Record<string, string>>) {
+    return (item.official_verify as Record<string, string>).desc || item.sign
   }
 }

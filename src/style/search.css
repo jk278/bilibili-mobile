@@ -150,14 +150,23 @@ ul.vui_tabs--nav>* {
     margin: 5px 0 !important;
 }
 
-div.vui_pagenation--btns {
-    display: block;
-    white-space: pre-wrap;
-    text-align: center;
+.vui_pagenation {
+    width: 100%;
 }
 
-.vui_pagenation--btns>*:not(last-child) {
-    margin: 0 5px 5px !important;
+div.vui_pagenation--btns {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.vui_pagenation--btns>* {
+    margin: 0 calc((100% - 34px * 6) / 12) 5px !important;
+}
+
+.vui_pagenation--btns>*:nth-child(7) {
+    margin-left: calc((100% - 34px* 6) / 12 * 3 + 34px) !important;
 }
 
 .vui_pagenation--btn-num {

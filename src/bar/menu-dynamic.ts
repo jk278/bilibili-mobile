@@ -1,4 +1,4 @@
-import { getDynamicList } from '../api.js'
+import { getDynamicList } from '../api.ts'
 
 // 设置动态自动展开
 export function handleDynamicShowMore() {
@@ -17,10 +17,10 @@ export function handleDynamicShowMore() {
 
   const dynamicContent = document.querySelector(
     '.dynamic-panel-popover>.header-tabs-panel__content',
-  )
+  ) as HTMLElement
   const dynamicAll = dynamicContent.querySelector('.dynamic-all')
 
-  let loadedTitle = []
+  let loadedTitle: string[] = []
 
   async function onScroll() {
     const { scrollTop, scrollHeight, clientHeight } = dynamicContent
@@ -38,18 +38,25 @@ export function handleDynamicShowMore() {
     offset = data.offset
     data.items.forEach(checkIsLoaded) // 简写形式有时需绑定 this
 
-    const dynamics = dynamicAll.querySelectorAll(':scope>a')
-    loadedTitle = Array.from(dynamics).map((a) => a.title)
+    const dynamics = dynamicAll!.querySelectorAll(':scope>a')
+    loadedTitle = Array.from(dynamics).map((a) => (a as HTMLElement).title)
   }
   dynamicContent.addEventListener('scroll', onScroll)
 
-  function checkIsLoaded(item) {
-    if (!loadedTitle.includes(item.title)) {
+  function checkIsLoaded(item: {
+    [key: string]: string | Record<string, string>
+  }) {
+    if (!loadedTitle.includes(item.title as string)) {
       addElementByItem(item)
     }
   }
 
-  function addElementByItem(item) {
+  function addElementByItem(item: {
+    [key: string]: string | Record<string, string>
+  }) {
+    const author = item.author as Record<string, string>
+    const cover = item.cover as string
+
     const record = Object.assign(document.createElement('a'), {
       href: `${item.jump_url}`,
       title: `${item.title}`,
@@ -61,15 +68,15 @@ export function handleDynamicShowMore() {
       innerHTML: `
           <div data-v-16c69722="" data-v-0290fa94="" class="header-dynamic-list-item" title="${item.title}" target="_blank">
             <div data-v-16c69722="" class="header-dynamic-container">
-              <div data-v-16c69722="" class="header-dynamic__box--left"><a data-v-16c69722="" class="header-dynamic-avatar" href="${item.author.jump_url}" title="${item.author.name}" target="_blank">
+              <div data-v-16c69722="" class="header-dynamic__box--left"><a data-v-16c69722="" class="header-dynamic-avatar" href="${author.jump_url}" title="${author.name}" target="_blank">
                 <div class="bili-avatar" style="width: 100%;height:100%;">
-                  <img class="bili-avatar-img bili-avatar-face bili-avatar-img-radius" data-src="${formatUrl(item.author.face)}@96w_96h_1c_1s_!web-avatar.avif" alt="" src="${formatUrl(item.author.face)}@96w_96h_1c_1s_!web-avatar.avif">
+                  <img class="bili-avatar-img bili-avatar-face bili-avatar-img-radius" data-src="${formatUrl(author.face)}@96w_96h_1c_1s_!web-avatar.avif" alt="" src="${formatUrl(author.face)}@96w_96h_1c_1s_!web-avatar.avif">
                 </div>
               </a></div>
               <div data-v-16c69722="" class="header-dynamic__box--center">
                 <div data-v-16c69722="" class="dynamic-name-line">
                   <div data-v-16c69722="" class="user-name">
-                    <a data-v-16c69722="" href="${item.author.jump_url}" title="${item.author.name}" target="_blank">${item.author.name}</a>
+                    <a data-v-16c69722="" href="${author.jump_url}" title="${author.name}" target="_blank">${author.name}</a>
                   </div>
                 </div>
                 <div data-v-16c69722="" class="dynamic-info-content" title="">
@@ -80,9 +87,9 @@ export function handleDynamicShowMore() {
               <a data-v-16c69722="" class="header-dynamic__box--right" href="${item.jump_url}" target="_blank">
                 <div data-v-0290fa94="" class="cover">
                   <picture data-v-0290fa94="" class="v-img">
-                    <source srcset="${formatUrl(item.cover)}@164w_92h_1c.avif" type="image/avif">
-                    <source srcset="${formatUrl(item.cover)}@164w_92h_1c.webp" type="image/webp">
-                    <img src="${formatUrl(item.cover)}@164w_92h_1c" alt="" loading="lazy" onload="" onerror="typeof window.imgOnError === 'function' &amp;&amp; window.imgOnError(this)">
+                    <source srcset="${formatUrl(cover)}@164w_92h_1c.avif" type="image/avif">
+                    <source srcset="${formatUrl(cover)}@164w_92h_1c.webp" type="image/webp">
+                    <img src="${formatUrl(cover)}@164w_92h_1c" alt="" loading="lazy" onload="" onerror="typeof window.imgOnError === 'function' &amp;&amp; window.imgOnError(this)">
                   </picture>
                   <div data-v-0290fa94="" class="watch-later"><svg data-v-0290fa94="" class="bili-watch-later__icon"><use xlink:href="#widget-watch-later"></use></svg></div>
                 </div>
@@ -91,8 +98,8 @@ export function handleDynamicShowMore() {
           </div>
           `,
     })
-    dynamicAll.appendChild(record)
+    dynamicAll?.appendChild(record)
   }
 
-  const formatUrl = (url) => url.slice(url.indexOf(':') + 1)
+  const formatUrl = (url: string) => url.slice(url.indexOf(':') + 1)
 }

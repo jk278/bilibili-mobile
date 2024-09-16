@@ -7,8 +7,8 @@ import { handleTransitionEndOnce } from '../utils/transition.ts'
 /**
  * 处理侧边栏事件的函数
  */
-export function setSidebarBtn(type) {
-  const videoMap = {
+export function setSidebarBtn(type: 'video' | 'list' | 'message'): void {
+  const videoMap: Record<string, string[]> = {
     video: ['.right-container', '#reco_list'],
     list: ['.playlist-container--right', '.recommend-list-container'],
   }
@@ -24,8 +24,10 @@ export function setSidebarBtn(type) {
    * 处理视频侧边栏
    */
   function handleVideoSidebar() {
-    const sidebarFab = document.getElementById('sidebar-fab')
-    const videoContainer = document.querySelector('#mirror-vdcon')
+    const sidebarFab = document.getElementById('sidebar-fab') as HTMLElement
+    const videoContainer = document.querySelector(
+      '#mirror-vdcon',
+    ) as HTMLElement
 
     sidebarFab.addEventListener('click', () =>
       videoContainer.toggleAttribute('sidebar'),
@@ -35,15 +37,19 @@ export function setSidebarBtn(type) {
       videoContainer.removeAttribute('sidebar')
     }
 
-    const rightContainer = videoContainer.querySelector(videoMap[type][0])
-    const recommendLiist = rightContainer.querySelector(videoMap[type][1])
+    const rightContainer = videoContainer.querySelector(
+      videoMap[type][0],
+    ) as HTMLElement
+    const recommendLiist = rightContainer.querySelector(
+      videoMap[type][1],
+    ) as HTMLElement
 
     recommendLiist.addEventListener('click', (event) => {
       const nextPlay = document.querySelector('.rec-title')
       const recommendFooter = document.querySelector('.rec-footer') // 自动收起侧边栏
       if (
-        !nextPlay?.contains(event.target) &&
-        !recommendFooter.contains(event.target)
+        !nextPlay?.contains(event.target as Node) &&
+        !recommendFooter!.contains(event.target as Node)
       ) {
         closeSidebar()
         handleTransitionEndOnce(rightContainer, 'transform', () => {
@@ -57,20 +63,22 @@ export function setSidebarBtn(type) {
 
   // 侧边栏自动展开更多
   function showMoreRecommend() {
-    const recommendFooter = document.querySelector('.rec-footer')
+    const recommendFooter = document.querySelector('.rec-footer') as HTMLElement
     setTimeout(() => {
       recommendFooter?.click()
     }, 2000) // 直接传递 recommendFooter?.click: 可选链操作符前的 recommendFooter 条件判断将会立即执行
 
     document
       .querySelector('video')
-      .addEventListener('canplay', showMoreRecommend, { once: true })
+      ?.addEventListener('canplay', showMoreRecommend, { once: true })
   }
 
   // 处理消息侧边栏
   function handleMessageSidebar() {
-    const sidebarFab = document.getElementById('sidebar-fab')
-    const messageContainer = document.querySelector('body>.container')
+    const sidebarFab = document.getElementById('sidebar-fab') as HTMLElement
+    const messageContainer = document.querySelector(
+      'body>.container',
+    ) as HTMLElement
 
     sidebarFab.addEventListener('click', () => {
       messageContainer.toggleAttribute('sidebar')

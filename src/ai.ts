@@ -1,42 +1,44 @@
-import { getAIConclusion } from './api.js'
-import { aiData } from './values.ts'
+import { getAIConclusion } from './api.ts'
+import { AIConclusion, aiData } from './values.ts'
 
-export async function loadAI(card) {
+export async function loadAI(card: HTMLElement) {
   const aiCardElement = createAICardElement(
-    card.querySelector('.bili-video-card__image--wrap'),
+    card.querySelector('.bili-video-card__image--wrap')!,
   )
 
   const aiConclusionRes = await aiConclusion(card)
-  const bvid = card.querySelector('.bili-video-card__image--link').dataset.bvid
-  genterateAIConclusionCard(aiConclusionRes, aiCardElement, bvid)
+  const bvid = (card.querySelector(
+    '.bili-video-card__image--link',
+  ) as HTMLElement)!.dataset.bvid
+  genterateAIConclusionCard(aiConclusionRes!, aiCardElement, bvid!)
 }
 
-async function aiConclusion(card) {
+async function aiConclusion(card: HTMLElement) {
   const cardImageLinkElement = card.querySelector(
     '.bili-video-card__image--link',
-  )
+  ) as HTMLLinkElement
   const match =
-    /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) ||
+    /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl!) ||
     /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
-  const bvid = match[1]
+  const bvid = match![1]
 
   if (aiData[bvid] && aiData[bvid].code === 0) {
     return aiData[bvid]
   }
 
   if (cardImageLinkElement.dataset.hasGotAi === undefined) {
-    const cid = cardImageLinkElement.dataset.cid
-    const up_mid = cardImageLinkElement.dataset.upMid
+    const cid = cardImageLinkElement.dataset.cid as string
+    const up_mid = cardImageLinkElement.dataset.upMid as string
     const aiConclusionRes = await getAIConclusion({ bvid, cid, up_mid })
     aiData[bvid] = aiConclusionRes
-    cardImageLinkElement.dataset.hasGotAi = true
+    cardImageLinkElement.dataset.hasGotAi = true.toString()
     if (aiConclusionRes.code === 0) {
       return aiData[bvid]
     }
   }
 }
 
-function createAICardElement(cardElement) {
+function createAICardElement(cardElement: HTMLElement) {
   const overlay = document.createElement('div')
   overlay.id = 'ai-conclusion-overlay'
   overlay.innerHTML = `
@@ -44,7 +46,7 @@ function createAICardElement(cardElement) {
         <div class="ai-conclusion-card-header">正在加载 AI 总结</div>
       </div>
     `
-  cardElement.closest('.bili-video-card').appendChild(overlay)
+  cardElement.closest('.bili-video-card')?.appendChild(overlay)
   overlay.classList.add('show')
 
   overlay.addEventListener(
@@ -56,13 +58,17 @@ function createAICardElement(cardElement) {
     { once: true },
   )
 
-  const div = overlay.querySelector('.ai-conclusion-card')
+  const div = overlay.querySelector('.ai-conclusion-card') as HTMLElement
   div.addEventListener('click', (event) => event.stopPropagation())
 
   return div
 }
 
-function genterateAIConclusionCard(aiConclusionRes, aiCardElement, bvid) {
+function genterateAIConclusionCard(
+  aiConclusionRes: AIConclusion,
+  aiCardElement: HTMLElement,
+  bvid: string,
+) {
   let aiCard = `
       <div class="ai-conclusion-card-header">
         <div class="ai-conclusion-card-header-left">
@@ -74,15 +80,19 @@ function genterateAIConclusionCard(aiConclusionRes, aiCardElement, bvid) {
         ${aiConclusionRes.model_result.summary}
       </div>
     `
-  aiConclusionRes.model_result.outline.forEach((item) => {
-    aiCard += `
+  aiConclusionRes.model_result.outline.forEach(
+    (item: {
+      [key: string]: string | Record<string, string | number>[]
+      part_outline: Record<string, string | number>[]
+    }) => {
+      aiCard += `
         <div class="ai-conclusion-card-selection">
           <div class="ai-conclusion-card-selection-title">${item.title}</div>
           ${item.part_outline
             .map(
               (s) => `
             <a class="bullet" href="https://www.bilibili.com/video/${bvid}/?t=${s.timestamp}s">
-              <span class="ai-conclusion-card-selection-timer">${timeNumberToTime(s.timestamp)}</span>
+              <span class="ai-conclusion-card-selection-timer">${timeNumberToTime(s.timestamp as number)}</span>
               <span>${s.content}</span>
             </a>
           `,
@@ -90,9 +100,10 @@ function genterateAIConclusionCard(aiConclusionRes, aiCardElement, bvid) {
             .join('')}
         </div>
       `
-  })
+    },
+  )
 
-  function timeNumberToTime(time) {
+  function timeNumberToTime(time: number) {
     const min = Math.floor(time / 60)
     const sec = time % 60
     return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`

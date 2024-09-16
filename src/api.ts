@@ -12,7 +12,7 @@ const mixinKeyEncTab = [
 // 使用缓存机制减少重复计算
 const mixinKeyCache = new Map()
 
-const getMixinKey = (orig) => {
+const getMixinKey = (orig: string) => {
   if (mixinKeyCache.has(orig)) {
     return mixinKeyCache.get(orig)
   }
@@ -25,7 +25,11 @@ const getMixinKey = (orig) => {
 }
 
 // 为请求参数进行 wbi 签名
-function encWbi(params, imgKey, subKey) {
+function encWbi(
+  params: Record<string, string>,
+  imgKey: string,
+  subKey: string,
+) {
   const mixinKey = getMixinKey(imgKey + subKey)
   const currTime = Math.round(Date.now() / 1000)
   const chrFilter = /[!'()*]/g
@@ -42,7 +46,6 @@ function encWbi(params, imgKey, subKey) {
     .join('&')
 
   // 在脚本 metadata 中引用 AI 总结使用的 md5 算法
-  // eslint-disable-next-line no-undef
   const wbiSign = md5(query + mixinKey) // 计算 w_rid
 
   return `${query}&w_rid=${wbiSign}`
@@ -61,7 +64,7 @@ async function getWbiKeys() {
 }
 
 // 刷新 wts 和 wrid
-async function getwts(params) {
+async function getwts(params: Record<string, string>) {
   const webKeys = await getWbiKeys()
   const imgKey = webKeys.imgKey
   const subKey = webKeys.subKey
@@ -76,7 +79,7 @@ async function getwts(params) {
  * @returns {Promise<Object>} 响应主体 response.json().data
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
-async function fetchAPI(url, options = {}) {
+async function fetchAPI(url: string, options = {}) {
   try {
     const response = await fetch(url, options)
     if (!response.ok) {
@@ -107,17 +110,17 @@ async function getNavUserInfo() {
  * @returns {Promise<Object>} 视频信息数据
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
-export async function getVideoInfo(bvid) {
+export async function getVideoInfo(bvid: string) {
   return fetchAPI(`${BILIBILI_API}/x/web-interface/view?bvid=${bvid}`)
 }
 
 /**
  * 获取 AI判断 响应
- * @param {object} params 请求参数
+ * @param {object} params 请求参数 { bvid, cid, up_mid }
  * @returns {Promise<Object>} 响应主体 data
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
-export async function getJudgeAI(params) {
+export async function getJudgeAI(params: Record<string, string>) {
   const query = await getwts(params)
   return fetchAPI(
     `${BILIBILI_API}/x/web-interface/view/conclusion/judge?${query}`,
@@ -130,7 +133,7 @@ export async function getJudgeAI(params) {
  * @returns {Promise<Object>} 响应主体 data
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
-export async function getAIConclusion(params) {
+export async function getAIConclusion(params: Record<string, string>) {
   const query = await getwts(params)
   return fetchAPI(
     `${BILIBILI_API}/x/web-interface/view/conclusion/get?${query}`,
@@ -177,7 +180,11 @@ function getCSRF() {
  * @returns {Promise<Object>} 响应主体 data
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
-export async function getFollowList(pageNumber, pageSize, orderType) {
+export async function getFollowList(
+  pageNumber: number,
+  pageSize: number,
+  orderType: number,
+) {
   const vmid = getUserID()
   const query = await getwts({})
   return fetchAPI(
@@ -192,7 +199,7 @@ export async function getFollowList(pageNumber, pageSize, orderType) {
  * @returns {Promise<Object>} 响应主体 data
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
-export async function getDynamicList(offset) {
+export async function getDynamicList(offset: string) {
   return fetchAPI(
     `${BILIBILI_API}/x/polymer/web-dynamic/v1/feed/nav?offset=${offset}`,
     { credentials: 'include' },
@@ -205,7 +212,7 @@ export async function getDynamicList(offset) {
  * @returns {Promise<Object>} 响应主体 data
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
-export async function getHistoryList(cursor) {
+export async function getHistoryList(cursor: { max: number; view_at: number }) {
   const url = `${BILIBILI_API}/x/web-interface/history/cursor?max=${cursor.max}&view_at=${cursor.view_at}&business=archive`
   const options = { credentials: 'include' }
   return fetchAPI(url, options)
@@ -218,7 +225,7 @@ export async function getHistoryList(cursor) {
  * @returns {Promise<Object>} 响应主体 data
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
-export async function getHistorySearchList(key, pn) {
+export async function getHistorySearchList(key: string, pn: number) {
   return fetchAPI(
     `${BILIBILI_API}/x/web-interface/history/search?pn=${pn}&keyword=${key}&business=all`,
     { credentials: 'include' },
@@ -232,22 +239,23 @@ export async function getHistorySearchList(key, pn) {
  */
 export async function getUnreadNums() {
   const options = { credentials: 'include' }
-  const messageNumObj = await fetchAPI(
+  const messageNumObj = (await fetchAPI(
     'https://api.vc.bilibili.com/session_svr/v1/session_svr/single_unread?build=0&mobi_app=web&unread_type=0',
     options,
-  )
+  )) as Record<string, number>
   const dynamicNumObj = await fetchAPI(
     `${BILIBILI_API}/x/web-interface/dynamic/entrance?alltype_offset=&video_offset=0&article_offset=0`,
     options,
   )
 
   const messageNum = Object.values(messageNumObj).reduce(
-    (acc, value) => acc + value,
-    0,
+    // 数组方法：所有元素累积成一个值
+    (acc, value) => acc + value, // 回调：累加器 + 当前值
+    0, // 初始值
   )
-  const dynamicNum = dynamicNumObj.update_info.item.count
+  const dynamicNum = dynamicNumObj.update_info.item.count as number
 
-  return [messageNum, dynamicNum]
+  return { messageNum, dynamicNum }
 }
 
 /**
@@ -257,16 +265,15 @@ export async function getUnreadNums() {
  * @returns {Promise<Object>} 响应数据
  * @throws {Error} 如果请求失败或响应状态码不是 200
  */
-export async function followUser(mid, isFollow) {
+export async function followUser(mid: string, isFollow: boolean) {
   const response = await fetch('https://api.bilibili.com/x/relation/modify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       fid: mid,
       act: isFollow ? '1' : '2',
-
       re_src: '11',
-      csrf: getCSRF(),
+      csrf: getCSRF()!,
     }).toString(),
     credentials: 'include',
   })

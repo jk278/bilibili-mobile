@@ -1,6 +1,6 @@
 import { GM_getValue } from '$'
-import { getVideoInfo, getJudgeAI } from './api.js'
-import { loadAI } from './ai.js'
+import { getVideoInfo, getJudgeAI } from './api.ts'
+import { loadAI } from './ai.ts'
 
 // 真正的预加载
 export function preloadAnchor() {

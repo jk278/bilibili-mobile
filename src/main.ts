@@ -21,10 +21,10 @@ import {
   handleScriptSetting,
   setScriptHelp,
 } from './setting.js'
-import { handleActionbar } from './actionbar/actionbar.js'
+import { handleActionbar } from './bar/actionbar.ts'
 import { preloadAnchor, handleHeaderImage, handleVideoCard } from './home.js'
 import { videoInteraction } from './video.js'
-import { createUnfoldBtn } from './message.js'
+import { createUnfoldBtn } from './message.ts'
 import { waitDOMContentLoaded } from './utils/wait.ts'
 ;(function () {
   // setInterval(() => { debugger }, 100)

@@ -1,12 +1,12 @@
-import { loadFollowList } from './menu-follow.js'
-import { handleHistoryShowMore } from './menu-history.js'
-import { handleDynamicShowMore } from './menu-dynamic.js'
-import { getUnreadNums } from '../api.js'
+import { loadFollowList } from './menu-follow.ts'
+import { handleHistoryShowMore } from './menu-history.ts'
+import { handleDynamicShowMore } from './menu-dynamic.ts'
+import { getUnreadNums } from '../api.ts'
 import { handleTransitionEndOnce } from '../utils/transition.ts'
 
 export function setMenuBtn() {
   // console.log('Menu')
-  let isOldApp
+  let isOldApp: boolean
   // 覆盖显隐，初始化加载：消息、动态、收藏、历史（依DOM中顺序）、主页（从最前置最后））
   const preloadeditems1 = [
     // 旧APP不用预加载消息
@@ -44,18 +44,26 @@ export function setMenuBtn() {
       changeMenu()
       function changeMenu() {
         if (document.querySelector('#header-in-menu')) {
-          document.querySelector(
-            '[data-refer="[data-idx=message]"]',
+          ;(
+            document.querySelector(
+              '[data-refer="[data-idx=message]"]',
+            ) as HTMLElement
           ).dataset.refer =
             ".right-entry__outside[href='//message.bilibili.com']"
-          document.querySelector(
-            '[data-refer="[data-idx=dynamic]"]',
+          ;(
+            document.querySelector(
+              '[data-refer="[data-idx=dynamic]"]',
+            ) as HTMLElement
           ).dataset.refer = ".right-entry__outside[href='//t.bilibili.com/']"
-          document.querySelector(
-            '[data-refer="[data-idx=fav]"]',
+          ;(
+            document.querySelector(
+              '[data-refer="[data-idx=fav]"]',
+            ) as HTMLElement
           ).dataset.refer = '.right-entry__outside[data-header-fav-entry]'
-          document.querySelector(
-            '[data-refer="[data-idx=history]"]',
+          ;(
+            document.querySelector(
+              '[data-refer="[data-idx=history]"]',
+            ) as HTMLElement
           ).dataset.refer =
             ".right-entry__outside[href='//www.bilibili.com/account/history']"
         } else {
@@ -75,7 +83,7 @@ export function setMenuBtn() {
     }
   }
 
-  const menuFab = document.getElementById('menu-fab')
+  const menuFab = document.getElementById('menu-fab') as HTMLElement
 
   // headerInMenu
   const menuOverlay = Object.assign(document.createElement('div'), {
@@ -97,7 +105,7 @@ export function setMenuBtn() {
     `,
   })
   menuFab.appendChild(menuOverlay)
-  const menu = menuOverlay.querySelector('#header-in-menu')
+  const menu = menuOverlay.querySelector('#header-in-menu') as HTMLElement
 
   menuFab.addEventListener('click', () => {
     menu.classList.add('show')
@@ -108,10 +116,10 @@ export function setMenuBtn() {
   updateBadges()
   // 消息数
   async function updateBadges() {
-    function update(id, number) {
-      const badge = menuOverlay.querySelector(`#${id}`)
+    function update(id: string, number: number) {
+      const badge = menuOverlay.querySelector(`#${id}`) as HTMLElement
       if (number > 0) {
-        badge.textContent = number > 99 ? '99+' : number
+        badge.textContent = number > 99 ? '99+' : number.toString()
         badge.style.visibility = 'visible'
       } else {
         badge.style.visibility = 'hidden'
@@ -140,7 +148,7 @@ export function setMenuBtn() {
 
       const referElement = document.querySelector(`${refer}+.v-popover`)
       if (!referElement) {
-        const toast = document.querySelector('#toast')
+        const toast = document.querySelector('#toast') as HTMLElement
         toast.textContent = '网页菜单加载中，请稍后重试'
         toast.style.display = 'block'
         setTimeout(() => {
@@ -182,7 +190,9 @@ export function setMenuBtn() {
       return
     }
 
-    const referElement = document.querySelector(`${openedDialog}+.v-popover`)
+    const referElement = document.querySelector(
+      `${openedDialog}+.v-popover`,
+    ) as HTMLElement
     referElement.removeAttribute('show')
 
     handleTransitionEndOnce(referElement, 'opacity', () => {

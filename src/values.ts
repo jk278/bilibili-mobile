@@ -1,12 +1,16 @@
 export const BILIBILI_API = 'https://api.bilibili.com'
 
-interface AIConclusion {
+export interface AIConclusion {
   code: number
-  // 其他属性
+  bvid: string
+  aiCardElement: HTMLElement
+  model_result: {
+    summary: string
+    outline: {
+      [key: string]: string | Record<string, string | number>[]
+      part_outline: Record<string, string | number>[]
+    }[]
+  }
 }
 
-interface AIData {
-  [key: string]: AIConclusion
-}
-
-export const aiData: AIData = {}
+export const aiData: { [key: string]: AIConclusion } = {}
