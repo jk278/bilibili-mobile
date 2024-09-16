@@ -162,7 +162,7 @@ div.vui_pagenation--btns {
 }
 
 .vui_pagenation--btns>* {
-    margin: 0 calc((100% - 34px * 6) / 12) 5px !important;
+    margin: 0 calc((100% - 34px * 6) / 12) 10px !important;
 }
 
 .vui_pagenation--btns>*:nth-child(7) {
