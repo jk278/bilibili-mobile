@@ -7,9 +7,9 @@ export async function loadAI(card: HTMLElement) {
   )
 
   const aiConclusionRes = await aiConclusion(card)
-  const bvid = (card.querySelector(
-    '.bili-video-card__image--link',
-  ) as HTMLElement)!.dataset.bvid
+  const bvid = (
+    card.querySelector('.bili-video-card__image--link') as HTMLElement
+  ).dataset.bvid
   genterateAIConclusionCard(aiConclusionRes!, aiCardElement, bvid!)
 }
 

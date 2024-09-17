@@ -147,7 +147,7 @@ ul.vui_tabs--nav>* {
 
 /* 页数 - 美化 */
 .search-page .flex_center {
-    margin: 5px 0 !important;
+    margin: 5px 0 10px !important;
 }
 
 .vui_pagenation {
@@ -159,39 +159,32 @@ div.vui_pagenation--btns {
     flex-wrap: wrap;
     justify-content: space-between;
     width: 100%;
+
+    --calc-margin: calc((100% - 34px * 7) / 14);
+    position: relative;
+    margin-bottom: 34px;
 }
 
 .vui_pagenation--btns>* {
-    margin: 0 calc((100% - 34px * 6) / 12) 10px !important;
-}
-
-.vui_pagenation--btns>*:nth-child(7) {
-    margin-left: calc((100% - 34px* 6) / 12 * 3 + 34px) !important;
-}
-
-.vui_pagenation--btn-num {
     max-width: 34px;
+    margin: 0 var(--calc-margin) 10px !important;
 }
 
-span.vui_pagenation--extend {
-    max-width: 34px;
-}
-
+/* 换页按钮更改样式 */
 .vui_pagenation--btn-side {
-    padding: 0 5px;
-    max-width: 34px;
     overflow: hidden;
-    position: relative;
+    position: absolute;
+    top: 0;
 }
 
 .vui_pagenation--btn-side::before {
     color: var(--v_text1);
     background-color: inherit;
     position: absolute;
-    left: 0;
     top: 0;
-    font-size: 20px;
+    left: 0;
     width: 34px;
+    font-size: 20px;
 }
 
 .vui_pagenation--btn-side:first-child::before {
@@ -202,6 +195,29 @@ span.vui_pagenation--extend {
 .vui_pagenation--btn-side:last-child::before {
     content: '>';
     padding: 5.5px 7px 8.5px 7px;
+}
+
+/* 首尾四按钮置于第二行 */
+button.vui_pagenation--btn-side:first-child {
+    margin: 44px var(--calc-margin) 0 !important;
+}
+
+button.vui_pagenation--btn-num:nth-child(2) {
+    position: absolute;
+    top: 0;
+    margin: 44px 0 0 calc(var(--calc-margin) * 3 + 34px) !important;
+}
+
+button.vui_pagenation--btn-num:nth-last-child(2) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 44px calc(var(--calc-margin) * 3 + 34px) 0 0 !important;
+}
+
+button.vui_pagenation--btn-side:last-child {
+    right: 0;
+    margin: 44px var(--calc-margin) 0 0 !important;
 }
 
 /* 搜索页底部 */

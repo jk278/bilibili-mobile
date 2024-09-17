@@ -208,7 +208,7 @@ function slideSearchSort() {
       document.querySelector(
         `.vui_tabs--nav-item:nth-child(${navItems[clickIndex]})`,
       ) as HTMLElement
-    )?.click()
+    ).click()
   }
 
   setupSlide(

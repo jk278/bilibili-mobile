@@ -4,23 +4,23 @@ import { loadAI } from './ai.ts'
 
 // 真正的预加载
 export function preloadAnchor() {
-  let anchor
-  let firstUnloadElem
-  let height
+  let anchor: Node
+  let firstUnloadElem: HTMLElement
+  let height: number
 
-  const container = document.querySelector('.container')
+  const container = document.querySelector('.container')!
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       // dev 模式获取不到全部 addedNode
       mutation.addedNodes.forEach((node) => {
         if (
           node.nodeType === Node.ELEMENT_NODE &&
-          node.className === 'load-more-anchor'
+          (node as HTMLElement).className === 'load-more-anchor'
         ) {
           anchor = node
           firstUnloadElem = document.querySelector(
             '.container>.bili-video-card:not(.is-rcmd)',
-          )
+          )!
           height = firstUnloadElem.clientHeight + 8
           observer.disconnect()
         }
@@ -33,9 +33,9 @@ export function preloadAnchor() {
     if (firstUnloadElem?.getBoundingClientRect().top < height * 6) {
       // 为何使用 {once: true} 无法正常工作？
       window.removeEventListener('scroll', preload)
-      anchor.parentNode.children[1].appendChild(anchor)
+      anchor.parentNode!.children[1].appendChild(anchor)
       setTimeout(() => {
-        firstUnloadElem.parentNode.appendChild(anchor)
+        firstUnloadElem.parentNode!.appendChild(anchor)
         window.addEventListener('scroll', preload)
       }, 500)
     }
@@ -46,7 +46,7 @@ export function preloadAnchor() {
 
 // 控制首页头图函数
 export function handleHeaderImage() {
-  const source = GM_getValue('header-image-source', 'unsplash')
+  const source = GM_getValue('header-image-source', 'unsplash') as string
   const mapping = {
     bing: 'https://api.suyanw.cn/api/bing.php',
     unsplash: 'https://unsplash.it/1600/900?random',
@@ -55,7 +55,7 @@ export function handleHeaderImage() {
     dongman: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=dongman',
     fengjing: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=fengjing',
     suiji: 'https://api.suyanw.cn/api/sjbz.php?method=pc&lx=suiji',
-  }
+  } as { [key: string]: string }
 
   let url = mapping[source]
   const elementSelector = '.bili-header__banner'
@@ -67,14 +67,15 @@ export function handleHeaderImage() {
     setTimeout(renewImage, 5000)
   }
 
-  window.addEventListener('variableChanged', (e) => {
+  window.addEventListener('variableChanged', (event: Event) => {
+    const e = event as CustomEvent<{ key: string; newValue: string }>
     if (e.detail.key === 'header-image-source') {
       url = mapping[e.detail.newValue]
       setTimeout(() => renewImage(true), 0)
     }
   })
 
-  async function renewImage(loadImmediately) {
+  async function renewImage(loadImmediately: boolean) {
     try {
       const img = await getImage(url)
       const base64Data = imageToBase64(img)
@@ -87,7 +88,7 @@ export function handleHeaderImage() {
     }
   }
 
-  function getImage(url) {
+  function getImage(url: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
       const img = new Image()
       img.crossOrigin = 'Anonymous'
@@ -97,27 +98,27 @@ export function handleHeaderImage() {
     })
   }
 
-  function imageToBase64(img) {
+  function imageToBase64(img: HTMLImageElement) {
     const canvas = document.createElement('canvas')
     canvas.width = img.width
     canvas.height = img.height
     const ctx = canvas.getContext('2d')
-    ctx.drawImage(img, 0, 0)
+    ctx?.drawImage(img, 0, 0)
     return canvas.toDataURL('image/jpeg')
   }
 
-  function storeImage(key, base64Data) {
+  function storeImage(key: string, base64Data: string) {
     localStorage.setItem(key, base64Data)
   }
 
-  function loadImage(key, elementSelector) {
+  function loadImage(key: string, elementSelector: string) {
     const base64Data = localStorage.getItem(key)
     if (base64Data) {
       applyStyle(elementSelector, base64Data)
     } else {
       getImage(url)
         .then((img) => {
-          const base64Data = imageToBase64(img)
+          const base64Data = imageToBase64(img as HTMLImageElement)
           storeImage(key, base64Data)
           applyStyle(elementSelector, base64Data)
         })
@@ -125,7 +126,7 @@ export function handleHeaderImage() {
     }
   }
 
-  function applyStyle(elementSelector, base64Data) {
+  function applyStyle(elementSelector: string, base64Data: string) {
     const style = document.createElement('style')
     style.innerHTML = `
       ${elementSelector}::after {
@@ -158,7 +159,7 @@ export function handleVideoCard() {
       mutation.addedNodes.forEach((node) => {
         if (
           node.nodeType === Node.ELEMENT_NODE &&
-          node.classList.contains('bili-video-card')
+          (node as HTMLElement).classList.contains('bili-video-card')
         ) {
           isLoading = true
           setTimeout(() => {
@@ -169,39 +170,42 @@ export function handleVideoCard() {
       })
     })
   }).observe(
-    document.querySelector('.recommended-container_floor-aside>.container'),
+    document.querySelector('.recommended-container_floor-aside>.container')!,
     { childList: true },
   )
 
   function judgeHasAi() {
     const imageLinks = document.querySelectorAll(
       '.bili-video-card__image--link',
-    )
+    ) as NodeListOf<HTMLElement>
     let delay = 0
     imageLinks.forEach(async (link) => {
       await new Promise((resolve) => setTimeout(resolve, delay))
       const card = link.closest(
         '.bili-video-card:not(:has(.bili-video-card__info--ad))',
-      )
+      ) as HTMLElement
       if (card && !link.dataset.hasJudgedAi) {
         const aiJudgeRes = await judge(card)
         if (aiJudgeRes) {
-          card.dataset.hasAi = true
+          card.dataset.hasAi = 'true'
         }
         delay += 100
       }
-      link.dataset.hasJudgedAi = true
+      link.dataset.hasJudgedAi = 'true'
     })
   }
 
-  let lastPreviewCard = null
+  let lastPreviewCard: HTMLElement | null = null
   new MutationObserver((mutations) => {
     mutations.forEach(async (mutation) => {
-      const firstChild = mutation.addedNodes[0]?.firstChild
-      if (firstChild && firstChild.className === 'v-popover is-bottom-end') {
+      const firstChild = mutation.addedNodes[0]?.firstChild as HTMLElement
+      if (
+        firstChild &&
+        (firstChild as HTMLElement).className === 'v-popover is-bottom-end'
+      ) {
         const panel = firstChild.querySelector(
           '.bili-video-card__info--no-interest-panel',
-        )
+        ) as HTMLElement
         const previewOption = createOption('预览此视频')
         panel.insertBefore(previewOption, panel.firstChild)
         previewOption.addEventListener('click', (event) =>
@@ -235,7 +239,7 @@ export function handleVideoCard() {
     const btn = document.querySelector(
       '.bili-video-card__info--no-interest.active',
     )
-    if (btn?.contains(event.target)) {
+    if (btn?.contains(event.target as HTMLElement)) {
       btn.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
       btn.classList.remove('use')
       btn.addEventListener(
@@ -248,7 +252,7 @@ export function handleVideoCard() {
     }
   })
 
-  function onPreviewOptionClick(event, firstChild) {
+  function onPreviewOptionClick(event: MouseEvent, firstChild: HTMLElement) {
     event.stopPropagation()
     firstChild.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }))
     window.addEventListener(
@@ -262,9 +266,11 @@ export function handleVideoCard() {
     )
 
     const card = document
-      .querySelector('.bili-video-card__info--no-interest.active')
-      .closest('.bili-video-card')
-    const cardEventWrap = card.querySelector('.bili-video-card__image--wrap')
+      .querySelector('.bili-video-card__info--no-interest.active')!
+      .closest('.bili-video-card')!
+    const cardEventWrap = card.querySelector(
+      '.bili-video-card__image--wrap',
+    ) as HTMLElement
     cardEventWrap.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }))
     lastPreviewCard = cardEventWrap
 
@@ -278,23 +284,23 @@ export function handleVideoCard() {
     }
   }
 
-  function createProgressBar(cardEventWrap) {
+  function createProgressBar(cardEventWrap: HTMLElement) {
     const progressBar = document.createElement('div')
     progressBar.className = 'inline-progress-bar'
     progressBar.innerHTML =
       '<div class="inline-progress-bar-filled"></div><div class="inline-progress-bar-thumb"></div>'
     cardEventWrap.appendChild(progressBar)
 
-    const video = cardEventWrap.querySelector('video')
+    const video = cardEventWrap.querySelector('video')!
     const progressBarFilled = progressBar.querySelector(
       '.inline-progress-bar-filled',
-    )
+    ) as HTMLElement
     const progressBarThumb = progressBar.querySelector(
       '.inline-progress-bar-thumb',
-    )
+    ) as HTMLElement
     const progressBarWidth = progressBar.offsetWidth
 
-    function updateProgressBar(progress) {
+    function updateProgressBar(progress: number) {
       progressBarFilled.style.width = `${progress * 100}%`
       progressBarThumb.style.left = `${progress * progressBarWidth}px`
     }
@@ -318,7 +324,7 @@ export function handleVideoCard() {
       true,
     )
 
-    function onTouchEvent(event) {
+    function onTouchEvent(event: TouchEvent) {
       const progress =
         (event.touches[0].clientX - progressBar.getBoundingClientRect().left) /
         progressBarWidth
@@ -341,14 +347,14 @@ export function handleVideoCard() {
     })
   }
 
-  async function judge(card) {
+  async function judge(card: HTMLElement) {
     const cardImageLinkElement = card.querySelector(
       '.bili-video-card__image--link',
-    )
+    ) as HTMLLinkElement
     const match =
-      /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl) ||
+      /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.dataset.targetUrl!) ||
       /\/video\/([A-Za-z0-9]+)/.exec(cardImageLinkElement.href)
-    const bvid = match[1]
+    const bvid = match![1]
 
     try {
       const videoInfo = await getVideoInfo(bvid)
@@ -365,14 +371,14 @@ export function handleVideoCard() {
     }
   }
 
-  function createOption(text) {
+  function createOption(text: string) {
     return Object.assign(document.createElement('div'), {
       className: 'bili-video-card__info--no-interest-panel--item',
       textContent: text,
     })
   }
 
-  async function getCard() {
+  async function getCard(): Promise<HTMLElement | null> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const btn = document.querySelector(
@@ -383,7 +389,7 @@ export function handleVideoCard() {
           console.log('疑似弹窗动作被打断：未获取到激活的视频更多选项按钮')
           return
         }
-        const card = btn.closest('.bili-video-card')
+        const card = btn.closest('.bili-video-card') as HTMLElement
         btn.classList.add('use')
         resolve(card)
       }, 50)

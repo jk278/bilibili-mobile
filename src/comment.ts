@@ -4,7 +4,7 @@ import { touchZoomWrap } from './utils/zoom.ts'
  * 动态修改播放组件样式
  * @param {boolean} isDynamicRefresh - 是否动态刷新
  */
-export function modifyShadowDOMLate(isDynamicRefresh: boolean) {
+export function modifyShadowDOMLate(isDynamicRefresh: boolean = false) {
   let commentsShadow: ShadowRoot | null | undefined = null
   let commentsHeaderShadow: ShadowRoot | null | undefined = null
   let headerBoxShadow: ShadowRoot | null | undefined = null
@@ -376,7 +376,7 @@ div#navbar {
             'click',
             (event) => {
               event.stopImmediatePropagation() // 禁用点击
-              ;(photoShadow?.querySelector('#close') as HTMLElement)?.click()
+              ;(photoShadow?.querySelector('#close') as HTMLElement).click()
             },
             { capture: true, once: true },
           )

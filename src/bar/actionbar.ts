@@ -96,7 +96,7 @@ export function handleActionbar(type: string): void {
     refreshFab.addEventListener('click', () => {
       ;(
         document.querySelector('.flexible-roll-btn-inner') as HTMLElement
-      )?.click()
+      ).click()
     })
   }
 
@@ -112,7 +112,7 @@ export function handleActionbar(type: string): void {
       if (video.volume === 0) {
         ;(
           document.querySelector('.bpx-player-ctrl-muted-icon') as HTMLElement
-        )?.click()
+        ).click()
       }
     }
 

@@ -1,7 +1,7 @@
 import { GM_getValue, GM_setValue, GM_registerMenuCommand } from '$'
 import { waitDOMContentLoaded } from './utils/wait.ts'
 
-function appendStyle(id, textContent) {
+function appendStyle(id: string, textContent: string) {
   const style = Object.assign(document.createElement('style'), {
     id,
     textContent,
@@ -81,7 +81,9 @@ export function handleScriptPreSetting() {
     createSettingPanel()
 
     GM_registerMenuCommand('元素隐藏设置', () => {
-      const settingPanel = document.getElementById('setting-panel-style')
+      const settingPanel = document.getElementById(
+        'setting-panel-style',
+      ) as HTMLElement
       settingPanel.style.display = 'flex'
       setTimeout(() => {
         settingPanel.setAttribute('show', '')
@@ -90,9 +92,12 @@ export function handleScriptPreSetting() {
   })
 
   // 形参 diference 隐式声明成 let
-  function readScriptSetting(diference) {
+  function readScriptSetting(diference: boolean[] | undefined = undefined) {
     // 傻逼 GM_getValue 获取未设的值就报错加阻塞线程，值不自动转字符串
-    const settingShowHidden = GM_getValue('settingShowHidden', defaultValue)
+    const settingShowHidden = GM_getValue(
+      'settingShowHidden',
+      defaultValue,
+    ) as boolean[]
     const values = Object.values(css) // 可枚举属性值，返回 [v1, v2]
 
     if (diference) {
@@ -140,16 +145,22 @@ export function handleScriptPreSetting() {
 
     const checkboxElements = settingPanel.querySelectorAll(
       '.setting-checkboxes input[type="checkbox"]',
-    )
-    const oldValues = GM_getValue('settingShowHidden', defaultValue)
-    for (const [index, element] of checkboxElements.entries()) {
+    ) as NodeListOf<HTMLInputElement>
+    const oldValues = GM_getValue(
+      'settingShowHidden',
+      defaultValue,
+    ) as boolean[]
+    for (const [index, element] of Array.from(checkboxElements).entries()) {
       element.checked = oldValues[index]
     }
 
     settingPanel
-      .querySelector('#setting-conform-1')
+      .querySelector('#setting-conform-1')!
       .addEventListener('click', () => {
-        const oldValues = GM_getValue('settingShowHidden', defaultValue)
+        const oldValues = GM_getValue(
+          'settingShowHidden',
+          defaultValue,
+        ) as boolean[]
         const selectedValues = Array.from(checkboxElements).map(
           (checkbox) => checkbox.checked,
         )
@@ -191,7 +202,7 @@ export function handleScriptSetting() {
     'home-single-column': '首页单列推荐',
     'allow-video-slid': '视频滑动调整进度',
     'menu-dialog-move-down': '菜单弹窗(收藏、历史等)靠下',
-  }
+  } as { [key: string]: string }
 
   const customKeyValues = {
     'menu-dialog-move-down-value': '20',
@@ -203,7 +214,7 @@ export function handleScriptSetting() {
     'menu-dialog-move-down-value': '自定义菜单弹窗底边距',
     'video-longpress-speed': '自定义视频长按倍速',
     'header-image-source': '主页头图换源',
-  }
+  } as { [key: string]: string }
 
   const menuOptions = {
     key: 'modify-menu-options',
@@ -219,7 +230,9 @@ export function handleScriptSetting() {
 
   // 注册菜单命令
   GM_registerMenuCommand('操作偏好设置', () => {
-    const settingPanel = document.getElementById('setting-panel-preference')
+    const settingPanel = document.getElementById(
+      'setting-panel-preference',
+    ) as HTMLElement
     settingPanel.style.display = 'flex'
     setTimeout(() => {
       settingPanel.setAttribute('show', '')
@@ -238,7 +251,7 @@ export function handleScriptSetting() {
     }
     // home-single-column 由预加载初始化
     if (
-      !GM_getValue(menuOptions.key, menuOptions.value).every(
+      !(GM_getValue(menuOptions.key, menuOptions.value) as boolean[]).every(
         (item) => item === false,
       )
     ) {
@@ -287,7 +300,7 @@ export function handleScriptSetting() {
   }
 
   function modifyMenuOptions() {
-    const options = GM_getValue(menuOptions.key, menuOptions.value)
+    const options = GM_getValue(menuOptions.key, menuOptions.value) as boolean[]
     let selector = ''
     options.forEach((value, index) => {
       if (value) {
@@ -341,24 +354,27 @@ export function handleScriptSetting() {
 
     const checkboxElements = settingPanel.querySelectorAll(
       '.setting-checkboxes input[type="checkbox"]',
-    )
+    ) as NodeListOf<HTMLInputElement>
     const customElements = settingPanel.querySelectorAll(
       '.setting-checkboxes input[type="number"], .setting-checkboxes select',
-    )
+    ) as NodeListOf<HTMLInputElement>
 
     checkboxElements.forEach((checkbox, index) => {
-      checkbox.checked = GM_getValue(Object.values(keyValues)[index], false)
+      checkbox.checked = GM_getValue(
+        Object.values(keyValues)[index],
+        false,
+      ) as boolean
     })
 
     customElements.forEach((elem, index) => {
       elem.value = GM_getValue(
         Object.keys(customKeyValues)[index],
         Object.values(customKeyValues)[index],
-      )
+      ) as string
     })
 
     settingPanel
-      .querySelector('#setting-conform-2')
+      .querySelector('#setting-conform-2')!
       .addEventListener('click', () => {
         const selectedValues = Array.from(checkboxElements).map(
           (checkbox) => checkbox.checked,
@@ -374,19 +390,19 @@ export function handleScriptSetting() {
             switch (key) {
               case 'ban-actionbar-hidden':
                 if (value) banActionbarHidden()
-                else document.getElementById(key).remove()
+                else document.getElementById(key)?.remove()
                 break
               case 'message-sidebar-change-right':
                 if (value) messageSidebarRight()
-                else document.getElementById(key).remove()
+                else document.getElementById(key)?.remove()
                 break
               case 'menu-dialog-move-down':
                 if (value) menuDialogMoveDown()
-                else document.getElementById(`${key}-value`).remove()
+                else document.getElementById(`${key}-value`)?.remove()
                 break
               case 'home-single-column':
                 if (value) homeSingleColumn()
-                else document.getElementById(key).remove()
+                else document.getElementById(key)?.remove()
                 break
             }
           }
@@ -422,19 +438,19 @@ export function handleScriptSetting() {
       })
 
     settingPanel
-      .querySelector('.header-image-source')
+      .querySelector('.header-image-source')!
       .addEventListener('change', (event) => {
-        if (event.target.value === 'local') {
+        if ((event.target as HTMLInputElement).value === 'local') {
           const input = document.createElement('input')
           input.type = 'file'
           input.accept = 'image/*'
           input.addEventListener('change', () => {
-            const file = input.files[0]
+            const file = input.files![0]
             const reader = new FileReader()
             reader.readAsDataURL(file)
             reader.onload = () => {
               const base64Data = reader.result
-              localStorage.setItem('header-image', base64Data)
+              localStorage.setItem('header-image', base64Data!.toString())
             }
           })
           input.click()
@@ -442,7 +458,7 @@ export function handleScriptSetting() {
       })
 
     settingPanel
-      .querySelector('.modify-menu-options')
+      .querySelector('.modify-menu-options')!
       .addEventListener('click', () => {
         const settingPanel = Object.assign(document.createElement('div'), {
           id: 'setting-panel-modify-menu-options',
@@ -465,18 +481,21 @@ export function handleScriptSetting() {
 
         const checkboxElements = settingPanel.querySelectorAll(
           '.setting-checkboxes input[type="checkbox"]',
-        )
-        const oldValues = GM_getValue(menuOptions.key, menuOptions.value)
+        ) as NodeListOf<HTMLInputElement>
+        const oldValues = GM_getValue(
+          menuOptions.key,
+          menuOptions.value,
+        ) as boolean[]
 
         checkboxElements.forEach((element, index) => {
           element.checked = oldValues[index]
         })
 
         settingPanel
-          .querySelector('#setting-conform-3')
+          .querySelector('#setting-conform-3')!
           .addEventListener('click', () => {
             const selectedValues = Array.from(checkboxElements).map(
-              (checkbox) => checkbox.checked,
+              (checkbox) => (checkbox as HTMLInputElement).checked,
             )
 
             if (selectedValues !== oldValues) {
@@ -496,7 +515,9 @@ export function setScriptHelp() {
   createSettingPanel()
 
   GM_registerMenuCommand('脚本说明', () => {
-    const settingPanel = document.getElementById('setting-panel-help')
+    const settingPanel = document.getElementById(
+      'setting-panel-help',
+    ) as HTMLElement
     settingPanel.style.display = 'flex'
     setTimeout(() => {
       settingPanel.setAttribute('show', '')
@@ -523,7 +544,7 @@ export function setScriptHelp() {
     document.body.appendChild(settingPanel)
 
     settingPanel
-      .querySelector('#setting-conform-3')
+      .querySelector('#setting-conform-3')!
       .addEventListener('click', () => {
         settingPanel.removeAttribute('show')
         settingPanel.addEventListener(

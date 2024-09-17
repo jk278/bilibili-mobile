@@ -21,7 +21,9 @@ export function videoInteraction() {
 let isPortrait = false
 
 function handlePortrait() {
-  const video = document.querySelector('#bilibili-player video')
+  const video = document.querySelector(
+    '#bilibili-player video',
+  ) as HTMLVideoElement
 
   // 适配侧边栏切换视频
   video.addEventListener('resize', () => {
@@ -32,28 +34,36 @@ function handlePortrait() {
 
 // 接管视频点击事件
 function handlelVideoClick() {
-  const playerContainter = document.querySelector('.bpx-player-container')
-  const videoArea = playerContainter.querySelector('.bpx-player-video-area')
-  const videoPerch = videoArea.querySelector('.bpx-player-video-perch')
-  const videoWrap = videoPerch.querySelector('.bpx-player-video-wrap')
-  const video = videoWrap.querySelector('video')
+  const playerContainter = document.querySelector(
+    '.bpx-player-container',
+  ) as HTMLElement
+  const videoArea = playerContainter.querySelector(
+    '.bpx-player-video-area',
+  ) as HTMLElement
+  const videoPerch = videoArea.querySelector(
+    '.bpx-player-video-perch',
+  ) as HTMLElement
+  const videoWrap = videoPerch.querySelector(
+    '.bpx-player-video-wrap',
+  ) as HTMLElement
+  const video = videoWrap.querySelector('video') as HTMLVideoElement
 
   // 架空双击全屏层以适应竖屏
   videoArea.insertBefore(videoWrap, videoPerch)
 
   // safari 内联播放
-  if (video) {
-    video.playsInline = true
-  }
+  video.playsInline = true
 
-  const oldControlWrap = videoArea.querySelector('.bpx-player-control-wrap')
+  const oldControlWrap = videoArea.querySelector(
+    '.bpx-player-control-wrap',
+  ) as HTMLElement
   const controlEntity = oldControlWrap.querySelector(
     '.bpx-player-control-entity',
-  ) // 移动后再使用
+  ) as HTMLElement // 移动后再使用
 
-  let clickTimer = null
+  let clickTimer: number
 
-  let hideTimer = null
+  let hideTimer: number
 
   // 阻止 controlWrap 的 mouseleave 事件隐藏控制栏, mouseleave 事件不会在冒泡阶段和捕获阶段传播
   const controlWrap = Object.assign(document.createElement('div'), {
@@ -70,10 +80,12 @@ function handlelVideoClick() {
       '.bpx-player-control-bottom-right>.bpx-state-show',
     )
 
-  const controlTop = controlEntity.querySelector('.bpx-player-control-top')
+  const controlTop = controlEntity.querySelector(
+    '.bpx-player-control-top',
+  ) as HTMLElement
   const bottomRight = controlEntity.querySelector(
     '.bpx-player-control-bottom-right',
-  )
+  ) as HTMLElement
 
   // 可以作语句的表达式：需要赋值给变量或者作为函数调用的一部分，能够产生一个可以被丢弃的值
   // 布尔值不能直接作为语句，因为它们不执行任何动作，也不改变程序的状态
@@ -85,7 +97,11 @@ function handlelVideoClick() {
 
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
-      if (mutation.addedNodes[0].classList.contains('bpx-player-ctrl-web')) {
+      if (
+        (mutation.addedNodes[0] as HTMLElement).classList.contains(
+          'bpx-player-ctrl-web',
+        )
+      ) {
         // 还可以让控制栏显示作为网页全屏按钮加载的标志事件
         if (video.paused) {
           showControlWrap()
@@ -94,7 +110,7 @@ function handlelVideoClick() {
         const subtitleBtn = document.querySelector('.bpx-player-ctrl-subtitle')
         if (subtitleBtn) {
           window.addEventListener('click', (event) => {
-            if (!subtitleBtn.contains(event.target)) {
+            if (!subtitleBtn.contains(event.target as HTMLElement)) {
               subtitleBtn.dispatchEvent(new MouseEvent('mouseleave'))
             }
           })
@@ -105,7 +121,7 @@ function handlelVideoClick() {
   })
   observer.observe(bottomRight, { childList: true })
 
-  function hideControlWrap(isEnd) {
+  function hideControlWrap(isEnd: boolean = false) {
     if ((!video.paused && !isBpxStateShow()) || isEnd) {
       playerContainter.setAttribute('ctrl-shown', 'false')
       clearTimeout(hideTimer)
@@ -167,10 +183,13 @@ function handlelVideoClick() {
     // 双击打开声音
     video.muted = false
     if (video.volume === 0) {
-      document.querySelector('.bpx-player-ctrl-muted-icon').click()
+      ;(
+        document.querySelector('.bpx-player-ctrl-muted-icon') as HTMLElement
+      ).click()
     }
 
-    if (isPortrait) document.querySelector('.bpx-player-ctrl-web').click()
+    if (isPortrait)
+      (document.querySelector('.bpx-player-ctrl-web') as HTMLElement).click()
     // view 省略时指向当前窗口
     else videoPerch.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
   })
@@ -185,13 +204,14 @@ function handlelVideoClick() {
 function closeMiniPlayer() {
   // 关闭小窗: getElement 提前使用在元素加载后能获取到, querySelector 在元素加载后使用才能获取到
   if (!localStorage.getItem('is-mini-player-closed')) {
-    const miniPlayerBtn =
-      document.getElementsByClassName('mini-player-window')[0]
+    const miniPlayerBtn = document.getElementsByClassName(
+      'mini-player-window',
+    )[0] as HTMLElement
     new MutationObserver((mutations) =>
       mutations.forEach((mutation) => {
-        if (mutation.target.classList.contains('on')) {
+        if ((mutation.target as HTMLElement).classList.contains('on')) {
           miniPlayerBtn.click()
-          localStorage.setItem('is-mini-player-closed', true)
+          localStorage.setItem('is-mini-player-closed', 'true')
         }
       }),
     ).observe(miniPlayerBtn, { attributes: true, attributeFilter: ['class'] })
@@ -199,16 +219,16 @@ function closeMiniPlayer() {
 }
 
 function handleVideoInteraction() {
-  const video = document.querySelector('video')
-  let startX, startY, startTime
+  const video = document.querySelector('video') as HTMLVideoElement
+  let startX: number, startY: number, startTime: number
   const threshold = 10 // 滑动阈值
   const initialCheckDuration = 300 // 前 x 秒，例如 300 毫秒
   let isLongPress = false
   let isSliding = false
-  let timeoutId
-  let times
-  let isSlideAllowed
-  let progressInfo
+  let timeoutId: number
+  let times: number
+  let isSlideAllowed: boolean
+  let progressInfo: HTMLElement
   let progressInfoCreated = false // 标志是否已创建 progressInfo 元素
   let isCreatingProgressInfo = false // 避免 progressInfo 创建完成前被重复创建
 
@@ -217,7 +237,7 @@ function handleVideoInteraction() {
     startY = event.touches[0].clientY
     startTime = video.currentTime
     times = Number(GM_getValue('video-longpress-speed', '2'))
-    isSlideAllowed = GM_getValue('allow-video-slid', false)
+    isSlideAllowed = GM_getValue('allow-video-slid', false) as boolean
 
     // 设置初始检测定时器
     timeoutId = setTimeout(() => {
@@ -253,7 +273,7 @@ function handleVideoInteraction() {
           isCreatingProgressInfo = true
           progressInfo = document.createElement('div')
           progressInfo.id = 'progress-info'
-          video.parentNode.insertBefore(progressInfo, video.nextSibling)
+          video.parentNode!.insertBefore(progressInfo, video.nextSibling)
           progressInfoCreated = true
           isCreatingProgressInfo = false
         }
@@ -287,7 +307,7 @@ function handleVideoInteraction() {
     }
   })
 
-  function formatTime(seconds) {
+  function formatTime(seconds: number) {
     const hours = Math.floor(seconds / 3600)
     const minutes = Math.floor((seconds % 3600) / 60)
     const secs = Math.floor(seconds % 60)
@@ -311,7 +331,7 @@ function setEndingContent() {
   }
 
   function renewEndingScale() {
-    document.head.querySelector('#ending-content-scale').remove()
+    document.head.querySelector('#ending-content-scale')?.remove()
     addEndingScale()
   }
 
