@@ -207,7 +207,7 @@ export function handleScriptSetting() {
   const customKeyValues = {
     'menu-dialog-move-down-value': '20',
     'video-longpress-speed': '2',
-    'header-image-source': 'bing',
+    'header-image-source': 'unsplash', // 与 home.js 保持一致
   }
 
   const customKeyNames = {
