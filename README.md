@@ -2,7 +2,7 @@
 
 1. 接近APP的使用体验
 2. 还算不错的细节和优化
-3. 作者持续改进和处理反馈，[电报吹水群](https://t.me/dream_x_forest)、QQ交流群：113980230
+3. 作者持续改进和处理反馈，[Github 主页](https://github.com/jk278/bilibili-mobile)、[电报吹水群](https://t.me/dream_x_forest)
 
 视频页：双击全屏按钮竖屏播放，左右滑动切换侧边栏
 
