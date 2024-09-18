@@ -765,7 +765,7 @@ div.bili-live-card__info {
           <li>视频页：双击全屏按钮竖屏播放，左右滑动切换侧边栏</li>
           <li>搜索页：双击搜索按钮清空输入框，左右滑动切换分类</li>
           <li>个人空间：双击搜索按钮全局搜索，左右滑动切换分类</li>
-          <li>作者持续改进和处理反馈，<a href="https://t.me/dream_x_forest" target="_blank">电报吹水群</a>、QQ交流群：113980230</li>
+          <li>作者持续改进和处理反馈，<a href="https://github.com/jk278/bilibili-mobile" target="_blank">Github 主页</a>、<a href="https://t.me/dream_x_forest" target="_blank">电报吹水群</a></li>
           <li>Firefox 推荐扩展：<a href="https://addons.mozilla.org/zh-CN/firefox/addon/uaswitcher/" target="_blank">User Agent Switcher</a></li>
           <li>更多自定义功能，请查看脚本设置</li>
         </div>
