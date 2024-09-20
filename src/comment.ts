@@ -404,4 +404,48 @@ div#navbar {
       })
     })
   }
+
+  // 评论区详情、笔记
+  new MutationObserver(handleBodyMutation2).observe(document.body, {
+    childList: true,
+  })
+
+  function handleBodyMutation2(mutations: MutationRecord[]): void {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          node.nodeName.toLowerCase() === 'bili-comments-popup'
+        ) {
+          const iframe = (node as Element).querySelector('iframe')!
+          // iframe 的 load 事件触发时，iframe 的 contentDocument 已完全加载，并此后才能访问
+          iframe.addEventListener('load', () => {
+            const contentDocument = iframe.contentDocument!
+            const style = contentDocument.createElement('style')
+            style.textContent = `
+div.bili-dyn-item-draw {
+  min-width: 0;
+  padding-left: 58px;
+}
+div.bili-dyn-item-draw__avatar {
+  width: 58px;
+  height: 58px;
+}
+.bili-album__preview__picture {
+  max-width: 100%;
+  height: auto !important;
+}
+.bili-album__preview[class*=grid] {
+  max-width: 100%;
+}
+.bili-album__preview[class*=grid] .bili-album__preview__picture {
+    margin-bottom: 4px;
+}
+                `
+            contentDocument.head.appendChild(style)
+          })
+        }
+      })
+    })
+  }
 }

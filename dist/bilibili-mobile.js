@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         bilibili 移动端
 // @namespace    https://github.com/jk278/bilibili-mobile
-// @version      5.0.4
+// @version      5.0.4.1
 // @author       jk278
 // @description  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @license      MIT
 // @icon         https://www.bilibili.com/favicon.ico
 // @match        https://*.bilibili.com/*
 // @exclude      https://message.bilibili.com/pages/nav/*
+// @exclude      https://www.bilibili.com/blackboard/comment-detail.html?*
 // @require      https://unpkg.com/js-md5@latest/src/md5.js
 // @grant        GM_addStyle
 // @grant        GM_getValue
@@ -2244,6 +2245,43 @@ div#navbar {
 }
 `
             );
+          }
+        });
+      });
+    }
+    new MutationObserver(handleBodyMutation2).observe(document.body, {
+      childList: true
+    });
+    function handleBodyMutation2(mutations) {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === "bili-comments-popup") {
+            const iframe = node.querySelector("iframe");
+            iframe.addEventListener("load", () => {
+              const contentDocument = iframe.contentDocument;
+              const style = contentDocument.createElement("style");
+              style.textContent = `
+div.bili-dyn-item-draw {
+  min-width: 0;
+  padding-left: 58px;
+}
+div.bili-dyn-item-draw__avatar {
+  width: 58px;
+  height: 58px;
+}
+.bili-album__preview__picture {
+  max-width: 100%;
+  height: auto !important;
+}
+.bili-album__preview[class*=grid] {
+  max-width: 100%;
+}
+.bili-album__preview[class*=grid] .bili-album__preview__picture {
+    margin-bottom: 4px;
+}
+                `;
+              contentDocument.head.appendChild(style);
+            });
           }
         });
       });
