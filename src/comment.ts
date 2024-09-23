@@ -444,6 +444,18 @@ div.bili-dyn-item-draw__avatar {
                 `
             contentDocument.head.appendChild(style)
           })
+
+          node.addEventListener(
+            'click',
+            () => {
+              ;(
+                (node as HTMLElement).shadowRoot!.querySelector(
+                  '#close',
+                ) as HTMLElement
+              ).click()
+            },
+            { once: true },
+          )
         }
       })
     })
