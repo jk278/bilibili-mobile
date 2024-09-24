@@ -164,7 +164,6 @@ div.bili-live-card .bili-live-card__info--no-interest {
     display: flex !important;
     top: calc((var(--title-line-height) * 2 - var(--no-interest-entry-size)) / 2);
     right: 2px;
-    box-shadow: 0 0 2px rgba(127, 127, 127, .6);
     opacity: 0;
     transition: opacity .2s ease-in;
 }
