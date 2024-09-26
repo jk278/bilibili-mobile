@@ -294,7 +294,7 @@ div.header.space-search-tip {
 /* 某块视频 */
 .small-item {
     width: calc(50% - 10px) !important;
-    padding: 0 5px 5px !important;
+    padding: 5px !important;
 }
 
 .small-item .cover {
@@ -591,6 +591,50 @@ div.page-head {
     margin-left: 0;
 }
 
+/* 投稿页页数-美化 */
+ul.be-pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: var(--actionbar-height);
+}
+
+.be-pager li {
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    padding: 0;
+}
+
+.be-pager>* {
+    margin-bottom: 5px;
+}
+
+.be-pager li.be-pager-prev,
+.be-pager li.be-pager-next {
+    overflow: hidden;
+    position: relative;
+}
+
+.be-pager li.be-pager-prev::before,
+.be-pager li.be-pager-next::before {
+    color: #18191C;
+    background-color: inherit;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 20px;
+    width: 34px;
+}
+
+.be-pager li.be-pager-prev::before {
+    content: '<';
+}
+
+.be-pager li.be-pager-next::before {
+    content: '>';
+}
+
 /* 导航 - 合集 */
 /* 视频列表 */
 #page-channel .series-item .video-list {
@@ -818,14 +862,14 @@ li.pgc-space-follow-item {
     padding-right: 0;
 }
 
-/* 页数 */
+/* 追番页页数-美化 */
 div.bangumi-pagelistbox {
     white-space: pre-wrap;
     height: auto;
 }
 
 .bangumi-pagelistbox>*:not(.custom-right) {
-    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .bangumi-pagelistbox a.p {
@@ -883,4 +927,14 @@ div.bangumi-pagelistbox::before {
     white-space: pre-wrap;
     height: 40px;
     margin-bottom: 4px;
+}
+
+/* ---------- 底部充电 ---------- */
+#page-index div.col-2 {
+    width: 100%;
+    margin-bottom: var(--actionbar-height);
+}
+
+#page-index .col-2 .section.user-info {
+    margin-bottom: 0;
 }

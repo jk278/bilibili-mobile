@@ -427,7 +427,7 @@ div.bpx-player-sending-bar {
 
 /* 更新时间: 避免窄屏隐藏 */
 .pubdate-ip {
-    display: block !important;
+    display: inline-flex !important;
 }
 
 /* 全站排行、每周必看等标签 & 温馨提示 */
@@ -535,6 +535,11 @@ div.ai-summary-popup {
 
 .tag-panel .tag {
     margin-bottom: 6px !important;
+}
+
+/* up 头像悬浮弹窗（非必要、会误触） */
+bili-user-profile {
+    display: none !important;
 }
 
 /**************************************************** 按钮 ***************************************************/

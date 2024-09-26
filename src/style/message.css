@@ -129,6 +129,11 @@ body>.container[sidebar] .space-left {
     width: calc(100vw - 90px);
 }
 
+/* 修复滚动事件溢出到 .message-list */
+.message-list-content {
+    height: 100%;
+}
+
 /* 聊天设置 */
 .bili-im .menu-list {
     left: unset !important;

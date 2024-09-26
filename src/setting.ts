@@ -44,9 +44,37 @@ div.bili-live-card__info {
   )
 }
 
+// 修改后 需刷新
+function foldDescTag() {
+  appendStyle(
+    'fold-desc-tag',
+    `
+#v_desc,#v_tag{
+  max-height: 0;
+  overflow: hidden;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.left-container-under-player[unfold] #v_desc,
+.left-container-under-player[unfold] #v_tag{
+  max-height: unset;
+  padding: 5px 0 !important;
+}
+#fold-desc-btn {
+  height: 24px;
+  transform: rotate(180deg);
+  transition: transform .4s ease-in;
+}
+.left-container-under-player[unfold] #fold-desc-btn{
+  transform: none;
+}  
+`,
+  )
+}
+
 // 脚本预加载设置
 export function handleScriptPreSetting() {
-  const defaultValue = Array(10).fill(false)
+  const defaultValue = Array(11).fill(false)
 
   const css = {
     css1: `
@@ -70,12 +98,17 @@ export function handleScriptPreSetting() {
     css8: '.bili-live-card {display: none !important;}',
     css9: '.bangumi-pgc-list {display: none;}',
     css10: '#danmukuBox {display: none;}',
+    css11: '.message>.context-menu {display: none;}',
   } // 对象的值可通过 object[key] 获取
 
   readScriptSetting()
 
   if (GM_getValue('home-single-column', false)) {
     homeSingleColumn()
+  }
+
+  if (GM_getValue('fold-desc-tag', false)) {
+    foldDescTag()
   }
 
   waitDOMContentLoaded(() => {
@@ -138,6 +171,7 @@ export function handleScriptPreSetting() {
           <label><input type="checkbox"><span>首页直播推荐</span></label>
           <label><input type="checkbox"><span>搜索综合栏影视块</span></label>
           <label><input type="checkbox"><span>视频侧栏弹幕列表</span></label>
+          <label><input type="checkbox"><span>消息页长按弹窗</span></label>
         </div>
         <button id="setting-conform-1" class="setting-conform">确认</button>
         `,
@@ -188,20 +222,13 @@ export function handleScriptPreSetting() {
 // 脚本设置
 export function handleScriptSetting() {
   const keyValues = {
-    key1: 'ban-video-click-play',
-    key2: 'ban-actionbar-hidden',
-    key3: 'message-sidebar-change-right',
-    key4: 'home-single-column',
-    key5: 'allow-video-slid',
-    key6: 'menu-dialog-move-down',
-  }
-
-  const keyNames = {
     'ban-video-click-play': '禁用点击视频播放/暂停',
+    'allow-video-slid': '视频滑动调整进度',
+    'fold-desc-tag': '折叠简介和标签',
+    'video-touch-unmute': '视频页交互解除静音',
     'ban-actionbar-hidden': '禁止底栏滚动时隐藏',
     'message-sidebar-change-right': '消息页侧边栏靠右',
     'home-single-column': '首页单列推荐',
-    'allow-video-slid': '视频滑动调整进度',
     'menu-dialog-move-down': '菜单弹窗(收藏、历史等)靠下',
   } as { [key: string]: string }
 
@@ -321,10 +348,10 @@ export function handleScriptSetting() {
       innerHTML: `
         <div class="setting-title">操作偏好</div>
         <div class="setting-checkboxes">
-        ${Object.values(keyValues)
+        ${Object.entries(keyValues)
           .map(
-            (key) => `
-          <label><input type="checkbox" data-key="${key}"><span>${keyNames[key]}</span></label>
+            ([key, value]) => `
+          <label><input type="checkbox" data-key="${key}"><span>${value}</span></label>
         `,
           )
           .join('')}
@@ -362,7 +389,7 @@ export function handleScriptSetting() {
 
     checkboxElements.forEach((checkbox, index) => {
       checkbox.checked = GM_getValue(
-        Object.values(keyValues)[index],
+        Object.keys(keyValues)[index],
         false,
       ) as boolean
     })
@@ -385,7 +412,7 @@ export function handleScriptSetting() {
         )
 
         selectedValues.forEach((value, index) => {
-          const key = Object.values(keyValues)[index]
+          const key = Object.keys(keyValues)[index]
           if (value !== GM_getValue(key, false)) {
             GM_setValue(key, value)
             switch (key) {

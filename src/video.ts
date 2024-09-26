@@ -11,6 +11,8 @@ export function videoInteraction() {
 
   handleVideoInteraction()
 
+  foldDescTag()
+
   closeMiniPlayer()
 
   setEndingContent()
@@ -181,12 +183,7 @@ function handlelVideoClick() {
     clearTimeout(clickTimer)
 
     // 双击打开声音
-    video.muted = false
-    if (video.volume === 0) {
-      ;(
-        document.querySelector('.bpx-player-ctrl-muted-icon') as HTMLElement
-      ).click()
-    }
+    unmute()
 
     if (isPortrait)
       (document.querySelector('.bpx-player-ctrl-web') as HTMLElement).click()
@@ -194,11 +191,25 @@ function handlelVideoClick() {
     else videoPerch.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
   })
 
+  function unmute() {
+    video.muted = false
+    if (video.volume === 0) {
+      ;(
+        document.querySelector('.bpx-player-ctrl-muted-icon') as HTMLElement
+      ).click()
+    }
+  }
+
   // 阻止视频响应滑动侧边栏
   // 阻止冒泡只对当前监听器生效，禁止全屏滑动和拖动进度条触发侧边栏。要传递参数或用形参，就要用函数而非引用
   videoArea.addEventListener('touchstart', (event) => {
     event.stopPropagation()
   })
+
+  if (GM_getValue('video-touch-unmute', false)) {
+    videoArea.addEventListener('touchstart', unmute)
+    window.addEventListener('touchstart', unmute)
+  }
 }
 
 function closeMiniPlayer() {
@@ -313,6 +324,28 @@ function handleVideoInteraction() {
     const secs = Math.floor(seconds % 60)
     return `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
   }
+}
+
+function foldDescTag() {
+  if (!GM_getValue('fold-desc-tag', false)) return
+
+  const underPlayer = document.querySelector('.left-container-under-player')!
+
+  const foldBtn = Object.assign(document.createElement('div'), {
+    id: 'fold-desc-btn',
+    innerHTML: `
+    <svg width="24" height="24" viewBox="0 0 40 40" fill="currentColor"  style="pointer-events: none; display: inherit; width: 100%; height: 100%;" xmlns="http://www.w3.org/2000/svg"><path transform="translate(4,4)" d="M0.256 23.481c0 0.269 0.106 0.544 0.313 0.75 0.412 0.413 1.087 0.413 1.5 0l14.119-14.119 13.913 13.912c0.413 0.413 1.087 0.413 1.5 0s0.413-1.087 0-1.5l-14.663-14.669c-0.413-0.412-1.088-0.412-1.5 0l-14.869 14.869c-0.213 0.212-0.313 0.481-0.313 0.756z"></path></svg>
+    `,
+  })
+
+  foldBtn.addEventListener('click', () => {
+    underPlayer.toggleAttribute('unfold')
+  })
+
+  // 等待评论预加载
+  setTimeout(() => {
+    underPlayer.insertBefore(foldBtn, underPlayer.firstChild)
+  }, 2000)
 }
 
 function setEndingContent() {
