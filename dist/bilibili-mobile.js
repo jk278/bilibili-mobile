@@ -3092,10 +3092,9 @@ div.bili-dyn-item-draw__avatar {
       else videoPerch.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
     });
     function unmute() {
-      const video2 = document.querySelector("video");
-      video2.play();
-      video2.muted = false;
-      if (video2.volume === 0) {
+      video.play();
+      video.muted = false;
+      if (video.volume === 0) {
         document.querySelector(".bpx-player-ctrl-muted-icon").click();
       }
     }

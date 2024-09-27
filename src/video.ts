@@ -192,10 +192,8 @@ function handlelVideoClick() {
   })
 
   function unmute() {
-    // 修复 VIA 解除静音视频暂停的问题
-    const video = document.querySelector('video') as HTMLVideoElement
+    // 修复 VIA 解除静音时视频暂停的问题
     video.play()
-
     video.muted = false
     if (video.volume === 0) {
       ;(
