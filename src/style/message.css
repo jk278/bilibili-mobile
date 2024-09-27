@@ -131,7 +131,7 @@ body>.container[sidebar] .space-left {
 
 /* 隐藏嵌套滚动条后，溢出内容依然影响滚动，且难以调试 */
 
-/* 修复滚动异常。why? */
+/* 滚动异常。勉强能用。why? */
 .dynamic-link i {
     vertical-align: bottom;
 }
