@@ -3096,12 +3096,14 @@ div.bili-dyn-item-draw__avatar {
       if (video.volume === 0) {
         document.querySelector(".bpx-player-ctrl-muted-icon").click();
       }
+      video.play();
     }
     videoArea.addEventListener("touchstart", (event) => {
       event.stopPropagation();
     });
     if (_GM_getValue("video-click-unmute", false)) {
       window.addEventListener("click", (event) => {
+        console.log(event.target);
         if (!videoArea.contains(event.target)) {
           unmute();
         }

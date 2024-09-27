@@ -198,6 +198,9 @@ function handlelVideoClick() {
         document.querySelector('.bpx-player-ctrl-muted-icon') as HTMLElement
       ).click()
     }
+
+    // 修复 VIA 解除静音时视频暂停的问题
+    video.play()
   }
 
   // 阻止视频响应滑动侧边栏
@@ -209,6 +212,8 @@ function handlelVideoClick() {
   if (GM_getValue('video-click-unmute', false)) {
     // 不响应 videoArea 避免交互冲突
     window.addEventListener('click', (event) => {
+      console.log(event.target)
+
       if (!videoArea.contains(event.target as HTMLElement)) {
         unmute()
       }
