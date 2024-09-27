@@ -3096,7 +3096,6 @@ div.bili-dyn-item-draw__avatar {
       if (video.volume === 0) {
         document.querySelector(".bpx-player-ctrl-muted-icon").click();
       }
-      video.play();
     }
     videoArea.addEventListener("touchstart", (event) => {
       event.stopPropagation();
