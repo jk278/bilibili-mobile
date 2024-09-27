@@ -136,8 +136,12 @@ body>.container[sidebar] .space-left {
     vertical-align: bottom;
 }
 
+.msg-item div.message {
+    margin: 0;
+}
+
 .notify-wrapper  {
-    min-height: 40px !important;
+    min-height: 32px !important;
 }
 
 /* 移除不必要的滚动条 */
