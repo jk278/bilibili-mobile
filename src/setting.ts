@@ -223,7 +223,7 @@ export function handleScriptSetting() {
     'ban-video-click-play': '禁用点击视频播放/暂停',
     'allow-video-slid': '视频滑动调整进度',
     'fold-desc-tag': '折叠简介和标签',
-    'video-touch-unmute': '视频页交互解除静音',
+    'video-click-unmute': '视频页点击空白解除静音',
     'ban-actionbar-hidden': '禁止底栏滚动时隐藏',
     'message-sidebar-change-right': '消息页侧边栏靠右',
     'cover-context-menu': '覆盖消息页长按弹窗',

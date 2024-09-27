@@ -209,9 +209,13 @@ function handlelVideoClick() {
     event.stopPropagation()
   })
 
-  if (GM_getValue('video-touch-unmute', false)) {
+  if (GM_getValue('video-click-unmute', false)) {
     // 不响应 videoArea 避免交互冲突
-    window.addEventListener('touchstart', unmute)
+    window.addEventListener('click', (event) => {
+      if (!videoArea.contains(event.target as HTMLElement)) {
+        unmute()
+      }
+    })
   }
 }
 
