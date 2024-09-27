@@ -211,12 +211,7 @@ function handlelVideoClick() {
     window.addEventListener('click', (event) => {
       console.log(event.target)
 
-      if (
-        !videoArea.contains(event.target as HTMLElement) &&
-        !document
-          .querySelector('.rec-footer')
-          ?.contains(event.target as HTMLElement)
-      ) {
+      if (!videoArea.contains(event.target as HTMLElement)) {
         unmute()
       }
     })
@@ -337,6 +332,7 @@ function handleVideoInteraction() {
   }
 }
 
+// 折叠简介
 function foldDescTag() {
   if (!GM_getValue('fold-desc-tag', false)) return
 
@@ -356,6 +352,10 @@ function foldDescTag() {
   // 等待评论预加载
   setTimeout(() => {
     underPlayer.insertBefore(foldBtn, underPlayer.firstChild)
+    ;(document.querySelector('.toggle-btn') as HTMLElement | null)?.click()
+    ;(
+      document.querySelector('.tag:has(>.show-more-btn)') as HTMLElement | null
+    )?.click()
   }, 2000)
 }
 

@@ -64,6 +64,13 @@ function foldDescTag() {
   height: 24px;
   transform: rotate(180deg);
   transition: transform .4s ease-in;
+  position: absolute;
+  right: 10px;
+  margin-top: 5px;
+  background-color: rgba(255,255,255,0.6);
+  border: 1px solid var(--line_regular);
+  border-radius: 50%;
+  padding: 2px;
 }
 .left-container-under-player[unfold] #fold-desc-btn{
   transform: none;
