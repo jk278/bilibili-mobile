@@ -209,7 +209,7 @@ function handlelVideoClick() {
   })
 
   if (GM_getValue('video-touch-unmute', false)) {
-    videoArea.addEventListener('touchstart', unmute)
+    // 不响应 videoArea 避免交互冲突
     window.addEventListener('touchstart', unmute)
   }
 }

@@ -3102,7 +3102,6 @@ div.bili-dyn-item-draw__avatar {
       event.stopPropagation();
     });
     if (_GM_getValue("video-touch-unmute", false)) {
-      videoArea.addEventListener("touchstart", unmute);
       window.addEventListener("touchstart", unmute);
     }
   }
