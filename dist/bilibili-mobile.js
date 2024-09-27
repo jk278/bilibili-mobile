@@ -3096,15 +3096,15 @@ div.bili-dyn-item-draw__avatar {
       if (video.volume === 0) {
         document.querySelector(".bpx-player-ctrl-muted-icon").click();
       }
-      video.play();
     }
     videoArea.addEventListener("touchstart", (event) => {
       event.stopPropagation();
     });
     if (_GM_getValue("video-click-unmute", false)) {
       window.addEventListener("click", (event) => {
+        var _a;
         console.log(event.target);
-        if (!videoArea.contains(event.target)) {
+        if (!videoArea.contains(event.target) && !((_a = document.querySelector(".rec-footer")) == null ? void 0 : _a.contains(event.target))) {
           unmute();
         }
       });
