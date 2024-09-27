@@ -24,7 +24,7 @@ import {
 import { handleActionbar } from './bar/actionbar.ts'
 import { preloadAnchor, handleHeaderImage, handleVideoCard } from './home.js'
 import { videoInteraction } from './video.js'
-import { createUnfoldBtn } from './message.ts'
+import { createUnfoldBtn, coverContextMenu } from './message.ts'
 import { waitDOMContentLoaded } from './utils/wait.ts'
 ;(function () {
   // setInterval(() => { debugger }, 100)
@@ -104,7 +104,10 @@ import { waitDOMContentLoaded } from './utils/wait.ts'
       waitDOMContentLoaded(videoInteraction)
       break
     case 'message':
-      waitDOMContentLoaded(createUnfoldBtn)
+      waitDOMContentLoaded(() => {
+        createUnfoldBtn()
+        coverContextMenu()
+      })
       break
     default:
       break

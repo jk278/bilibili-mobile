@@ -1,3 +1,5 @@
+import { GM_getValue } from '$'
+
 export function createUnfoldBtn() {
   const observer = new MutationObserver((mutations) =>
     mutations.forEach((mutation) => {
@@ -34,4 +36,18 @@ export function createUnfoldBtn() {
       }
     })
   }
+}
+
+export function coverContextMenu() {
+  if (!GM_getValue('cover-context-menu', false)) return
+
+  window.addEventListener(
+    'contextmenu',
+    (event) => {
+      if ((event.target as HTMLElement).className === 'message-content') {
+        event.stopImmediatePropagation() // 阻止同元素的其它事件监听器通过传播触发
+      }
+    },
+    true, // 在捕获阶段
+  )
 }

@@ -122,16 +122,21 @@ body>.container[sidebar] .space-left {
     width: 100% !important;
 }
 
-/* 消息外框 */
+/* 消息外框（滚动） */
 .message-list {
     padding: 5px;
     /* 固定宽度: 减去最外(.space-right) padding 20px, 消息列表 70px */
     width: calc(100vw - 90px);
 }
 
-/* 修复滚动事件溢出到 .message-list */
-.message-list-content {
-    height: 100%;
+/* 隐藏 .message-list-content 滚动条 */
+.message-list div.message-list-content {
+    overflow: hidden;
+}
+
+/* 修复子元素内容溢出导致的 .message-list-content 覆盖父元素滚动 */
+.notify-text.no-bg {
+    height: auto !important;
 }
 
 /* 聊天设置 */
