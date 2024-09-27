@@ -439,7 +439,7 @@ div.bpx-player-sending-bar {
     margin-bottom: 20px;
 }
 
-.honor.item {
+div:not(.overflow-panel)>div>.honor.item {
     position: absolute;
     align-self: start !important;
     top: 0;

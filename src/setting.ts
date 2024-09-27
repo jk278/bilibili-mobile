@@ -85,6 +85,8 @@ export function handleScriptPreSetting() {
     css2: '#v_tag {display:none !important;}',
     css3: `
       .video-info-meta div.copyright.item {display: none;}
+      .video-info-meta a.honor.item {display: none;}
+      .video-info-meta .video-info-detail-list:has(.honor.item) {margin-top: 0;}
       .video-info-meta .video-argue.item {display: none !important;}
       .video-info-meta .video-info-detail-list:has(.video-argue.item) {margin-bottom: 0;}
     `,
