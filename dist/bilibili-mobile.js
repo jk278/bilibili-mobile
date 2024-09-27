@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili 移动端
 // @namespace    https://github.com/jk278/bilibili-mobile
-// @version      5.1.4
+// @version      5.1.5
 // @author       jk278
 // @description  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @license      MIT
@@ -364,6 +364,13 @@ div.bili-live-card__info {
   height: 24px;
   transform: rotate(180deg);
   transition: transform .4s ease-in;
+  position: absolute;
+  right: 10px;
+  margin-top: 5px;
+  background-color: rgba(255,255,255,0.6);
+  border: 1px solid var(--line_regular);
+  border-radius: 50%;
+  padding: 2px;
 }
 .left-container-under-player[unfold] #fold-desc-btn{
   transform: none;
@@ -3106,9 +3113,8 @@ div.bili-dyn-item-draw__avatar {
     });
     if (_GM_getValue("video-click-unmute", false)) {
       window.addEventListener("click", (event) => {
-        var _a;
         console.log(event.target);
-        if (!videoArea.contains(event.target) && !((_a = document.querySelector(".rec-footer")) == null ? void 0 : _a.contains(event.target))) {
+        if (!videoArea.contains(event.target)) {
           unmute();
         }
       });
@@ -3219,7 +3225,10 @@ div.bili-dyn-item-draw__avatar {
       underPlayer.toggleAttribute("unfold");
     });
     setTimeout(() => {
+      var _a, _b;
       underPlayer.insertBefore(foldBtn, underPlayer.firstChild);
+      (_a = document.querySelector(".toggle-btn")) == null ? void 0 : _a.click();
+      (_b = document.querySelector(".tag:has(>.show-more-btn)")) == null ? void 0 : _b.click();
     }, 2e3);
   }
   function setEndingContent() {
