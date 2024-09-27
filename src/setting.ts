@@ -74,7 +74,7 @@ function foldDescTag() {
 
 // 脚本预加载设置
 export function handleScriptPreSetting() {
-  const defaultValue = Array(10).fill(false)
+  const defaultValue = Array(11).fill(false)
 
   const css = {
     css1: `
@@ -98,6 +98,7 @@ export function handleScriptPreSetting() {
     css8: '.bili-live-card {display: none !important;}',
     css9: '.bangumi-pgc-list {display: none;}',
     css10: '#danmukuBox {display: none;}',
+    css11: '.bpx-player-toast-wrap {display: none;}',
   } // 对象的值可通过 object[key] 获取
 
   readScriptSetting()
@@ -170,6 +171,7 @@ export function handleScriptPreSetting() {
           <label><input type="checkbox"><span>首页直播推荐</span></label>
           <label><input type="checkbox"><span>搜索综合栏影视块</span></label>
           <label><input type="checkbox"><span>视频侧栏弹幕列表</span></label>
+          <label><input type="checkbox"><span>视频开播时提示条</span></label>
         </div>
         <button id="setting-conform-1" class="setting-conform">确认</button>
         `,

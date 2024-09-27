@@ -372,7 +372,7 @@ div.bili-live-card__info {
     );
   }
   function handleScriptPreSetting() {
-    const defaultValue = Array(10).fill(false);
+    const defaultValue = Array(11).fill(false);
     const css = {
       css1: `
       .bpx-player-sending-area.bpx-player-sending-area {display:none !important;}
@@ -394,7 +394,8 @@ div.bili-live-card__info {
       css7: ".fixed-sidenav-storage, div.float-nav-exp {display: none !important;}",
       css8: ".bili-live-card {display: none !important;}",
       css9: ".bangumi-pgc-list {display: none;}",
-      css10: "#danmukuBox {display: none;}"
+      css10: "#danmukuBox {display: none;}",
+      css11: ".bpx-player-toast-wrap {display: none;}"
     };
     readScriptSetting();
     if (_GM_getValue("home-single-column", false)) {
@@ -457,6 +458,7 @@ div.bili-live-card__info {
           <label><input type="checkbox"><span>首页直播推荐</span></label>
           <label><input type="checkbox"><span>搜索综合栏影视块</span></label>
           <label><input type="checkbox"><span>视频侧栏弹幕列表</span></label>
+          <label><input type="checkbox"><span>视频开播时提示条</span></label>
         </div>
         <button id="setting-conform-1" class="setting-conform">确认</button>
         `
