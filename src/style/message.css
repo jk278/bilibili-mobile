@@ -129,14 +129,20 @@ body>.container[sidebar] .space-left {
     width: calc(100vw - 90px);
 }
 
-/* 隐藏 .message-list-content 滚动条 */
-.message-list div.message-list-content {
-    overflow: hidden;
+/* 隐藏嵌套滚动条后，溢出内容依然影响滚动，且难以调试 */
+
+/* 修复滚动异常。why? */
+.dynamic-link i {
+    vertical-align: bottom;
 }
 
-/* 修复子元素内容溢出导致的 .message-list-content 覆盖父元素滚动 */
-.notify-text.no-bg {
-    height: auto !important;
+.notify-wrapper  {
+    min-height: 40px !important;
+}
+
+/* 移除不必要的滚动条 */
+body:has(>#samantha-toast-container) {
+    overflow: unset;
 }
 
 /* 聊天设置 */
