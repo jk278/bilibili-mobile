@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili 移动端
 // @namespace    https://github.com/jk278/bilibili-mobile
-// @version      5.1.2
+// @version      5.1.3
 // @author       jk278
 // @description  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @license      MIT
@@ -395,7 +395,7 @@ div.bili-live-card__info {
       css8: ".bili-live-card {display: none !important;}",
       css9: ".bangumi-pgc-list {display: none;}",
       css10: "#danmukuBox {display: none;}",
-      css11: ".bpx-player-toast-wrap {display: none;}"
+      css11: "div.bpx-player-toast-wrap {display: none !important;}"
     };
     readScriptSetting();
     if (_GM_getValue("home-single-column", false)) {
@@ -458,7 +458,7 @@ div.bili-live-card__info {
           <label><input type="checkbox"><span>首页直播推荐</span></label>
           <label><input type="checkbox"><span>搜索综合栏影视块</span></label>
           <label><input type="checkbox"><span>视频侧栏弹幕列表</span></label>
-          <label><input type="checkbox"><span>视频开播时提示条</span></label>
+          <label><input type="checkbox"><span>视频弹出提示条</span></label>
         </div>
         <button id="setting-conform-1" class="setting-conform">确认</button>
         `

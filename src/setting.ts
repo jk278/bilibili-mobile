@@ -98,7 +98,7 @@ export function handleScriptPreSetting() {
     css8: '.bili-live-card {display: none !important;}',
     css9: '.bangumi-pgc-list {display: none;}',
     css10: '#danmukuBox {display: none;}',
-    css11: '.bpx-player-toast-wrap {display: none;}',
+    css11: 'div.bpx-player-toast-wrap {display: none !important;}',
   } // 对象的值可通过 object[key] 获取
 
   readScriptSetting()
@@ -171,7 +171,7 @@ export function handleScriptPreSetting() {
           <label><input type="checkbox"><span>首页直播推荐</span></label>
           <label><input type="checkbox"><span>搜索综合栏影视块</span></label>
           <label><input type="checkbox"><span>视频侧栏弹幕列表</span></label>
-          <label><input type="checkbox"><span>视频开播时提示条</span></label>
+          <label><input type="checkbox"><span>视频弹出提示条</span></label>
         </div>
         <button id="setting-conform-1" class="setting-conform">确认</button>
         `,
