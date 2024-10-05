@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili 移动端
 // @namespace    https://github.com/jk278/bilibili-mobile
-// @version      5.1.7.1
+// @version      5.1.7.2
 // @author       jk278
 // @description  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @license      MIT
@@ -1870,8 +1870,6 @@ div.bili-live-card__info {
       let startY = 0;
       let initialTransformX = 0;
       let initialTransformY = 0;
-      let isSingleFinger = false;
-      let touchCount = 0;
       const calculateDistance = (touches) => {
         const dx = touches[0].clientX - touches[1].clientX;
         const dy = touches[0].clientY - touches[1].clientY;
@@ -1882,15 +1880,23 @@ div.bili-live-card__info {
         const dy = (touches[0].clientY - touches[1].clientY) / 2;
         return [dx, dy];
       };
+      const calcInitalTranslate = (changedTouches) => {
+        startX = changedTouches[0].clientX;
+        startY = changedTouches[0].clientY;
+        initialTransformX = +zoomWrap.style.transform.match(
+          /translate\((-?[0-9.]+)px, -?[0-9.]+px\)/
+        )[1];
+        initialTransformY = +zoomWrap.style.transform.match(
+          /translate\(-?[0-9.]+px, (-?[0-9.]+)px\)/
+        )[1];
+      };
       const handleTouchStart = (event) => {
-        touchCount++;
         if (zoomWrap.style.cssText.match(/scale3d\(1, 1, 1\)/)) {
           zoomWrap.style.cssText = `transform: scale(1) translate(0px, 0px) !important;
 transform-origin: 50% 50%;
 `;
         }
         if (event.touches.length === 2) {
-          isSingleFinger = false;
           initialDistance = calculateDistance(event.touches);
           transformOrigin = calculateCenter(event.touches);
           zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
@@ -1898,21 +1904,13 @@ transform-origin: 50% 50%;
             `transform-origin: ${transformOrigin[0]}px ${transformOrigin[1]}px;`
           );
         } else if (event.touches.length === 1) {
-          isSingleFinger = true;
-          startX = event.changedTouches[0].clientX;
-          startY = event.changedTouches[0].clientY;
+          calcInitalTranslate(event.changedTouches);
         }
-        initialTransformX = +zoomWrap.style.transform.match(
-          /translate\((-?[0-9.]+)px, -?[0-9.]+px\)/
-        )[1];
-        initialTransformY = +zoomWrap.style.transform.match(
-          /translate\(-?[0-9.]+px, (-?[0-9.]+)px\)/
-        )[1];
         initialScale = +zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)[1];
         zoomWrap.addEventListener("touchmove", handleTouchMove);
       };
       const handleTouchMove = (event) => {
-        if (!isSingleFinger) {
+        if (event.touches.length === 2) {
           const currentDistance = calculateDistance(event.touches);
           const preScale = initialScale * (currentDistance / initialDistance);
           let scale;
@@ -1930,7 +1928,7 @@ transform-origin: 50% 50%;
             `scale(${scale})`
           );
           event.preventDefault();
-        } else {
+        } else if (event.touches.length === 1) {
           if (initialScale > 1.05) {
             const deltaX = (event.changedTouches[0].clientX - startX) / initialScale;
             const deltaY = (event.changedTouches[0].clientY - startY) / initialScale;
@@ -1943,9 +1941,8 @@ transform-origin: 50% 50%;
       };
       const handleTouchEnd = (event) => {
         var _a, _b;
-        touchCount--;
         zoomWrap.removeEventListener("touchend", handleTouchMove);
-        if (isSingleFinger) {
+        if (event.touches.length === 0) {
           if (initialScale < 1.05) {
             const offsetX = event.changedTouches[0].clientX - startX;
             const offsetY = event.changedTouches[0].clientY - startY;
@@ -1958,11 +1955,8 @@ transform-origin: 50% 50%;
             }
           }
         }
-        if (touchCount === 0) {
-          isSingleFinger = false;
-        }
-        if (touchCount === 1) {
-          isSingleFinger = true;
+        if (event.touches.length === 1) {
+          calcInitalTranslate(event.changedTouches);
         }
       };
       zoomWrap.addEventListener("touchstart", handleTouchStart);

@@ -13,8 +13,6 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: ShadowRoot) {
     let startY = 0
     let initialTransformX = 0
     let initialTransformY = 0
-    let isSingleFinger = false
-    let touchCount = 0
     // console.log('Here')
 
     const calculateDistance = (touches: TouchList): number => {
@@ -29,27 +27,9 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: ShadowRoot) {
       return [dx, dy]
     }
 
-    const handleTouchStart = (event: TouchEvent) => {
-      touchCount++
-      if (zoomWrap.style.cssText.match(/scale3d\(1, 1, 1\)/)) {
-        zoomWrap.style.cssText = `transform: scale(1) translate(0px, 0px) !important;
-transform-origin: 50% 50%;
-`
-      }
-
-      if (event.touches.length === 2) {
-        isSingleFinger = false
-        initialDistance = calculateDistance(event.touches)
-        transformOrigin = calculateCenter(event.touches)
-        zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-          /transform-origin: [^;]+;/,
-          `transform-origin: ${transformOrigin[0]}px ${transformOrigin[1]}px;`,
-        )
-      } else if (event.touches.length === 1) {
-        isSingleFinger = true
-        startX = event.changedTouches[0].clientX
-        startY = event.changedTouches[0].clientY
-      }
+    const calcInitalTranslate = (changedTouches: TouchList) => {
+      startX = changedTouches[0].clientX
+      startY = changedTouches[0].clientY
 
       initialTransformX = +zoomWrap.style.transform.match(
         /translate\((-?[0-9.]+)px, -?[0-9.]+px\)/,
@@ -57,12 +37,32 @@ transform-origin: 50% 50%;
       initialTransformY = +zoomWrap.style.transform.match(
         /translate\(-?[0-9.]+px, (-?[0-9.]+)px\)/,
       )![1] // 解析当前偏移
+    }
+
+    const handleTouchStart = (event: TouchEvent) => {
+      if (zoomWrap.style.cssText.match(/scale3d\(1, 1, 1\)/)) {
+        zoomWrap.style.cssText = `transform: scale(1) translate(0px, 0px) !important;
+transform-origin: 50% 50%;
+`
+      }
+
+      if (event.touches.length === 2) {
+        initialDistance = calculateDistance(event.touches)
+        transformOrigin = calculateCenter(event.touches)
+        zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
+          /transform-origin: [^;]+;/,
+          `transform-origin: ${transformOrigin[0]}px ${transformOrigin[1]}px;`,
+        )
+      } else if (event.touches.length === 1) {
+        calcInitalTranslate(event.changedTouches)
+      }
+
       initialScale = +zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)![1] // 解析当前缩放比例
       zoomWrap.addEventListener('touchmove', handleTouchMove)
     }
 
     const handleTouchMove = (event: TouchEvent) => {
-      if (!isSingleFinger) {
+      if (event.touches.length === 2) {
         const currentDistance = calculateDistance(event.touches)
         const preScale = initialScale * (currentDistance / initialDistance)
         let scale
@@ -82,7 +82,7 @@ transform-origin: 50% 50%;
         )
 
         event.preventDefault() // 阻止默认行为
-      } else {
+      } else if (event.touches.length === 1) {
         if (initialScale > 1.05) {
           // 防止未还原到位
           const deltaX =
@@ -99,9 +99,8 @@ transform-origin: 50% 50%;
     }
 
     const handleTouchEnd = (event: TouchEvent) => {
-      touchCount--
       zoomWrap.removeEventListener('touchend', handleTouchMove)
-      if (isSingleFinger) {
+      if (event.touches.length === 0) {
         if (initialScale < 1.05) {
           const offsetX = event.changedTouches[0].clientX - startX
           const offsetY = event.changedTouches[0].clientY - startY
@@ -115,11 +114,8 @@ transform-origin: 50% 50%;
           }
         }
       }
-      if (touchCount === 0) {
-        isSingleFinger = false
-      }
-      if (touchCount === 1) {
-        isSingleFinger = true
+      if (event.touches.length === 1) {
+        calcInitalTranslate(event.changedTouches)
       }
     }
     zoomWrap.addEventListener('touchstart', handleTouchStart)
