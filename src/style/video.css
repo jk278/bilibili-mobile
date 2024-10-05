@@ -145,6 +145,20 @@ div.multi-page-v1 .cur-list {
     overflow-y: auto;
 }
 
+.cur-list ul.list-box li {
+    width: 100% !important;
+}
+
+/* 选集-宫格 */
+.cur-list ul.module-box.clearfix {
+    margin: 5px 10px;
+}
+
+.cur-list ul.module-box li {
+    width: 23% !important;
+    margin: 2% 1% !important;
+}
+
 /* 推荐视频图块 */
 #reco_list .card-box .pic-box {
     max-width: 50%;
@@ -538,7 +552,8 @@ div.ai-summary-popup {
 }
 
 /* up 头像悬浮弹窗（非必要、会误触） */
-bili-user-profile {
+.bili-user-profile,
+body>.usercard-wrap {
     display: none !important;
 }
 

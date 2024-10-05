@@ -121,6 +121,8 @@ ul.vui_tabs--nav>* {
     display: none;
 }
 
+/* ----- 布局 ----- */
+
 /* 视频结果 */
 .video-list>div {
     flex: 0 0 50%;
@@ -138,6 +140,20 @@ ul.vui_tabs--nav>* {
 .search-page-wrapper .search-page {
     margin-top: 8px !important;
     padding-bottom: 0 !important;
+}
+
+div.search-page.search-page-all {
+    --list_padding: 10px;
+}
+
+/* 查看更多 */
+.i_wrapper.p_relative:has(.watch-more) {
+    margin-bottom: var(--list_padding);
+}
+
+/* 缩小综合页主内容块顶部空白 */
+.search-page-all div.i_wrapper.search-all-list {
+    padding-top: 12px;
 }
 
 /* 搜索页无不喜欢按钮 */
@@ -402,9 +418,4 @@ div.live-content {
 /* 位置异常的 logo */
 .search-logo.p_center_y {
     display: none;
-}
-
-/* 去除综合顶部空白 */
-.search-page-all div.i_wrapper.search-all-list {
-    padding-top: 8px;
 }
