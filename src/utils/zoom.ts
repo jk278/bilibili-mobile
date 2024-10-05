@@ -14,7 +14,6 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: ShadowRoot) {
     let initialTransformX = 0
     let initialTransformY = 0
     let isSingleFinger = false
-    let isTwoFingerZooming = false
     let touchCount = 0
     // console.log('Here')
 
@@ -40,7 +39,6 @@ transform-origin: 50% 50%;
 
       if (event.touches.length === 2) {
         isSingleFinger = false
-        isTwoFingerZooming = true
         initialDistance = calculateDistance(event.touches)
         transformOrigin = calculateCenter(event.touches)
         zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
@@ -64,7 +62,7 @@ transform-origin: 50% 50%;
     }
 
     const handleTouchMove = (event: TouchEvent) => {
-      if (isTwoFingerZooming) {
+      if (!isSingleFinger) {
         const currentDistance = calculateDistance(event.touches)
         const preScale = initialScale * (currentDistance / initialDistance)
         let scale
@@ -118,7 +116,10 @@ transform-origin: 50% 50%;
         }
       }
       if (touchCount === 0) {
-        isTwoFingerZooming = false
+        isSingleFinger = false
+      }
+      if (touchCount === 1) {
+        isSingleFinger = true
       }
     }
     zoomWrap.addEventListener('touchstart', handleTouchStart)

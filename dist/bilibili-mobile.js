@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili 移动端
 // @namespace    https://github.com/jk278/bilibili-mobile
-// @version      5.1.7
+// @version      5.1.7.1
 // @author       jk278
 // @description  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @license      MIT
@@ -1871,7 +1871,6 @@ div.bili-live-card__info {
       let initialTransformX = 0;
       let initialTransformY = 0;
       let isSingleFinger = false;
-      let isTwoFingerZooming = false;
       let touchCount = 0;
       const calculateDistance = (touches) => {
         const dx = touches[0].clientX - touches[1].clientX;
@@ -1892,7 +1891,6 @@ transform-origin: 50% 50%;
         }
         if (event.touches.length === 2) {
           isSingleFinger = false;
-          isTwoFingerZooming = true;
           initialDistance = calculateDistance(event.touches);
           transformOrigin = calculateCenter(event.touches);
           zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
@@ -1914,7 +1912,7 @@ transform-origin: 50% 50%;
         zoomWrap.addEventListener("touchmove", handleTouchMove);
       };
       const handleTouchMove = (event) => {
-        if (isTwoFingerZooming) {
+        if (!isSingleFinger) {
           const currentDistance = calculateDistance(event.touches);
           const preScale = initialScale * (currentDistance / initialDistance);
           let scale;
@@ -1961,7 +1959,10 @@ transform-origin: 50% 50%;
           }
         }
         if (touchCount === 0) {
-          isTwoFingerZooming = false;
+          isSingleFinger = false;
+        }
+        if (touchCount === 1) {
+          isSingleFinger = true;
         }
       };
       zoomWrap.addEventListener("touchstart", handleTouchStart);
