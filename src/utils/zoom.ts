@@ -8,12 +8,12 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: ShadowRoot) {
   if (zoomWrap) {
     let initialDistance = 0
     let initialScale = 1
-    let transformOrigin
+    let transformOrigin = { x: 0, y: 0 }
     let startX = 0
     let startY = 0
     let initialTransformX = 0
     let initialTransformY = 0
-    // console.log('Here')
+    let lastTouchCount = 0
 
     const calculateDistance = (touches: TouchList): number => {
       const dx = touches[0].clientX - touches[1].clientX
@@ -27,7 +27,7 @@ export function touchZoomWrap(zoomWrap: HTMLElement, photoShadow: ShadowRoot) {
       return [dx, dy]
     }
 
-    const calcInitalTranslate = (changedTouches: TouchList) => {
+    const calcInitialTranslate = (changedTouches: TouchList) => {
       startX = changedTouches[0].clientX
       startY = changedTouches[0].clientY
 
@@ -48,41 +48,40 @@ transform-origin: 50% 50%;
 
       if (event.touches.length === 2) {
         initialDistance = calculateDistance(event.touches)
-        transformOrigin = calculateCenter(event.touches)
-        zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-          /transform-origin: [^;]+;/,
-          `transform-origin: ${transformOrigin[0]}px ${transformOrigin[1]}px;`,
-        )
+        const center = calculateCenter(event.touches)
+        transformOrigin = { x: center[0], y: center[1] }
+        updateTransformOrigin()
       } else if (event.touches.length === 1) {
-        calcInitalTranslate(event.changedTouches)
+        calcInitialTranslate(event.changedTouches)
       }
 
-      initialScale = +zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)![1] // 解析当前缩放比例
-      zoomWrap.addEventListener('touchmove', handleTouchMove)
+      lastTouchCount = event.touches.length
+      initialScale = getCurrentScale()
+      zoomWrap.addEventListener('touchmove', handleTouchMove, {
+        passive: false,
+      })
     }
 
     const handleTouchMove = (event: TouchEvent) => {
       if (event.touches.length === 2) {
         const currentDistance = calculateDistance(event.touches)
-        const preScale = initialScale * (currentDistance / initialDistance)
-        let scale
-        if (preScale < 1) {
-          scale = 1
-          zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-            /translate\(-?[0-9.]+px, -?[0-9.]+px\)/,
-            `translate(0px, 0px)`,
-          )
-        } else {
-          scale = preScale
-        }
-
-        zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-          /scale\([0-9.]+\)/,
-          `scale(${scale})`,
+        const scale = Math.max(
+          1,
+          initialScale * (currentDistance / initialDistance),
         )
 
-        event.preventDefault() // 阻止默认行为
-      } else if (event.touches.length === 1) {
+        const center = calculateCenter(event.touches)
+        transformOrigin = { x: center[0], y: center[1] }
+
+        updateTransform(scale)
+        updateTransformOrigin()
+
+        event.preventDefault()
+      } else if (event.touches.length === 1 && lastTouchCount === 2) {
+        // 处理从双指变为单指的情况
+        calcInitialTranslate(event.touches)
+        initialScale = getCurrentScale()
+      } else if (event.touches.length === 1 && initialScale > 1.05) {
         if (initialScale > 1.05) {
           // 防止未还原到位
           const deltaX =
@@ -96,6 +95,8 @@ transform-origin: 50% 50%;
           )
         }
       }
+
+      lastTouchCount = event.touches.length
     }
 
     const handleTouchEnd = (event: TouchEvent) => {
@@ -115,9 +116,28 @@ transform-origin: 50% 50%;
         }
       }
       if (event.touches.length === 1) {
-        calcInitalTranslate(event.changedTouches)
+        calcInitialTranslate(event.changedTouches)
       }
     }
+
+    const getCurrentScale = (): number => {
+      const match = zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)
+      return match ? parseFloat(match[1]) : 1
+    }
+
+    const updateTransform = (scale: number) => {
+      const currentTransform = zoomWrap.style.transform
+      const newTransform = currentTransform.replace(
+        /scale\([0-9.]+\)/,
+        `scale(${scale})`,
+      )
+      zoomWrap.style.transform = newTransform
+    }
+
+    const updateTransformOrigin = () => {
+      zoomWrap.style.transformOrigin = `${transformOrigin.x}px ${transformOrigin.y}px`
+    }
+
     zoomWrap.addEventListener('touchstart', handleTouchStart)
     zoomWrap.addEventListener('touchend', handleTouchEnd)
   }

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili 移动端
 // @namespace    https://github.com/jk278/bilibili-mobile
-// @version      5.1.7.2
+// @version      5.1.7.3
 // @author       jk278
 // @description  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @license      MIT
@@ -1865,11 +1865,12 @@ div.bili-live-card__info {
     if (zoomWrap) {
       let initialDistance = 0;
       let initialScale = 1;
-      let transformOrigin;
+      let transformOrigin = { x: 0, y: 0 };
       let startX = 0;
       let startY = 0;
       let initialTransformX = 0;
       let initialTransformY = 0;
+      let lastTouchCount = 0;
       const calculateDistance = (touches) => {
         const dx = touches[0].clientX - touches[1].clientX;
         const dy = touches[0].clientY - touches[1].clientY;
@@ -1880,7 +1881,7 @@ div.bili-live-card__info {
         const dy = (touches[0].clientY - touches[1].clientY) / 2;
         return [dx, dy];
       };
-      const calcInitalTranslate = (changedTouches) => {
+      const calcInitialTranslate = (changedTouches) => {
         startX = changedTouches[0].clientX;
         startY = changedTouches[0].clientY;
         initialTransformX = +zoomWrap.style.transform.match(
@@ -1898,37 +1899,34 @@ transform-origin: 50% 50%;
         }
         if (event.touches.length === 2) {
           initialDistance = calculateDistance(event.touches);
-          transformOrigin = calculateCenter(event.touches);
-          zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-            /transform-origin: [^;]+;/,
-            `transform-origin: ${transformOrigin[0]}px ${transformOrigin[1]}px;`
-          );
+          const center = calculateCenter(event.touches);
+          transformOrigin = { x: center[0], y: center[1] };
+          updateTransformOrigin();
         } else if (event.touches.length === 1) {
-          calcInitalTranslate(event.changedTouches);
+          calcInitialTranslate(event.changedTouches);
         }
-        initialScale = +zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/)[1];
-        zoomWrap.addEventListener("touchmove", handleTouchMove);
+        lastTouchCount = event.touches.length;
+        initialScale = getCurrentScale();
+        zoomWrap.addEventListener("touchmove", handleTouchMove, {
+          passive: false
+        });
       };
       const handleTouchMove = (event) => {
         if (event.touches.length === 2) {
           const currentDistance = calculateDistance(event.touches);
-          const preScale = initialScale * (currentDistance / initialDistance);
-          let scale;
-          if (preScale < 1) {
-            scale = 1;
-            zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-              /translate\(-?[0-9.]+px, -?[0-9.]+px\)/,
-              `translate(0px, 0px)`
-            );
-          } else {
-            scale = preScale;
-          }
-          zoomWrap.style.cssText = zoomWrap.style.cssText.replace(
-            /scale\([0-9.]+\)/,
-            `scale(${scale})`
+          const scale = Math.max(
+            1,
+            initialScale * (currentDistance / initialDistance)
           );
+          const center = calculateCenter(event.touches);
+          transformOrigin = { x: center[0], y: center[1] };
+          updateTransform(scale);
+          updateTransformOrigin();
           event.preventDefault();
-        } else if (event.touches.length === 1) {
+        } else if (event.touches.length === 1 && lastTouchCount === 2) {
+          calcInitialTranslate(event.touches);
+          initialScale = getCurrentScale();
+        } else if (event.touches.length === 1 && initialScale > 1.05) {
           if (initialScale > 1.05) {
             const deltaX = (event.changedTouches[0].clientX - startX) / initialScale;
             const deltaY = (event.changedTouches[0].clientY - startY) / initialScale;
@@ -1938,6 +1936,7 @@ transform-origin: 50% 50%;
             );
           }
         }
+        lastTouchCount = event.touches.length;
       };
       const handleTouchEnd = (event) => {
         var _a, _b;
@@ -1956,8 +1955,23 @@ transform-origin: 50% 50%;
           }
         }
         if (event.touches.length === 1) {
-          calcInitalTranslate(event.changedTouches);
+          calcInitialTranslate(event.changedTouches);
         }
+      };
+      const getCurrentScale = () => {
+        const match = zoomWrap.style.transform.match(/scale\(([0-9.]+)\)/);
+        return match ? parseFloat(match[1]) : 1;
+      };
+      const updateTransform = (scale) => {
+        const currentTransform = zoomWrap.style.transform;
+        const newTransform = currentTransform.replace(
+          /scale\([0-9.]+\)/,
+          `scale(${scale})`
+        );
+        zoomWrap.style.transform = newTransform;
+      };
+      const updateTransformOrigin = () => {
+        zoomWrap.style.transformOrigin = `${transformOrigin.x}px ${transformOrigin.y}px`;
       };
       zoomWrap.addEventListener("touchstart", handleTouchStart);
       zoomWrap.addEventListener("touchend", handleTouchEnd);
