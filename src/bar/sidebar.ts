@@ -9,7 +9,7 @@ import { handleTransitionEndOnce } from '../utils/transition.ts'
  */
 export function setSidebarBtn(type: 'video' | 'list' | 'message'): void {
   const videoMap: Record<string, string[]> = {
-    video: ['.right-container', '#reco_list'],
+    video: ['.right-container', '.rec-footer'],
     list: ['.playlist-container--right', '.recommend-list-container'],
   }
 

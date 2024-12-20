@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili 移动端
 // @namespace    https://github.com/jk278/bilibili-mobile
-// @version      5.1.7.3
+// @version      5.1.7.4
 // @author       jk278
 // @description  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @license      MIT
@@ -2356,7 +2356,7 @@ div.bili-dyn-item-draw__avatar {
   }
   function setSidebarBtn(type) {
     const videoMap = {
-      video: [".right-container", "#reco_list"],
+      video: [".right-container", ".rec-footer"],
       list: [".playlist-container--right", ".recommend-list-container"]
     };
     if (["video", "list"].includes(type)) {
