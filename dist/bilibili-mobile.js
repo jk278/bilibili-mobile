@@ -386,7 +386,7 @@ div.bili-live-card__info {
       .left-container.left-container {padding:5px 10px 10px;}
       html body {--commentbox-display: none;}
     `,
-      css2: "#v_tag {display:none !important;}",
+      css2: ".video-tag-container {display:none !important;}",
       css3: `
       .video-info-meta div.copyright.item {display: none;}
       .video-info-meta a.honor.item {display: none;}
