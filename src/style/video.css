@@ -13,6 +13,7 @@ body[scroll-hidden] {
 /* 主应用块 */
 #app {
     --sidebar-time: .6s;
+    min-width: auto !important; /* 覆盖原始 min-width: 1080px; */
 }
 
 /* 主体内容块 */
