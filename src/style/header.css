@@ -19,7 +19,7 @@
 
 /* 首页顶栏偏移 */
 .large-header .bili-header__bar {
-    top: -64px !important;
+    /* top: -64px !important; */
     /* 首页顶栏防滚动(避免搜索页异常) */
     position: fixed !important;
 }

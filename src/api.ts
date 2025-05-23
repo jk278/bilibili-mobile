@@ -174,17 +174,16 @@ function getCSRF() {
 
 /**
  * 获取关注列表
- * @param {number} pageNumber 页码
- * @param {number} pageSize 每页显示的数据条数
- * @param {number} orderType 排序方式，1: 最常访问，2: 最近关注
- * @returns {Promise<Object>} 响应主体 data
- * @throws {Error} 如果请求失败或响应状态码不是 200
+ * @param 页码
+ * @param 每页显示的数据条数
+ * @param 排序方式，1: 最常访问，2: 最近关注
+ * @returns 响应主体 data
  */
 export async function getFollowList(
   pageNumber: number,
   pageSize: number,
   orderType: number,
-) {
+): Promise<{list: Array<Record<string, string>>, total:number}> {
   const vmid = getUserID()
   const query = await getwts({})
   return fetchAPI(

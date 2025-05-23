@@ -12,7 +12,7 @@ export function setMenuBtn() {
     // 旧APP不用预加载消息
     '.v-popover-wrap:has(>.right-entry__outside[href="//t.bilibili.com/"])',
     '.v-popover-wrap:has(>.right-entry__outside[data-header-fav-entry])',
-    '.right-entry__outside[href="//www.bilibili.com/account/history"]',
+    '.right-entry__outside[href="//www.bilibili.com/history"]',
     '.header-avatar-wrap',
   ]
   const preloadeditems2 = [
@@ -65,7 +65,7 @@ export function setMenuBtn() {
               '[data-refer="[data-idx=history]"]',
             ) as HTMLElement
           ).dataset.refer =
-            ".right-entry__outside[href='//www.bilibili.com/account/history']"
+            ".right-entry__outside[href='//www.bilibili.com/history']"
         } else {
           setTimeout(changeMenu, 50)
         }
@@ -220,7 +220,7 @@ export function setMenuBtn() {
 
   createExtraDialog()
 
-  // 添加关注弹窗
+  // 添加额外弹窗-分类、关注
   function createExtraDialog() {
     const falseHeader = Object.assign(document.createElement('div'), {
       className: 'bili-header false-header',
