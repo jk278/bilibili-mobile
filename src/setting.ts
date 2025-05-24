@@ -49,14 +49,15 @@ function foldDescTag() {
   appendStyle(
     'fold-desc-tag',
     `
-#v_desc,#v_tag{
+.video-desc-container,
+.video-tag-container{
   max-height: 0;
   overflow: hidden;
   margin: 0 !important;
   padding: 0 !important;
 }
-.left-container[unfold] #v_desc,
-.left-container[unfold] #v_tag{
+.left-container[unfold] .video-desc-container,
+.left-container[unfold] .video-tag-container{
   max-height: unset;
   padding: 5px 0 !important;
 }
