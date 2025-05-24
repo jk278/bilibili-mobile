@@ -1,5 +1,9 @@
 /* ---------------------- 操作栏 ----------------------*/
 
+html {
+    background-color: white !important;
+}
+
 body {
     --actionbar-height: 40px;
 

@@ -61,15 +61,16 @@ function foldDescTag() {
   padding: 5px 0 !important;
 }
 #fold-desc-btn {
+  width: 24px;
   height: 24px;
   transform: rotate(180deg);
-  transition: transform .4s ease-in;
   position: absolute;
   right: 10px;
-  margin-top: 5px;
-  background-color: rgba(255,255,255,0.6);
-  border: 1px solid var(--line_regular);
-  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 25%;
+  box-shadow: 0 0 0 1px var(--line_regular) inset;
   padding: 2px;
 }
 .left-container[unfold] #fold-desc-btn{

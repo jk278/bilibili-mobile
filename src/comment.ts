@@ -269,11 +269,12 @@ div#navbar {
       commentShadow!,
       `
         div#body {
-          padding-left: 45px;
+          padding: 4px 0 0 44px;
           --bili-comment-hover-more-display: block;
         }
         a#user-avatar {
           left: 0;
+          top: 12px;
         }`,
     )
 

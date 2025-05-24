@@ -553,6 +553,11 @@ div.ai-summary-popup {
     margin-bottom: 6px !important;
 }
 
+/* 评论 */
+#commentapp {
+    padding-top: 10px;
+}
+
 /* up 头像悬浮弹窗（非必要、会误触） */
 .bili-user-profile,
 body>.usercard-wrap {
