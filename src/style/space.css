@@ -28,7 +28,7 @@ div.header.space-search-tip {
 
 .space-home .aside,
 .space-dynamic__right {
-    --aside-width: calc(100% - 72px);
+    --aside-width: calc(100% - 72px) !important;
 }
 
 /* --------- 导航栏 --------- */

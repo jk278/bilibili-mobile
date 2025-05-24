@@ -30,6 +30,7 @@ export function modifyShadowDOMLate(isDynamicRefresh: boolean = false) {
     })
   }
 
+  //  始终观察动态加载的新评论
   function observeComments() {
     commentsShadow = document.querySelector('bili-comments')?.shadowRoot
     if (!commentsShadow) return
@@ -50,13 +51,25 @@ export function modifyShadowDOMLate(isDynamicRefresh: boolean = false) {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
-          node.nodeType === Node.ELEMENT_NODE &&
-          (node as Element).id === 'contents'
+          node.nodeType === Node.ELEMENT_NODE && (node as Element).id === 'contents'
         ) {
           observeHeader()
           observeContent()
-          observer.disconnect()
+        } else if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          node.nodeName.toLowerCase() === 'bili-comment-thread-renderer'
+        ) {
+          // 新增的评论单独添加观察器
+          const threadShadow = (node as Element).shadowRoot
+
+          let observer: MutationObserver
+          const callback = (mutations: MutationRecord[]) =>
+            handleContentMutation(mutations, observer)
+
+          observer = new MutationObserver(callback)
+          observer.observe(threadShadow!, { childList: true, subtree: true })
         }
+
       })
     })
   }
@@ -69,7 +82,10 @@ export function modifyShadowDOMLate(isDynamicRefresh: boolean = false) {
     )?.shadowRoot
     if (!commentsHeaderShadow) return
 
-    const observer = new MutationObserver(handleHeaderMutation)
+    let observer: MutationObserver
+    const callback = (mutations: MutationRecord[]) =>
+      handleHeaderMutation(mutations, observer)
+    observer = new MutationObserver(callback)
     observer.observe(commentsHeaderShadow, { childList: true, subtree: true })
 
     // 修复评论行概率性异常
@@ -115,7 +131,7 @@ div#navbar {
     )
   }
 
-  function handleHeaderMutation(mutations: MutationRecord[]): void {
+  function handleHeaderMutation(mutations: MutationRecord[], observer: MutationObserver): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
@@ -135,7 +151,11 @@ div#navbar {
       commentsHeaderShadow?.querySelector('bili-comment-box')?.shadowRoot
     if (!headerBoxShadow) return
 
-    const observer = new MutationObserver(handleHeader2Mutation)
+
+    let observer: MutationObserver
+    const callback = (mutations: MutationRecord[]) =>
+      handleHeader2Mutation(mutations, observer)
+    observer = new MutationObserver(callback)
     observer.observe(headerBoxShadow, { childList: true, subtree: true })
 
     appendStyle(
@@ -185,7 +205,7 @@ div#navbar {
     }
   }
 
-  function handleHeader2Mutation(mutations: MutationRecord[]): void {
+  function handleHeader2Mutation(mutations: MutationRecord[], observer: MutationObserver): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
@@ -232,17 +252,23 @@ div#navbar {
   // --------------------
   // content
   function observeContent() {
+    // 对初次加载的所有评论添加观察器
     const commentThreads = commentsShadow?.querySelectorAll(
       'bili-comment-thread-renderer',
     )
     commentThreads?.forEach((thread) => {
       const threadShadow = thread.shadowRoot
-      const observer = new MutationObserver(handleContentMutation)
+
+      let observer: MutationObserver
+      const callback = (mutations: MutationRecord[]) =>
+        handleContentMutation(mutations, observer)
+
+      observer = new MutationObserver(callback)
       observer.observe(threadShadow!, { childList: true, subtree: true })
     })
   }
 
-  function handleContentMutation(mutations: MutationRecord[]): void {
+  function handleContentMutation(mutations: MutationRecord[], observer: MutationObserver): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
@@ -286,14 +312,22 @@ div#navbar {
         }`,
     )
 
-    const observer = new MutationObserver(handleCommentShadowMutation)
+    let observer: MutationObserver
+    const callback = (mutations: MutationRecord[]) =>
+      handleCommentShadowMutation(mutations, observer)
+
+    observer = new MutationObserver(callback)
     observer.observe(commentShadow!, { childList: true, subtree: true })
 
-    const observer2 = new MutationObserver(handleRepliesShadowMutation)
+    let observer2: MutationObserver
+    const callback2 = (mutations: MutationRecord[]) =>
+      handleRepliesShadowMutation(mutations, observer2)
+
+    observer2 = new MutationObserver(callback2)
     observer2.observe(repliesShadow!, { childList: true, subtree: true })
   }
 
-  function handleCommentShadowMutation(mutations: MutationRecord[]): void {
+  function handleCommentShadowMutation(mutations: MutationRecord[], observer: MutationObserver): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
@@ -318,7 +352,7 @@ div#navbar {
     })
   }
 
-  function handleRepliesShadowMutation(mutations: MutationRecord[]): void {
+  function handleRepliesShadowMutation(mutations: MutationRecord[], observer: MutationObserver): void {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (
@@ -377,7 +411,7 @@ div#navbar {
             'click',
             (event) => {
               event.stopImmediatePropagation() // 禁用点击
-              ;(photoShadow?.querySelector('#close') as HTMLElement).click()
+                ; (photoShadow?.querySelector('#close') as HTMLElement).click()
             },
             { capture: true, once: true },
           )
@@ -449,7 +483,7 @@ div.bili-dyn-item-draw__avatar {
           node.addEventListener(
             'click',
             () => {
-              ;(
+              ; (
                 (node as HTMLElement).shadowRoot!.querySelector(
                   '#close',
                 ) as HTMLElement

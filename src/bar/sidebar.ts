@@ -49,7 +49,7 @@ export function setSidebarBtn(type: 'video' | 'list' | 'message'): void {
       const recommendFooter = document.querySelector('.rec-footer') // 自动收起侧边栏
       if (
         !nextPlay?.contains(event.target as Node) &&
-        !recommendFooter!.contains(event.target as Node)
+        !recommendFooter?.contains(event.target as Node)
       ) {
         closeSidebar()
         handleTransitionEndOnce(rightContainer, 'transform', () => {

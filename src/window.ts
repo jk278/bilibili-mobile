@@ -139,7 +139,6 @@ function scrollToHidden(type: string) {
     const currentScrollY = window.scrollY
     const offsetY = currentScrollY - lastScrollY
 
-    console.log("elem.clientHeight: ", elem.clientHeight)
     if (currentScrollY < scrollThreshold) {
       document.body.removeAttribute('scroll-hidden')
     }
@@ -205,7 +204,7 @@ function slideSearchSort() {
   const container = document.querySelector('#i_cecream') as HTMLElement
 
   function clickSortTab() {
-    ;(
+    ; (
       document.querySelector(
         `.vui_tabs--nav-item:nth-child(${navItems[clickIndex]})`,
       ) as HTMLElement
