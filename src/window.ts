@@ -139,6 +139,7 @@ function scrollToHidden(type: string) {
     const currentScrollY = window.scrollY
     const offsetY = currentScrollY - lastScrollY
 
+    console.log("elem.clientHeight: ", elem.clientHeight)
     if (currentScrollY < scrollThreshold) {
       document.body.removeAttribute('scroll-hidden')
     }
@@ -153,7 +154,7 @@ function scrollToHidden(type: string) {
     }
 
     if (['video', 'list'].includes(type)) {
-      if (currentScrollY > elem.clientHeight) {
+      if (currentScrollY > window.innerHeight / 2) {
         backup?.setAttribute('show', '')
       } else {
         backup?.removeAttribute('show')

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili 移动端
 // @namespace    https://github.com/jk278/bilibili-mobile
-// @version      5.1.8.3
+// @version      5.1.8.4
 // @author       jk278
 // @description  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @license      MIT
@@ -152,6 +152,7 @@
     window.addEventListener("scroll", () => {
       const currentScrollY = window.scrollY;
       const offsetY = currentScrollY - lastScrollY;
+      console.log("elem.clientHeight: ", elem.clientHeight);
       if (currentScrollY < scrollThreshold) {
         document.body.removeAttribute("scroll-hidden");
       }
@@ -164,7 +165,7 @@
         lastScrollY = currentScrollY;
       }
       if (["video", "list"].includes(type)) {
-        if (currentScrollY > elem.clientHeight) {
+        if (currentScrollY > window.innerHeight / 2) {
           backup == null ? void 0 : backup.setAttribute("show", "");
         } else {
           backup == null ? void 0 : backup.removeAttribute("show");
