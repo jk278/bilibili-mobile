@@ -1,8 +1,12 @@
-/* ------------------- 个人主页 ----------------------- */
+/* ------------------- 个人主页(新版) ----------------------- */
 
-/* 包裹块、分栏内容 */
-div.wrapper,
-.content {
+/* 主体内容宽度限制 */
+.wrapper,
+.space-main,
+.header-upinfo,
+.nav-bar__main,
+.space-dynamic__content {
+    min-width: unset !important;
     max-width: 100%;
 }
 
@@ -16,177 +20,99 @@ div.header.space-search-tip {
     display: none;
 }
 
-/* --------- 导航栏 --------- */
-
-/* 隐藏贴顶栏 (不是主页而是 up 名) */
-#navigator-fixed {
-    display: none;
+/* 主页/充电 */
+.space-home {
+    flex-direction: column;
+    margin-top: 20px !important;
 }
 
-/* 静态版块栏贴顶 */
-#navigator.sticky {
-    position: fixed;
-    top: 0;
-    z-index: 2;
-    width: 100%;
+.space-home .aside,
+.space-dynamic__right {
+    --aside-width: calc(100% - 72px);
+}
+
+/* --------- 导航栏 --------- */
+
+.nav-bar {
+    z-index: 2 !important;
 }
 
 /* 移除搜索框: 隐藏后依然能模拟输入和代码触发元素点击事件 */
 /* 用 CSS 属性 display: none; 隐藏元素后，虽然元素在视觉上消失了，但是它在 DOM 中仍然存在。这意味着仍然可以通过 JavaScript 与隐藏元素进行交互 */
-#navigator .search-container {
+.space-navbar .nav-search {
     display: none;
 }
 
-/* 贴顶后内容区高度补偿 (移除搜索框后) */
-#app:has(>.sticky)>.s-space {
-    padding-top: 49px;
-}
-
-/* 内框 */
-.n .n-inner {
-    height: auto !important;
+/* 调整导航栏横向布局 */
+.nav-bar__main {
     padding: 0 !important;
 }
 
-/* 导航项框 */
-.n .n-tab-links {
-    display: flex !important;
-    justify-content: space-evenly;
+.nav-bar__main-left {
+    flex: 1;
+    margin-right: 0 !important;
+
+    .nav-tab {
+        flex: 1;
+        justify-content: space-evenly;
+    }
 }
 
 /* 导航项 */
-#app .n .n-btn {
-    line-height: unset;
-    margin: 0;
-    display: flex;
+.nav-tab__item {
+    margin-left: 0 !important;
     flex-direction: column;
-    align-items: center;
+    height: 46px !important;
+}
 
-    .iconfont {
+.nav-tab__item-text {
+    margin-left: 0 !important;
+}
+
+/* --------- up 块(header) --------- */
+
+/* 增加高度 */
+.space-header {
+    height: 260px !important;
+}
+
+.header-upinfo-bg-shadow {
+    background-color: black;
+    opacity: .1;
+
+    div {
+        background: none !important;
+    }
+}
+
+.header-upinfo {
+    align-self: center !important;
+    padding: 0 20px !important;
+
+    .upinfo__main {
         margin-right: 0;
+        align-items: flex-start !important;
     }
 
-    .n-text {
-        line-height: 15px;
-        width: 26px;
-        white-space: nowrap;
-        overflow: hidden;
+    .upinfo-avatar {
+        margin-top: 24px;
     }
 
-    .n-num {
-        line-height: 14px;
-        margin-left: 0;
-        text-align: center;
+    /* 简介 */
+    .header-sign {
+        height: auto !important;
+
+        .pure-text {
+            display: block !important;
+        }
     }
-}
-
-/* 导航: 排序 */
-/* 投稿 */
-.n .n-video.n-audio.n-article.n-album {
-    order: -2;
-}
-
-/* 动态 */
-.n .n-dynamic {
-    order: -1;
-}
-
-/* 主页 .n .n-index.n-fans */
-
-/* 合集 */
-.n .n-channel {
-    order: 1;
-}
-
-/* 收藏 */
-.n .n-favlist {
-    order: 2;
-}
-
-/* 课程 */
-.n .n-pugv {
-    order: 3;
-}
-
-/* 降低高度: 时长、充电头像、充电图 */
-.col-1 span.length,
-.col-2 .elec .elec-hito:nth-child(4),
-.col-2 .elec .elec-status {
-    z-index: 1;
-}
-
-/* --------- 关注栏 --------- */
-
-/* 降低关注栏高度 */
-#app .h {
-    z-index: 1;
-}
-
-/* 折叠关注按钮栏 */
-#app .h .h-action {
-    position: fixed;
-    background-color: #f1f2f3;
-    left: 0;
-    bottom: 0 !important;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    opacity: 0;
-    /* easi-in 距离与时间的平方成正比 */
-    transition: calc(var(--actionbar-time)*1.44) ease-in;
-}
-
-#app .h .h-action.show {
-    bottom: var(--actionbar-height) !important;
-    opacity: 1;
-}
-
-[scroll-hidden] #app .h .h-action {
-    transform: translateY(calc(100% + var(--actionbar-height)));
-}
-
-.h .h-action .h-f-btn {
-    margin: 10px;
-}
-
-/* 更多按钮 */
-.be-dropdown.h-add-to-black {
-    background: rgba(0, 0, 0, .45);
-    box-shadow: 0 0 0 2px hsla(0, 0%, 100%, .3);
-    border-radius: 4px;
-}
-
-/* --------- up 块 --------- */
-
-/* up 块背景阴影 */
-.h .h-gradient {
-    height: 120% !important;
-    background-size: auto 100%;
-}
-
-/* up 信息上空白 */
-#app .h .h-inner {
-    padding-top: 20px;
-}
-
-/* up 信息 */
-#app .h .h-info {
-    margin: 0 10px;
-    padding-bottom: calc(40px + 12px);
-}
-
-/* up 简介 */
-#app .h .h-sign {
-    width: 100%;
-    word-break: break-all;
-    height: fit-content;
-    line-height: 18px;
 }
 
 /* 关注、粉丝数 (height: 40px) */
-.n .n-statistics {
+.space-navbar .nav-statistics {
     position: absolute;
     top: 0;
+    right: 0;
     transform: translateY(-100%);
     z-index: 10;
     /* 不减去左右 margin 会溢出 */
@@ -198,20 +124,368 @@ div.header.space-search-tip {
     margin: 0 10px;
     border-top: 1px solid var(--line_regular);
 
-    .n-data {
-        padding: 0 5px;
-        height: auto;
+    .nav-statistics__item-text {
+        color: var(--text_white);
     }
 
-    .n-data-k {
-        color: white !important;
-    }
-
-    .n-data-v {
-        color: hsla(0, 0%, 100%, .8) !important;
-        margin-top: 0 !important;
+    .nav-statistics__item-num {
+        color: var(--text_white);
     }
 }
+
+/* --------- 内容主体 --------- */
+
+.space-main {
+    padding: 10px !important;
+    background-color: var(--bg1);
+}
+
+/* 视频块 */
+.section-wrap .items {
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+
+/* 合集部分特殊处理 */
+.video-list__content {
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+
+/* 标题 */
+.section-wrap__header:has(.radio-filter) {
+    height: 68px !important;
+    align-items: flex-start;
+    margin-bottom: 10px !important;
+}
+
+/* 标题 - 视频排序 */
+.section-wrap .radio-filter {
+    position: absolute;
+    left: 0;
+    transform: translateX(calc(50vw - 50%));
+    margin: 38px 0 0 !important;
+
+    .radio-filter__item {
+        height: 30px !important;
+    }
+}
+
+.section-wrap .vui_button {
+    height: 30px;
+    width: 84px !important;
+    padding: 0 6px !important;
+}
+
+.section-wrap .amount {
+    text-wrap: nowrap;
+}
+
+/* 已关注置顶推荐 */
+.top-video {
+    flex-direction: column;
+}
+
+.top-video__cover {
+    width: 100% !important;
+    height: fit-content !important;
+}
+
+.top-video__title {
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    margin-top: 5px;
+}
+
+.top-video__desc {
+    -webkit-line-clamp: 4 !important;
+    line-clamp: 4 !important;
+}
+
+/* 代表作 */
+.masterpiece-block {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+
+    .masterpiece-block__item {
+        width: 100% !important;
+    }
+}
+
+/* 专栏 */
+.article-section .article-list {
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+
+/* --------- 关注栏 --------- */
+
+/* 折叠关注按钮栏 */
+.upinfo .operations {
+    position: fixed;
+    left: 0;
+    bottom: 0 !important;
+    width: 100%;
+    z-index: 1;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    opacity: 0;
+    /* easi-in 距离与时间的平方成正比 */
+    transition: calc(var(--actionbar-time)*1.44) ease-in;
+}
+
+.upinfo .operations.show {
+    bottom: var(--actionbar-height) !important;
+    opacity: 1;
+    z-index: 10;
+}
+
+[scroll-hidden] .header-upinfo .operations {
+    transform: translateY(calc(100% + var(--actionbar-height)));
+}
+
+.operations .message-btn,
+.operations .more-actions__trigger,
+.operations .space-follow-btn.gray {
+    color: var(--v_text1) !important;
+    background: var(--v_bg1_float) !important;
+    border: 1px solid var(--v_line_regular) !important;
+    box-shadow: 0 0 0 1px var(--v_line_regular) !important;
+}
+
+/* ----- 换页栏 ----- */
+
+.vui_pagenation {
+    padding: 20px 0 !important;
+    width: 100% !important;
+    flex-direction: column;
+}
+
+/* 其它样式与 search.css 文件的"页数"一致 */
+
+/* ----- 动态Tab ----- */
+
+.space-dynamic {
+    flex-direction: column;
+    margin-top: 10px !important;
+}
+
+.space-dynamic .space-dynamic__left {
+    height: auto;
+    width: 100%;
+    /* 取消 sticky 效果 */
+    top: unset !important;
+
+    .side-nav {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 10px;
+
+        .side-nav__item {
+            border: 1px solid var(--line_regular);
+            margin-top: 0;
+        }
+    }
+}
+
+#page-dynamic .col-1 {
+    max-width: 100%;
+}
+
+div.bili-dyn-item {
+    min-width: 0;
+}
+
+div.bili-dyn-item__main {
+    padding: 0 15px 0 60px;
+}
+
+div.bili-dyn-item__avatar {
+    width: 60px;
+    height: 77px;
+}
+
+/* 内容填充左侧空白 */
+.bili-dyn-item__body {
+    position: relative;
+    left: -45px;
+    width: calc(100% + 45px);
+}
+
+/* 封面尺寸 - 投稿边框 */
+a.bili-dyn-card-video {
+    border: 1px solid var(--line_regular);
+    border-radius: 0 6px 6px 0;
+}
+
+/* 封面尺寸 */
+div.bili-dyn-card-video__header {
+    width: 40%;
+    height: fit-content;
+    align-self: center;
+}
+
+/* 投稿边框、内容 */
+div.bili-dyn-card-video__body {
+    border: none;
+    min-height: 85px;
+    padding: 10px 12px 8px;
+}
+
+div.bili-dyn-card-video__title {
+    font-size: 14px;
+}
+
+/* 动态图片 */
+.bili-album__preview__picture {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 动态图片 */
+div.bili-album__preview.grid6 {
+    width: unset;
+}
+
+/* 点赞评论 */
+div.bili-dyn-action {
+    width: unset;
+}
+
+div.bili-dyn-item__footer {
+    position: relative;
+    left: -45px;
+    width: calc(100% + 45px);
+    padding-right: 0;
+    justify-content: space-around;
+}
+
+/* ----- 投稿Tab ----- */
+
+.space-upload {
+    flex-direction: column;
+    margin-top: 10px !important;
+}
+
+.space-upload .upload-sidenav {
+    height: auto !important;
+    width: 100% !important;
+    top: unset !important;
+
+    .side-nav {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 10px;
+
+        .side-nav__item {
+            border: 1px solid var(--line_regular);
+            margin-top: 0;
+        }
+    }
+}
+
+.space-upload .video-list {
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+
+/* ----- 收藏Tab ----- */
+
+.space-favlist {
+    flex-direction: column;
+    margin-top: 10px !important;
+}
+
+.favlist-aside {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    top: unset !important;
+}
+
+.favlist-aside .vui_sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+
+    .fav-sidebar-item {
+        border: 1px solid var(--line_regular);
+        border-radius: 6px;
+    }
+}
+
+.space-upload .video-list {
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+
+/* 标题 */
+.fav-list-header {
+    margin-top: 10px !important;
+}
+
+.fav-list-header:has(.radio-filter) {
+    height: 64px !important;
+    align-items: flex-start;
+    margin-bottom: 10px !important;
+}
+
+.fav-list-main .radio-filter {
+    position: absolute;
+    left: 0;
+    transform: translateX(calc(50vw - 50%));
+    margin: 30px 0 0 !important;
+
+    .radio-filter__item {
+        height: 30px !important;
+    }
+}
+
+.fav-list-main .fav-list-header-filter__left {
+    align-items: flex-start !important;
+}
+
+/* 收藏视频 */
+.fav-list-main .items {
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+
+/* ----- 追剧Tab ----- */
+
+.space-subscribe {
+    flex-direction: column;
+    margin-top: 10px !important;
+}
+
+.space-subscribe .subscribe-sidebar {
+    height: auto !important;
+    width: 100% !important;
+    top: unset !important;
+
+    .side-nav {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 10px;
+
+        .side-nav__item {
+            border: 1px solid var(--line_regular);
+            margin-top: 0;
+        }
+    }
+}
+
+.bili-bangumi-card__cover {
+    width: 106px;
+    height: 163px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+/* ------------------------------------------ */
+/* -------------- 旧版样式分割线 -------------- */
+/* ------------------------------------------ */
+
+/* ------ 视频展示块 ------ */
 
 /* 宽度 100% 时, 溢出因素: margin、padding、border */
 
@@ -227,44 +501,9 @@ div.header.space-search-tip {
     white-space: wrap !important;
 }
 
-/* ------ 已关注置顶推荐 ------ */
-
-.i-pin-c.cover-big {
-    padding-bottom: 5px;
-}
-
-.i-pin-c .i-pin-cover {
-    width: 100% !important;
-    height: fit-content !important;
-}
-
-.i-pin-title {
-    white-space: wrap !important;
-}
-
-.i-pin-info {
-    margin-left: 0 !important;
-    height: auto !important;
-}
-
-/* 描述 - 不限高 */
-.i-pin-desc {
-    max-height: unset !important;
-}
-
-/* ------ TA的视频 ------ */
-
 /* 标题 */
 .section-title {
     padding: 0 5px 33px !important;
-}
-
-/* 标题 - 视频排序 */
-#page-index .video .be-tab {
-    position: absolute;
-    left: 0;
-    transform: translateX(calc(50vw - 50%));
-    margin: 33px 0 0 !important;
 }
 
 .be-tab-item {
@@ -280,15 +519,6 @@ div.header.space-search-tip {
 /* TA的视频: 不限制高度 */
 #page-index .video .content {
     max-height: unset !important;
-}
-
-/* 代表作 */
-#i-masterpiece .i-mp-multi {
-    height: unset;
-}
-
-#i-masterpiece .i-mp-multi .small-item {
-    height: unset;
 }
 
 /* 某块视频 */
@@ -412,80 +642,6 @@ h2.article-title {
     span {
         margin-right: 0;
     }
-}
-
-/* 导航 - 动态 */
-
-#page-dynamic .col-1 {
-    max-width: 100%;
-}
-
-div.bili-dyn-item {
-    min-width: 0;
-}
-
-div.bili-dyn-item__main {
-    padding: 0 15px 0 60px;
-}
-
-div.bili-dyn-item__avatar {
-    width: 60px;
-    height: 77px;
-}
-
-/* 内容填充左侧空白 */
-.bili-dyn-item__body {
-    position: relative;
-    left: -45px;
-    width: calc(100% + 45px);
-}
-
-/* 封面尺寸 - 投稿边框 */
-a.bili-dyn-card-video {
-    border: 1px solid var(--line_regular);
-    border-radius: 0 6px 6px 0;
-}
-
-/* 封面尺寸 */
-div.bili-dyn-card-video__header {
-    width: 40%;
-    height: fit-content;
-    align-self: center;
-}
-
-/* 投稿边框、内容 */
-div.bili-dyn-card-video__body {
-    border: none;
-    min-height: 85px;
-    padding: 10px 12px 8px;
-}
-
-div.bili-dyn-card-video__title {
-    font-size: 14px;
-}
-
-/* 动态图片 */
-.bili-album__preview__picture {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-/* 动态图片 */
-div.bili-album__preview.grid6 {
-    width: unset;
-}
-
-/* 点赞评论 */
-div.bili-dyn-action {
-    width: unset;
-}
-
-div.bili-dyn-item__footer {
-    position: relative;
-    left: -45px;
-    width: calc(100% + 45px);
-    padding-right: 0;
-    justify-content: space-around;
 }
 
 /* 导航 - 投稿 */
@@ -922,19 +1078,9 @@ div.bangumi-pagelistbox::before {
     width: 100%;
 }
 
-.section .pugv-container .pugv-item .item-infos p.sub-title{
+.section .pugv-container .pugv-item .item-infos p.sub-title {
     width: 100%;
     white-space: pre-wrap;
     height: 40px;
     margin-bottom: 4px;
-}
-
-/* ---------- 底部充电 ---------- */
-#page-index div.col-2 {
-    width: 100%;
-    margin-bottom: var(--actionbar-height);
-}
-
-#page-index .col-2 .section.user-info {
-    margin-bottom: 0;
 }

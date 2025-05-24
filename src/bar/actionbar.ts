@@ -175,7 +175,7 @@ export function handleActionbar(type: string): void {
           }
         }
       } else if (type === 'space') {
-        const followRow = document.querySelector('.h .h-action') as HTMLElement
+        const followRow = document.querySelector('.upinfo .operations') as HTMLElement
 
         followRow.style.transition = '.4s ease-in'
         followRow?.classList.toggle('show')

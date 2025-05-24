@@ -124,7 +124,7 @@ ul.vui_tabs--nav>* {
 /* ----- 布局 ----- */
 
 /* 视频结果 */
-.video-list>div {
+.search-page .video-list>div {
     flex: 0 0 50%;
     max-width: 50%;
     padding: 0 4px !important;
@@ -168,6 +168,10 @@ div.search-page.search-page-all {
 
 .vui_pagenation {
     width: 100%;
+}
+
+.vui_pagenation--jump .vui_pagenation--btns {
+    margin-right: 0 !important;
 }
 
 div.vui_pagenation--btns {

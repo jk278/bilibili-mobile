@@ -275,7 +275,6 @@ function handleSpaceSwipe() {
           addedNode.nodeType === Node.ELEMENT_NODE &&
           (addedNode as HTMLElement).id === 'app'
         ) {
-          setTimeout(scrollToStick, 50) // 等待粉丝牌宽度 (可能影响高度) 动态加载
           slideSpaceNavigator()
           observer.disconnect()
         }
@@ -283,20 +282,6 @@ function handleSpaceSwipe() {
     })
   })
   observer.observe(document.body, { childList: true })
-
-  function scrollToStick() {
-    const navigator = document.querySelector('#navigator') as HTMLElement
-    const threshold = navigator.getBoundingClientRect().top
-
-    let isStuck = false
-
-    window.addEventListener('scroll', () => {
-      if (isStuck !== window.scrollY > threshold) {
-        navigator.classList.toggle('sticky')
-        isStuck = !isStuck
-      }
-    })
-  }
 
   function slideSpaceNavigator() {
     const current = document.querySelector('#navigator .active')
