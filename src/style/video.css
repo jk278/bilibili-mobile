@@ -13,7 +13,8 @@ body[scroll-hidden] {
 /* 主应用块 */
 #app {
     --sidebar-time: .6s;
-    min-width: auto !important; /* 覆盖原始 min-width: 1080px; */
+    min-width: auto !important;
+    /* 覆盖原始 min-width: 1080px; */
 }
 
 /* 主体内容块 */
@@ -68,7 +69,7 @@ body[scroll-hidden] {
     box-sizing: border-box;
     width: 100% !important;
     padding: calc(var(--dm-row-height) + 5px) 10px 10px;
-    
+
     background: white;
 }
 
@@ -91,8 +92,7 @@ body[scroll-hidden] {
     z-index: 1;
 }
 
-#mirror-vdcon[sidebar] .left-container::after
-#mirror-vdcon[sidebar] .playlist-container--left::after {
+#mirror-vdcon[sidebar] .left-container::after #mirror-vdcon[sidebar] .playlist-container--left::after {
     pointer-events: auto;
     opacity: 1;
 }

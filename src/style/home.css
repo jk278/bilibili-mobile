@@ -2,7 +2,7 @@
 
 /* 修复 via 记忆滚动位置导致的加载异常 (api获取频繁) */
 /* overflow-y 属性的值会影响滚动事件的传递 */
-/* overscroll-behavior-y 属性用于控制当用户在滚动到边界时浏览器的行为 */    
+/* overscroll-behavior-y 属性用于控制当用户在滚动到边界时浏览器的行为 */
 
 body {
     /* 避免评论未加载时显示灰色 */
@@ -40,9 +40,13 @@ body,
     width: 100% !important;
 }
 
-/* 视频流广告、影视 */
+/* 视频流广告 */
+/* 广告元素标识 */
+/* 进行行为统计的广告和推广 */
+/* 影视 */
 .container>*:has(.bili-video-card__info--ad),
 .container>*:has(.bili-video-card__info--creative-ad),
+.container>*:has([href^="//cm.bilibili.com/cm/api/"]),
 .floor-single-card {
     display: none !important;
 }
@@ -63,7 +67,8 @@ body,
 }
 
 /* 修复视频被未知规则屏蔽一部分后导致的提示词溢出 */
-.bili-video-card *::before, .bili-video-card *::after {
+.bili-video-card *::before,
+.bili-video-card *::after {
     width: 100%;
     white-space: wrap !important;
     word-break: break-all;
