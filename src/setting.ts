@@ -55,8 +55,8 @@ function foldDescTag() {
   margin: 0 !important;
   padding: 0 !important;
 }
-.left-container-under-player[unfold] #v_desc,
-.left-container-under-player[unfold] #v_tag{
+.left-container[unfold] #v_desc,
+.left-container[unfold] #v_tag{
   max-height: unset;
   padding: 5px 0 !important;
 }
@@ -72,7 +72,7 @@ function foldDescTag() {
   border-radius: 50%;
   padding: 2px;
 }
-.left-container-under-player[unfold] #fold-desc-btn{
+.left-container[unfold] #fold-desc-btn{
   transform: none;
 }  
 `,

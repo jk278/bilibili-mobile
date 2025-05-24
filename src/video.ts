@@ -336,7 +336,8 @@ function handleVideoInteraction() {
 function foldDescTag() {
   if (!GM_getValue('fold-desc-tag', false)) return
 
-  const underPlayer = document.querySelector('.left-container-under-player')!
+  const leftContainer = document.querySelector('.left-container') as HTMLElement
+  const commentApp = document.querySelector('#commentapp')!
 
   const foldBtn = Object.assign(document.createElement('div'), {
     id: 'fold-desc-btn',
@@ -346,12 +347,12 @@ function foldDescTag() {
   })
 
   foldBtn.addEventListener('click', () => {
-    underPlayer.toggleAttribute('unfold')
+    leftContainer.toggleAttribute('unfold')
   })
 
   // 等待评论预加载
   setTimeout(() => {
-    underPlayer.insertBefore(foldBtn, underPlayer.firstChild)
+    commentApp.insertBefore(foldBtn, commentApp.firstChild)
     ;(document.querySelector('.toggle-btn') as HTMLElement | null)?.click()
     ;(
       document.querySelector('.tag:has(>.show-more-btn)') as HTMLElement | null

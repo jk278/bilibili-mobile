@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili 移动端
 // @namespace    https://github.com/jk278/bilibili-mobile
-// @version      5.1.8.4
+// @version      5.1.8.5
 // @author       jk278
 // @description  Safari打开电脑模式，其它浏览器关闭电脑模式修改网站UA，获取舒适的移动端体验。
 // @license      MIT
@@ -356,8 +356,8 @@ div.bili-live-card__info {
   margin: 0 !important;
   padding: 0 !important;
 }
-.left-container-under-player[unfold] #v_desc,
-.left-container-under-player[unfold] #v_tag{
+.left-container[unfold] #v_desc,
+.left-container[unfold] #v_tag{
   max-height: unset;
   padding: 5px 0 !important;
 }
@@ -373,7 +373,7 @@ div.bili-live-card__info {
   border-radius: 50%;
   padding: 2px;
 }
-.left-container-under-player[unfold] #fold-desc-btn{
+.left-container[unfold] #fold-desc-btn{
   transform: none;
 }  
 `
@@ -3237,7 +3237,8 @@ div.bili-dyn-item-draw__avatar {
   }
   function foldDescTag() {
     if (!_GM_getValue("fold-desc-tag", false)) return;
-    const underPlayer = document.querySelector(".left-container-under-player");
+    const leftContainer = document.querySelector(".left-container");
+    const commentApp = document.querySelector("#commentapp");
     const foldBtn = Object.assign(document.createElement("div"), {
       id: "fold-desc-btn",
       innerHTML: `
@@ -3245,11 +3246,11 @@ div.bili-dyn-item-draw__avatar {
     `
     });
     foldBtn.addEventListener("click", () => {
-      underPlayer.toggleAttribute("unfold");
+      leftContainer.toggleAttribute("unfold");
     });
     setTimeout(() => {
       var _a, _b;
-      underPlayer.insertBefore(foldBtn, underPlayer.firstChild);
+      commentApp.insertBefore(foldBtn, commentApp.firstChild);
       (_a = document.querySelector(".toggle-btn")) == null ? void 0 : _a.click();
       (_b = document.querySelector(".tag:has(>.show-more-btn)")) == null ? void 0 : _b.click();
     }, 2e3);
